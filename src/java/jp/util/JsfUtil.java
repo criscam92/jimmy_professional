@@ -1,6 +1,7 @@
 package jp.util;
 
 import java.util.List;
+import java.util.ResourceBundle;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -66,5 +67,13 @@ public class JsfUtil {
         CREATE,
         DELETE,
         UPDATE
+    }
+
+    public static String getMessageBundle(String[] msgs) {
+        String msgTMP = "";
+        for (String msg : msgs) {
+            msgTMP += " " + ResourceBundle.getBundle("languages/Bundle").getString(msg);
+        }
+        return msgTMP.trim();
     }
 }

@@ -109,7 +109,7 @@ public class Pais implements Serializable {
 
     @Override
     public String toString() {
-        return "jp.entidades.Pais[ id=" + id + " ]";
+        return this.getNombre();
     }
     
 }
