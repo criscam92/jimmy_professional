@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="FacturaViewDlg" widgetVar="FacturaViewDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.ViewFacturaTitle}">
+            <h:form id="FacturaViewForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{facturaController.selected != null}">
+                        <h:outputText value="#{bundle.ViewFacturaLabel_id}"/>
+                        <h:outputText value="#{facturaController.selected.id}" title="#{bundle.ViewFacturaTitle_id}"/>
+                        <h:outputText value="#{bundle.ViewFacturaLabel_fecha}"/>
+                        <h:outputText value="#{facturaController.selected.fecha}" title="#{bundle.ViewFacturaTitle_fecha}">
+                            <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
+                        </h:outputText>
+                        <h:outputText value="#{bundle.ViewFacturaLabel_fechaVencimiento}"/>
+                        <h:outputText value="#{facturaController.selected.fechaVencimiento}" title="#{bundle.ViewFacturaTitle_fechaVencimiento}">
+                            <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
+                        </h:outputText>
+                        <h:outputText value="#{bundle.ViewFacturaLabel_totalUnidadVentas}"/>
+                        <h:outputText value="#{facturaController.selected.totalUnidadVentas}" title="#{bundle.ViewFacturaTitle_totalUnidadVentas}"/>
+                        <h:outputText value="#{bundle.ViewFacturaLabel_totalUnidadBonificaciones}"/>
+                        <h:outputText value="#{facturaController.selected.totalUnidadBonificaciones}" title="#{bundle.ViewFacturaTitle_totalUnidadBonificaciones}"/>
+                        <h:outputText value="#{bundle.ViewFacturaLabel_totalBruto}"/>
+                        <h:outputText value="#{facturaController.selected.totalBruto}" title="#{bundle.ViewFacturaTitle_totalBruto}"/>
+                        <h:outputText value="#{bundle.ViewFacturaLabel_descuento}"/>
+                        <h:outputText value="#{facturaController.selected.descuento}" title="#{bundle.ViewFacturaTitle_descuento}"/>
+                        <h:outputText value="#{bundle.ViewFacturaLabel_subtotal}"/>
+                        <h:outputText value="#{facturaController.selected.subtotal}" title="#{bundle.ViewFacturaTitle_subtotal}"/>
+                        <h:outputText value="#{bundle.ViewFacturaLabel_totalPagar}"/>
+                        <h:outputText value="#{facturaController.selected.totalPagar}" title="#{bundle.ViewFacturaTitle_totalPagar}"/>
+                        <h:outputText value="#{bundle.ViewFacturaLabel_observaciones}"/>
+                        <h:outputText value="#{facturaController.selected.observaciones}" title="#{bundle.ViewFacturaTitle_observaciones}"/>
+                        <h:outputText value="#{bundle.ViewFacturaLabel_cliente}"/>
+                        <h:outputText value="#{facturaController.selected.cliente}" title="#{bundle.ViewFacturaTitle_cliente}"/>
+                        <h:outputText value="#{bundle.ViewFacturaLabel_empleado}"/>
+                        <h:outputText value="#{facturaController.selected.empleado}" title="#{bundle.ViewFacturaTitle_empleado}"/>
+                    </p:panelGrid>
+                    <p:commandButton value="#{bundle.Close}" onclick="FacturaViewDialog.hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

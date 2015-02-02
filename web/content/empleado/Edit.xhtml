@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="EmpleadoEditDlg" widgetVar="EmpleadoEditDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.EditEmpleadoTitle}">
+            <h:form id="EmpleadoEditForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{empleadoController.selected != null}">
+                        <p:outputLabel value="#{bundle.EditEmpleadoLabel_id}" for="id" />
+                        <p:inputText id="id" value="#{empleadoController.selected.id}" title="#{bundle.EditEmpleadoTitle_id}" required="true" requiredMessage="#{bundle.EditEmpleadoRequiredMessage_id}"/>
+                        <p:outputLabel value="#{bundle.EditEmpleadoLabel_nombre}" for="nombre" />
+                        <p:inputText id="nombre" value="#{empleadoController.selected.nombre}" title="#{bundle.EditEmpleadoTitle_nombre}" required="true" requiredMessage="#{bundle.EditEmpleadoRequiredMessage_nombre}"/>
+                        <p:outputLabel value="#{bundle.EditEmpleadoLabel_codigo}" for="codigo" />
+                        <p:inputText id="codigo" value="#{empleadoController.selected.codigo}" title="#{bundle.EditEmpleadoTitle_codigo}" required="true" requiredMessage="#{bundle.EditEmpleadoRequiredMessage_codigo}"/>
+                        <p:outputLabel value="#{bundle.EditEmpleadoLabel_telefonos}" for="telefonos" />
+                        <p:inputText id="telefonos" value="#{empleadoController.selected.telefonos}" title="#{bundle.EditEmpleadoTitle_telefonos}" />
+                        <p:outputLabel value="#{bundle.EditEmpleadoLabel_tipo}" for="tipo" />
+                        <p:selectOneMenu id="tipo" value="#{empleadoController.selected.tipo}" required="true" requiredMessage="#{bundle.EditEmpleadoRequiredMessage_tipo}">
+                            <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>
+                            <f:selectItems value="#{tipoEmpleadoController.itemsAvailableSelectOne}"
+                                           var="tipoItem"
+                                           itemValue="#{tipoItem}"/>
+                        </p:selectOneMenu>
+                    </p:panelGrid>
+                    <p:commandButton actionListener="#{empleadoController.update}" value="#{bundle.Save}" update="display,:EmpleadoListForm:datalist,:growl" oncomplete="handleSubmit(args, 'EmpleadoEditDialog');"/>
+                    <p:commandButton value="#{bundle.Cancel}" onclick="EmpleadoEditDialog.hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

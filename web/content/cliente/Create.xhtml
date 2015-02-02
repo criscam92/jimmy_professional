@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="ClienteCreateDlg" widgetVar="ClienteCreateDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.CreateClienteTitle}">
+            <h:form id="ClienteCreateForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{clienteController.selected != null}">
+                        <p:outputLabel value="#{bundle.CreateClienteLabel_id}" for="id" />
+                        <p:inputText id="id" value="#{clienteController.selected.id}" title="#{bundle.CreateClienteTitle_id}" required="true" requiredMessage="#{bundle.CreateClienteRequiredMessage_id}"/>
+                        <p:outputLabel value="#{bundle.CreateClienteLabel_nombre}" for="nombre" />
+                        <p:inputText id="nombre" value="#{clienteController.selected.nombre}" title="#{bundle.CreateClienteTitle_nombre}" required="true" requiredMessage="#{bundle.CreateClienteRequiredMessage_nombre}"/>
+                        <p:outputLabel value="#{bundle.CreateClienteLabel_direccion}" for="direccion" />
+                        <p:inputText id="direccion" value="#{clienteController.selected.direccion}" title="#{bundle.CreateClienteTitle_direccion}" required="true" requiredMessage="#{bundle.CreateClienteRequiredMessage_direccion}"/>
+                        <p:outputLabel value="#{bundle.CreateClienteLabel_barrio}" for="barrio" />
+                        <p:inputText id="barrio" value="#{clienteController.selected.barrio}" title="#{bundle.CreateClienteTitle_barrio}" required="true" requiredMessage="#{bundle.CreateClienteRequiredMessage_barrio}"/>
+                        <p:outputLabel value="#{bundle.CreateClienteLabel_telefonos}" for="telefonos" />
+                        <p:inputText id="telefonos" value="#{clienteController.selected.telefonos}" title="#{bundle.CreateClienteTitle_telefonos}" />
+                        <p:outputLabel value="#{bundle.CreateClienteLabel_cupoCredito}" for="cupoCredito" />
+                        <p:inputText id="cupoCredito" value="#{clienteController.selected.cupoCredito}" title="#{bundle.CreateClienteTitle_cupoCredito}" required="true" requiredMessage="#{bundle.CreateClienteRequiredMessage_cupoCredito}"/>
+                        <p:outputLabel value="#{bundle.CreateClienteLabel_tarifaEspecial}" for="tarifaEspecial" />
+                        <p:inputText id="tarifaEspecial" value="#{clienteController.selected.tarifaEspecial}" title="#{bundle.CreateClienteTitle_tarifaEspecial}" required="true" requiredMessage="#{bundle.CreateClienteRequiredMessage_tarifaEspecial}"/>
+                        <p:outputLabel value="#{bundle.CreateClienteLabel_ciudad}" for="ciudad" />
+                        <p:selectOneMenu id="ciudad" value="#{clienteController.selected.ciudad}" required="true" requiredMessage="#{bundle.EditClienteRequiredMessage_ciudad}">
+                            <f:selectItems value="#{ciudadController.itemsAvailableSelectOne}"
+                                           var="ciudadItem"
+                                           itemValue="#{ciudadItem}"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel value="#{bundle.CreateClienteLabel_empleado}" for="empleado" />
+                        <p:selectOneMenu id="empleado" value="#{clienteController.selected.empleado}" required="true" requiredMessage="#{bundle.EditClienteRequiredMessage_empleado}">
+                            <f:selectItems value="#{empleadoController.itemsAvailableSelectOne}"
+                                           var="empleadoItem"
+                                           itemValue="#{empleadoItem}"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel value="#{bundle.CreateClienteLabel_tipo}" for="tipo" />
+                        <p:selectOneMenu id="tipo" value="#{clienteController.selected.tipo}" required="true" requiredMessage="#{bundle.EditClienteRequiredMessage_tipo}">
+                            <f:selectItems value="#{tipoClienteController.itemsAvailableSelectOne}"
+                                           var="tipoItem"
+                                           itemValue="#{tipoItem}"/>
+                        </p:selectOneMenu>
+                    </p:panelGrid>
+                    <p:commandButton actionListener="#{clienteController.create}" value="#{bundle.Save}" update="display,:ClienteListForm:datalist,:growl" oncomplete="handleSubmit(args,'ClienteCreateDialog');"/>
+                    <p:commandButton value="#{bundle.Cancel}" onclick="ClienteCreateDialog.hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="FacturaEditDlg" widgetVar="FacturaEditDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.EditFacturaTitle}">
+            <h:form id="FacturaEditForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{facturaController.selected != null}">
+                        <p:outputLabel value="#{bundle.EditFacturaLabel_id}" for="id" />
+                        <p:inputText id="id" value="#{facturaController.selected.id}" title="#{bundle.EditFacturaTitle_id}" required="true" requiredMessage="#{bundle.EditFacturaRequiredMessage_id}"/>
+                        <p:outputLabel value="#{bundle.EditFacturaLabel_fecha}" for="fecha" />
+                        <p:calendar id="fecha" pattern="MM/dd/yyyy HH:mm:ss" value="#{facturaController.selected.fecha}" title="#{bundle.EditFacturaTitle_fecha}" required="true" requiredMessage="#{bundle.EditFacturaRequiredMessage_fecha}" showOn="button"/>
+                        <p:outputLabel value="#{bundle.EditFacturaLabel_fechaVencimiento}" for="fechaVencimiento" />
+                        <p:calendar id="fechaVencimiento" pattern="MM/dd/yyyy HH:mm:ss" value="#{facturaController.selected.fechaVencimiento}" title="#{bundle.EditFacturaTitle_fechaVencimiento}" required="true" requiredMessage="#{bundle.EditFacturaRequiredMessage_fechaVencimiento}" showOn="button"/>
+                        <p:outputLabel value="#{bundle.EditFacturaLabel_totalUnidadVentas}" for="totalUnidadVentas" />
+                        <p:inputText id="totalUnidadVentas" value="#{facturaController.selected.totalUnidadVentas}" title="#{bundle.EditFacturaTitle_totalUnidadVentas}" required="true" requiredMessage="#{bundle.EditFacturaRequiredMessage_totalUnidadVentas}"/>
+                        <p:outputLabel value="#{bundle.EditFacturaLabel_totalUnidadBonificaciones}" for="totalUnidadBonificaciones" />
+                        <p:inputText id="totalUnidadBonificaciones" value="#{facturaController.selected.totalUnidadBonificaciones}" title="#{bundle.EditFacturaTitle_totalUnidadBonificaciones}" required="true" requiredMessage="#{bundle.EditFacturaRequiredMessage_totalUnidadBonificaciones}"/>
+                        <p:outputLabel value="#{bundle.EditFacturaLabel_totalBruto}" for="totalBruto" />
+                        <p:inputText id="totalBruto" value="#{facturaController.selected.totalBruto}" title="#{bundle.EditFacturaTitle_totalBruto}" required="true" requiredMessage="#{bundle.EditFacturaRequiredMessage_totalBruto}"/>
+                        <p:outputLabel value="#{bundle.EditFacturaLabel_descuento}" for="descuento" />
+                        <p:inputText id="descuento" value="#{facturaController.selected.descuento}" title="#{bundle.EditFacturaTitle_descuento}" />
+                        <p:outputLabel value="#{bundle.EditFacturaLabel_subtotal}" for="subtotal" />
+                        <p:inputText id="subtotal" value="#{facturaController.selected.subtotal}" title="#{bundle.EditFacturaTitle_subtotal}" required="true" requiredMessage="#{bundle.EditFacturaRequiredMessage_subtotal}"/>
+                        <p:outputLabel value="#{bundle.EditFacturaLabel_totalPagar}" for="totalPagar" />
+                        <p:inputText id="totalPagar" value="#{facturaController.selected.totalPagar}" title="#{bundle.EditFacturaTitle_totalPagar}" required="true" requiredMessage="#{bundle.EditFacturaRequiredMessage_totalPagar}"/>
+                        <p:outputLabel value="#{bundle.EditFacturaLabel_observaciones}" for="observaciones" />
+                        <p:inputText id="observaciones" value="#{facturaController.selected.observaciones}" title="#{bundle.EditFacturaTitle_observaciones}" />
+                        <p:outputLabel value="#{bundle.EditFacturaLabel_cliente}" for="cliente" />
+                        <p:selectOneMenu id="cliente" value="#{facturaController.selected.cliente}" required="true" requiredMessage="#{bundle.EditFacturaRequiredMessage_cliente}">
+                            <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>
+                            <f:selectItems value="#{clienteController.itemsAvailableSelectOne}"
+                                           var="clienteItem"
+                                           itemValue="#{clienteItem}"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel value="#{bundle.EditFacturaLabel_empleado}" for="empleado" />
+                        <p:selectOneMenu id="empleado" value="#{facturaController.selected.empleado}" required="true" requiredMessage="#{bundle.EditFacturaRequiredMessage_empleado}">
+                            <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>
+                            <f:selectItems value="#{empleadoController.itemsAvailableSelectOne}"
+                                           var="empleadoItem"
+                                           itemValue="#{empleadoItem}"/>
+                        </p:selectOneMenu>
+                    </p:panelGrid>
+                    <p:commandButton actionListener="#{facturaController.update}" value="#{bundle.Save}" update="display,:FacturaListForm:datalist,:growl" oncomplete="handleSubmit(args, 'FacturaEditDialog');"/>
+                    <p:commandButton value="#{bundle.Cancel}" onclick="FacturaEditDialog.hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="VisitaCreateDlg" widgetVar="VisitaCreateDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.CreateVisitaTitle}">
+            <h:form id="VisitaCreateForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{visitaController.selected != null}">
+                        <p:outputLabel value="#{bundle.CreateVisitaLabel_id}" for="id" />
+                        <p:inputText id="id" value="#{visitaController.selected.id}" title="#{bundle.CreateVisitaTitle_id}" required="true" requiredMessage="#{bundle.CreateVisitaRequiredMessage_id}"/>
+                        <p:outputLabel value="#{bundle.CreateVisitaLabel_fecha}" for="fecha" />
+                        <p:calendar id="fecha" pattern="MM/dd/yyyy HH:mm:ss" value="#{visitaController.selected.fecha}" title="#{bundle.EditVisitaTitle_fecha}" required="true" requiredMessage="#{bundle.EditVisitaRequiredMessage_fecha}" showOn="button"/>
+                        <p:outputLabel value="#{bundle.CreateVisitaLabel_observacionesCliente}" for="observacionesCliente" />
+                        <p:inputText id="observacionesCliente" value="#{visitaController.selected.observacionesCliente}" title="#{bundle.CreateVisitaTitle_observacionesCliente}" required="true" requiredMessage="#{bundle.CreateVisitaRequiredMessage_observacionesCliente}"/>
+                        <p:outputLabel value="#{bundle.CreateVisitaLabel_calificacionServicio}" for="calificacionServicio" />
+                        <p:inputText id="calificacionServicio" value="#{visitaController.selected.calificacionServicio}" title="#{bundle.CreateVisitaTitle_calificacionServicio}" />
+                        <p:outputLabel value="#{bundle.CreateVisitaLabel_puntualidadServicio}" for="puntualidadServicio" />
+                        <p:inputText id="puntualidadServicio" value="#{visitaController.selected.puntualidadServicio}" title="#{bundle.CreateVisitaTitle_puntualidadServicio}" />
+                        <p:outputLabel value="#{bundle.CreateVisitaLabel_cumplioExpectativas}" for="cumplioExpectativas" />
+                        <p:selectBooleanCheckbox id="cumplioExpectativas" value="#{visitaController.selected.cumplioExpectativas}" required="true" requiredMessage="#{bundle.EditVisitaRequiredMessage_cumplioExpectativas}"/>
+                        <p:outputLabel value="#{bundle.CreateVisitaLabel_estado}" for="estado" />
+                        <p:inputText id="estado" value="#{visitaController.selected.estado}" title="#{bundle.CreateVisitaTitle_estado}" />
+                        <p:outputLabel value="#{bundle.CreateVisitaLabel_cliente}" for="cliente" />
+                        <p:selectOneMenu id="cliente" value="#{visitaController.selected.cliente}" required="true" requiredMessage="#{bundle.EditVisitaRequiredMessage_cliente}">
+                            <f:selectItems value="#{clienteController.itemsAvailableSelectOne}"
+                                           var="clienteItem"
+                                           itemValue="#{clienteItem}"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel value="#{bundle.CreateVisitaLabel_empleado}" for="empleado" />
+                        <p:selectOneMenu id="empleado" value="#{visitaController.selected.empleado}" required="true" requiredMessage="#{bundle.EditVisitaRequiredMessage_empleado}">
+                            <f:selectItems value="#{empleadoController.itemsAvailableSelectOne}"
+                                           var="empleadoItem"
+                                           itemValue="#{empleadoItem}"/>
+                        </p:selectOneMenu>
+                    </p:panelGrid>
+                    <p:commandButton actionListener="#{visitaController.create}" value="#{bundle.Save}" update="display,:VisitaListForm:datalist,:growl" oncomplete="handleSubmit(args,'VisitaCreateDialog');"/>
+                    <p:commandButton value="#{bundle.Cancel}" onclick="VisitaCreateDialog.hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

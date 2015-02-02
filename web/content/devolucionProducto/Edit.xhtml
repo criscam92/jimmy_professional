@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="DevolucionProductoEditDlg" widgetVar="DevolucionProductoEditDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.EditDevolucionProductoTitle}">
+            <h:form id="DevolucionProductoEditForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{devolucionProductoController.selected != null}">
+                        <p:outputLabel value="#{bundle.EditDevolucionProductoLabel_id}" for="id" />
+                        <p:inputText id="id" value="#{devolucionProductoController.selected.id}" title="#{bundle.EditDevolucionProductoTitle_id}" required="true" requiredMessage="#{bundle.EditDevolucionProductoRequiredMessage_id}"/>
+                        <p:outputLabel value="#{bundle.EditDevolucionProductoLabel_cantidad}" for="cantidad" />
+                        <p:inputText id="cantidad" value="#{devolucionProductoController.selected.cantidad}" title="#{bundle.EditDevolucionProductoTitle_cantidad}" required="true" requiredMessage="#{bundle.EditDevolucionProductoRequiredMessage_cantidad}"/>
+                        <p:outputLabel value="#{bundle.EditDevolucionProductoLabel_detalle}" for="detalle" />
+                        <p:inputText id="detalle" value="#{devolucionProductoController.selected.detalle}" title="#{bundle.EditDevolucionProductoTitle_detalle}" />
+                        <p:outputLabel value="#{bundle.EditDevolucionProductoLabel_devolucion}" for="devolucion" />
+                        <p:selectOneMenu id="devolucion" value="#{devolucionProductoController.selected.devolucion}" required="true" requiredMessage="#{bundle.EditDevolucionProductoRequiredMessage_devolucion}">
+                            <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>
+                            <f:selectItems value="#{devolucionController.itemsAvailableSelectOne}"
+                                           var="devolucionItem"
+                                           itemValue="#{devolucionItem}"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel value="#{bundle.EditDevolucionProductoLabel_producto}" for="producto" />
+                        <p:selectOneMenu id="producto" value="#{devolucionProductoController.selected.producto}" required="true" requiredMessage="#{bundle.EditDevolucionProductoRequiredMessage_producto}">
+                            <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>
+                            <f:selectItems value="#{productoController.itemsAvailableSelectOne}"
+                                           var="productoItem"
+                                           itemValue="#{productoItem}"/>
+                        </p:selectOneMenu>
+                    </p:panelGrid>
+                    <p:commandButton actionListener="#{devolucionProductoController.update}" value="#{bundle.Save}" update="display,:DevolucionProductoListForm:datalist,:growl" oncomplete="handleSubmit(args, 'DevolucionProductoEditDialog');"/>
+                    <p:commandButton value="#{bundle.Cancel}" onclick="DevolucionProductoEditDialog.hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>
