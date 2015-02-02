@@ -1,3 +1,12 @@
+#logo{
+    background-image: url("src/logo.png");
+    background-repeat: no-repeat;
+    background-size: auto 75px;
+    background-position: center;
+    height: 75px;
+    margin-bottom: 5px;
+}
+
 .ui-widget {
     font-size: 12px !important;
 }
@@ -14,4 +23,19 @@
 }
 .ui-button {
     margin-top: 10px !important;
+}
+
+div.ui-menubar ul.ui-menu-list li.menuPrincipal,
+div.ui-menubar ul.ui-menu-list li.ui-menuitem{
+    padding-right: 7px;
+}
+
+div.ui-menubar ul.ui-menu-list li.menuPrincipal a.ui-menuitem-link,
+div.ui-menubar ul.ui-menu-list li.ui-menuitem a.menuPrincipal{
+    padding: 7px;
+    border-radius: 5px;
+}
+
+div.ui-menubar ul.ui-menu-list li.menuPrincipal ul.ui-menu-child{
+    padding-right: 15px;
 }
