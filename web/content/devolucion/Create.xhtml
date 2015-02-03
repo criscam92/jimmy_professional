@@ -12,10 +12,9 @@
             <h:form id="DevolucionCreateForm">
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{devolucionController.selected != null}">
-                        <p:outputLabel value="#{bundle.CreateDevolucionLabel_id}" for="id" />
-                        <p:inputText id="id" value="#{devolucionController.selected.id}" title="#{bundle.CreateDevolucionTitle_id}" required="true" requiredMessage="#{bundle.CreateDevolucionRequiredMessage_id}"/>
                         <p:outputLabel value="#{bundle.CreateDevolucionLabel_observaciones}" for="observaciones" />
-                        <p:inputText id="observaciones" value="#{devolucionController.selected.observaciones}" title="#{bundle.CreateDevolucionTitle_observaciones}" />
+                        <p:inputTextarea id="observaciones" value="#{devolucionController.selected.observaciones}"
+                                         title="#{bundle.CreateDevolucionTitle_observaciones}" cols="30" rows="5"/>
                         <p:outputLabel value="#{bundle.CreateDevolucionLabel_codigo}" for="codigo" />
                         <p:selectOneMenu id="codigo" value="#{devolucionController.selected.codigo}" required="true" requiredMessage="#{bundle.EditDevolucionRequiredMessage_codigo}">
                             <f:selectItems value="#{codigoDevolucionController.itemsAvailableSelectOne}"
@@ -24,7 +23,7 @@
                         </p:selectOneMenu>
                     </p:panelGrid>
                     <p:commandButton actionListener="#{devolucionController.create}" value="#{bundle.Save}" update="display,:DevolucionListForm:datalist,:growl" oncomplete="handleSubmit(args,'DevolucionCreateDialog');"/>
-                    <p:commandButton value="#{bundle.Cancel}" onclick="DevolucionCreateDialog.hide()"/>
+                    <p:commandButton value="#{bundle.Cancel}" type="button" onclick="PF('DevolucionCreateDialog').hide()"/>
                 </h:panelGroup>
             </h:form>
         </p:dialog>

@@ -56,18 +56,18 @@ public class DevolucionController implements Serializable {
     }
 
     public void create() {
-        persist(PersistAction.CREATE, ResourceBundle.getBundle("languages/Bundle").getString("DevolucionCreated"));
+        persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageDevolucion","CreateSuccessF"}));
         if (!JsfUtil.isValidationFailed()) {
             items = null;    // Invalidate list of items to trigger re-query.
         }
     }
 
     public void update() {
-        persist(PersistAction.UPDATE, ResourceBundle.getBundle("languages/Bundle").getString("DevolucionUpdated"));
+        persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessageDevolucion","UpdateSuccessF"}));
     }
 
     public void destroy() {
-        persist(PersistAction.DELETE, ResourceBundle.getBundle("languages/Bundle").getString("DevolucionDeleted"));
+        persist(PersistAction.DELETE, JsfUtil.getMessageBundle(new String[]{"MessageDevolucion","DeleteSuccessF"}));
         if (!JsfUtil.isValidationFailed()) {
             selected = null; // Remove selection
             items = null;    // Invalidate list of items to trigger re-query.

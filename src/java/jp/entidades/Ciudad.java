@@ -38,6 +38,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Ciudad.findById", query = "SELECT c FROM Ciudad c WHERE c.id = :id"),
     @NamedQuery(name = "Ciudad.findByNombre", query = "SELECT c FROM Ciudad c WHERE c.nombre = :nombre")})
 public class Ciudad implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -124,5 +125,5 @@ public class Ciudad implements Serializable {
     public String toString() {
         return "jp.entidades.Ciudad[ id=" + id + " ]";
     }
-    
+
 }

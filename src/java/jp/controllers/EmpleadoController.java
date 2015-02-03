@@ -56,7 +56,7 @@ public class EmpleadoController implements Serializable {
     }
 
     public void create() {
-        if (!getFacade().getEmpleadoByCodigo(selected)) {
+        if (!getFacade().getEntityByCodigo(selected)) {
             persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageEmpleado", "CreateSuccessM"}));
             if (!JsfUtil.isValidationFailed()) {
                 items = null;    // Invalidate list of items to trigger re-query.
@@ -68,7 +68,7 @@ public class EmpleadoController implements Serializable {
     }
 
     public void update() {
-        if (!getFacade().getEmpleadoByCodigo(selected)) {
+        if (!getFacade().getEntityByCodigo(selected)) {
             persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessageEmpleado", "UpdateSuccessM"}));
         } else {
             JsfUtil.addErrorMessage(JsfUtil.getMessageBundle("MessageEmpleadoCodigoExist").replaceAll("%cod%", selected.getCodigo()));
@@ -169,7 +169,7 @@ public class EmpleadoController implements Serializable {
     }
 
     public String updateMessage() {
-        if (getFacade().getEmpleadoByCodigo(selected)) {
+        if (getFacade().getEntityByCodigo(selected)) {
             JsfUtil.addErrorMessage(JsfUtil.getMessageBundle("MessageEmpleadoCodigoExist").replaceAll("%cod%", selected.getCodigo()));
             return "ui-state-error";
         }else{

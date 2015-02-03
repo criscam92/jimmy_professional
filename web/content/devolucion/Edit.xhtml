@@ -12,10 +12,9 @@
             <h:form id="DevolucionEditForm">
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{devolucionController.selected != null}">
-                        <p:outputLabel value="#{bundle.EditDevolucionLabel_id}" for="id" />
-                        <p:inputText id="id" value="#{devolucionController.selected.id}" title="#{bundle.EditDevolucionTitle_id}" required="true" requiredMessage="#{bundle.EditDevolucionRequiredMessage_id}"/>
                         <p:outputLabel value="#{bundle.EditDevolucionLabel_observaciones}" for="observaciones" />
-                        <p:inputText id="observaciones" value="#{devolucionController.selected.observaciones}" title="#{bundle.EditDevolucionTitle_observaciones}" />
+                        <p:inputTextarea id="observaciones" value="#{devolucionController.selected.observaciones}"
+                                         title="#{bundle.CreateDevolucionTitle_observaciones}" cols="30" rows="5"/>
                         <p:outputLabel value="#{bundle.EditDevolucionLabel_codigo}" for="codigo" />
                         <p:selectOneMenu id="codigo" value="#{devolucionController.selected.codigo}" required="true" requiredMessage="#{bundle.EditDevolucionRequiredMessage_codigo}">
                             <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>

@@ -24,6 +24,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import jp.entidades.aux.Codificable;
 
 /**
  *
@@ -38,12 +39,11 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "CodigoDevolucion.findById", query = "SELECT c FROM CodigoDevolucion c WHERE c.id = :id"),
     @NamedQuery(name = "CodigoDevolucion.findByCodigo", query = "SELECT c FROM CodigoDevolucion c WHERE c.codigo = :codigo"),
     @NamedQuery(name = "CodigoDevolucion.findByDescripcion", query = "SELECT c FROM CodigoDevolucion c WHERE c.descripcion = :descripcion")})
-public class CodigoDevolucion implements Serializable {
+public class CodigoDevolucion implements Serializable, Codificable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @NotNull
     @Column(nullable = false)
     private Long id;
     @Basic(optional = false)
@@ -72,6 +72,7 @@ public class CodigoDevolucion implements Serializable {
         this.descripcion = descripcion;
     }
 
+    @Override
     public Long getId() {
         return id;
     }
@@ -80,6 +81,7 @@ public class CodigoDevolucion implements Serializable {
         this.id = id;
     }
 
+    @Override
     public String getCodigo() {
         return codigo;
     }
@@ -127,7 +129,7 @@ public class CodigoDevolucion implements Serializable {
 
     @Override
     public String toString() {
-        return "jp.entidades.CodigoDevolucion[ id=" + id + " ]";
+        return this.getCodigo()+" - "+this.getDescripcion();
     }
     
 }

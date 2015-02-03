@@ -7,6 +7,10 @@ package jp.facades;
 
 import java.util.List;
 import javax.persistence.EntityManager;
+import javax.persistence.Id;
+import javax.persistence.Query;
+import jp.entidades.Empleado;
+import jp.entidades.aux.Codificable;
 
 /**
  *
@@ -58,6 +62,35 @@ public abstract class AbstractFacade<T> {
         cq.select(getEntityManager().getCriteriaBuilder().count(rt));
         javax.persistence.Query q = getEntityManager().createQuery(cq);
         return ((Long) q.getSingleResult()).intValue();
+    }
+    
+    public <U extends Codificable> Boolean getEntityByCodigo(U entity) {
+        try {
+            
+            String sql = "SELECT e FROM " + entityClass.getSimpleName() + " e WHERE e.codigo = :codigoNuevo";
+            String codigoViejo = null;
+            
+            if(entity.getId()!=null){
+                 U entityTMP = (U)getEntityManager().find(entityClass, entity.getId());
+                 sql += " AND e.codigo <> :codigoViejo";
+                 codigoViejo = entityTMP.getCodigo();
+            }
+            
+            Query query = getEntityManager().createQuery(sql);
+            query.setParameter("codigoNuevo", entity.getCodigo());
+            if(entity.getId()!=null){
+                query.setParameter("codigoViejo", codigoViejo);
+            }
+            query.setMaxResults(1);
+            T empleadoTMP = (T) query.getSingleResult();
+            if (empleadoTMP != null) {
+                return true;
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
     
 }

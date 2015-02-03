@@ -17,7 +17,7 @@
                         <h:outputText value="#{bundle.ViewDevolucionLabel_observaciones}"/>
                         <h:outputText value="#{devolucionController.selected.observaciones}" title="#{bundle.ViewDevolucionTitle_observaciones}"/>
                         <h:outputText value="#{bundle.ViewDevolucionLabel_codigo}"/>
-                        <h:outputText value="#{devolucionController.selected.codigo}" title="#{bundle.ViewDevolucionTitle_codigo}"/>
+                        <h:outputText value="#{devolucionController.selected.codigo.toString()}" title="#{bundle.ViewDevolucionTitle_codigo}"/>
                     </p:panelGrid>
                     <p:commandButton value="#{bundle.Close}" onclick="DevolucionViewDialog.hide()"/>
                 </h:panelGroup>

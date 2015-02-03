@@ -26,6 +26,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import jp.entidades.aux.Codificable;
 
 /**
  *
@@ -41,7 +42,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Empleado.findByNombre", query = "SELECT e FROM Empleado e WHERE e.nombre = :nombre"),
     @NamedQuery(name = "Empleado.findByCodigo", query = "SELECT e FROM Empleado e WHERE e.codigo = :codigo"),
     @NamedQuery(name = "Empleado.findByTelefonos", query = "SELECT e FROM Empleado e WHERE e.telefonos = :telefonos")})
-public class Empleado implements Serializable {
+public class Empleado implements Serializable, Codificable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -84,6 +85,7 @@ public class Empleado implements Serializable {
         this.codigo = codigo;
     }
 
+    @Override
     public Long getId() {
         return id;
     }
@@ -100,6 +102,7 @@ public class Empleado implements Serializable {
         this.nombre = nombre;
     }
 
+    @Override
     public String getCodigo() {
         return codigo;
     }
