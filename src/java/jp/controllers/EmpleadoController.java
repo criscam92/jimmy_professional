@@ -56,18 +56,18 @@ public class EmpleadoController implements Serializable {
     }
 
     public void create() {
-        persist(PersistAction.CREATE, ResourceBundle.getBundle("languages/Bundle").getString("EmpleadoCreated"));
+        persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageEmpleado","CreateSuccessM"}));
         if (!JsfUtil.isValidationFailed()) {
             items = null;    // Invalidate list of items to trigger re-query.
         }
     }
 
     public void update() {
-        persist(PersistAction.UPDATE, ResourceBundle.getBundle("languages/Bundle").getString("EmpleadoUpdated"));
+        persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessageEmpleado","UpdateSuccessM"}));
     }
 
     public void destroy() {
-        persist(PersistAction.DELETE, ResourceBundle.getBundle("languages/Bundle").getString("EmpleadoDeleted"));
+        persist(PersistAction.DELETE, JsfUtil.getMessageBundle(new String[]{"MessageEmpleado","DeleteSuccessM"}));
         if (!JsfUtil.isValidationFailed()) {
             selected = null; // Remove selection
             items = null;    // Invalidate list of items to trigger re-query.

@@ -56,18 +56,18 @@ public class CiudadController implements Serializable {
     }
 
     public void create() {
-        persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageCiudad","CreateSuccesF"}));
+        persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageCiudad","CreateSuccessF"}));
         if (!JsfUtil.isValidationFailed()) {
             items = null;    // Invalidate list of items to trigger re-query.
         }
     }
 
     public void update() {
-        persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessageCiudad","UpdateSuccesF"}));
+        persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessageCiudad","UpdateSuccessF"}));
     }
 
     public void destroy() {
-        persist(PersistAction.DELETE, JsfUtil.getMessageBundle(new String[]{"MessageCiudad","DeleteSuccesF"}));
+        persist(PersistAction.DELETE, JsfUtil.getMessageBundle(new String[]{"MessageCiudad","DeleteSuccessF"}));
         if (!JsfUtil.isValidationFailed()) {
             selected = null; // Remove selection
             items = null;    // Invalidate list of items to trigger re-query.

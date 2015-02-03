@@ -12,8 +12,6 @@
             <h:form id="TipoEmpleadoEditForm">
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{tipoEmpleadoController.selected != null}">
-                        <p:outputLabel value="#{bundle.EditTipoEmpleadoLabel_id}" for="id" />
-                        <p:inputText id="id" value="#{tipoEmpleadoController.selected.id}" title="#{bundle.EditTipoEmpleadoTitle_id}" required="true" requiredMessage="#{bundle.EditTipoEmpleadoRequiredMessage_id}"/>
                         <p:outputLabel value="#{bundle.EditTipoEmpleadoLabel_tipo}" for="tipo" />
                         <p:inputText id="tipo" value="#{tipoEmpleadoController.selected.tipo}" title="#{bundle.EditTipoEmpleadoTitle_tipo}" required="true" requiredMessage="#{bundle.EditTipoEmpleadoRequiredMessage_tipo}"/>
                     </p:panelGrid>

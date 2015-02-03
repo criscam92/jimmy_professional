@@ -7,7 +7,7 @@
       xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <h:head>
-        <title><ui:insert name="title">Default Title</ui:insert></title>
+        <title><ui:insert name="title">Jimmy Professional</ui:insert></title>
         <h:outputStylesheet library="css" name="jsfcrud.css"/>
         <h:outputScript library="js" name="jsfcrud.js"/>
     </h:head>
@@ -30,25 +30,38 @@
                     <p:menubar>
                         <p:menuitem class="menuPrincipal" value="#{bundle.Home}" outcome="/index" icon="ui-icon-home"/>
                         <p:submenu class="menuPrincipal" label="#{bundle.Maintenance}">
-                            <p:menuitem value="Ciudad" outcome="/content/ciudad/List.xhtml" />
-                            <p:menuitem value="Cliente" outcome="/content/cliente/List.xhtml" />
-                            <p:menuitem value="CodigoDevolucion" outcome="/content/codigoDevolucion/List.xhtml" />
-                            <p:menuitem value="Devolucion" outcome="/content/devolucion/List.xhtml" />
-                            <p:menuitem value="DevolucionProducto" outcome="/content/devolucionProducto/List.xhtml" />
-                            <p:menuitem value="Empleado" outcome="/content/empleado/List.xhtml" />
-                            <p:menuitem value="Factura" outcome="/content/factura/List.xhtml" />
-                            <p:menuitem value="FacturaProducto" outcome="/content/facturaProducto/List.xhtml" />
-                            <p:menuitem value="Pago" outcome="/content/pago/List.xhtml" />
-                            <p:menuitem value="Pais" outcome="/content/pais/List.xhtml" />
-                            <p:menuitem value="Producto" outcome="/content/producto/List.xhtml" />
-                            <p:menuitem value="Promocion" outcome="/content/promocion/List.xhtml" />
-                            <p:menuitem value="PromocionProducto" outcome="/content/promocionProducto/List.xhtml" />
-                            <p:menuitem value="TipoCliente" outcome="/content/tipoCliente/List.xhtml" />
-                            <p:menuitem value="TipoEmpleado" outcome="/content/tipoEmpleado/List.xhtml" />
-                            <p:menuitem value="TipoPago" outcome="/content/tipoPago/List.xhtml" />
-                            <p:menuitem value="Usuario" outcome="/content/usuario/List.xhtml" />
+
+                            <p:submenu label="Ciudades">
+                                <p:menuitem value="Pais" outcome="/content/pais/List.xhtml" />
+                                <p:menuitem value="Ciudad" outcome="/content/ciudad/List.xhtml" />
+                            </p:submenu>
+
+                            <p:submenu label="Productos">
+                                <p:menuitem value="Producto" outcome="/content/producto/List.xhtml" />
+                                <p:menuitem value="Promocion" outcome="/content/promocion/List.xhtml" />
+                                <p:menuitem value="PromocionProducto" outcome="/content/promocionProducto/List.xhtml" />
+                            </p:submenu>
+
+                            <p:submenu label="Personal">
+                                <p:menuitem value="Cliente" outcome="/content/cliente/List.xhtml" />
+                                <p:menuitem value="Empleado" outcome="/content/empleado/List.xhtml" />
+                                <p:menuitem value="TipoCliente" outcome="/content/tipoCliente/List.xhtml" />
+                                <p:menuitem value="TipoEmpleado" outcome="/content/tipoEmpleado/List.xhtml" />
+                            </p:submenu>
+
+                            <p:submenu label="Pedidos y pagos">
+                                <p:menuitem value="CodigoDevolucion" outcome="/content/codigoDevolucion/List.xhtml" />
+                                <p:menuitem value="Devolucion" outcome="/content/devolucion/List.xhtml" />
+                                <p:menuitem value="DevolucionProducto" outcome="/content/devolucionProducto/List.xhtml" />
+                                <p:menuitem value="Factura" outcome="/content/factura/List.xhtml" />
+                                <p:menuitem value="FacturaProducto" outcome="/content/facturaProducto/List.xhtml" />
+                                <p:menuitem value="Pago" outcome="/content/pago/List.xhtml" />
+                                <p:menuitem value="TipoPago" outcome="/content/tipoPago/List.xhtml" />
+                            </p:submenu>
+                            
                             <p:menuitem value="Visita" outcome="/content/visita/List.xhtml" />
                             <p:menuitem value="VisitaProducto" outcome="/content/visitaProducto/List.xhtml" />
+                            <p:menuitem value="Usuarios" outcome="/content/usuario/List.xhtml" />
                         </p:submenu>
                     </p:menubar>
                 </h:form>

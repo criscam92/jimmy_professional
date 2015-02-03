@@ -12,8 +12,6 @@
             <h:form id="TipoClienteCreateForm">
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{tipoClienteController.selected != null}">
-                        <p:outputLabel value="#{bundle.CreateTipoClienteLabel_id}" for="id" />
-                        <p:inputText id="id" value="#{tipoClienteController.selected.id}" title="#{bundle.CreateTipoClienteTitle_id}" required="true" requiredMessage="#{bundle.CreateTipoClienteRequiredMessage_id}"/>
                         <p:outputLabel value="#{bundle.CreateTipoClienteLabel_tipo}" for="tipo" />
                         <p:inputText id="tipo" value="#{tipoClienteController.selected.tipo}" title="#{bundle.CreateTipoClienteTitle_tipo}" required="true" requiredMessage="#{bundle.CreateTipoClienteRequiredMessage_tipo}"/>
                     </p:panelGrid>
