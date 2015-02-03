@@ -10,7 +10,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Id;
 import javax.persistence.Query;
 import jp.entidades.Empleado;
-import jp.entidades.aux.Codificable;
+import jp.entidades.auxiliar.Codificable;
 
 /**
  *
