@@ -12,15 +12,13 @@
             <h:form id="CodigoDevolucionCreateForm">
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{codigoDevolucionController.selected != null}">
-                        <p:outputLabel value="#{bundle.CreateCodigoDevolucionLabel_id}" for="id" />
-                        <p:inputText id="id" value="#{codigoDevolucionController.selected.id}" title="#{bundle.CreateCodigoDevolucionTitle_id}" required="true" requiredMessage="#{bundle.CreateCodigoDevolucionRequiredMessage_id}"/>
                         <p:outputLabel value="#{bundle.CreateCodigoDevolucionLabel_codigo}" for="codigo" />
                         <p:inputText id="codigo" value="#{codigoDevolucionController.selected.codigo}" title="#{bundle.CreateCodigoDevolucionTitle_codigo}" required="true" requiredMessage="#{bundle.CreateCodigoDevolucionRequiredMessage_codigo}"/>
                         <p:outputLabel value="#{bundle.CreateCodigoDevolucionLabel_descripcion}" for="descripcion" />
                         <p:inputText id="descripcion" value="#{codigoDevolucionController.selected.descripcion}" title="#{bundle.CreateCodigoDevolucionTitle_descripcion}" required="true" requiredMessage="#{bundle.CreateCodigoDevolucionRequiredMessage_descripcion}"/>
                     </p:panelGrid>
                     <p:commandButton actionListener="#{codigoDevolucionController.create}" value="#{bundle.Save}" update="display,:CodigoDevolucionListForm:datalist,:growl" oncomplete="handleSubmit(args,'CodigoDevolucionCreateDialog');"/>
-                    <p:commandButton value="#{bundle.Cancel}" onclick="CodigoDevolucionCreateDialog.hide()"/>
+                    <p:commandButton type="button" value="#{bundle.Cancel}" onclick="PF('CodigoDevolucionCreateDialog').hide()"/>
                 </h:panelGroup>
             </h:form>
         </p:dialog>
