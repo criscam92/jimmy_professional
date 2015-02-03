@@ -109,7 +109,7 @@ public class TipoEmpleado implements Serializable {
 
     @Override
     public String toString() {
-        return "jp.entidades.TipoEmpleado[ id=" + id + " ]";
+        return this.getTipo();
     }
     
 }

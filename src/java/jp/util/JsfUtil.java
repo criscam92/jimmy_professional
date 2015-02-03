@@ -69,6 +69,10 @@ public class JsfUtil {
         UPDATE
     }
 
+    public static String getMessageBundle(String msg) {
+        return ResourceBundle.getBundle("languages/Bundle").getString(msg);
+    }
+
     public static String getMessageBundle(String[] msgs) {
         String msgTMP = "";
         for (String msg : msgs) {

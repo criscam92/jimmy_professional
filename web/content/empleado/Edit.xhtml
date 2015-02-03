@@ -12,12 +12,12 @@
             <h:form id="EmpleadoEditForm">
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{empleadoController.selected != null}">
-                        <p:outputLabel value="#{bundle.EditEmpleadoLabel_id}" for="id" />
-                        <p:inputText id="id" value="#{empleadoController.selected.id}" title="#{bundle.EditEmpleadoTitle_id}" required="true" requiredMessage="#{bundle.EditEmpleadoRequiredMessage_id}"/>
                         <p:outputLabel value="#{bundle.EditEmpleadoLabel_nombre}" for="nombre" />
                         <p:inputText id="nombre" value="#{empleadoController.selected.nombre}" title="#{bundle.EditEmpleadoTitle_nombre}" required="true" requiredMessage="#{bundle.EditEmpleadoRequiredMessage_nombre}"/>
-                        <p:outputLabel value="#{bundle.EditEmpleadoLabel_codigo}" for="codigo" />
-                        <p:inputText id="codigo" value="#{empleadoController.selected.codigo}" title="#{bundle.EditEmpleadoTitle_codigo}" required="true" requiredMessage="#{bundle.EditEmpleadoRequiredMessage_codigo}"/>
+                        <p:outputLabel id="labelCodigo" styleClass="#{empleadoController.updateMessage()}" value="#{bundle.EditEmpleadoLabel_codigo}" for="codigo" />
+                        <p:inputText styleClass="#{empleadoController.updateMessage()}" id="codigo"  value="#{empleadoController.selected.codigo}" title="#{bundle.EditEmpleadoTitle_codigo}" required="true" requiredMessage="#{bundle.EditEmpleadoRequiredMessage_codigo}">
+                            <p:ajax event="keyup" listener="#{empleadoController.updateMessage()}" update=":growl" />
+                        </p:inputText> 
                         <p:outputLabel value="#{bundle.EditEmpleadoLabel_telefonos}" for="telefonos" />
                         <p:inputText id="telefonos" value="#{empleadoController.selected.telefonos}" title="#{bundle.EditEmpleadoTitle_telefonos}" />
                         <p:outputLabel value="#{bundle.EditEmpleadoLabel_tipo}" for="tipo" />
@@ -29,7 +29,7 @@
                         </p:selectOneMenu>
                     </p:panelGrid>
                     <p:commandButton actionListener="#{empleadoController.update}" value="#{bundle.Save}" update="display,:EmpleadoListForm:datalist,:growl" oncomplete="handleSubmit(args, 'EmpleadoEditDialog');"/>
-                    <p:commandButton value="#{bundle.Cancel}" onclick="EmpleadoEditDialog.hide()"/>
+                    <p:commandButton type="button" value="#{bundle.Cancel}" onclick="PF('EmpleadoEditDialog').hide()"/>
                 </h:panelGroup>
             </h:form>
         </p:dialog>
