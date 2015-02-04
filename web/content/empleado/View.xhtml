@@ -22,9 +22,11 @@
                         <h:outputText value="#{empleadoController.selected.telefonos}" title="#{bundle.ViewEmpleadoTitle_telefonos}"/>
                         <h:outputText value="#{bundle.ViewEmpleadoLabel_tipo}"/>
                         <h:outputText value="#{empleadoController.selected.tipo.tipo}" title="#{bundle.ViewEmpleadoTitle_tipo}"/>
-                    </p:panelGrid>
-                    <p:commandButton value="#{bundle.Close}" onclick="EmpleadoViewDialog.hide()"/>
+                    </p:panelGrid>                    
                 </h:panelGroup>
+                <div class="botonesDialog">   
+                    <p:commandButton value="#{bundle.Close}" onclick="EmpleadoViewDialog.hide()"/>
+                </div>
             </h:form>
         </p:dialog>
 
