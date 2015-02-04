@@ -25,9 +25,11 @@
                                            itemValue="#{tipoItem}"/>
                         </p:selectOneMenu>
                     </p:panelGrid>
-                    <p:commandButton actionListener="#{empleadoController.create}" value="#{bundle.Save}" update="display,:EmpleadoListForm:datalist,:growl" oncomplete="handleSubmit(args,'EmpleadoCreateDialog');"/>
-                    <p:commandButton value="#{bundle.Cancel}" onclick="EmpleadoCreateDialog.hide()"/>
                 </h:panelGroup>
+                <div class="botonesDialog">
+                    <p:commandButton actionListener="#{empleadoController.create}" value="#{bundle.Save}" update="display,:EmpleadoListForm:datalist,:growl" oncomplete="handleSubmit(args,'EmpleadoCreateDialog');"/>
+                    <p:commandButton type="button" value="#{bundle.Cancel}" onclick="PF('EmpleadoCreateDialog').hide()"/>
+                </div>
             </h:form>
         </p:dialog>
 

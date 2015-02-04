@@ -3,7 +3,6 @@ package jp.controllers;
 import jp.entidades.Empleado;
 import jp.util.JsfUtil;
 import jp.util.JsfUtil.PersistAction;
-
 import java.io.Serializable;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -59,12 +58,12 @@ public class EmpleadoController implements Serializable {
         if (!getFacade().getEntityByCodigo(selected)) {
             persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageEmpleado", "CreateSuccessM"}));
             if (!JsfUtil.isValidationFailed()) {
-                items = null;    // Invalidate list of items to trigger re-query.
+                selected = null; // Remove selection
+                items = null;    // Invalidate list of items to trigger re-query.                
             }
         } else {
             JsfUtil.addErrorMessage(JsfUtil.getMessageBundle("MessageEmpleadoCodigoExist").replaceAll("%cod%", selected.getCodigo()));
         }
-
     }
 
     public void update() {
@@ -73,7 +72,6 @@ public class EmpleadoController implements Serializable {
         } else {
             JsfUtil.addErrorMessage(JsfUtil.getMessageBundle("MessageEmpleadoCodigoExist").replaceAll("%cod%", selected.getCodigo()));
         }
-
     }
 
     public void destroy() {
@@ -172,7 +170,7 @@ public class EmpleadoController implements Serializable {
         if (getFacade().getEntityByCodigo(selected)) {
             JsfUtil.addErrorMessage(JsfUtil.getMessageBundle("MessageEmpleadoCodigoExist").replaceAll("%cod%", selected.getCodigo()));
             return "ui-state-error";
-        }else{
+        } else {
             return "";
         }
     }

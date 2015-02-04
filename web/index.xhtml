@@ -58,7 +58,7 @@
                                 <p:menuitem value="Pago" outcome="/content/pago/List.xhtml" />
                                 <p:menuitem value="Tipos de Pago" outcome="/content/tipoPago/List.xhtml" />
                             </p:submenu>
-                            
+
                             <p:menuitem value="Visitas" outcome="/content/visita/List.xhtml" />
                             <p:menuitem value="VisitaProducto" outcome="/content/visitaProducto/List.xhtml" />
                             <p:menuitem value="Usuarios" outcome="/content/usuario/List.xhtml" />
@@ -71,8 +71,14 @@
                 <ui:insert name="footer"/>
             </p:layoutUnit>
 
-            <p:layoutUnit position="center">
+            <p:layoutUnit styleClass="contenido" position="center">
                 <ui:insert name="body"/>
+                <h:form id="formulario_confirmar">
+                    <p:confirmDialog global="true" appendTo="@(body)">
+                        <p:commandButton styleClass="ui-confirmdialog-yes" value="Si" icon="ui-icon-trash"/>  
+                        <p:commandButton styleClass="ui-confirmdialog-no"  value="No" icon="ui-icon-close"/>
+                    </p:confirmDialog>
+                </h:form>
             </p:layoutUnit>
 
         </p:layout>
