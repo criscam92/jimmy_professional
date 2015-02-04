@@ -5,6 +5,7 @@ import jp.util.JsfUtil;
 import jp.util.JsfUtil.PersistAction;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -26,9 +27,11 @@ public class DevolucionProductoController implements Serializable {
     @EJB
     private jp.facades.DevolucionProductoFacade ejbFacade;
     private List<DevolucionProducto> items = null;
+    private List<DevolucionProducto> itemsTMP = null;
     private DevolucionProducto selected;
 
     public DevolucionProductoController() {
+        itemsTMP = new ArrayList<>();
     }
 
     public DevolucionProducto getSelected() {
@@ -56,10 +59,18 @@ public class DevolucionProductoController implements Serializable {
     }
 
     public void create() {
-        persist(PersistAction.CREATE, ResourceBundle.getBundle("languages/Bundle").getString("DevolucionProductoCreated"));
-        if (!JsfUtil.isValidationFailed()) {
-            items = null;    // Invalidate list of items to trigger re-query.
+
+        if (getFacade().createDevolucionProducto(itemsTMP)) {
+            JsfUtil.addSuccessMessage(JsfUtil.getMessageBundle(new String[]{"MessageDevolucionProducto", "CreateSuccessF"}));
+            if (!JsfUtil.isValidationFailed()) {
+                selected = null; // Remove selection
+                items = null;    // Invalidate list of items to trigger re-query.
+                itemsTMP.clear();
+            }
+        }else{
+            JsfUtil.addSuccessMessage(JsfUtil.getMessageBundle("ErrorCreateDevolucionProducto"));
         }
+
     }
 
     public void update() {
@@ -79,6 +90,10 @@ public class DevolucionProductoController implements Serializable {
             items = getFacade().findAll();
         }
         return items;
+    }
+
+    public List<DevolucionProducto> getItemsTMP() {
+        return itemsTMP;
     }
 
     private void persist(PersistAction persistAction, String successMessage) {
@@ -155,6 +170,19 @@ public class DevolucionProductoController implements Serializable {
                 return null;
             }
         }
+    }
+
+    public void addDevolucionProducto() {
+        DevolucionProducto devolucionProducto = new DevolucionProducto();
+        devolucionProducto.setCantidad(selected.getCantidad());
+        devolucionProducto.setDetalle(selected.getDetalle());
+        devolucionProducto.setDevolucion(selected.getDevolucion());
+        devolucionProducto.setProducto(selected.getProducto());
+
+        System.out.println("====>" + devolucionProducto);
+        System.out.println("Cantidad--> " + devolucionProducto.getCantidad() + "\nDetalle--> " + devolucionProducto.getDetalle()
+                + "\nProducto--> " + devolucionProducto.getProducto() + "\nDevolucion--> " + devolucionProducto.getDevolucion());
+        itemsTMP.add(devolucionProducto);
 
     }
 

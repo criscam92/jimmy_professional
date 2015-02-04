@@ -212,7 +212,7 @@ public class Producto implements Serializable {
 
     @Override
     public String toString() {
-        return "jp.entidades.Producto[ id=" + id + " ]";
+        return this.getGramaje()+" - "+this.getNombre();
     }
     
 }

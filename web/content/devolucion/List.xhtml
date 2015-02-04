@@ -15,40 +15,38 @@
 
         <ui:define name="body">
             <h:form id="DevolucionListForm">
-                <p:panel header="#{bundle.ListDevolucionTitle}">
-                    <p:dataTable id="datalist" value="#{devolucionController.items}" var="item"
-                                 selectionMode="single" selection="#{devolucionController.selected}"
-                                 paginator="true"
-                                 rowKey="#{item.id}"
-                                 rows="10"
-                                 rowsPerPageTemplate="10,20,30,40,50"
-                                 emptyMessage="#{bundle.EmptyTable}"
-                                 paginatorPosition="bottom"
-                                 >
+                <p:dataTable id="datalist" value="#{devolucionController.items}" var="item"
+                             selectionMode="single" selection="#{devolucionController.selected}"
+                             paginator="true"
+                             rowKey="#{item.id}"
+                             rows="10"
+                             rowsPerPageTemplate="10,20,30,40,50"
+                             emptyMessage="#{bundle.EmptyTable}"
+                             paginatorPosition="bottom"
+                             >
 
-                        <p:ajax event="rowSelect"   update="createButton viewButton editButton deleteButton"/>
-                        <p:ajax event="rowUnselect" update="createButton viewButton editButton deleteButton"/>
+                    <p:ajax event="rowSelect"   update="createButton viewButton editButton deleteButton"/>
+                    <p:ajax event="rowUnselect" update="createButton viewButton editButton deleteButton"/>
 
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="#{bundle.ListDevolucionTitle_observaciones}"/>
-                            </f:facet>
-                            <h:outputText value="#{item.observaciones}"/>
-                        </p:column>
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="#{bundle.ListDevolucionTitle_codigo}"/>
-                            </f:facet>
-                            <h:outputText value="#{item.codigo.toString()}"/>
-                        </p:column>
-                        <f:facet name="footer">
-                            <p:commandButton id="createButton" icon="ui-icon-plus"   value="#{bundle.Create}" actionListener="#{devolucionController.prepareCreate}" update=":DevolucionCreateForm" oncomplete="PF('DevolucionCreateDialog').show()"/>
-                            <p:commandButton id="viewButton"   icon="ui-icon-search" value="#{bundle.View}" update=":DevolucionViewForm" oncomplete="PF('DevolucionViewDialog').show()" disabled="#{empty devolucionController.selected}"/>
-                            <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":DevolucionEditForm" oncomplete="PF('DevolucionEditDialog').show()" disabled="#{empty devolucionController.selected}"/>
-                            <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{devolucionController.destroy}" update=":growl,datalist" disabled="#{empty devolucionController.selected}"/>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.ListDevolucionTitle_codigo}"/>
                         </f:facet>
-                    </p:dataTable>
-                </p:panel>
+                        <h:outputText value="#{item.codigo.toString()}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.ListDevolucionTitle_observaciones}"/>
+                        </f:facet>
+                        <h:outputText value="#{item.observaciones}"/>
+                    </p:column>
+                    <f:facet name="footer">
+                        <p:commandButton id="createButton" icon="ui-icon-plus"   value="#{bundle.Create}" actionListener="#{devolucionController.prepareCreate}" update=":DevolucionCreateForm" oncomplete="PF('DevolucionCreateDialog').show()"/>
+                        <p:commandButton id="viewButton"   icon="ui-icon-search" value="#{bundle.View}" update=":DevolucionViewForm" oncomplete="PF('DevolucionViewDialog').show()" disabled="#{empty devolucionController.selected}"/>
+                        <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":DevolucionEditForm" oncomplete="PF('DevolucionEditDialog').show()" disabled="#{empty devolucionController.selected}"/>
+                        <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{devolucionController.destroy}" update=":growl,datalist" disabled="#{empty devolucionController.selected}"/>
+                    </f:facet>
+                </p:dataTable>
             </h:form>
 
             <ui:include src="Create.xhtml"/>

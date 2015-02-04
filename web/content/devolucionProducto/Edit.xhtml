@@ -12,8 +12,6 @@
             <h:form id="DevolucionProductoEditForm">
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{devolucionProductoController.selected != null}">
-                        <p:outputLabel value="#{bundle.EditDevolucionProductoLabel_id}" for="id" />
-                        <p:inputText id="id" value="#{devolucionProductoController.selected.id}" title="#{bundle.EditDevolucionProductoTitle_id}" required="true" requiredMessage="#{bundle.EditDevolucionProductoRequiredMessage_id}"/>
                         <p:outputLabel value="#{bundle.EditDevolucionProductoLabel_cantidad}" for="cantidad" />
                         <p:inputText id="cantidad" value="#{devolucionProductoController.selected.cantidad}" title="#{bundle.EditDevolucionProductoTitle_cantidad}" required="true" requiredMessage="#{bundle.EditDevolucionProductoRequiredMessage_cantidad}"/>
                         <p:outputLabel value="#{bundle.EditDevolucionProductoLabel_detalle}" for="detalle" />
