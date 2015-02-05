@@ -23,7 +23,9 @@
                         <p:outputLabel value="#{bundle.CreateVisitaLabel_cumplioExpectativas}" for="cumplioExpectativas" />
                         <p:selectBooleanCheckbox id="cumplioExpectativas" value="#{visitaController.selected.cumplioExpectativas}" required="true" requiredMessage="#{bundle.EditVisitaRequiredMessage_cumplioExpectativas}"/>
                         <p:outputLabel value="#{bundle.CreateVisitaLabel_estado}" for="estado" />
-                        <p:inputText id="estado" value="#{visitaController.selected.estado}" title="#{bundle.CreateVisitaTitle_estado}" />
+                        <p:selectOneMenu id="estado" value="#{visitaController.selected.estado}" required="true" requiredMessage="#{bundle.CreateVisitaRequiredMessage_estado}">
+                            <f:selectItems value="#{visitaController.estadosVisita}" var="item" itemLabel="#{item.detalle}" itemValue="#{item.valor}" />
+                        </p:selectOneMenu>
                         <p:outputLabel value="#{bundle.CreateVisitaLabel_cliente}" for="cliente" />
                         <p:selectOneMenu id="cliente" value="#{visitaController.selected.cliente}" required="true" requiredMessage="#{bundle.EditVisitaRequiredMessage_cliente}">
                             <f:selectItems value="#{clienteController.itemsAvailableSelectOne}"

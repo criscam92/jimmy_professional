@@ -6,6 +6,7 @@ import jp.util.JsfUtil.PersistAction;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,6 +19,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import jp.facades.VisitaFacade;
+import jp.util.EstadoVisita;
 
 @ManagedBean(name = "visitaController")
 @SessionScoped
@@ -58,6 +60,7 @@ public class VisitaController implements Serializable {
     }
 
     public void create() {
+        System.out.println("");
         persist(PersistAction.CREATE, ResourceBundle.getBundle("languages/Bundle").getString("VisitaCreated"));
         if (!JsfUtil.isValidationFailed()) {
             items = null;    // Invalidate list of items to trigger re-query.
@@ -157,7 +160,10 @@ public class VisitaController implements Serializable {
                 return null;
             }
         }
-
+    }
+    
+    public EstadoVisita[] getEstadosVisita(){
+        return EstadoVisita.values();
     }
 
 }
