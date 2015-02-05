@@ -68,7 +68,7 @@ div#acciones button.ui-button {
 
 table.ui-panelgrid tbody tr.ui-widget-content, 
 table.ui-panelgrid tbody tr.ui-widget-content td.ui-panelgrid-cell{
-     border-style: none; 
+    border-style: none; 
 }
 
 div.botonesDialog{
@@ -82,4 +82,9 @@ div.botonesDialog{
 
 div.botonesDialog button{
     margin-right: 5px;
+}
+
+.ui-outputlabel-rfi{
+    color: #FF0000;
+    font-size: 15px;
 }
