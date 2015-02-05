@@ -67,7 +67,7 @@ public class DevolucionProductoController implements Serializable {
                 items = null;    // Invalidate list of items to trigger re-query.
                 itemsTMP.clear();
             }
-        }else{
+        } else {
             JsfUtil.addSuccessMessage(JsfUtil.getMessageBundle("ErrorCreateDevolucionProducto"));
         }
 
@@ -183,6 +183,14 @@ public class DevolucionProductoController implements Serializable {
         System.out.println("Cantidad--> " + devolucionProducto.getCantidad() + "\nDetalle--> " + devolucionProducto.getDetalle()
                 + "\nProducto--> " + devolucionProducto.getProducto() + "\nDevolucion--> " + devolucionProducto.getDevolucion());
         itemsTMP.add(devolucionProducto);
+
+    }
+
+    public void removeDevolucionProducto(DevolucionProducto devolucionProducto) {
+        System.out.println("Tamano de lista antes de eliminar-> " + itemsTMP.size());
+        System.out.println("Item a eliminar-> " + devolucionProducto.getDetalle());
+
+        itemsTMP.remove(devolucionProducto);
 
     }
 

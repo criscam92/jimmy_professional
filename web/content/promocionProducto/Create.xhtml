@@ -12,8 +12,6 @@
             <h:form id="PromocionProductoCreateForm">
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{promocionProductoController.selected != null}">
-                        <p:outputLabel value="#{bundle.CreatePromocionProductoLabel_id}" for="id" />
-                        <p:inputText id="id" value="#{promocionProductoController.selected.id}" title="#{bundle.CreatePromocionProductoTitle_id}" required="true" requiredMessage="#{bundle.CreatePromocionProductoRequiredMessage_id}"/>
                         <p:outputLabel value="#{bundle.CreatePromocionProductoLabel_valor}" for="valor" />
                         <p:inputText id="valor" value="#{promocionProductoController.selected.valor}" title="#{bundle.CreatePromocionProductoTitle_valor}" required="true" requiredMessage="#{bundle.CreatePromocionProductoRequiredMessage_valor}"/>
                         <p:outputLabel value="#{bundle.CreatePromocionProductoLabel_producto}" for="producto" />
@@ -30,7 +28,7 @@
                         </p:selectOneMenu>
                     </p:panelGrid>
                     <p:commandButton actionListener="#{promocionProductoController.create}" value="#{bundle.Save}" update="display,:PromocionProductoListForm:datalist,:growl" oncomplete="handleSubmit(args,'PromocionProductoCreateDialog');"/>
-                    <p:commandButton value="#{bundle.Cancel}" onclick="PromocionProductoCreateDialog.hide()"/>
+                    <p:commandButton value="#{bundle.Cancel}" type="button" onclick="PF('PromocionProductoCreateDialog').hide()"/>
                 </h:panelGroup>
             </h:form>
         </p:dialog>

@@ -26,7 +26,7 @@
                         <p:inputText id="valorVentaUsd" value="#{productoController.selected.valorVentaUsd}" title="#{bundle.CreateProductoTitle_valorVentaUsd}" />
                     </p:panelGrid>
                     <p:commandButton actionListener="#{productoController.create}" value="#{bundle.Save}" update="display,:ProductoListForm:datalist,:growl" oncomplete="handleSubmit(args,'ProductoCreateDialog');"/>
-                    <p:commandButton value="#{bundle.Cancel}" onclick="ProductoCreateDialog.hide()"/>
+                    <p:commandButton value="#{bundle.Cancel}" type="button" onclick="PF('ProductoCreateDialog').hide()"/>
                 </h:panelGroup>
             </h:form>
         </p:dialog>

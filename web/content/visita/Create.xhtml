@@ -12,16 +12,14 @@
             <h:form id="VisitaCreateForm">
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{visitaController.selected != null}">
-                        <p:outputLabel value="#{bundle.CreateVisitaLabel_id}" for="id" />
-                        <p:inputText id="id" value="#{visitaController.selected.id}" title="#{bundle.CreateVisitaTitle_id}" required="true" requiredMessage="#{bundle.CreateVisitaRequiredMessage_id}"/>
                         <p:outputLabel value="#{bundle.CreateVisitaLabel_fecha}" for="fecha" />
                         <p:calendar id="fecha" pattern="MM/dd/yyyy HH:mm:ss" value="#{visitaController.selected.fecha}" title="#{bundle.EditVisitaTitle_fecha}" required="true" requiredMessage="#{bundle.EditVisitaRequiredMessage_fecha}" showOn="button"/>
                         <p:outputLabel value="#{bundle.CreateVisitaLabel_observacionesCliente}" for="observacionesCliente" />
-                        <p:inputText id="observacionesCliente" value="#{visitaController.selected.observacionesCliente}" title="#{bundle.CreateVisitaTitle_observacionesCliente}" required="true" requiredMessage="#{bundle.CreateVisitaRequiredMessage_observacionesCliente}"/>
+                        <p:inputTextarea id="observacionesCliente" value="#{visitaController.selected.observacionesCliente}" title="#{bundle.CreateVisitaTitle_observacionesCliente}" required="true" requiredMessage="#{bundle.CreateVisitaRequiredMessage_observacionesCliente}"/>
                         <p:outputLabel value="#{bundle.CreateVisitaLabel_calificacionServicio}" for="calificacionServicio" />
-                        <p:inputText id="calificacionServicio" value="#{visitaController.selected.calificacionServicio}" title="#{bundle.CreateVisitaTitle_calificacionServicio}" />
+                        <p:rating id="calificacionServicio" value="#{visitaController.selected.calificacionServicio}" />
                         <p:outputLabel value="#{bundle.CreateVisitaLabel_puntualidadServicio}" for="puntualidadServicio" />
-                        <p:inputText id="puntualidadServicio" value="#{visitaController.selected.puntualidadServicio}" title="#{bundle.CreateVisitaTitle_puntualidadServicio}" />
+                        <p:rating id="puntualidadServicio" value="#{visitaController.selected.puntualidadServicio}" />
                         <p:outputLabel value="#{bundle.CreateVisitaLabel_cumplioExpectativas}" for="cumplioExpectativas" />
                         <p:selectBooleanCheckbox id="cumplioExpectativas" value="#{visitaController.selected.cumplioExpectativas}" required="true" requiredMessage="#{bundle.EditVisitaRequiredMessage_cumplioExpectativas}"/>
                         <p:outputLabel value="#{bundle.CreateVisitaLabel_estado}" for="estado" />

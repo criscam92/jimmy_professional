@@ -28,6 +28,8 @@ public class VisitaController implements Serializable {
     private List<Visita> items = null;
     private Visita selected;
 
+
+
     public VisitaController() {
     }
 

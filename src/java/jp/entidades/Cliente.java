@@ -225,7 +225,7 @@ public class Cliente implements Serializable {
 
     @Override
     public String toString() {
-        return "jp.entidades.Cliente[ id=" + id + " ]";
+        return this.getNombre();
     }
     
 }

@@ -111,7 +111,7 @@ public class Ciudad implements Serializable {
 
     @Override
     public String toString() {
-        return nombre;
+        return this.getNombre()+", "+this.getPais().getNombre();
     }
 
 }
