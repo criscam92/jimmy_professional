@@ -19,6 +19,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -29,13 +30,15 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author CRISTIAN
  */
 @Entity
-@Table(name = "tipo_cliente", catalog = "jimmy_professional", schema = "public")
+@Table(catalog = "jimmy_professional", schema = "public", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"tipo"})})
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "TipoCliente.findAll", query = "SELECT t FROM TipoCliente t"),
     @NamedQuery(name = "TipoCliente.findById", query = "SELECT t FROM TipoCliente t WHERE t.id = :id"),
     @NamedQuery(name = "TipoCliente.findByTipo", query = "SELECT t FROM TipoCliente t WHERE t.tipo = :tipo")})
 public class TipoCliente implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -101,15 +104,12 @@ public class TipoCliente implements Serializable {
             return false;
         }
         TipoCliente other = (TipoCliente) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return !((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)));
     }
 
     @Override
     public String toString() {
-        return "jp.entidades.TipoCliente[ id=" + id + " ]";
+        return tipo;
     }
-    
+
 }

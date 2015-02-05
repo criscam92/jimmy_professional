@@ -3,7 +3,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:p="http://primefaces.org/ui">
 
     <ui:composition>
@@ -14,10 +13,12 @@
                     <p:panelGrid columns="2" rendered="#{tipoClienteController.selected != null}">
                         <p:outputLabel value="#{bundle.EditTipoClienteLabel_tipo}" for="tipo" />
                         <p:inputText id="tipo" value="#{tipoClienteController.selected.tipo}" title="#{bundle.EditTipoClienteTitle_tipo}" required="true" requiredMessage="#{bundle.EditTipoClienteRequiredMessage_tipo}"/>
-                    </p:panelGrid>
-                    <p:commandButton actionListener="#{tipoClienteController.update}" value="#{bundle.Save}" update="display,:TipoClienteListForm:datalist,:growl" oncomplete="handleSubmit(args, 'TipoClienteEditDialog');"/>
-                    <p:commandButton value="#{bundle.Cancel}" onclick="TipoClienteEditDialog.hide()"/>
+                    </p:panelGrid>                    
                 </h:panelGroup>
+                <div class="botonesDialog">
+                    <p:commandButton actionListener="#{tipoClienteController.update}" value="#{bundle.Save}" update="display,:TipoClienteListForm:datalist,:growl" oncomplete="handleSubmit(args, 'TipoClienteEditDialog');"/>
+                    <p:commandButton type="button" value="#{bundle.Cancel}" onclick="PF('TipoClienteEditDialog').hide()"/>
+                </div>
             </h:form>
         </p:dialog>
 

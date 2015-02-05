@@ -11,10 +11,7 @@
         <p:dialog id="ClienteEditDlg" widgetVar="ClienteEditDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.EditClienteTitle}">
             <h:form id="ClienteEditForm">
                 <h:panelGroup id="display">
-                    <p:panelGrid columns="2" rendered="#{clienteController.selected != null}">
-                        <p:outputLabel value="#{bundle.EditClienteLabel_id}" for="id" />
-                        <p:inputText id="id" value="#{clienteController.selected.id}" title="#{bundle.EditClienteTitle_id}" required="true" requiredMessage="#{bundle.EditClienteRequiredMessage_id}"/>
-                        <p:outputLabel value="#{bundle.EditClienteLabel_nombre}" for="nombre" />
+                    <p:panelGrid columns="2" rendered="#{clienteController.selected != null}"><p:outputLabel value="#{bundle.EditClienteLabel_nombre}" for="nombre" />
                         <p:inputText id="nombre" value="#{clienteController.selected.nombre}" title="#{bundle.EditClienteTitle_nombre}" required="true" requiredMessage="#{bundle.EditClienteRequiredMessage_nombre}"/>
                         <p:outputLabel value="#{bundle.EditClienteLabel_direccion}" for="direccion" />
                         <p:inputText id="direccion" value="#{clienteController.selected.direccion}" title="#{bundle.EditClienteTitle_direccion}" required="true" requiredMessage="#{bundle.EditClienteRequiredMessage_direccion}"/>
@@ -47,10 +44,12 @@
                                            var="tipoItem"
                                            itemValue="#{tipoItem}"/>
                         </p:selectOneMenu>
-                    </p:panelGrid>
-                    <p:commandButton actionListener="#{clienteController.update}" value="#{bundle.Save}" update="display,:ClienteListForm:datalist,:growl" oncomplete="handleSubmit(args, 'ClienteEditDialog');"/>
-                    <p:commandButton value="#{bundle.Cancel}" onclick="ClienteEditDialog.hide()"/>
+                    </p:panelGrid>                    
                 </h:panelGroup>
+                <div class="botonesDialog">
+                    <p:commandButton actionListener="#{clienteController.update}" value="#{bundle.Save}" update="display,:ClienteListForm:datalist,:growl" oncomplete="handleSubmit(args, 'ClienteEditDialog');"/>
+                    <p:commandButton type="button" value="#{bundle.Cancel}" onclick="PF('ClienteEditDialog').hide()"/>
+                </div>
             </h:form>
         </p:dialog>
 

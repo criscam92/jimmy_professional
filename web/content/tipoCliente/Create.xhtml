@@ -3,23 +3,22 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:p="http://primefaces.org/ui">
 
     <ui:composition>
-
         <p:dialog id="TipoClienteCreateDlg" widgetVar="TipoClienteCreateDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.CreateTipoClienteTitle}">
             <h:form id="TipoClienteCreateForm">
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{tipoClienteController.selected != null}">
                         <p:outputLabel value="#{bundle.CreateTipoClienteLabel_tipo}" for="tipo" />
                         <p:inputText id="tipo" value="#{tipoClienteController.selected.tipo}" title="#{bundle.CreateTipoClienteTitle_tipo}" required="true" requiredMessage="#{bundle.CreateTipoClienteRequiredMessage_tipo}"/>
-                    </p:panelGrid>
-                    <p:commandButton actionListener="#{tipoClienteController.create}" value="#{bundle.Save}" update="display,:TipoClienteListForm:datalist,:growl" oncomplete="handleSubmit(args,'TipoClienteCreateDialog');"/>
-                    <p:commandButton value="#{bundle.Cancel}" onclick="TipoClienteCreateDialog.hide()"/>
+                    </p:panelGrid>                    
                 </h:panelGroup>
+                <div class="botonesDialog">
+                    <p:commandButton actionListener="#{tipoClienteController.create}" value="#{bundle.Save}" update="display,:TipoClienteListForm:datalist,:growl" oncomplete="handleSubmit(args,'TipoClienteCreateDialog');"/>
+                    <p:commandButton type="button" value="#{bundle.Cancel}" onclick="PF('TipoClienteCreateDialog').hide()"/>
+                </div>
             </h:form>
         </p:dialog>
-
     </ui:composition>
 </html>

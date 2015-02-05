@@ -7,40 +7,45 @@
       xmlns:p="http://primefaces.org/ui">
 
     <ui:composition template="/index.xhtml">
-
-
+        
         <ui:define name="title">
             <h:outputText value="#{bundle.ListTipoClienteTitle}"></h:outputText>
         </ui:define>
 
         <ui:define name="body">
             <h:form id="TipoClienteListForm">
-                    <p:dataTable id="datalist" value="#{tipoClienteController.items}" var="item"
-                                 selectionMode="single" selection="#{tipoClienteController.selected}"
-                                 paginator="true"
-                                 rowKey="#{item.id}"
-                                 rows="10"
-                                 rowsPerPageTemplate="10,20,30,40,50"
-                                 paginatorPosition="bottom"
-                                 emptyMessage="#{bundle.EmptyTable}"
-                                 >
+                <p:dataTable styleClass="tabla" id="datalist" value="#{tipoClienteController.items}" var="item"
+                             selectionMode="single" selection="#{tipoClienteController.selected}"
+                             paginator="true"
+                             rowKey="#{item.id}"
+                             rows="10"
+                             rowsPerPageTemplate="10,20,30,40,50"
+                             paginatorPosition="bottom"
+                             emptyMessage="#{bundle.EmptyTable}"
+                             >
 
-                        <p:ajax event="rowSelect"   update="createButton viewButton editButton deleteButton"/>
-                        <p:ajax event="rowUnselect" update="createButton viewButton editButton deleteButton"/>
+                    <p:ajax event="rowSelect"   update="createButton viewButton editButton deleteButton"/>
+                    <p:ajax event="rowUnselect" update="createButton viewButton editButton deleteButton"/>
 
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="#{bundle.ListTipoClienteTitle_tipo}"/>
-                            </f:facet>
-                            <h:outputText value="#{item.tipo}"/>
-                        </p:column>
-                        <f:facet name="footer">
+                    <f:facet name="header">
+                        <div id="titulo">
+                            TIPOS DE CLIENTES
+                        </div>
+                        <div id="acciones">
                             <p:commandButton id="createButton" icon="ui-icon-plus"   value="#{bundle.Create}" actionListener="#{tipoClienteController.prepareCreate}" update=":TipoClienteCreateForm" oncomplete="PF('TipoClienteCreateDialog').show()"/>
                             <p:commandButton id="viewButton"   icon="ui-icon-search" value="#{bundle.View}" update=":TipoClienteViewForm" oncomplete="PF('TipoClienteViewDialog').show()" disabled="#{empty tipoClienteController.selected}"/>
                             <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":TipoClienteEditForm" oncomplete="PF('TipoClienteEditDialog').show()" disabled="#{empty tipoClienteController.selected}"/>
                             <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{tipoClienteController.destroy}" update=":growl,datalist" disabled="#{empty tipoClienteController.selected}"/>
+                        </div>
+                    </f:facet>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.ListTipoClienteTitle_tipo}"/>
                         </f:facet>
-                    </p:dataTable>
+                        <h:outputText value="#{item.tipo}"/>
+                    </p:column>
+                </p:dataTable>
             </h:form>
 
             <ui:include src="Create.xhtml"/>
