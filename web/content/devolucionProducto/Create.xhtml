@@ -12,27 +12,73 @@
             <h:form id="DevolucionProductoCreateForm">
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{devolucionProductoController.selected != null}">
-                        <p:outputLabel value="#{bundle.CreateDevolucionProductoLabel_id}" for="id" />
-                        <p:inputText id="id" value="#{devolucionProductoController.selected.id}" title="#{bundle.CreateDevolucionProductoTitle_id}" required="true" requiredMessage="#{bundle.CreateDevolucionProductoRequiredMessage_id}"/>
-                        <p:outputLabel value="#{bundle.CreateDevolucionProductoLabel_cantidad}" for="cantidad" />
-                        <p:inputText id="cantidad" value="#{devolucionProductoController.selected.cantidad}" title="#{bundle.CreateDevolucionProductoTitle_cantidad}" required="true" requiredMessage="#{bundle.CreateDevolucionProductoRequiredMessage_cantidad}"/>
-                        <p:outputLabel value="#{bundle.CreateDevolucionProductoLabel_detalle}" for="detalle" />
-                        <p:inputText id="detalle" value="#{devolucionProductoController.selected.detalle}" title="#{bundle.CreateDevolucionProductoTitle_detalle}" />
-                        <p:outputLabel value="#{bundle.CreateDevolucionProductoLabel_devolucion}" for="devolucion" />
-                        <p:selectOneMenu id="devolucion" value="#{devolucionProductoController.selected.devolucion}" required="true" requiredMessage="#{bundle.EditDevolucionProductoRequiredMessage_devolucion}">
-                            <f:selectItems value="#{devolucionController.itemsAvailableSelectOne}"
-                                           var="devolucionItem"
-                                           itemValue="#{devolucionItem}"/>
-                        </p:selectOneMenu>
-                        <p:outputLabel value="#{bundle.CreateDevolucionProductoLabel_producto}" for="producto" />
-                        <p:selectOneMenu id="producto" value="#{devolucionProductoController.selected.producto}" required="true" requiredMessage="#{bundle.EditDevolucionProductoRequiredMessage_producto}">
-                            <f:selectItems value="#{productoController.itemsAvailableSelectOne}"
-                                           var="productoItem"
-                                           itemValue="#{productoItem}"/>
-                        </p:selectOneMenu>
+                        <p:panelGrid columns="2">
+                            <p:outputLabel value="#{bundle.CreateDevolucionProductoLabel_cantidad}" for="cantidad" />
+                            <p:inputText id="cantidad" value="#{devolucionProductoController.selected.cantidad}" title="#{bundle.CreateDevolucionProductoTitle_cantidad}" required="true" requiredMessage="#{bundle.CreateDevolucionProductoRequiredMessage_cantidad}"/>
+                            <p:outputLabel value="#{bundle.CreateDevolucionProductoLabel_detalle}" for="detalle" />
+                            <p:inputText id="detalle" value="#{devolucionProductoController.selected.detalle}" title="#{bundle.CreateDevolucionProductoTitle_detalle}" />
+                            <p:outputLabel value="#{bundle.CreateDevolucionProductoLabel_devolucion}" for="devolucion" />
+                            <p:selectOneMenu id="devolucion" value="#{devolucionProductoController.selected.devolucion}" required="true" requiredMessage="#{bundle.EditDevolucionProductoRequiredMessage_devolucion}">
+                                <f:selectItems value="#{devolucionController.itemsAvailableSelectOne}"
+                                               var="devolucionItem"
+                                               itemValue="#{devolucionItem}"/>
+                            </p:selectOneMenu>
+                            <p:outputLabel value="#{bundle.CreateDevolucionProductoLabel_producto}" for="producto" />
+                            <p:selectOneMenu id="producto" value="#{devolucionProductoController.selected.producto}" required="true" requiredMessage="#{bundle.EditDevolucionProductoRequiredMessage_producto}">
+                                <f:selectItems value="#{productoController.itemsAvailableSelectOne}"
+                                               var="productoItem"
+                                               itemValue="#{productoItem}"/>
+                            </p:selectOneMenu>
+                            <p:commandButton value="#{bundle.AddItem}" update="datalistTMP"
+                                             actionListener="#{devolucionProductoController.addDevolucionProducto()}"/>
+                        </p:panelGrid>
+                        <p:panelGrid columns="2">
+                            <p:dataTable id="datalistTMP" value="#{devolucionProductoController.itemsTMP}" var="item"
+                                         paginator="true"
+                                         rowKey="#{item.id}"
+                                         rows="10"
+                                         rowsPerPageTemplate="10,20,30,40,50"
+                                         emptyMessage="#{bundle.EmptyTable}"
+                                         paginatorPosition="bottom">
+                                <p:column width="80">
+                                    <f:facet name="header">
+                                        <h:outputText value="#{bundle.ListDevolucionProductoTitle_cantidad}"/>
+                                    </f:facet>
+                                    <h:outputText value="#{item.cantidad}"/>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="#{bundle.ListDevolucionProductoTitle_detalle}"/>
+                                    </f:facet>
+                                    <h:outputText value="#{item.detalle}"/>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="#{bundle.ListDevolucionProductoTitle_devolucion}"/>
+                                    </f:facet>
+                                    <h:outputText value="#{item.devolucion.toString()}"/>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="#{bundle.ListDevolucionProductoTitle_producto}"/>
+                                    </f:facet>
+                                    <h:outputText value="#{item.producto.toString()}"/>
+                                </p:column>
+                                <p:column width="70">
+                                    <f:facet name="header">
+                                        <h:outputText value="#{bundle.RemoveItem}"/>
+                                    </f:facet>
+                                    <p:commandButton icon="ui-icon-close"/>
+                                </p:column>
+                            </p:dataTable><h:outputText/>
+                            <p:panel style="border-style: none">
+                                <p:commandButton actionListener="#{devolucionProductoController.create}" value="#{bundle.Save}" update="display,:DevolucionProductoListForm:datalist,:growl" oncomplete="handleSubmit(args,'DevolucionProductoCreateDialog');"/>
+                                <p:commandButton type="button" update=":DevolucionProductoListForm:datalist" value="#{bundle.Cancel}"  onclick="PF('DevolucionProductoCreateDialog').hide()"/>
+                            </p:panel>
+                        </p:panelGrid>
                     </p:panelGrid>
-                    <p:commandButton actionListener="#{devolucionProductoController.create}" value="#{bundle.Save}" update="display,:DevolucionProductoListForm:datalist,:growl" oncomplete="handleSubmit(args,'DevolucionProductoCreateDialog');"/>
-                    <p:commandButton value="#{bundle.Cancel}" onclick="DevolucionProductoCreateDialog.hide()"/>
+                    <br/>
+
                 </h:panelGroup>
             </h:form>
         </p:dialog>

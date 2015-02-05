@@ -114,7 +114,7 @@ public class Devolucion implements Serializable {
 
     @Override
     public String toString() {
-        return "jp.entidades.Devolucion[ id=" + id + " ]";
+        return ""+this.getCodigo();
     }
     
 }
