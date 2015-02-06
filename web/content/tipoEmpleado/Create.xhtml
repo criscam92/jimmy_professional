@@ -11,12 +11,12 @@
             <h:form id="TipoEmpleadoCreateForm">
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{tipoEmpleadoController.selected != null}">
-                        <p:outputLabel value="#{bundle.CreateTipoEmpleadoLabel_tipo}" for="tipo" />
-                        <p:inputText id="tipo" value="#{tipoEmpleadoController.selected.tipo}" title="#{bundle.CreateTipoEmpleadoTitle_tipo}" required="true" requiredMessage="#{bundle.CreateTipoEmpleadoRequiredMessage_tipo}"/>
+                        <p:outputLabel styleClass="#{tipoEmpleadoController.classError()}" value="#{bundle.CreateTipoEmpleadoLabel_tipo}" for="tipo" />
+                        <p:inputText styleClass="#{tipoEmpleadoController.classError()}"  id="tipo" value="#{tipoEmpleadoController.selected.tipo}" title="#{bundle.CreateTipoEmpleadoTitle_tipo}" required="true" requiredMessage="#{bundle.CreateTipoEmpleadoRequiredMessage_tipo}"/>
                     </p:panelGrid>
                 </h:panelGroup>
                 <div class="botonesDialog">
-                    <p:commandButton actionListener="#{tipoEmpleadoController.create}" value="#{bundle.Save}" update="display,:TipoEmpleadoListForm:datalist,:growl" oncomplete="handleSubmit(args,'TipoEmpleadoCreateDialog');"/>
+                    <p:commandButton actionListener="#{tipoEmpleadoController.create}" value="#{bundle.Save}" update="display,:TipoEmpleadoListForm:datalist,:growl"/>
                     <p:commandButton type="button" value="#{bundle.Cancel}" onclick="PF('TipoEmpleadoCreateDialog').hide()"/>
                 </div>
             </h:form>

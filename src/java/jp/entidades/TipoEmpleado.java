@@ -52,7 +52,7 @@ public class TipoEmpleado implements Serializable, Codificable {
 
     public TipoEmpleado(Long id, String tipo) {
         this.id = id;
-        this.tipo = tipo;
+        this.tipo = tipo.toUpperCase();
     }
 
     @Override
@@ -70,7 +70,7 @@ public class TipoEmpleado implements Serializable, Codificable {
     }
 
     public void setTipo(String tipo) {
-        this.tipo = tipo;
+        this.tipo = tipo.toUpperCase();
     }
 
     @XmlTransient

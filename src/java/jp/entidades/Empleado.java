@@ -24,7 +24,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import jp.entidades.auxiliar.Codificable;
 
 @Entity
-@Table(catalog = "jimmy_professional", schema = "public", uniqueConstraints = {
+@Table(name = "empleado", catalog = "jimmy_professional", schema = "public", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"codigo"})})
 @XmlRootElement
 @NamedQueries({
@@ -168,7 +168,6 @@ public class Empleado implements Serializable, Codificable {
         return codigo + " - " + nombre;
     }
 
-    
     @Override
     public String getTipo() {
         return null;

@@ -60,10 +60,10 @@ public abstract class AbstractFacade<T> {
     public <U extends Codificable> Boolean getEntityByCodigoOrTipo(U entity) {
         try {
             String sql = "SELECT e FROM " + entityClass.getSimpleName() + " e WHERE";
-            sql += (entity.getTipo() != null && !entity.getTipo().trim().isEmpty()) ? " e.tipo = :tipo" : " e.codigo = :tipo";
+            sql += (entity.getTipo() != null && !entity.getTipo().trim().isEmpty()) ? " e.tipo = :param" : " e.codigo = :param";
 
             Query query = getEntityManager().createQuery(sql);
-            query.setParameter("tipo", sql.contains("e.tipo") ? entity.getTipo() : entity.getCodigo());
+            query.setParameter("param", sql.contains("tipo") ? entity.getTipo() : entity.getCodigo());
             U entidad = (U) query.getSingleResult();
 
             if (entidad != null) {

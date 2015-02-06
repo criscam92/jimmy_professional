@@ -3,7 +3,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:p="http://primefaces.org/ui">
 
     <ui:composition>
@@ -21,11 +20,11 @@
                         <h:outputText value="#{bundle.ViewEmpleadoLabel_telefonos}"/>
                         <h:outputText value="#{empleadoController.selected.telefonos}" title="#{bundle.ViewEmpleadoTitle_telefonos}"/>
                         <h:outputText value="#{bundle.ViewEmpleadoLabel_tipo}"/>
-                        <h:outputText value="#{empleadoController.selected.tipoEmpledo.tipo}" title="#{bundle.ViewEmpleadoTitle_tipo}"/>
+                        <h:outputText value="#{empleadoController.selected.tipoEmpleado.tipo}" title="#{bundle.ViewEmpleadoTitle_tipo}"/>
                     </p:panelGrid>                    
                 </h:panelGroup>
                 <div class="botonesDialog">   
-                    <p:commandButton value="#{bundle.Close}" onclick="EmpleadoViewDialog.hide()"/>
+                    <p:commandButton type="button" value="#{bundle.Close}" onclick="PF('EmpleadoViewDialog').hide()"/>
                 </div>
             </h:form>
         </p:dialog>
