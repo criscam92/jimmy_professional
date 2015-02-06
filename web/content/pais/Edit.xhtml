@@ -12,13 +12,11 @@
             <h:form id="PaisEditForm">
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{paisController.selected != null}">
-                        <p:outputLabel value="#{bundle.EditPaisLabel_id}" for="id" />
-                        <p:inputText id="id" value="#{paisController.selected.id}" title="#{bundle.EditPaisTitle_id}" required="true" requiredMessage="#{bundle.EditPaisRequiredMessage_id}"/>
                         <p:outputLabel value="#{bundle.EditPaisLabel_nombre}" for="nombre" />
                         <p:inputText id="nombre" value="#{paisController.selected.nombre}" title="#{bundle.EditPaisTitle_nombre}" required="true" requiredMessage="#{bundle.EditPaisRequiredMessage_nombre}"/>
                     </p:panelGrid>
                     <p:commandButton actionListener="#{paisController.update}" value="#{bundle.Save}" update="display,:PaisListForm:datalist,:growl" oncomplete="handleSubmit(args, 'PaisEditDialog');"/>
-                    <p:commandButton value="#{bundle.Cancel}" onclick="PaisEditDialog.hide()"/>
+                    <p:commandButton value="#{bundle.Cancel}" type="button" onclick="PF('PaisEditDialog').hide()"/>
                 </h:panelGroup>
             </h:form>
         </p:dialog>

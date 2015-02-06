@@ -12,8 +12,6 @@
             <h:form id="VisitaViewForm">
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{visitaController.selected != null}">
-                        <h:outputText value="#{bundle.ViewVisitaLabel_id}"/>
-                        <h:outputText value="#{visitaController.selected.id}" title="#{bundle.ViewVisitaTitle_id}"/>
                         <h:outputText value="#{bundle.ViewVisitaLabel_fecha}"/>
                         <h:outputText value="#{visitaController.selected.fecha}" title="#{bundle.ViewVisitaTitle_fecha}">
                             <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />

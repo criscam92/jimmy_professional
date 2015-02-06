@@ -17,9 +17,9 @@
                         <h:outputText value="#{bundle.ViewPromocionProductoLabel_valor}"/>
                         <h:outputText value="#{promocionProductoController.selected.valor}" title="#{bundle.ViewPromocionProductoTitle_valor}"/>
                         <h:outputText value="#{bundle.ViewPromocionProductoLabel_producto}"/>
-                        <h:outputText value="#{promocionProductoController.selected.producto}" title="#{bundle.ViewPromocionProductoTitle_producto}"/>
+                        <h:outputText value="#{promocionProductoController.selected.producto.toString()}" title="#{bundle.ViewPromocionProductoTitle_producto}"/>
                         <h:outputText value="#{bundle.ViewPromocionProductoLabel_promocion}"/>
-                        <h:outputText value="#{promocionProductoController.selected.promocion}" title="#{bundle.ViewPromocionProductoTitle_promocion}"/>
+                        <h:outputText value="#{promocionProductoController.selected.promocion.toString()}" title="#{bundle.ViewPromocionProductoTitle_promocion}"/>
                     </p:panelGrid>
                     <p:commandButton value="#{bundle.Close}" onclick="PromocionProductoViewDialog.hide()"/>
                 </h:panelGroup>

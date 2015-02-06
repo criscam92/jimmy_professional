@@ -109,7 +109,7 @@ public class Promocion implements Serializable {
 
     @Override
     public String toString() {
-        return "jp.entidades.Promocion[ id=" + id + " ]";
+        return this.getDescripcion();
     }
     
 }

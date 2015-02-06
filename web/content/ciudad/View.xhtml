@@ -17,7 +17,7 @@
                         <h:outputText value="#{bundle.ViewCiudadLabel_nombre}"/>
                         <h:outputText value="#{ciudadController.selected.nombre}" title="#{bundle.ViewCiudadTitle_nombre}"/>
                         <h:outputText value="#{bundle.ViewCiudadLabel_pais}"/>
-                        <h:outputText value="#{ciudadController.selected.pais}" title="#{bundle.ViewCiudadTitle_pais}"/>
+                        <h:outputText value="#{ciudadController.selected.pais.toString()}" title="#{bundle.ViewCiudadTitle_pais}"/>
                     </p:panelGrid>
                     <p:commandButton value="#{bundle.Close}" onclick="CiudadViewDialog.hide()"/>
                 </h:panelGroup>

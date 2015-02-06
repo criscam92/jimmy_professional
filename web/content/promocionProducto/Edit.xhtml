@@ -12,8 +12,6 @@
             <h:form id="PromocionProductoEditForm">
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{promocionProductoController.selected != null}">
-                        <p:outputLabel value="#{bundle.EditPromocionProductoLabel_id}" for="id" />
-                        <p:inputText id="id" value="#{promocionProductoController.selected.id}" title="#{bundle.EditPromocionProductoTitle_id}" required="true" requiredMessage="#{bundle.EditPromocionProductoRequiredMessage_id}"/>
                         <p:outputLabel value="#{bundle.EditPromocionProductoLabel_valor}" for="valor" />
                         <p:inputText id="valor" value="#{promocionProductoController.selected.valor}" title="#{bundle.EditPromocionProductoTitle_valor}" required="true" requiredMessage="#{bundle.EditPromocionProductoRequiredMessage_valor}"/>
                         <p:outputLabel value="#{bundle.EditPromocionProductoLabel_producto}" for="producto" />

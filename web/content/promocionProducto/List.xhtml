@@ -15,50 +15,50 @@
 
         <ui:define name="body">
             <h:form id="PromocionProductoListForm">
-                <p:panel header="#{bundle.ListPromocionProductoTitle}">
-                    <p:dataTable id="datalist" value="#{promocionProductoController.items}" var="item"
-                                 selectionMode="single" selection="#{promocionProductoController.selected}"
-                                 paginator="true"
-                                 rowKey="#{item.id}"
-                                 rows="10"
-                                 rowsPerPageTemplate="10,20,30,40,50"
-                                 >
+                <p:dataTable styleClass="tabla" id="datalist" value="#{promocionProductoController.items}" var="item"
+                             selectionMode="single" selection="#{promocionProductoController.selected}"
+                             paginator="true"
+                             rowKey="#{item.id}"
+                             rows="10"
+                             rowsPerPageTemplate="10,20,30,40,50"
+                             emptyMessage="#{bundle.EmptyTable}"
+                             paginatorPosition="bottom"
+                             >
 
-                        <p:ajax event="rowSelect"   update="createButton viewButton editButton deleteButton"/>
-                        <p:ajax event="rowUnselect" update="createButton viewButton editButton deleteButton"/>
+                    <p:ajax event="rowSelect"   update="createButton viewButton editButton deleteButton"/>
+                    <p:ajax event="rowUnselect" update="createButton viewButton editButton deleteButton"/>
 
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="#{bundle.ListPromocionProductoTitle_id}"/>
-                            </f:facet>
-                            <h:outputText value="#{item.id}"/>
-                        </p:column>
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="#{bundle.ListPromocionProductoTitle_valor}"/>
-                            </f:facet>
-                            <h:outputText value="#{item.valor}"/>
-                        </p:column>
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="#{bundle.ListPromocionProductoTitle_producto}"/>
-                            </f:facet>
-                            <h:outputText value="#{item.producto}"/>
-                        </p:column>
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="#{bundle.ListPromocionProductoTitle_promocion}"/>
-                            </f:facet>
-                            <h:outputText value="#{item.promocion}"/>
-                        </p:column>
-                        <f:facet name="footer">
+                    <f:facet name="header">
+                        <div id="titulo">
+                            Promoción de Productos
+                        </div>
+                        <div id="acciones">
                             <p:commandButton id="createButton" icon="ui-icon-plus"   value="#{bundle.Create}" actionListener="#{promocionProductoController.prepareCreate}" update=":PromocionProductoCreateForm" oncomplete="PF('PromocionProductoCreateDialog').show()"/>
                             <p:commandButton id="viewButton"   icon="ui-icon-search" value="#{bundle.View}" update=":PromocionProductoViewForm" oncomplete="PF('PromocionProductoViewDialog').show()" disabled="#{empty promocionProductoController.selected}"/>
                             <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":PromocionProductoEditForm" oncomplete="PF('PromocionProductoEditDialog').show()" disabled="#{empty promocionProductoController.selected}"/>
                             <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{promocionProductoController.destroy}" update=":growl,datalist" disabled="#{empty promocionProductoController.selected}"/>
+                        </div>
+                    </f:facet>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.ListPromocionProductoTitle_valor}"/>
                         </f:facet>
-                    </p:dataTable>
-                </p:panel>
+                        <h:outputText value="#{item.valor}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.ListPromocionProductoTitle_producto}"/>
+                        </f:facet>
+                        <h:outputText value="#{item.producto.toString()}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.ListPromocionProductoTitle_promocion}"/>
+                        </f:facet>
+                        <h:outputText value="#{item.promocion.toString()}"/>
+                    </p:column>                    
+                </p:dataTable>
             </h:form>
 
             <ui:include src="Create.xhtml"/>

@@ -129,7 +129,7 @@ public class DevolucionProducto implements Serializable {
 
     @Override
     public String toString() {
-        return "jp.entidades.DevolucionProducto[ id=" + id + " ]";
+        return ""+this.getDevolucion().getCodigo()+this.getProducto().toString();
     }
     
 }
