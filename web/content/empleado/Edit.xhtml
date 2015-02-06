@@ -19,7 +19,7 @@
                         <p:outputLabel value="#{bundle.EditEmpleadoLabel_telefonos}" for="telefonos" />
                         <p:inputText id="telefonos" value="#{empleadoController.selected.telefonos}" title="#{bundle.EditEmpleadoTitle_telefonos}" />
                         <p:outputLabel value="#{bundle.EditEmpleadoLabel_tipo}" for="tipo" />
-                        <p:selectOneMenu id="tipo" value="#{empleadoController.selected.tipo}" required="true" requiredMessage="#{bundle.EditEmpleadoRequiredMessage_tipo}">
+                        <p:selectOneMenu id="tipo" value="#{empleadoController.selected.tipoEmpleado}" required="true" requiredMessage="#{bundle.EditEmpleadoRequiredMessage_tipo}">
                             <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>
                             <f:selectItems value="#{tipoEmpleadoController.itemsAvailableSelectOne}"
                                            var="tipoItem"
@@ -28,7 +28,7 @@
                     </p:panelGrid>                    
                 </h:panelGroup>
                 <div class="botonesDialog">                    
-                    <p:commandButton actionListener="#{empleadoController.update}" value="#{bundle.Save}" update="display,:EmpleadoListForm:datalist,:growl" oncomplete="handleSubmit(args, 'EmpleadoEditDialog');"/>
+                    <p:commandButton actionListener="#{empleadoController.update}" value="#{bundle.Save}" update="display,:EmpleadoListForm:datalist,:growl"/>
                     <p:commandButton type="button" value="#{bundle.Cancel}" onclick="PF('EmpleadoEditDialog').hide()"/>
                 </div>
             </h:form>

@@ -3,7 +3,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:p="http://primefaces.org/ui">
 
     <ui:composition>
@@ -12,12 +11,14 @@
             <h:form id="TipoEmpleadoCreateForm">
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{tipoEmpleadoController.selected != null}">
-                        <p:outputLabel value="#{bundle.CreateTipoEmpleadoLabel_tipo}" for="tipo" />
-                        <p:inputText id="tipo" value="#{tipoEmpleadoController.selected.tipo}" title="#{bundle.CreateTipoEmpleadoTitle_tipo}" required="true" requiredMessage="#{bundle.CreateTipoEmpleadoRequiredMessage_tipo}"/>
+                        <p:outputLabel styleClass="#{tipoEmpleadoController.classError()}" value="#{bundle.CreateTipoEmpleadoLabel_tipo}" for="tipo" />
+                        <p:inputText styleClass="#{tipoEmpleadoController.classError()}"  id="tipo" value="#{tipoEmpleadoController.selected.tipo}" title="#{bundle.CreateTipoEmpleadoTitle_tipo}" required="true" requiredMessage="#{bundle.CreateTipoEmpleadoRequiredMessage_tipo}"/>
                     </p:panelGrid>
-                    <p:commandButton actionListener="#{tipoEmpleadoController.create}" value="#{bundle.Save}" update="display,:TipoEmpleadoListForm:datalist,:growl" oncomplete="handleSubmit(args,'TipoEmpleadoCreateDialog');"/>
-                    <p:commandButton value="#{bundle.Cancel}" onclick="TipoEmpleadoCreateDialog.hide()"/>
                 </h:panelGroup>
+                <div class="botonesDialog">
+                    <p:commandButton actionListener="#{tipoEmpleadoController.create}" value="#{bundle.Save}" update="display,:TipoEmpleadoListForm:datalist,:growl"/>
+                    <p:commandButton type="button" value="#{bundle.Cancel}" onclick="PF('TipoEmpleadoCreateDialog').hide()"/>
+                </div>
             </h:form>
         </p:dialog>
 

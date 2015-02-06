@@ -24,21 +24,21 @@
                         <p:outputLabel value="#{bundle.EditClienteLabel_tarifaEspecial}" for="tarifaEspecial" />
                         <p:inputText id="tarifaEspecial" value="#{clienteController.selected.tarifaEspecial}" title="#{bundle.EditClienteTitle_tarifaEspecial}" required="true" requiredMessage="#{bundle.EditClienteRequiredMessage_tarifaEspecial}"/>
                         <p:outputLabel value="#{bundle.EditClienteLabel_ciudad}" for="ciudad" />
-                        <p:selectOneMenu id="ciudad" value="#{clienteController.selected.ciudad}" required="true" requiredMessage="#{bundle.EditClienteRequiredMessage_ciudad}">
+                        <p:selectOneMenu style="width: 155px" id="ciudad" value="#{clienteController.selected.ciudad}" required="true" requiredMessage="#{bundle.EditClienteRequiredMessage_ciudad}">
                             <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>
                             <f:selectItems value="#{ciudadController.itemsAvailableSelectOne}"
                                            var="ciudadItem"
                                            itemValue="#{ciudadItem}"/>
                         </p:selectOneMenu>
                         <p:outputLabel value="#{bundle.EditClienteLabel_empleado}" for="empleado" />
-                        <p:selectOneMenu id="empleado" value="#{clienteController.selected.empleado}" required="true" requiredMessage="#{bundle.EditClienteRequiredMessage_empleado}">
+                        <p:selectOneMenu style="width: 155px" id="empleado" value="#{clienteController.selected.empleado}" required="true" requiredMessage="#{bundle.EditClienteRequiredMessage_empleado}">
                             <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>
                             <f:selectItems value="#{empleadoController.itemsAvailableSelectOne}"
                                            var="empleadoItem"
                                            itemValue="#{empleadoItem}"/>
                         </p:selectOneMenu>
                         <p:outputLabel value="#{bundle.EditClienteLabel_tipo}" for="tipo" />
-                        <p:selectOneMenu id="tipo" value="#{clienteController.selected.tipo}" required="true" requiredMessage="#{bundle.EditClienteRequiredMessage_tipo}">
+                        <p:selectOneMenu style="width: 155px" id="tipo" value="#{clienteController.selected.tipo}" required="true" requiredMessage="#{bundle.EditClienteRequiredMessage_tipo}">
                             <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>
                             <f:selectItems value="#{tipoClienteController.itemsAvailableSelectOne}"
                                            var="tipoItem"
@@ -48,7 +48,7 @@
                 </h:panelGroup>
                 <div class="botonesDialog">
                     <p:commandButton actionListener="#{clienteController.update}" value="#{bundle.Save}" update="display,:ClienteListForm:datalist,:growl" oncomplete="handleSubmit(args, 'ClienteEditDialog');"/>
-                    <p:commandButton type="button" value="#{bundle.Cancel}" onclick="PF('ClienteEditDialog').hide()"/>
+                    <p:commandButton type="button" value="#{bundle.Cancel}" update=":ClienteListForm:datalist,@form" onclick="PF('ClienteEditDialog').hide()"/>
                 </div>
             </h:form>
         </p:dialog>

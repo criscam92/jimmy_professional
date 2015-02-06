@@ -56,7 +56,7 @@ public class CodigoDevolucionController implements Serializable {
     }
 
     public void create() {
-        if (!getFacade().getEntityByCodigo(selected)) {
+        if (!getFacade().getEntityByCodigoOrTipo(selected)) {
             persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageCodigoDevolucion", "CreateSuccessM"}));
             if (!JsfUtil.isValidationFailed()) {
                 items = null;    // Invalidate list of items to trigger re-query.
@@ -68,7 +68,7 @@ public class CodigoDevolucionController implements Serializable {
     }
 
     public void update() {
-        if (!getFacade().getEntityByCodigo(selected)) {
+        if (!getFacade().getEntityByCodigoOrTipo(selected)) {
             persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessageCodigoDevolucion", "UpdateSuccessM"}));
         }else{
             JsfUtil.addErrorMessage(JsfUtil.getMessageBundle("MessageEmpleadoCodigoExist").replaceAll("%cod%", selected.getCodigo()));

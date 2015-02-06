@@ -24,7 +24,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import jp.entidades.auxiliar.Codificable;
 
 @Entity
-@Table(catalog = "jimmy_professional", schema = "public", uniqueConstraints = {
+@Table(name = "empleado", catalog = "jimmy_professional", schema = "public", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"codigo"})})
 @XmlRootElement
 @NamedQueries({
@@ -34,6 +34,7 @@ import jp.entidades.auxiliar.Codificable;
     @NamedQuery(name = "Empleado.findByCodigo", query = "SELECT e FROM Empleado e WHERE e.codigo = :codigo"),
     @NamedQuery(name = "Empleado.findByTelefonos", query = "SELECT e FROM Empleado e WHERE e.telefonos = :telefonos")})
 public class Empleado implements Serializable, Codificable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -61,7 +62,7 @@ public class Empleado implements Serializable, Codificable {
     private List<Factura> facturaList;
     @JoinColumn(name = "tipo", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    private TipoEmpleado tipo;
+    private TipoEmpleado tipoEmpleado;
 
     public Empleado() {
     }
@@ -137,12 +138,12 @@ public class Empleado implements Serializable, Codificable {
         this.facturaList = facturaList;
     }
 
-    public TipoEmpleado getTipo() {
-        return tipo;
+    public TipoEmpleado getTipoEmpleado() {
+        return tipoEmpleado;
     }
 
-    public void setTipo(TipoEmpleado tipo) {
-        this.tipo = tipo;
+    public void setTipoEmpleado(TipoEmpleado tipoEmpleado) {
+        this.tipoEmpleado = tipoEmpleado;
     }
 
     @Override
@@ -166,5 +167,9 @@ public class Empleado implements Serializable, Codificable {
     public String toString() {
         return codigo + " - " + nombre;
     }
-    
+
+    @Override
+    public String getTipo() {
+        return null;
+    }
 }

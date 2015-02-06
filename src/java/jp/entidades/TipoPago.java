@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package jp.entidades;
 
 import java.io.Serializable;
@@ -24,10 +19,6 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-/**
- *
- * @author CRISTIAN
- */
 @Entity
 @Table(name = "tipo_pago", catalog = "jimmy_professional", schema = "public")
 @XmlRootElement
@@ -102,10 +93,7 @@ public class TipoPago implements Serializable {
             return false;
         }
         TipoPago other = (TipoPago) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return !((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)));
     }
 
     @Override
