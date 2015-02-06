@@ -19,7 +19,7 @@
                         <p:outputLabel value="#{bundle.EditEmpleadoLabel_telefonos}" for="telefonos" />
                         <p:inputText id="telefonos" value="#{empleadoController.selected.telefonos}" title="#{bundle.EditEmpleadoTitle_telefonos}" />
                         <p:outputLabel value="#{bundle.EditEmpleadoLabel_tipo}" for="tipo" />
-                        <p:selectOneMenu id="tipo" value="#{empleadoController.selected.tipo}" required="true" requiredMessage="#{bundle.EditEmpleadoRequiredMessage_tipo}">
+                        <p:selectOneMenu id="tipo" value="#{empleadoController.selected.tipoEmpledo}" required="true" requiredMessage="#{bundle.EditEmpleadoRequiredMessage_tipo}">
                             <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>
                             <f:selectItems value="#{tipoEmpleadoController.itemsAvailableSelectOne}"
                                            var="tipoItem"

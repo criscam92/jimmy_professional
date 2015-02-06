@@ -14,10 +14,12 @@
                     <p:panelGrid columns="2" rendered="#{tipoEmpleadoController.selected != null}">
                         <p:outputLabel value="#{bundle.EditTipoEmpleadoLabel_tipo}" for="tipo" />
                         <p:inputText id="tipo" value="#{tipoEmpleadoController.selected.tipo}" title="#{bundle.EditTipoEmpleadoTitle_tipo}" required="true" requiredMessage="#{bundle.EditTipoEmpleadoRequiredMessage_tipo}"/>
-                    </p:panelGrid>
-                    <p:commandButton actionListener="#{tipoEmpleadoController.update}" value="#{bundle.Save}" update="display,:TipoEmpleadoListForm:datalist,:growl" oncomplete="handleSubmit(args, 'TipoEmpleadoEditDialog');"/>
-                    <p:commandButton value="#{bundle.Cancel}" onclick="TipoEmpleadoEditDialog.hide()"/>
+                    </p:panelGrid>                    
                 </h:panelGroup>
+                <div class="botonesDialog">
+                    <p:commandButton actionListener="#{tipoEmpleadoController.update}" value="#{bundle.Save}" update="display,:TipoEmpleadoListForm:datalist,:growl" oncomplete="handleSubmit(args, 'TipoEmpleadoEditDialog');"/>
+                    <p:commandButton type="button" value="#{bundle.Cancel}" onclick="PF('TipoEmpleadoEditDialog').hide()"/>
+                </div>
             </h:form>
         </p:dialog>
 

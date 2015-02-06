@@ -54,7 +54,7 @@
                 </h:panelGroup>
                 <div class="botonesDialog">
                     <p:commandButton actionListener="#{clienteController.create}" value="#{bundle.Save}" update="display,:ClienteListForm:datalist,:growl" oncomplete="handleSubmit(args,'ClienteCreateDialog');"/>
-                    <p:commandButton value="#{bundle.Cancel}" onclick="ClienteCreateDialog.hide()"/>
+                    <p:commandButton type="button" value="#{bundle.Cancel}" update=":ClienteListForm:datalist,@form" onclick="PF('ClienteCreateDialog').hide()"/>
                 </div>
             </h:form>
         </p:dialog>

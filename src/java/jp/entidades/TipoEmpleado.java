@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package jp.entidades;
 
 import java.io.Serializable;
@@ -23,11 +18,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import jp.entidades.auxiliar.Codificable;
 
-/**
- *
- * @author CRISTIAN
- */
 @Entity
 @Table(name = "tipo_empleado", catalog = "jimmy_professional", schema = "public")
 @XmlRootElement
@@ -35,7 +27,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "TipoEmpleado.findAll", query = "SELECT t FROM TipoEmpleado t"),
     @NamedQuery(name = "TipoEmpleado.findById", query = "SELECT t FROM TipoEmpleado t WHERE t.id = :id"),
     @NamedQuery(name = "TipoEmpleado.findByTipo", query = "SELECT t FROM TipoEmpleado t WHERE t.tipo = :tipo")})
-public class TipoEmpleado implements Serializable {
+public class TipoEmpleado implements Serializable, Codificable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,7 +40,7 @@ public class TipoEmpleado implements Serializable {
     @Size(min = 1, max = 100)
     @Column(nullable = false, length = 100)
     private String tipo;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "tipo", fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "tipoEmpleado", fetch = FetchType.LAZY)
     private List<Empleado> empleadoList;
 
     public TipoEmpleado() {
@@ -62,6 +55,7 @@ public class TipoEmpleado implements Serializable {
         this.tipo = tipo;
     }
 
+    @Override
     public Long getId() {
         return id;
     }
@@ -70,6 +64,7 @@ public class TipoEmpleado implements Serializable {
         this.id = id;
     }
 
+    @Override
     public String getTipo() {
         return tipo;
     }
@@ -101,15 +96,17 @@ public class TipoEmpleado implements Serializable {
             return false;
         }
         TipoEmpleado other = (TipoEmpleado) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return !((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)));
     }
 
     @Override
     public String toString() {
         return this.getTipo();
     }
-    
+
+    @Override
+    public String getCodigo() {
+        return null;
+    }
+
 }

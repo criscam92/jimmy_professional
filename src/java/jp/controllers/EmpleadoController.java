@@ -66,7 +66,7 @@ public class EmpleadoController implements Serializable {
     }
 
     public void create() {
-        if (!getFacade().getEntityByCodigo(selected)) {
+        if (!getFacade().getEntityByCodigoOrTipo(selected)) {
             persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageEmpleado", "CreateSuccessM"}));
             if (!JsfUtil.isValidationFailed()) {
                 selected = null; // Remove selection
@@ -81,7 +81,7 @@ public class EmpleadoController implements Serializable {
     }
 
     public void update() {
-        if (!getFacade().getEntityByCodigo(selected)) {
+        if (!getFacade().getEntityByCodigoOrTipo(selected)) {
             persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessageEmpleado", "UpdateSuccessM"}));
             setClassError("");
             RequestContext.getCurrentInstance().execute("PF('EmpleadoCreateDialog').hide()");
@@ -92,7 +92,6 @@ public class EmpleadoController implements Serializable {
     }
 
     public void destroy() {
-        System.out.println("HOLA");
         persist(PersistAction.DELETE, JsfUtil.getMessageBundle(new String[]{"MessageEmpleado", "DeleteSuccessM"}));
         if (!JsfUtil.isValidationFailed()) {
             selected = null; // Remove selection
@@ -183,23 +182,4 @@ public class EmpleadoController implements Serializable {
             }
         }
     }
-
-    public void seleccionarEliminar(Empleado emp) {
-        selected = emp;
-    }
-
-    public void deseleccionar() {
-        selected = new Empleado();
-    }
-
-    public void cancel() {
-        setClassError("");
-    }
-//    public void validateCodigo(){
-//        String codigoTMP = selected.getCodigo();
-//        if (getFacade().getEmpleadoByCodigo(selected)) {
-//            JsfUtil.addErrorMessage();
-//        }
-//        
-//    }
 }

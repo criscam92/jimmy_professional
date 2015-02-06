@@ -16,9 +16,11 @@
                         <h:outputText value="#{tipoEmpleadoController.selected.id}" title="#{bundle.ViewTipoEmpleadoTitle_id}"/>
                         <h:outputText value="#{bundle.ViewTipoEmpleadoLabel_tipo}"/>
                         <h:outputText value="#{tipoEmpleadoController.selected.tipo}" title="#{bundle.ViewTipoEmpleadoTitle_tipo}"/>
-                    </p:panelGrid>
-                    <p:commandButton value="#{bundle.Close}" onclick="TipoEmpleadoViewDialog.hide()"/>
+                    </p:panelGrid>                   
                 </h:panelGroup>
+                <div class="botonesDialog">
+                    <p:commandButton value="#{bundle.Close}" onclick="TipoEmpleadoViewDialog.hide()"/>
+                </div>
             </h:form>
         </p:dialog>
 
