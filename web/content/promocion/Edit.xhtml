@@ -14,6 +14,8 @@
                     <p:panelGrid columns="2" rendered="#{promocionController.selected != null}">
                         <p:outputLabel value="#{bundle.EditPromocionLabel_descripcion}" for="descripcion" />
                         <p:inputText id="descripcion" value="#{promocionController.selected.descripcion}" title="#{bundle.EditPromocionTitle_descripcion}" required="true" requiredMessage="#{bundle.EditPromocionRequiredMessage_descripcion}"/>
+                        <p:outputLabel value="#{bundle.EditPromocionLabel_valor}" for="valor" />
+                        <p:inputText id="valor" value="#{promocionController.selected.valor}" title="#{bundle.EditPromocionTitle_descripcion}" required="true" requiredMessage="#{bundle.EditPromocionRequiredMessage_descripcion}"/>
                     </p:panelGrid>
                     <p:commandButton actionListener="#{promocionController.update}" value="#{bundle.Save}" update="display,:PromocionListForm:datalist,:growl" oncomplete="handleSubmit(args, 'PromocionEditDialog');"/>
                     <p:commandButton value="#{bundle.Cancel}" onclick="PF('PromocionEditDialog').hide()"/>

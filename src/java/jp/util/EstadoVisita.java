@@ -5,8 +5,9 @@ import java.util.Map;
 
 public enum EstadoVisita {
 
-    REALIZADA(0, "Realizada"),
-    PENDIENTE(1, "Pendiente");
+    PENDIENTE(0, "Pendiente"),
+    REALIZADA(1, "Realizada"),
+    CANCELADA(2, "Cancelada");
 
     private int valor;
     private String detalle;

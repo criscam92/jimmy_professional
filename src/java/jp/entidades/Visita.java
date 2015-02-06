@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package jp.entidades;
 
 import java.io.Serializable;
@@ -29,10 +24,6 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-/**
- *
- * @author CRISTIAN
- */
 @Entity
 @Table(catalog = "jimmy_professional", schema = "public")
 @XmlRootElement
@@ -50,7 +41,6 @@ public class Visita implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @NotNull
     @Column(nullable = false)
     private Long id;
     @Basic(optional = false)
@@ -59,9 +49,8 @@ public class Visita implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date fecha;
     @Basic(optional = false)
-    @NotNull
     @Size(min = 1, max = 200)
-    @Column(name = "observaciones_cliente", nullable = false, length = 200)
+    @Column(name = "observaciones_cliente", nullable = true, length = 200)
     private String observacionesCliente;
     @Column(name = "calificacion_servicio")
     private Integer calificacionServicio;
@@ -71,6 +60,9 @@ public class Visita implements Serializable {
     @NotNull
     @Column(name = "cumplio_expectativas", nullable = false)
     private boolean cumplioExpectativas;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "estado", nullable = false)
     private Integer estado;
     @JoinColumn(name = "cliente", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)

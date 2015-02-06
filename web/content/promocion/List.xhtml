@@ -44,7 +44,13 @@
                         <f:facet name="header">
                             <h:outputText value="#{bundle.ListPromocionTitle_descripcion}"/>
                         </f:facet>
-                        <h:outputText value="#{item.descripcion}"/>
+                        <h:outputText value="#{item.descripcion}"/>                        
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.ListPromocionTitle_valor}"/>
+                        </f:facet>
+                        <h:outputText value="#{item.valor}"/>
                     </p:column>
                 </p:dataTable>
             </h:form>

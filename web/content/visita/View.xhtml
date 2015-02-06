@@ -19,19 +19,19 @@
                         <h:outputText value="#{bundle.ViewVisitaLabel_observacionesCliente}"/>
                         <h:outputText value="#{visitaController.selected.observacionesCliente}" title="#{bundle.ViewVisitaTitle_observacionesCliente}"/>
                         <h:outputText value="#{bundle.ViewVisitaLabel_calificacionServicio}"/>
-                        <h:outputText value="#{visitaController.selected.calificacionServicio}" title="#{bundle.ViewVisitaTitle_calificacionServicio}"/>
+                        <p:rating value="#{visitaController.selected.calificacionServicio}" readonly="true"/>
                         <h:outputText value="#{bundle.ViewVisitaLabel_puntualidadServicio}"/>
-                        <h:outputText value="#{visitaController.selected.puntualidadServicio}" title="#{bundle.ViewVisitaTitle_puntualidadServicio}"/>
+                        <p:rating value="#{visitaController.selected.puntualidadServicio}" readonly="true"/>
                         <h:outputText value="#{bundle.ViewVisitaLabel_cumplioExpectativas}"/>
-                        <p:selectBooleanCheckbox value="#{visitaController.selected.cumplioExpectativas}" disabled="true"/>
+                        <h:outputText value="#{visitaController.getExpectativasVisita(visitaController.selected.cumplioExpectativas)}"/>
                         <h:outputText value="#{bundle.ViewVisitaLabel_estado}"/>
-                        <h:outputText value="#{visitaController.selected.estado}" title="#{bundle.ViewVisitaTitle_estado}"/>
+                        <h:outputText value="#{visitaController.getEstadoVisita(visitaController.selected.estado)}" title="#{bundle.ViewVisitaTitle_estado}"/>
                         <h:outputText value="#{bundle.ViewVisitaLabel_cliente}"/>
-                        <h:outputText value="#{visitaController.selected.cliente}" title="#{bundle.ViewVisitaTitle_cliente}"/>
+                        <h:outputText value="#{visitaController.selected.cliente.toString()}" title="#{bundle.ViewVisitaTitle_cliente}"/>
                         <h:outputText value="#{bundle.ViewVisitaLabel_empleado}"/>
-                        <h:outputText value="#{visitaController.selected.empleado}" title="#{bundle.ViewVisitaTitle_empleado}"/>
+                        <h:outputText value="#{visitaController.selected.empleado.toString()}" title="#{bundle.ViewVisitaTitle_empleado}"/>
                     </p:panelGrid>
-                    <p:commandButton value="#{bundle.Close}" onclick="VisitaViewDialog.hide()"/>
+                    <p:commandButton value="#{bundle.Close}" type="button" onclick="PF('VisitaViewDialog').hide()"/>
                 </h:panelGroup>
             </h:form>
         </p:dialog>

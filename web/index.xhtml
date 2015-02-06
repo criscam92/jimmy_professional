@@ -59,7 +59,7 @@
                                 <p:menuitem value="Tipos de Pago" outcome="/content/tipoPago/List.xhtml" />
                             </p:submenu>
 
-                            <p:menuitem value="Formatos de Visitas" outcome="/content/visita/List.xhtml" />
+                            <p:menuitem value="Programación de Visitas" outcome="/content/visita/List.xhtml" />
                             <p:menuitem value="Registros de Visitas" outcome="/content/visitaProducto/List.xhtml" />
                             <p:menuitem value="Usuarios" outcome="/content/usuario/List.xhtml" />
                         </p:submenu>
@@ -67,12 +67,12 @@
                 </h:form>
             </p:layoutUnit>
 
-            <p:layoutUnit styleClass="contenido"  position="center">
-                <ui:insert name="body"/>
-            </p:layoutUnit>
-
             <p:layoutUnit position="south" size="60">
                 <ui:insert name="footer"/>
+            </p:layoutUnit>
+
+            <p:layoutUnit styleClass="contenido" position="center">
+                <ui:insert name="body"/>
             </p:layoutUnit>
 
         </p:layout>
