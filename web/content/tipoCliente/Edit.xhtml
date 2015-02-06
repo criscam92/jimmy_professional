@@ -16,7 +16,7 @@
                     </p:panelGrid>                    
                 </h:panelGroup>
                 <div class="botonesDialog">
-                    <p:commandButton actionListener="#{tipoClienteController.update}" value="#{bundle.Save}" update="display,:TipoClienteListForm:datalist,:growl" oncomplete="handleSubmit(args, 'TipoClienteEditDialog');"/>
+                    <p:commandButton actionListener="#{tipoClienteController.update}" value="#{bundle.Save}" update="display,:TipoClienteListForm:datalist,:growl"/>
                     <p:commandButton type="button" value="#{bundle.Cancel}" onclick="PF('TipoClienteEditDialog').hide()"/>
                 </div>
             </h:form>

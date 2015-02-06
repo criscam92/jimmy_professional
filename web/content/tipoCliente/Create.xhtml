@@ -10,12 +10,12 @@
             <h:form id="TipoClienteCreateForm">
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{tipoClienteController.selected != null}">
-                        <p:outputLabel value="#{bundle.CreateTipoClienteLabel_tipo}" for="tipo" />
-                        <p:inputText id="tipo" value="#{tipoClienteController.selected.tipo}" title="#{bundle.CreateTipoClienteTitle_tipo}" required="true" requiredMessage="#{bundle.CreateTipoClienteRequiredMessage_tipo}"/>
+                        <p:outputLabel styleClass="#{tipoClienteController.classError()}" value="#{bundle.CreateTipoClienteLabel_tipo}" for="tipo" />
+                        <p:inputText styleClass="#{tipoClienteController.classError()}" id="tipo" value="#{tipoClienteController.selected.tipo}" title="#{bundle.CreateTipoClienteTitle_tipo}" required="true" requiredMessage="#{bundle.CreateTipoClienteRequiredMessage_tipo}"/>
                     </p:panelGrid>                    
                 </h:panelGroup>
                 <div class="botonesDialog">
-                    <p:commandButton actionListener="#{tipoClienteController.create}" value="#{bundle.Save}" update="display,:TipoClienteListForm:datalist,:growl" oncomplete="handleSubmit(args,'TipoClienteCreateDialog');"/>
+                    <p:commandButton actionListener="#{tipoClienteController.create}" value="#{bundle.Save}" update="display,:TipoClienteListForm:datalist,:growl"/>
                     <p:commandButton type="button" value="#{bundle.Cancel}" onclick="PF('TipoClienteCreateDialog').hide()"/>
                 </div>
             </h:form>
