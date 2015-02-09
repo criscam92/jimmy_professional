@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.faces.bean.ManagedBean;
@@ -18,6 +19,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import jp.entidades.VisitaProducto;
 import jp.facades.VisitaFacade;
 import jp.util.EstadoVisita;
 
@@ -28,10 +30,16 @@ public class VisitaController implements Serializable {
     @EJB
     private jp.facades.VisitaFacade ejbFacade;
     private List<Visita> items = null;
+    private VisitaProducto visitaProducto;
     
     private Visita selected;
 
     public VisitaController() {        
+    }
+    
+    @PostConstruct
+    public void init(){
+        visitaProducto = new VisitaProducto();
     }
 
     public Visita getSelected() {
@@ -40,6 +48,14 @@ public class VisitaController implements Serializable {
 
     public void setSelected(Visita selected) {
         this.selected = selected;
+    }
+
+    public VisitaProducto getVisitaProducto() {
+        return visitaProducto;
+    }
+
+    public void setVisitaProducto(VisitaProducto visitaProducto) {
+        this.visitaProducto = visitaProducto;
     }
 
     protected void setEmbeddableKeys() {

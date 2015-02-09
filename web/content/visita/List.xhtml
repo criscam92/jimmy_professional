@@ -90,11 +90,11 @@
                         </f:facet>
                         <h:outputText value="#{item.empleado.toString()}"/>
                     </p:column>                    
-                    <p:column>
+                    <p:column style="text-align: center;">
                         <f:facet name="header">
-                            <h:outputText value="hh"/>
+                            <h:outputText value="Acciones"/>
                         </f:facet>
-                        <p:commandButton id="productos" value="PRODUCTOS" update=":formProductos" oncomplete="PF('ProductosByVisitaDialog').show()"/>
+                        <p:commandButton id="productos" value="Realizar" update=":formProductos" oncomplete="PF('ProductosByVisitaDialog').show()"/>
                     </p:column>
                 </p:dataTable>
             </h:form>

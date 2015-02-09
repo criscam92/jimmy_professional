@@ -14,16 +14,16 @@
 
                         <p:outputLabel value="#{bundle.CreateProductoLabel_producto}"/>
                         
-                        <p:selectOneMenu id="producto" value="#{visitaProductoController.selected.producto}" required="true" requiredMessage="#{bundle.EditProductoRequiredMessage}">
+                        <p:selectOneMenu id="producto" value="#{visitaController.visitaProducto.producto}" required="true" requiredMessage="#{bundle.EditProductoRequiredMessage}">
                             <f:selectItem  itemLabel="#{bundle.SelectOneMessage}"/>
                             <f:selectItems value="#{productoController.itemsAvailableSelectOne}" var="productoItem" itemValue="#{productoItem}"/>
                         </p:selectOneMenu>
 
                         <p:outputLabel value="#{bundle.CreateCantidadLabel_producto}" for="cantidad" />
-                        <p:inputText id="cantidad" value="#{visitaProductoController.selected.cantidad}"/>
+                        <p:inputText id="cantidad" value="#{visitaController.visitaProducto.cantidad}"/>
 
-                        <p:outputLabel value="#{bundle.CreateCantidadLabel_producto}" for="detalle" />
-                        <p:inputTextarea id="detalle" value="#{visitaProductoController.selected.cantidad}"/>
+                        <p:outputLabel value="#{bundle.CreateObservacionLabel_producto}" for="observacion" />
+                        <p:inputTextarea id="observacion" value="#{visitaController.visitaProducto.observacion}"/>
                     </p:panelGrid>
                 </h:panelGroup>
             </h:form>
