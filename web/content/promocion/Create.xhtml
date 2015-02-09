@@ -3,7 +3,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:p="http://primefaces.org/ui">
 
     <ui:composition>
@@ -17,9 +16,11 @@
                         <p:outputLabel value="#{bundle.CreatePromocionLabel_valor}" for="valor" />
                         <p:inputText id="valor" value="#{promocionController.selected.valor}" title="#{bundle.CreatePromocionTitle_valor}" required="true" requiredMessage="#{bundle.CreatePromocionRequiredMessage_valor}"/>
                     </p:panelGrid>
+                </h:panelGroup>
+                <div class="botonesDialog">
                     <p:commandButton actionListener="#{promocionController.create}" value="#{bundle.Save}" update="display,:PromocionListForm:datalist,:growl" oncomplete="handleSubmit(args,'PromocionCreateDialog');"/>
                     <p:commandButton value="#{bundle.Cancel}" type="button" onclick="PF('PromocionCreateDialog').hide()"/>
-                </h:panelGroup>
+                </div>
             </h:form>
         </p:dialog>
 

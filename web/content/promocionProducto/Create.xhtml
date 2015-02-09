@@ -27,9 +27,11 @@
                                            itemValue="#{promocionItem}"/>
                         </p:selectOneMenu>
                     </p:panelGrid>
+                </h:panelGroup>
+                <div class="botonesDialog">
                     <p:commandButton actionListener="#{promocionProductoController.create}" value="#{bundle.Save}" update="display,:PromocionProductoListForm:datalist,:growl" oncomplete="handleSubmit(args,'PromocionProductoCreateDialog');"/>
                     <p:commandButton value="#{bundle.Cancel}" type="button" onclick="PF('PromocionProductoCreateDialog').hide()"/>
-                </h:panelGroup>
+                </div>
             </h:form>
         </p:dialog>
 

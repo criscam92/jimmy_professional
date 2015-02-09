@@ -28,10 +28,12 @@
                                            var="promocionItem"
                                            itemValue="#{promocionItem}"/>
                         </p:selectOneMenu>
-                    </p:panelGrid>
-                    <p:commandButton actionListener="#{promocionProductoController.update}" value="#{bundle.Save}" update="display,:PromocionProductoListForm:datalist,:growl" oncomplete="handleSubmit(args, 'PromocionProductoEditDialog');"/>
-                    <p:commandButton value="#{bundle.Cancel}" onclick="PromocionProductoEditDialog.hide()"/>
+                    </p:panelGrid>                    
                 </h:panelGroup>
+                <div class="botonesDialog">
+                    <p:commandButton actionListener="#{promocionProductoController.update}" value="#{bundle.Save}" update="display,:PromocionProductoListForm:datalist,:growl" oncomplete="handleSubmit(args, 'PromocionProductoEditDialog');"/>
+                    <p:commandButton type="button" value="#{bundle.Cancel}" onclick="PF('PromocionProductoEditDialog').hide()"/>
+                </div>
             </h:form>
         </p:dialog>
 

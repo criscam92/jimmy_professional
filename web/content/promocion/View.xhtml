@@ -3,7 +3,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:p="http://primefaces.org/ui">
 
     <ui:composition>
@@ -18,9 +17,11 @@
                         <h:outputText value="#{promocionController.selected.descripcion}" title="#{bundle.ViewPromocionTitle_descripcion}"/>
                         <h:outputText value="#{bundle.ViewPromocionLabel_valor}"/>
                         <h:outputText value="#{promocionController.selected.valor}" title="#{bundle.ViewPromocionTitle_valor}"/>
-                    </p:panelGrid>
-                    <p:commandButton value="#{bundle.Close}" onclick="PromocionViewDialog.hide()"/>
+                    </p:panelGrid>                    
                 </h:panelGroup>
+                <div class="botonesDialog">
+                    <p:commandButton type="button" value="#{bundle.Close}" onclick="PF('PromocionViewDialog').hide()"/>
+                </div>
             </h:form>
         </p:dialog>
 
