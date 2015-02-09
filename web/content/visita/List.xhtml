@@ -90,18 +90,13 @@
                         </f:facet>
                         <h:outputText value="#{item.empleado.toString()}"/>
                     </p:column>
-                    <p:column style="text-align: center">
-                        <f:facet name="header">
-                            Acciones
-                        </f:facet>
-                        <p:commandButton icon="ui-icon-check" value="Realizar"/>
-                    </p:column>
                 </p:dataTable>
             </h:form>
 
             <ui:include src="Create.xhtml"/>
             <ui:include src="Edit.xhtml"/>
             <ui:include src="View.xhtml"/>
+            <ui:include src="ProductosByVisita.xhtml"/>
         </ui:define>
     </ui:composition>
 
