@@ -41,7 +41,7 @@ public class PromocionProducto implements Serializable {
     @Column(nullable = false)
     private int cantidad;
 
-    public PromocionProducto() {
+    public PromocionProducto() {        
     }
 
     public PromocionProducto(Long id) {

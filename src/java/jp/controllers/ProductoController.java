@@ -3,7 +3,6 @@ package jp.controllers;
 import jp.entidades.Producto;
 import jp.util.JsfUtil;
 import jp.util.JsfUtil.PersistAction;
-
 import java.io.Serializable;
 import java.util.List;
 import java.util.ResourceBundle;

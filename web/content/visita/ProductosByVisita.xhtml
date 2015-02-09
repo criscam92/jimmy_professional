@@ -13,11 +13,10 @@
                     <p:panelGrid columns="2">
 
                         <p:outputLabel value="#{bundle.CreateProductoLabel_producto}"/>
+                        
                         <p:selectOneMenu id="producto" value="#{visitaProductoController.selected.producto}" required="true" requiredMessage="#{bundle.EditProductoRequiredMessage}">
                             <f:selectItem  itemLabel="#{bundle.SelectOneMessage}"/>
-                            <f:selectItems value="#{productoController.itemsAvailableSelectOne}"
-                                           var="productoItem"
-                                           itemValue="#{productoItem}"/>
+                            <f:selectItems value="#{productoController.itemsAvailableSelectOne}" var="productoItem" itemValue="#{productoItem}"/>
                         </p:selectOneMenu>
 
                         <p:outputLabel value="#{bundle.CreateCantidadLabel_producto}" for="cantidad" />
@@ -31,4 +30,3 @@
         </p:dialog>
     </ui:composition>
 </html>
-
