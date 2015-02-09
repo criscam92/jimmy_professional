@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package jp.entidades;
 
 import java.io.Serializable;
@@ -21,17 +16,13 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- *
- * @author CRISTIAN
- */
 @Entity
 @Table(name = "promocion_producto", catalog = "jimmy_professional", schema = "public")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "PromocionProducto.findAll", query = "SELECT p FROM PromocionProducto p"),
     @NamedQuery(name = "PromocionProducto.findById", query = "SELECT p FROM PromocionProducto p WHERE p.id = :id"),
-    @NamedQuery(name = "PromocionProducto.findByValor", query = "SELECT p FROM PromocionProducto p WHERE p.valor = :valor")})
+    @NamedQuery(name = "PromocionProducto.findByCantidad", query = "SELECT p FROM PromocionProducto p WHERE p.cantidad = :cantidad")})
 public class PromocionProducto implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -39,16 +30,16 @@ public class PromocionProducto implements Serializable {
     @Basic(optional = false)
     @Column(nullable = false)
     private Long id;
-    @Basic(optional = false)
-    @NotNull
-    @Column(nullable = false)
-    private double valor;
     @JoinColumn(name = "producto", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Producto producto;
     @JoinColumn(name = "promocion", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Promocion promocion;
+    @Basic(optional = false)
+    @NotNull
+    @Column(nullable = false)
+    private int cantidad;
 
     public PromocionProducto() {
     }
@@ -57,9 +48,9 @@ public class PromocionProducto implements Serializable {
         this.id = id;
     }
 
-    public PromocionProducto(Long id, double valor) {
+    public PromocionProducto(Long id, int cantidad) {
         this.id = id;
-        this.valor = valor;
+        this.cantidad = cantidad;
     }
 
     public Long getId() {
@@ -68,14 +59,6 @@ public class PromocionProducto implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public double getValor() {
-        return valor;
-    }
-
-    public void setValor(double valor) {
-        this.valor = valor;
     }
 
     public Producto getProducto() {
@@ -92,6 +75,14 @@ public class PromocionProducto implements Serializable {
 
     public void setPromocion(Promocion promocion) {
         this.promocion = promocion;
+    }
+
+    public int getCantidad() {
+        return cantidad;
+    }
+
+    public void setCantidad(int cantidad) {
+        this.cantidad = cantidad;
     }
 
     @Override

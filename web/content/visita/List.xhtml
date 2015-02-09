@@ -30,12 +30,12 @@
 
                     <f:facet name="header">
                         <div id="titulo">
-                            Formato de Visitas
+                            Programación de Visitas
                         </div>
                         <div id="acciones">
                             <p:commandButton id="createButton" icon="ui-icon-plus"   value="#{bundle.Create}" actionListener="#{visitaController.prepareCreate}" update=":VisitaCreateForm" oncomplete="PF('VisitaCreateDialog').show()"/>
                             <p:commandButton id="viewButton"   icon="ui-icon-search" value="#{bundle.View}" update=":VisitaViewForm" oncomplete="PF('VisitaViewDialog').show()" disabled="#{empty visitaController.selected}"/>
-                            <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":VisitaEditForm" oncomplete="PF('VisitaEditDialog').show()" disabled="#{empty visitaController.selected}"/>
+                            <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":VisitaEditForm,:formVisitas" oncomplete="PF('VisitaEditDialog').show()" disabled="#{empty visitaController.selected}"/>
                             <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{visitaController.destroy}" update=":growl,datalist" disabled="#{empty visitaController.selected}"/>
                         </div>
                     </f:facet>
@@ -58,38 +58,44 @@
                         <f:facet name="header">
                             <h:outputText value="#{bundle.ListVisitaTitle_calificacionServicio}"/>
                         </f:facet>
-                        <h:outputText value="#{item.calificacionServicio}"/>
+                        <p:rating value="#{item.calificacionServicio}" readonly="true"/>
                     </p:column>
                     <p:column>
                         <f:facet name="header">
                             <h:outputText value="#{bundle.ListVisitaTitle_puntualidadServicio}"/>
                         </f:facet>
-                        <h:outputText value="#{item.puntualidadServicio}"/>
+                        <p:rating value="#{item.puntualidadServicio}" readonly="true"/>
                     </p:column>
                     <p:column>
                         <f:facet name="header">
                             <h:outputText value="#{bundle.ListVisitaTitle_cumplioExpectativas}"/>
                         </f:facet>
-                        <p:selectBooleanCheckbox value="#{item.cumplioExpectativas}" disabled="true"/>
+                        <h:outputText value="#{visitaController.getExpectativasVisita(item.cumplioExpectativas)}"/>
                     </p:column>
                     <p:column>
                         <f:facet name="header">
                             <h:outputText value="#{bundle.ListVisitaTitle_estado}"/>
                         </f:facet>
-                        <h:outputText value="#{item.estado}"/>
+                        <h:outputText value="#{visitaController.getEstadoVisita(item.estado)}"/>
                     </p:column>
                     <p:column>
                         <f:facet name="header">
                             <h:outputText value="#{bundle.ListVisitaTitle_cliente}"/>
                         </f:facet>
-                        <h:outputText value="#{item.cliente}"/>
+                        <h:outputText value="#{item.cliente.toString()}"/>
                     </p:column>
                     <p:column>
                         <f:facet name="header">
                             <h:outputText value="#{bundle.ListVisitaTitle_empleado}"/>
                         </f:facet>
-                        <h:outputText value="#{item.empleado}"/>
-                    </p:column>                        
+                        <h:outputText value="#{item.empleado.toString()}"/>
+                    </p:column>
+                    <p:column style="text-align: center">
+                        <f:facet name="header">
+                            Acciones
+                        </f:facet>
+                        <p:commandButton icon="ui-icon-check" value="Realizar"/>
+                    </p:column>
                 </p:dataTable>
             </h:form>
 

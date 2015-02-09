@@ -14,6 +14,8 @@
                     <p:panelGrid columns="2" rendered="#{promocionController.selected != null}">
                         <p:outputLabel value="#{bundle.CreatePromocionLabel_descripcion}" for="descripcion" />
                         <p:inputText id="descripcion" value="#{promocionController.selected.descripcion}" title="#{bundle.CreatePromocionTitle_descripcion}" required="true" requiredMessage="#{bundle.CreatePromocionRequiredMessage_descripcion}"/>
+                        <p:outputLabel value="#{bundle.CreatePromocionLabel_valor}" for="valor" />
+                        <p:inputText id="valor" value="#{promocionController.selected.valor}" title="#{bundle.CreatePromocionTitle_valor}" required="true" requiredMessage="#{bundle.CreatePromocionRequiredMessage_valor}"/>
                     </p:panelGrid>
                     <p:commandButton actionListener="#{promocionController.create}" value="#{bundle.Save}" update="display,:PromocionListForm:datalist,:growl" oncomplete="handleSubmit(args,'PromocionCreateDialog');"/>
                     <p:commandButton value="#{bundle.Cancel}" type="button" onclick="PF('PromocionCreateDialog').hide()"/>

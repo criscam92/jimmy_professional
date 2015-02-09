@@ -5,6 +5,8 @@ import jp.util.JsfUtil;
 import jp.util.JsfUtil.PersistAction;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -17,7 +19,9 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import jp.entidades.VisitaProducto;
 import jp.facades.VisitaFacade;
+import jp.util.EstadoVisita;
 
 @ManagedBean(name = "visitaController")
 @SessionScoped
@@ -26,11 +30,10 @@ public class VisitaController implements Serializable {
     @EJB
     private jp.facades.VisitaFacade ejbFacade;
     private List<Visita> items = null;
+    
     private Visita selected;
 
-
-
-    public VisitaController() {
+    public VisitaController() {        
     }
 
     public Visita getSelected() {
@@ -58,18 +61,28 @@ public class VisitaController implements Serializable {
     }
 
     public void create() {
-        persist(PersistAction.CREATE, ResourceBundle.getBundle("languages/Bundle").getString("VisitaCreated"));
+        /*System.out.println("Fecha-> "+selected.getFecha());
+         System.out.println("Observaciones-> "+selected.getObservacionesCliente());
+         System.out.println("calificacion servicio-> "+selected.getCalificacionServicio());
+         System.out.println("Puntualidad-> "+selected.getPuntualidadServicio());
+         System.out.println("Cumplio expectativas?-> "+selected.getCumplioExpectativas());
+         System.out.println("Estado-> "+selected.getEstado());
+         System.out.println("cliente-> "+selected.getCliente());
+         System.out.println("empleado-> "+selected.getEmpleado());*/
+        selected.setObservacionesCliente("Visita Asignada a "+selected.getEmpleado());
+        selected.setEstado(EstadoVisita.PENDIENTE.getValor());
+        persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageVisita", "CreateSuccessF"}));
         if (!JsfUtil.isValidationFailed()) {
             items = null;    // Invalidate list of items to trigger re-query.
         }
     }
 
     public void update() {
-        persist(PersistAction.UPDATE, ResourceBundle.getBundle("languages/Bundle").getString("VisitaUpdated"));
+        persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessageVisita", "UpdateSuccessF"}));
     }
 
     public void destroy() {
-        persist(PersistAction.DELETE, ResourceBundle.getBundle("languages/Bundle").getString("VisitaDeleted"));
+        persist(PersistAction.DELETE, JsfUtil.getMessageBundle(new String[]{"MessageVisita", "DeleteSuccessF"}));
         if (!JsfUtil.isValidationFailed()) {
             selected = null; // Remove selection
             items = null;    // Invalidate list of items to trigger re-query.
@@ -157,7 +170,25 @@ public class VisitaController implements Serializable {
                 return null;
             }
         }
+    }
 
+    public EstadoVisita[] getEstadosVisita() {
+        return EstadoVisita.values();
+    }
+
+    public String getEstadoVisita(int tipo) {
+        System.out.println("Tipo--> "+tipo);
+        return EstadoVisita.getFromValue(tipo).getDetalle();
+    }
+
+    public String getExpectativasVisita(boolean expectativa) {
+        System.out.println("Expect--> "+expectativa);
+        return expectativa ? "Si" : "No";
+    }
+    
+    public Date getFechaActual(){
+        Date date = new Date();
+        return date;
     }
 
 }

@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package jp.entidades;
 
 import java.io.Serializable;
@@ -24,10 +19,6 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-/**
- *
- * @author CRISTIAN
- */
 @Entity
 @Table(catalog = "jimmy_professional", schema = "public")
 @XmlRootElement
@@ -47,6 +38,10 @@ public class Promocion implements Serializable {
     @Size(min = 1, max = 100)
     @Column(nullable = false, length = 100)
     private String descripcion;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "valor", nullable = false)
+    private double valor;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "promocion", fetch = FetchType.LAZY)
     private List<PromocionProducto> promocionProductoList;
 
@@ -57,9 +52,10 @@ public class Promocion implements Serializable {
         this.id = id;
     }
 
-    public Promocion(Long id, String descripcion) {
+    public Promocion(Long id, String descripcion, double valor) {
         this.id = id;
         this.descripcion = descripcion;
+        this.valor = valor;
     }
 
     public Long getId() {
@@ -76,6 +72,14 @@ public class Promocion implements Serializable {
 
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
+    }
+
+    public double getValor() {
+        return valor;
+    }
+
+    public void setValor(double valor) {
+        this.valor = valor;
     }
 
     @XmlTransient

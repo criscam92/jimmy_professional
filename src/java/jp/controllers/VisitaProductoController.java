@@ -5,6 +5,7 @@ import jp.util.JsfUtil;
 import jp.util.JsfUtil.PersistAction;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -17,6 +18,8 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import jp.entidades.Producto;
+import jp.entidades.Visita;
 import jp.facades.VisitaProductoFacade;
 
 @ManagedBean(name = "visitaProductoController")
@@ -26,9 +29,11 @@ public class VisitaProductoController implements Serializable {
     @EJB
     private jp.facades.VisitaProductoFacade ejbFacade;
     private List<VisitaProducto> items = null;
+    private List<VisitaProducto> itemsTMP = null;
     private VisitaProducto selected;
 
     public VisitaProductoController() {
+        itemsTMP = new ArrayList<>();
     }
 
     public VisitaProducto getSelected() {
@@ -155,6 +160,37 @@ public class VisitaProductoController implements Serializable {
                 return null;
             }
         }
+
+    }
+    
+    public List<Producto> getProductosByVisita(Visita visita){
+        try {
+            return getFacade().getProductosByVisita(visita);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
+    public void addDevolucionProducto() {
+        VisitaProducto visitaProducto = new VisitaProducto();
+        visitaProducto.setVisita(selected.getVisita());
+        visitaProducto.setProducto(selected.getProducto());
+        visitaProducto.setCantidad(selected.getCantidad());
+        visitaProducto.setObservacion(selected.getObservacion());
+
+        System.out.println("====>" + visitaProducto);
+        System.out.println("Visita--> " + visitaProducto.getCantidad() + "\nProducto--> " + visitaProducto.getObservacion()
+                + "\nCantidad--> " + visitaProducto.getCantidad()+ "\nObservacion--> " + visitaProducto.getObservacion());
+        itemsTMP.add(visitaProducto);
+
+    }
+    
+    public void removeVisitaProducto(VisitaProducto visitaProducto) {
+        System.out.println("Tamano de lista antes de eliminar-> " + itemsTMP.size());
+        System.out.println("Item a eliminar-> " + visitaProducto.getObservacion());
+
+        itemsTMP.remove(visitaProducto);
 
     }
 
