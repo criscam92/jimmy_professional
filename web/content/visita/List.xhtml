@@ -77,22 +77,28 @@
                             <h:outputText value="#{bundle.ListVisitaTitle_estado}"/>
                         </f:facet>
                         <h:outputText value="#{visitaController.getEstadoVisita(item.estado)}"/>
-                    </p:column>
+                    </p:column>                    
                     <p:column>
                         <f:facet name="header">
                             <h:outputText value="#{bundle.ListVisitaTitle_cliente}"/>
                         </f:facet>
                         <h:outputText value="#{item.cliente.toString()}"/>
-                    </p:column>
+                    </p:column>                    
                     <p:column>
                         <f:facet name="header">
                             <h:outputText value="#{bundle.ListVisitaTitle_empleado}"/>
                         </f:facet>
                         <h:outputText value="#{item.empleado.toString()}"/>
+                    </p:column>                    
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="hh"/>
+                        </f:facet>
+                        <p:commandButton id="productos" value="PRODUCTOS" update=":formProductos" oncomplete="PF('ProductosByVisitaDialog').show()"/>
                     </p:column>
                 </p:dataTable>
             </h:form>
-
+            
             <ui:include src="Create.xhtml"/>
             <ui:include src="Edit.xhtml"/>
             <ui:include src="View.xhtml"/>
