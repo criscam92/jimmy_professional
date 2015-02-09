@@ -6,7 +6,6 @@ import jp.util.JsfUtil.PersistAction;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
@@ -18,6 +17,8 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import jp.facades.TipoClienteFacade;
+import jp.util.Error;
+import org.primefaces.context.RequestContext;
 
 @ManagedBean(name = "tipoClienteController")
 @SessionScoped
@@ -27,8 +28,10 @@ public class TipoClienteController implements Serializable {
     private jp.facades.TipoClienteFacade ejbFacade;
     private List<TipoCliente> items = null;
     private TipoCliente selected;
+    private final Error error;
 
     public TipoClienteController() {
+        error = new Error();
     }
 
     public TipoCliente getSelected() {
@@ -59,10 +62,14 @@ public class TipoClienteController implements Serializable {
         if (!getFacade().getEntityByCodigoOrTipo(selected)) {
             persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageTipoCliente", "CreateSuccessM"}));
             if (!JsfUtil.isValidationFailed()) {
+                selected = null;
                 items = null;    // Invalidate list of items to trigger re-query.
+                error.cleanError();
+                RequestContext.getCurrentInstance().execute("PF('TipoClienteCreateDialog').hide()");
             }
         } else {
             JsfUtil.addErrorMessage("YA EXISTE EL TIPO");
+            error.addError();
         }
 
     }
@@ -70,8 +77,11 @@ public class TipoClienteController implements Serializable {
     public void update() {
         if (!getFacade().getEntityByCodigoOrTipo(selected)) {
             persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessageTipoCliente", "UpdateSuccessM"}));
+            error.cleanError();
+            RequestContext.getCurrentInstance().execute("PF('TipoClienteEditDialog').hide()");
         } else {
             JsfUtil.addErrorMessage("YA EXISTE EL TIPO");
+            error.addError();
         }
     }
 
@@ -109,11 +119,11 @@ public class TipoClienteController implements Serializable {
                 if (msg.length() > 0) {
                     JsfUtil.addErrorMessage(msg);
                 } else {
-                    JsfUtil.addErrorMessage(ex, ResourceBundle.getBundle("languages/Bundle").getString("PersistenceErrorOccured"));
+                    JsfUtil.addErrorMessage(ex, JsfUtil.getMessageBundle("PersistenceErrorOccured"));
                 }
             } catch (Exception ex) {
                 Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
-                JsfUtil.addErrorMessage(ex, ResourceBundle.getBundle("languages/Bundle").getString("PersistenceErrorOccured"));
+                JsfUtil.addErrorMessage(ex, JsfUtil.getMessageBundle("PersistenceErrorOccured"));
             }
         }
     }
@@ -165,6 +175,10 @@ public class TipoClienteController implements Serializable {
             }
         }
 
+    }
+    
+    public String classError(){
+        return error.getClassError();
     }
 
 }
