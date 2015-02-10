@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package jp.entidades;
 
 import java.io.Serializable;
@@ -24,16 +19,13 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-/**
- *
- * @author CRISTIAN
- */
 @Entity
 @Table(catalog = "jimmy_professional", schema = "public")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Producto.findAll", query = "SELECT p FROM Producto p"),
     @NamedQuery(name = "Producto.findById", query = "SELECT p FROM Producto p WHERE p.id = :id"),
+    @NamedQuery(name = "Producto.findByCodigo", query = "SELECT p FROM Producto p WHERE p.codigo = :codigo"),
     @NamedQuery(name = "Producto.findByNombre", query = "SELECT p FROM Producto p WHERE p.nombre = :nombre"),
     @NamedQuery(name = "Producto.findByDescripcion", query = "SELECT p FROM Producto p WHERE p.descripcion = :descripcion"),
     @NamedQuery(name = "Producto.findByGramaje", query = "SELECT p FROM Producto p WHERE p.gramaje = :gramaje"),
@@ -41,12 +33,18 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Producto.findByValorVenta", query = "SELECT p FROM Producto p WHERE p.valorVenta = :valorVenta"),
     @NamedQuery(name = "Producto.findByValorVentaUsd", query = "SELECT p FROM Producto p WHERE p.valorVentaUsd = :valorVentaUsd")})
 public class Producto implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(nullable = false)
     private Long id;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 45)
+    @Column(nullable = false, length = 45)
+    private String codigo;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 100)
@@ -89,13 +87,14 @@ public class Producto implements Serializable {
         this.id = id;
     }
 
-    public Producto(Long id, String nombre, String descripcion, String gramaje, double valorCosto, double valorVenta) {
+    public Producto(Long id, String nombre, String descripcion, String gramaje, double valorCosto, double valorVenta, String codigo) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.gramaje = gramaje;
         this.valorCosto = valorCosto;
         this.valorVenta = valorVenta;
+        this.codigo = codigo;
     }
 
     public Long getId() {
@@ -104,6 +103,14 @@ public class Producto implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
     }
 
     public String getNombre() {
@@ -204,15 +211,12 @@ public class Producto implements Serializable {
             return false;
         }
         Producto other = (Producto) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return !((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)));
     }
 
     @Override
     public String toString() {
-        return this.getGramaje()+" - "+this.getNombre();
+        return this.getGramaje() + " - " + this.getNombre();
     }
-    
+
 }
