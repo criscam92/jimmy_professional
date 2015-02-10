@@ -3,8 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:f="http://xmlns.jcp.org/jsf/core"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <ui:composition>
 
@@ -12,15 +12,32 @@
             <h:form id="UsuarioCreateForm">
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{usuarioController.selected != null}">
-                        <p:outputLabel value="#{bundle.CreateUsuarioLabel_id}" for="id" />
-                        <p:inputText id="id" value="#{usuarioController.selected.id}" title="#{bundle.CreateUsuarioTitle_id}" required="true" requiredMessage="#{bundle.CreateUsuarioRequiredMessage_id}"/>
-                        <p:outputLabel value="#{bundle.CreateUsuarioLabel_usuario}" for="usuario" />
-                        <p:inputText id="usuario" value="#{usuarioController.selected.usuario}" title="#{bundle.CreateUsuarioTitle_usuario}" required="true" requiredMessage="#{bundle.CreateUsuarioRequiredMessage_usuario}"/>
+
+                        <p:outputLabel styleClass="#{usuarioController.classError()}" value="#{bundle.CreateUsuarioLabel_usuario}" for="usuario" />
+                        <p:inputText styleClass="#{usuarioController.classError()}" id="usuario" value="#{usuarioController.selected.usuario}" title="#{bundle.CreateUsuarioTitle_usuario}" required="true" requiredMessage="#{bundle.CreateUsuarioRequiredMessage_usuario}"/>
+
+                        <p:outputLabel value="#{bundle.CreateUsuarioLabel_contrasena1}" for="contrasena1"/>
+                        <p:password id="contrasena1" value="#{usuarioController.pass}" match="contrasena2" weakLabel="#{bundle.WeakLabel}" feedback="true"
+                                    promptLabel="#{bundle.CreateUsuarioPromptLabel_contrasena1}" required="true" requiredMessage="#{bundle.CreateUsuarioRequiredMessage_contrasena1}" validatorMessage="#{bundle.CreateUsuarioValidatorMessage_contrasena1}"
+                                    goodLabel="#{bundle.GoodLabel}" strongLabel="#{bundle.StrongLabel}" title="#{bundle.CreateUsuarioTitle_contrasena1}">
+                            <f:validateRegex pattern="^|\S{5,16}$" for="contrasena1"/>
+                        </p:password>
+
+                        <p:outputLabel for="contrasena2" value="#{bundle.CreateUsuarioLabel_contrasena2}" />  
+                        <p:password id="contrasena2" title="#{bundle.CreateUsuarioTitle_contrasena2}" value="#{usuarioController.pass}"
+                                    required="true" requiredMessage="#{bundle.CreateUsuarioRequiredMessage_contrasena2}"
+                                    validatorMessage="#{bundle.CreateUsuarioValidatorMessage_contrasena2}" />
+
                         <p:outputLabel value="#{bundle.CreateUsuarioLabel_tipo}" for="tipo" />
-                        <p:inputText id="tipo" value="#{usuarioController.selected.tipo}" title="#{bundle.CreateUsuarioTitle_tipo}" required="true" requiredMessage="#{bundle.CreateUsuarioRequiredMessage_tipo}"/>
+                        <p:selectOneMenu id="tipo" value="#{usuarioController.selected.tipo}" style="width: 155px" required="true" requiredMessage="#{bundle.CreateUsuarioRequiredMessage_tipo}">  
+                            <f:selectItems value="#{usuarioController.tipoUsuarios}"/>
+                        </p:selectOneMenu>
+
                     </p:panelGrid>
-                    <p:commandButton actionListener="#{usuarioController.create}" value="#{bundle.Save}" update="display,:UsuarioListForm:datalist,:growl" oncomplete="handleSubmit(args,'UsuarioCreateDialog');"/>
-                    <p:commandButton value="#{bundle.Cancel}" onclick="UsuarioCreateDialog.hide()"/>
+                    <div class="botonesDialog">
+                        <p:commandButton actionListener="#{usuarioController.create}" value="#{bundle.Save}" update="display,:UsuarioListForm:datalist,:growl"/>
+                        <p:commandButton ajax="false" type="button" value="#{bundle.Cancel}" onclick="PF('UsuarioCreateDialog').hide()"/>
+                    </div>
                 </h:panelGroup>
             </h:form>
         </p:dialog>

@@ -12,15 +12,36 @@
             <h:form id="UsuarioEditForm">
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{usuarioController.selected != null}">
-                        <p:outputLabel value="#{bundle.EditUsuarioLabel_id}" for="id" />
-                        <p:inputText id="id" value="#{usuarioController.selected.id}" title="#{bundle.EditUsuarioTitle_id}" required="true" requiredMessage="#{bundle.EditUsuarioRequiredMessage_id}"/>
-                        <p:outputLabel value="#{bundle.EditUsuarioLabel_usuario}" for="usuario" />
-                        <p:inputText id="usuario" value="#{usuarioController.selected.usuario}" title="#{bundle.EditUsuarioTitle_usuario}" required="true" requiredMessage="#{bundle.EditUsuarioRequiredMessage_usuario}"/>
+
+                        <p:outputLabel styleClass="#{usuarioController.classError()}" value="#{bundle.EditUsuarioLabel_usuario}" for="usuario" />
+                        <p:inputText styleClass="#{usuarioController.classError()}" id="usuario" value="#{usuarioController.selected.usuario}" title="#{bundle.EditUsuarioTitle_usuario}" required="true" requiredMessage="#{bundle.EditUsuarioRequiredMessage_usuario}"/>
+
+                        <p:outputLabel value="#{bundle.EditUsuarioLabel_contrasena1}" for="contrasena1">
+                            <span class="ui-outputlabel-rfi">*</span>
+                        </p:outputLabel>  
+                        <p:password id="contrasena1" value="#{usuarioController.pass}" match="contrasena2" weakLabel="#{bundle.WeakLabel}" feedback="true"
+                                    promptLabel="#{bundle.EditUsuarioPromptLabel_contrasena1}" requiredMessage="#{bundle.EditUsuarioRequiredMessage_contrasena1}" validatorMessage="#{bundle.EditUsuarioValidatorMessage_contrasena1}"
+                                    goodLabel="#{bundle.GoodLabel}" strongLabel="#{bundle.StrongLabel}" title="#{bundle.EditUsuarioTitle_contrasena1}">
+                            <f:validateRegex pattern="^|\S{5,16}$" for="contrasena1"/>
+                        </p:password>
+
+                        <p:outputLabel for="contrasena2" value="#{bundle.EditUsuarioLabel_contrasena2}">
+                            <span class="ui-outputlabel-rfi">*</span>
+                        </p:outputLabel>  
+                        <p:password id="contrasena2" title="#{bundle.EditUsuarioTitle_contrasena2}" value="#{usuarioController.pass}"
+                                    requiredMessage="#{bundle.EditUsuarioRequiredMessage_contrasena2}"
+                                    validatorMessage="#{bundle.EditUsuarioValidatorMessage_contrasena2}" />
+
                         <p:outputLabel value="#{bundle.EditUsuarioLabel_tipo}" for="tipo" />
-                        <p:inputText id="tipo" value="#{usuarioController.selected.tipo}" title="#{bundle.EditUsuarioTitle_tipo}" required="true" requiredMessage="#{bundle.EditUsuarioRequiredMessage_tipo}"/>
+                        <p:selectOneMenu id="tipo" value="#{usuarioController.selected.tipo}" style="width: 155px" requiredMessage="#{bundle.EditUsuarioRequiredMessage_tipo}">  
+                            <f:selectItems value="#{usuarioController.tipoUsuarios}"/>
+                        </p:selectOneMenu>
+
                     </p:panelGrid>
-                    <p:commandButton actionListener="#{usuarioController.update}" value="#{bundle.Save}" update="display,:UsuarioListForm:datalist,:growl" oncomplete="handleSubmit(args, 'UsuarioEditDialog');"/>
-                    <p:commandButton value="#{bundle.Cancel}" onclick="UsuarioEditDialog.hide()"/>
+                    <div class="botonesDialog">
+                        <p:commandButton actionListener="#{usuarioController.update}" value="#{bundle.Save}" update="display,:UsuarioListForm:datalist,:growl"/>
+                        <p:commandButton ajax="false" value="#{bundle.Cancel}" type="button" onclick="PF('UsuarioEditDialog').hide()"/>
+                    </div>
                 </h:panelGroup>
             </h:form>
         </p:dialog>

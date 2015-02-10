@@ -3,10 +3,9 @@ package jp.controllers;
 import jp.entidades.Usuario;
 import jp.util.JsfUtil;
 import jp.util.JsfUtil.PersistAction;
-
 import java.io.Serializable;
 import java.util.List;
-import java.util.ResourceBundle;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
@@ -18,6 +17,10 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import jp.facades.UsuarioFacade;
+import jp.seguridad.Encrypt;
+import jp.util.TipoUsuario;
+import jp.util.Error;
+import org.primefaces.context.RequestContext;
 
 @ManagedBean(name = "usuarioController")
 @SessionScoped
@@ -27,8 +30,11 @@ public class UsuarioController implements Serializable {
     private jp.facades.UsuarioFacade ejbFacade;
     private List<Usuario> items = null;
     private Usuario selected;
+    private String pass;
+    private final Error error;
 
     public UsuarioController() {
+        error = new Error();
     }
 
     public Usuario getSelected() {
@@ -37,6 +43,14 @@ public class UsuarioController implements Serializable {
 
     public void setSelected(Usuario selected) {
         this.selected = selected;
+    }
+
+    public String getPass() {
+        return pass;
+    }
+
+    public void setPass(String pass) {
+        this.pass = pass;
     }
 
     protected void setEmbeddableKeys() {
@@ -56,21 +70,41 @@ public class UsuarioController implements Serializable {
     }
 
     public void create() {
-        persist(PersistAction.CREATE, ResourceBundle.getBundle("languages/Bundle").getString("UsuarioCreated"));
-        if (!JsfUtil.isValidationFailed()) {
-            items = null;    // Invalidate list of items to trigger re-query.
+        if (!getFacade().getUsuarioByNombre(selected)) {
+            if (verificarClave()) {
+                persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessengerUser", "CreateSuccessM"}));
+                if (!JsfUtil.isValidationFailed()) {
+                    selected = null;
+                    items = null;    // Invalidate list of items to trigger re-query.
+                    error.cleanError();
+                    RequestContext.getCurrentInstance().execute("PF('UsuarioCreateDialog').hide()");
+                }
+            }
+        } else {
+            JsfUtil.addErrorMessage(JsfUtil.getMessageBundle("MessengerUserExist").replaceAll("%USUARIO%", selected.getUsuario()));
+            error.addError();
         }
     }
 
     public void update() {
-        persist(PersistAction.UPDATE, ResourceBundle.getBundle("languages/Bundle").getString("UsuarioUpdated"));
+        if (!getFacade().getUsuarioByNombre(selected)) {
+            if (verificarClave()) {
+                persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(JsfUtil.getMessageBundle(new String[]{"MessengerUser", "UpdateSuccessM"})));
+                error.cleanError();
+                RequestContext.getCurrentInstance().execute("PF('UsuarioEditDialog').hide()");
+            }
+        } else {
+            JsfUtil.addErrorMessage(JsfUtil.getMessageBundle("MessengerUserExist").replaceAll("%USUARIO%", selected.getUsuario()));
+            error.addError();
+        }
     }
 
     public void destroy() {
-        persist(PersistAction.DELETE, ResourceBundle.getBundle("languages/Bundle").getString("UsuarioDeleted"));
+        persist(PersistAction.DELETE, JsfUtil.getMessageBundle(new String[]{"MessengerUser", "DeleteSuccessM"}));
         if (!JsfUtil.isValidationFailed()) {
             selected = null; // Remove selection
             items = null;    // Invalidate list of items to trigger re-query.
+            error.cleanError();
         }
     }
 
@@ -79,6 +113,18 @@ public class UsuarioController implements Serializable {
             items = getFacade().findAll();
         }
         return items;
+    }
+
+    public Map<String, Integer> getTipoUsuarios() {
+        return TipoUsuario.getMapTipoUsuarios();
+    }
+
+    public TipoUsuario[] getTipoUsuario() {
+        return TipoUsuario.values();
+    }
+
+    public String getTipoUsuario(int tipo) {
+        return TipoUsuario.getFromValue(tipo).getDetalle();
     }
 
     private void persist(PersistAction persistAction, String successMessage) {
@@ -100,11 +146,11 @@ public class UsuarioController implements Serializable {
                 if (msg.length() > 0) {
                     JsfUtil.addErrorMessage(msg);
                 } else {
-                    JsfUtil.addErrorMessage(ex, ResourceBundle.getBundle("languages/Bundle").getString("PersistenceErrorOccured"));
+                    JsfUtil.addErrorMessage(ex, JsfUtil.getMessageBundle("PersistenceErrorOccured"));
                 }
             } catch (Exception ex) {
                 Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
-                JsfUtil.addErrorMessage(ex, ResourceBundle.getBundle("languages/Bundle").getString("PersistenceErrorOccured"));
+                JsfUtil.addErrorMessage(ex, JsfUtil.getMessageBundle("PersistenceErrorOccured"));
             }
         }
     }
@@ -130,13 +176,13 @@ public class UsuarioController implements Serializable {
             return controller.getFacade().find(getKey(value));
         }
 
-        java.lang.Long getKey(String value) {
-            java.lang.Long key;
+        Long getKey(String value) {
+            Long key;
             key = Long.valueOf(value);
             return key;
         }
 
-        String getStringKey(java.lang.Long value) {
+        String getStringKey(Long value) {
             StringBuilder sb = new StringBuilder();
             sb.append(value);
             return sb.toString();
@@ -156,6 +202,28 @@ public class UsuarioController implements Serializable {
             }
         }
 
+    }
+
+    private boolean verificarClave() {
+        if (selected.getId() == null) {
+            if (pass == null || pass.isEmpty()) {
+                JsfUtil.addErrorMessage(JsfUtil.getMessageBundle("MessegerPass"));
+                return false;
+            } else {
+                String nuevaClave = Encrypt.getStringMessageDigest(pass);
+                selected.setContrasena(nuevaClave);
+            }
+        } else {
+            if (pass != null && !pass.isEmpty()) {
+                String nuevaClave = Encrypt.getStringMessageDigest(pass);
+                selected.setContrasena(nuevaClave);
+            }
+        }
+        return true;
+    }
+
+    public String classError() {
+        return error.getClassError();
     }
 
 }

@@ -8,7 +8,9 @@ package jp.facades;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import jp.entidades.Usuario;
+import jp.entidades.Usuario_;
 
 /**
  *
@@ -16,6 +18,7 @@ import jp.entidades.Usuario;
  */
 @Stateless
 public class UsuarioFacade extends AbstractFacade<Usuario> {
+
     @PersistenceContext(unitName = "jimmy_professionalPU")
     private EntityManager em;
 
@@ -27,5 +30,27 @@ public class UsuarioFacade extends AbstractFacade<Usuario> {
     public UsuarioFacade() {
         super(Usuario.class);
     }
-    
+
+    public boolean getUsuarioByNombre(Usuario usuario) {
+        try {
+            Query query = getEntityManager().createNamedQuery("Usuario.findByUsuario");
+            query.setParameter("usuario", usuario.getUsuario());
+            query.setMaxResults(1);
+
+            Usuario user = (Usuario) query.getSingleResult();
+
+            if (user != null) {
+                if (usuario.getId() != null) {
+                    return !user.getId().equals(usuario.getId());
+                } else {
+                    return true;
+                }
+            }
+
+        } catch (Exception e) {
+            
+        }
+        return false;
+    }
+
 }
