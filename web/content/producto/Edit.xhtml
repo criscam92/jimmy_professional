@@ -26,7 +26,8 @@
                     </p:panelGrid>                   
                 </h:panelGroup>
                 <div class="botonesDialog">
-                    <p:commandButton actionListener="#{productoController.update}" value="#{bundle.Save}" update="display,:ProductoListForm:datalist,:growl" oncomplete="handleSubmit(args, 'ProductoEditDialog');"/>
+                    <p:commandButton actionListener="#{productoController.update}" value="#{bundle.Save}"
+                                     update="display,:ProductoListForm:datalist,:growl" oncomplete="handleSubmit(args, 'ProductoEditDialog');"/>
                     <p:commandButton value="#{bundle.Cancel}" type="button" onclick="PF('ProductoEditDialog').hide()"/>
                 </div>
             </h:form>

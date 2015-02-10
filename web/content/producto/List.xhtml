@@ -62,19 +62,25 @@
                         <f:facet name="header">
                             <h:outputText value="#{bundle.ListProductoTitle_valorCosto}"/>
                         </f:facet>
-                        <h:outputText value="#{item.valorCosto}"/>
+                        <h:outputText value="#{item.valorCosto}">
+                            <f:convertNumber pattern="$ #,##0.00" currencySymbol="$" />
+                        </h:outputText>
                     </p:column>
                     <p:column>
                         <f:facet name="header">
                             <h:outputText value="#{bundle.ListProductoTitle_valorVenta}"/>
                         </f:facet>
-                        <h:outputText value="#{item.valorVenta}"/>
+                        <h:outputText value="#{item.valorVenta}">
+                            <f:convertNumber pattern="$ #,##0.00" currencySymbol="$" />
+                        </h:outputText>
                     </p:column>
                     <p:column>
                         <f:facet name="header">
                             <h:outputText value="#{bundle.ListProductoTitle_valorVentaUsd}"/>
                         </f:facet>
-                        <h:outputText value="#{item.valorVentaUsd}"/>
+                        <h:outputText value="#{item.valorVentaUsd}">
+                            <f:convertNumber type="currency" currencySymbol="$ " locale="en_US" />
+                        </h:outputText>
                     </p:column>
 
                 </p:dataTable>

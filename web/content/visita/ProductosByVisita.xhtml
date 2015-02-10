@@ -6,27 +6,80 @@
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-      <ui:composition>
-        <p:dialog id="ProductosByVisitaDlg" widgetVar="ProductosByVisitaDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.ProductosByVisitaTitle}">
+    <ui:composition>
+        <p:dialog id="ProductosByVisitaDlg" widgetVar="ProductosByVisitaDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.ProductosByVisitaTitle}" width="950">
             <h:form id="formProductos" >
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2">
+                        <p:panelGrid columns="2">
 
-                        <p:outputLabel value="#{bundle.CreateProductoLabel_producto}"/>
-                        
-                        <p:selectOneMenu id="producto" value="#{visitaController.visitaProducto.producto}" required="true" requiredMessage="#{bundle.EditProductoRequiredMessage}">
-                            <f:selectItem  itemLabel="#{bundle.SelectOneMessage}"/>
-                            <f:selectItems value="#{productoController.itemsAvailableSelectOne}" var="productoItem" itemValue="#{productoItem}"/>
-                        </p:selectOneMenu>
+                            <p:outputLabel value="#{bundle.CreateProductoLabel_producto}"/>
 
-                        <p:outputLabel value="#{bundle.CreateCantidadLabel_producto}" for="cantidad" />
-                        <p:inputText id="cantidad" value="#{visitaController.visitaProducto.cantidad}"/>
+                            <p:selectOneMenu id="producto" value="#{visitaController.visitaProducto.producto}" required="true" requiredMessage="#{bundle.EditProductoRequiredMessage}">
+                                <f:selectItem  itemLabel="#{bundle.SelectOneMessage}"/>
+                                <f:selectItems value="#{productoController.itemsAvailableSelectOne}" var="productoItem" itemValue="#{productoItem}"/>
+                            </p:selectOneMenu>
 
-                        <p:outputLabel value="#{bundle.CreateObservacionLabel_producto}" for="observacion" />
-                        <p:inputTextarea id="observacion" value="#{visitaController.visitaProducto.observacion}"/>
+                            <p:outputLabel value="#{bundle.CreateCantidadLabel_producto}" for="cantidad" />
+                            <p:inputText id="cantidad" value="#{visitaController.visitaProducto.cantidad}"/>
+
+                            <p:outputLabel value="#{bundle.CreateObservacionLabel_producto}" for="observacion" />
+                            <p:inputTextarea id="observacion" value="#{visitaController.visitaProducto.observacion}"/>
+                            <p:commandButton value="#{bundle.AddItem}" icon="ui-icon-plus"
+                                             actionListener="#{visitaController.addVisitaProducto()}" update="datalistTMP"/>
+                        </p:panelGrid>
+
+                        <p:panelGrid columns="1">
+                            <p:row>
+                                <p:column>
+                                    <p:dataTable id="datalistTMP" value="#{visitaController.itemsTMP}" var="itemTMP"
+                                                 paginator="true"
+                                                 rowKey="#{item.id}"
+                                                 rows="5"
+                                                 rowsPerPageTemplate="10,20,30,40,50"
+                                                 emptyMessage="#{bundle.EmptyTable}"
+                                                 paginatorPosition="bottom">
+                                        <p:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="Producto"/>
+                                            </f:facet>
+                                            <h:outputText value="#{itemTMP.producto.toString()}"/>
+                                        </p:column>
+                                        <p:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="Cantidad"/>
+                                            </f:facet>
+                                            <h:outputText value="#{itemTMP.cantidad}"/>
+                                        </p:column>
+                                        <p:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="Observación"/>                                        
+                                            </f:facet>
+                                            <h:outputText value="#{itemTMP.observacion}"/>
+                                        </p:column>
+                                        <p:column style="text-align: center;">
+                                            <f:facet name="header">
+                                                <h:outputText value="Quitar"/>
+                                            </f:facet>
+                                            <p:commandButton icon="ui-icon-closethick" update="datalistTMP" actionListener="#{visitaController.removeDevolucionProducto(itemTMP)}"/>
+                                        </p:column>
+                                    </p:dataTable>
+                                </p:column>
+                            </p:row>
+
+                            <p:row>
+                                <p:column>
+                                    <p:commandButton icon="ui-icon-disk" value="#{bundle.Save}" actionListener="#{visitaController.createVisitaProducto()}"
+                                                     update="display,:VisitaListForm:datalist,:growl" oncomplete="handleSubmit(args, 'ProductosByVisitaDialog');"/>
+                                    <p:commandButton icon="ui-icon-close" value="#{bundle.Cancel}" type="button"
+                                                     onclick="PF('ProductosByVisitaDialog').hide()"/>
+                                </p:column>
+                            </p:row>
+                        </p:panelGrid>
                     </p:panelGrid>
                 </h:panelGroup>
             </h:form>
+
         </p:dialog>
     </ui:composition>
 </html>

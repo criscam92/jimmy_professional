@@ -5,6 +5,7 @@ import jp.util.JsfUtil;
 import jp.util.JsfUtil.PersistAction;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -21,6 +22,7 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import jp.entidades.VisitaProducto;
 import jp.facades.VisitaFacade;
+import jp.facades.VisitaProductoFacade;
 import jp.util.EstadoVisita;
 
 @ManagedBean(name = "visitaController")
@@ -29,16 +31,19 @@ public class VisitaController implements Serializable {
 
     @EJB
     private jp.facades.VisitaFacade ejbFacade;
+    private jp.facades.VisitaProductoFacade ejbVisitaProductoFacade;
     private List<Visita> items = null;
+    private List<VisitaProducto> itemsTMP = null;
     private VisitaProducto visitaProducto;
-    
+
     private Visita selected;
 
-    public VisitaController() {        
+    public VisitaController() {
+        itemsTMP = new ArrayList<>();
     }
-    
+
     @PostConstruct
-    public void init(){
+    public void init() {
         visitaProducto = new VisitaProducto();
     }
 
@@ -58,6 +63,14 @@ public class VisitaController implements Serializable {
         this.visitaProducto = visitaProducto;
     }
 
+    public List<VisitaProducto> getItemsTMP() {
+        return itemsTMP;
+    }
+
+    public void setItemsTMP(List<VisitaProducto> itemsTMP) {
+        this.itemsTMP = itemsTMP;
+    }
+
     protected void setEmbeddableKeys() {
     }
 
@@ -68,6 +81,10 @@ public class VisitaController implements Serializable {
         return ejbFacade;
     }
 
+    public VisitaProductoFacade getEjbVisitaProductoFacade() {
+        return ejbVisitaProductoFacade;
+    }
+
     public Visita prepareCreate() {
         selected = new Visita();
         initializeEmbeddableKey();
@@ -75,19 +92,20 @@ public class VisitaController implements Serializable {
     }
 
     public void create() {
-        /*System.out.println("Fecha-> "+selected.getFecha());
-         System.out.println("Observaciones-> "+selected.getObservacionesCliente());
-         System.out.println("calificacion servicio-> "+selected.getCalificacionServicio());
-         System.out.println("Puntualidad-> "+selected.getPuntualidadServicio());
-         System.out.println("Cumplio expectativas?-> "+selected.getCumplioExpectativas());
-         System.out.println("Estado-> "+selected.getEstado());
-         System.out.println("cliente-> "+selected.getCliente());
-         System.out.println("empleado-> "+selected.getEmpleado());*/
-        selected.setObservacionesCliente("Visita Asignada a "+selected.getEmpleado());
+        selected.setObservacionesCliente("Visita Asignada a " + selected.getEmpleado());
         selected.setEstado(EstadoVisita.PENDIENTE.getValor());
+        System.out.println("Fecha-> " + selected.getFecha());
+        System.out.println("Observaciones-> " + selected.getObservacionesCliente());
+        System.out.println("calificacion servicio-> " + selected.getCalificacionServicio());
+        System.out.println("Puntualidad-> " + selected.getPuntualidadServicio());
+        System.out.println("Cumplio expectativas?-> " + selected.getCumplioExpectativas());
+        System.out.println("Estado-> " + selected.getEstado());
+        System.out.println("cliente-> " + selected.getCliente());
+        System.out.println("empleado-> " + selected.getEmpleado());
         persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageVisita", "CreateSuccessF"}));
         if (!JsfUtil.isValidationFailed()) {
             items = null;    // Invalidate list of items to trigger re-query.
+            itemsTMP.clear();
         }
     }
 
@@ -191,18 +209,45 @@ public class VisitaController implements Serializable {
     }
 
     public String getEstadoVisita(int tipo) {
-        System.out.println("Tipo--> "+tipo);
+        System.out.println("Tipo--> " + tipo);
         return EstadoVisita.getFromValue(tipo).getDetalle();
     }
 
     public String getExpectativasVisita(boolean expectativa) {
-        System.out.println("Expect--> "+expectativa);
         return expectativa ? "Si" : "No";
     }
-    
-    public Date getFechaActual(){
+
+    public Date getFechaActual() {
         Date date = new Date();
         return date;
     }
 
+    public void addVisitaProducto() {
+        VisitaProducto visitaProductoTMP = new VisitaProducto();
+        visitaProductoTMP.setCantidad(visitaProducto.getCantidad());
+        visitaProductoTMP.setProducto(visitaProducto.getProducto());
+        visitaProductoTMP.setObservacion(visitaProducto.getObservacion());
+        visitaProductoTMP.setVisita(selected);
+        visitaProductoTMP.setId(itemsTMP.size() + 1l);
+        itemsTMP.add(visitaProductoTMP);
+    }
+
+    public void removeDevolucionProducto(VisitaProducto visitaProductoArg) {
+        itemsTMP.remove(visitaProductoArg);        
+    }
+    
+    public void createVisitaProducto() {
+        if (!itemsTMP.isEmpty() && selected != null) {
+            if (getEjbVisitaProductoFacade().createVisitaProducto(itemsTMP, selected)) {
+                JsfUtil.addSuccessMessage(JsfUtil.getMessageBundle("MessageVisitaProducto"));
+                if (!JsfUtil.isValidationFailed()) {
+                    selected = null; // Remove selection
+                    items = null;    // Invalidate list of items to trigger re-query.
+                    itemsTMP.clear();
+                }
+            } else {
+                JsfUtil.addErrorMessage(JsfUtil.getMessageBundle("ErrorCreateDevolucionProducto"));
+            }
+        }
+    }
 }
