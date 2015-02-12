@@ -21,6 +21,4 @@ public class VisitaFacade extends AbstractFacade<Visita> {
         
     }
 
-    
-
 }

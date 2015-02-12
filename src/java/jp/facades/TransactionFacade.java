@@ -18,6 +18,9 @@ import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
+import jp.entidades.Producto;
+import jp.entidades.Promocion;
+import jp.entidades.PromocionProducto;
 import jp.entidades.Visita;
 import jp.entidades.VisitaProducto;
 import jp.util.EstadoVisita;
@@ -118,5 +121,37 @@ public class TransactionFacade {
         }
 
         return result;
+    }
+
+    public boolean addPromocionProducto(List<Producto> productos, Promocion promocion) {
+        boolean complete = false;
+        userTransaction = sessionContext.getUserTransaction();
+        try {
+            userTransaction.begin();
+            getEntityManager().persist(promocion);
+            Promocion promoTMP = getEntityManager().find(Promocion.class, promocion.getId());
+
+            PromocionProducto promocionProducto;
+            for (Producto producto : productos) {
+                promocionProducto = new PromocionProducto();
+//                promocionProducto.                
+            }
+
+            userTransaction.commit();
+            complete = true;
+        } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
+
+            try {
+                System.out.println("======>");
+                e.printStackTrace();
+                System.out.println("<======");
+                userTransaction.rollback();
+            } catch (IllegalStateException | SecurityException | SystemException es) {
+                System.out.println("======>");
+                es.printStackTrace();
+                System.out.println("<======");
+            }
+        }
+        return complete;
     }
 }

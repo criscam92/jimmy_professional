@@ -3,7 +3,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:p="http://primefaces.org/ui">
 
     <ui:composition>
@@ -12,16 +11,24 @@
             <h:form id="ProductoCreateForm">
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{productoController.selected != null}">
-                        <p:outputLabel value="#{bundle.CreateProductoLabel_nombre}" for="nombre" />
+                        <p:outputLabel value="#{bundle.CreateProductoLabel_nombre}" for="nombre" />                        
                         <p:inputText id="nombre" value="#{productoController.selected.nombre}" title="#{bundle.CreateProductoTitle_nombre}" required="true" requiredMessage="#{bundle.CreateProductoRequiredMessage_nombre}"/>
+
+                        <p:outputLabel styleClass="#{productoController.classError()}" value="#{bundle.CreateProductoLabel_codigo}" for="codigo" />
+                        <p:inputText styleClass="#{productoController.classError()}" id="codigo" value="#{productoController.selected.codigo}" title="#{bundle.CreateProductoTitle_codigo}" required="true" requiredMessage="#{bundle.CreateProductoRequiredMessage_codigo}"/>
+
                         <p:outputLabel value="#{bundle.CreateProductoLabel_descripcion}" for="descripcion" />
-                        <p:inputTextarea id="descripcion" cols="18" value="#{productoController.selected.descripcion}" title="#{bundle.CreateProductoTitle_descripcion}" required="true" requiredMessage="#{bundle.CreateProductoRequiredMessage_descripcion}"/>
+                        <p:inputTextarea style="width: 146px; " id="descripcion" cols="18" value="#{productoController.selected.descripcion}" title="#{bundle.CreateProductoTitle_descripcion}" required="true" requiredMessage="#{bundle.CreateProductoRequiredMessage_descripcion}"/>
+                        
                         <p:outputLabel value="#{bundle.CreateProductoLabel_gramaje}" for="gramaje" />
                         <p:inputText id="gramaje" value="#{productoController.selected.gramaje}" title="#{bundle.CreateProductoTitle_gramaje}" required="true" requiredMessage="#{bundle.CreateProductoRequiredMessage_gramaje}"/>
+                        
                         <p:outputLabel value="#{bundle.CreateProductoLabel_valorCosto}" for="valorCosto" />
                         <p:inputText id="valorCosto" value="#{productoController.selected.valorCosto}" title="#{bundle.CreateProductoTitle_valorCosto}" required="true" requiredMessage="#{bundle.CreateProductoRequiredMessage_valorCosto}"/>
+                        
                         <p:outputLabel value="#{bundle.CreateProductoLabel_valorVenta}" for="valorVenta" />
                         <p:inputText id="valorVenta" value="#{productoController.selected.valorVenta}" title="#{bundle.CreateProductoTitle_valorVenta}" required="true" requiredMessage="#{bundle.CreateProductoRequiredMessage_valorVenta}"/>
+                        
                         <p:outputLabel value="#{bundle.CreateProductoLabel_valorVentaUsd}" for="valorVentaUsd" />
                         <p:inputText id="valorVentaUsd" value="#{productoController.selected.valorVentaUsd}" title="#{bundle.CreateProductoTitle_valorVentaUsd}" />
                     </p:panelGrid>                    

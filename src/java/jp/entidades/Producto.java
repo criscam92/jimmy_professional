@@ -18,6 +18,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import jp.entidades.auxiliar.Codificable;
 
 @Entity
 @Table(catalog = "jimmy_professional", schema = "public")
@@ -32,7 +33,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Producto.findByValorCosto", query = "SELECT p FROM Producto p WHERE p.valorCosto = :valorCosto"),
     @NamedQuery(name = "Producto.findByValorVenta", query = "SELECT p FROM Producto p WHERE p.valorVenta = :valorVenta"),
     @NamedQuery(name = "Producto.findByValorVentaUsd", query = "SELECT p FROM Producto p WHERE p.valorVentaUsd = :valorVentaUsd")})
-public class Producto implements Serializable {
+public class Producto implements Serializable, Codificable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -55,8 +56,6 @@ public class Producto implements Serializable {
     @Size(min = 1, max = 100)
     @Column(nullable = false, length = 100)
     private String descripcion;
-    @Basic(optional = false)
-    @NotNull
     @Size(min = 1, max = 100)
     @Column(nullable = false, length = 100)
     private String gramaje;
@@ -97,6 +96,7 @@ public class Producto implements Serializable {
         this.codigo = codigo;
     }
 
+    @Override
     public Long getId() {
         return id;
     }
@@ -105,6 +105,7 @@ public class Producto implements Serializable {
         this.id = id;
     }
 
+    @Override
     public String getCodigo() {
         return codigo;
     }
@@ -216,7 +217,12 @@ public class Producto implements Serializable {
 
     @Override
     public String toString() {
-        return this.getGramaje() + " - " + this.getNombre();
+        return codigo + " - " + nombre + " " + gramaje;
+    }
+
+    @Override
+    public String getTipo() {
+        return null;
     }
 
 }

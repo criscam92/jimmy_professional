@@ -17,6 +17,8 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import jp.entidades.Producto;
+import jp.entidades.PromocionProducto;
 import jp.facades.PromocionFacade;
 
 @ManagedBean(name = "promocionController")
@@ -27,6 +29,9 @@ public class PromocionController implements Serializable {
     private jp.facades.PromocionFacade ejbFacade;
     private List<Promocion> items = null;
     private Promocion selected;
+    private Producto producto;
+    private PromocionProducto promocionProducto;
+    private List<PromocionProducto> promocionProductosTMP = null;
 
     public PromocionController() {
     }
@@ -37,6 +42,38 @@ public class PromocionController implements Serializable {
 
     public void setSelected(Promocion selected) {
         this.selected = selected;
+    }
+
+    public Producto getProducto() {
+        return producto;
+    }
+
+    public void setProducto(Producto producto) {
+        this.producto = producto;
+    }
+
+    public List<PromocionProducto> getPromocionProductosTMP() {
+        return promocionProductosTMP;
+    }
+
+    public void setPromocionProductosTMP(List<PromocionProducto> promocionProductosTMP) {
+        this.promocionProductosTMP = promocionProductosTMP;
+    }
+
+    public PromocionProducto getPromocionProducto() {
+        return promocionProducto;
+    }
+
+    public void setPromocionProducto(PromocionProducto promocionProducto) {
+        this.promocionProducto = promocionProducto;
+    }
+
+    public PromocionFacade getEjbFacade() {
+        return ejbFacade;
+    }
+
+    public void setEjbFacade(PromocionFacade ejbFacade) {
+        this.ejbFacade = ejbFacade;
     }
 
     protected void setEmbeddableKeys() {
@@ -51,23 +88,24 @@ public class PromocionController implements Serializable {
 
     public Promocion prepareCreate() {
         selected = new Promocion();
+        promocionProducto = new PromocionProducto();
         initializeEmbeddableKey();
         return selected;
     }
 
     public void create() {
-        persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessagePromocion","CreateSuccessF"}));
+        persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessagePromocion", "CreateSuccessF"}));
         if (!JsfUtil.isValidationFailed()) {
             items = null;    // Invalidate list of items to trigger re-query.
         }
     }
 
     public void update() {
-        persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessagePromocion","UpdateSuccessF"}));
+        persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessagePromocion", "UpdateSuccessF"}));
     }
 
     public void destroy() {
-        persist(PersistAction.DELETE, JsfUtil.getMessageBundle(new String[]{"MessagePromocion","DeleteSuccessF"}));
+        persist(PersistAction.DELETE, JsfUtil.getMessageBundle(new String[]{"MessagePromocion", "DeleteSuccessF"}));
         if (!JsfUtil.isValidationFailed()) {
             selected = null; // Remove selection
             items = null;    // Invalidate list of items to trigger re-query.
@@ -130,13 +168,13 @@ public class PromocionController implements Serializable {
             return controller.getFacade().find(getKey(value));
         }
 
-        java.lang.Long getKey(String value) {
-            java.lang.Long key;
+        Long getKey(String value) {
+            Long key;
             key = Long.valueOf(value);
             return key;
         }
 
-        String getStringKey(java.lang.Long value) {
+        String getStringKey(Long value) {
             StringBuilder sb = new StringBuilder();
             sb.append(value);
             return sb.toString();
@@ -156,6 +194,15 @@ public class PromocionController implements Serializable {
             }
         }
 
+    }
+
+    public List<Producto> llenarProducto(String query) {
+        return getFacade().getProductosByQuery(query);
+    }
+
+    public void addPromocionProducto() {
+        promocionProductosTMP.add(promocionProducto);
+        promocionProducto = new PromocionProducto();
     }
 
 }
