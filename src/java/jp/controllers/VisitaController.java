@@ -21,6 +21,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import jp.entidades.VisitaProducto;
+import jp.facades.TransactionFacade;
 import jp.facades.VisitaFacade;
 import jp.facades.VisitaProductoFacade;
 import jp.util.EstadoVisita;
@@ -31,7 +32,10 @@ public class VisitaController implements Serializable {
 
     @EJB
     private jp.facades.VisitaFacade ejbFacade;
+    @EJB
     private jp.facades.VisitaProductoFacade ejbVisitaProductoFacade;
+    @EJB
+    private jp.facades.TransactionFacade ejbTransactionFacade;
     private List<Visita> items = null;
     private List<VisitaProducto> itemsTMP = null;
     private VisitaProducto visitaProducto;
@@ -83,6 +87,10 @@ public class VisitaController implements Serializable {
 
     public VisitaProductoFacade getEjbVisitaProductoFacade() {
         return ejbVisitaProductoFacade;
+    }
+    
+    public TransactionFacade getEjbTransactionFacade() {
+        return ejbTransactionFacade;
     }
 
     public Visita prepareCreate() {
@@ -233,12 +241,12 @@ public class VisitaController implements Serializable {
     }
 
     public void removeDevolucionProducto(VisitaProducto visitaProductoArg) {
-        itemsTMP.remove(visitaProductoArg);        
+        itemsTMP.remove(visitaProductoArg);
     }
-    
+
     public void createVisitaProducto() {
-        if (!itemsTMP.isEmpty() && selected != null) {
-            if (getEjbVisitaProductoFacade().createVisitaProducto(itemsTMP, selected)) {
+        if (selected != null) {
+            if (getEjbTransactionFacade().createVisitaProducto(itemsTMP, selected)) {
                 JsfUtil.addSuccessMessage(JsfUtil.getMessageBundle("MessageVisitaProducto"));
                 if (!JsfUtil.isValidationFailed()) {
                     selected = null; // Remove selection
@@ -249,5 +257,37 @@ public class VisitaController implements Serializable {
                 JsfUtil.addErrorMessage(JsfUtil.getMessageBundle("ErrorCreateDevolucionProducto"));
             }
         }
+    }
+
+    public boolean disableRealizarVisita() {
+        boolean enable = false;
+        if (selected != null && selected.getEstado() == EstadoVisita.PENDIENTE.getValor()) {
+            enable = false;
+        } else {
+            enable = true;
+        }
+        return enable;
+    }
+    
+    public boolean disableAnularVisita() {
+        boolean disable = false;
+        if (selected != null && selected.getEstado() == EstadoVisita.REALIZADA.getValor()) {
+            disable = false;
+        } else {
+            disable = true;
+        }
+        return disable;
+    }
+    
+    public void anullVisitaProducto(){
+        if (!JsfUtil.isValidationFailed() && getEjbTransactionFacade().anullVisitaProducto(selected)) {
+            JsfUtil.addSuccessMessage(JsfUtil.getMessageBundle(new String[]{"MessageVisita", "AnullSuccessF"}));
+            selected = null; // Remove selection
+            items = null;    // Invalidate list of items to trigger re-query.
+        }        
+    }
+    
+    public EstadoVisita[] getEstadosVisitas(){
+        return EstadoVisita.getFromValue(new Integer[]{0,2});
     }
 }

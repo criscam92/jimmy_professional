@@ -7,7 +7,8 @@ public enum EstadoVisita {
 
     PENDIENTE(0, "Pendiente"),
     REALIZADA(1, "Realizada"),
-    CANCELADA(2, "Cancelada");
+    CANCELADA(2, "Cancelada"),
+    ANULADA(3, "Anulada");//Si se hizo pero quedo mala
 
     private int valor;
     private String detalle;
@@ -26,10 +27,22 @@ public enum EstadoVisita {
         return null;
     }
 
+    public static EstadoVisita[] getFromValue(Integer[] arre) {
+        EstadoVisita[] estadoVisitasTMP = new EstadoVisita[arre.length];
+        int count = 0;
+        for (int b : arre) {
+            estadoVisitasTMP[count] = getFromValue(b);
+            count++;
+        }
+        System.out.println("Size-> "+estadoVisitasTMP.length);
+        return estadoVisitasTMP;
+    }
+
     public static Map<Integer, String> getMapaEstados() {
         Map<Integer, String> mapTMP = new HashMap<>();
         for (EstadoVisita estadoVisita : EstadoVisita.values()) {
             mapTMP.put(estadoVisita.getValor(), estadoVisita.getDetalle());
+
         }
         return mapTMP;
     }

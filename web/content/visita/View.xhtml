@@ -8,30 +8,76 @@
 
     <ui:composition>
 
-        <p:dialog id="VisitaViewDlg" widgetVar="VisitaViewDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.ViewVisitaTitle}">
+        <p:dialog id="VisitaViewDlg" widgetVar="VisitaViewDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.ViewVisitaTitle}" width="1200">
             <h:form id="VisitaViewForm">
                 <h:panelGroup id="display">
-                    <p:panelGrid columns="2" rendered="#{visitaController.selected != null}">
-                        <h:outputText value="#{bundle.ViewVisitaLabel_fecha}"/>
-                        <h:outputText value="#{visitaController.selected.fecha}" title="#{bundle.ViewVisitaTitle_fecha}">
-                            <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
-                        </h:outputText>
-                        <h:outputText value="#{bundle.ViewVisitaLabel_observacionesCliente}"/>
-                        <h:outputText value="#{visitaController.selected.observacionesCliente}" title="#{bundle.ViewVisitaTitle_observacionesCliente}"/>
-                        <h:outputText value="#{bundle.ViewVisitaLabel_calificacionServicio}"/>
-                        <p:rating value="#{visitaController.selected.calificacionServicio}" readonly="true"/>
-                        <h:outputText value="#{bundle.ViewVisitaLabel_puntualidadServicio}"/>
-                        <p:rating value="#{visitaController.selected.puntualidadServicio}" readonly="true"/>
-                        <h:outputText value="#{bundle.ViewVisitaLabel_cumplioExpectativas}"/>
-                        <h:outputText value="#{visitaController.getExpectativasVisita(visitaController.selected.cumplioExpectativas)}"/>
-                        <h:outputText value="#{bundle.ViewVisitaLabel_estado}"/>
-                        <h:outputText value="#{visitaController.getEstadoVisita(visitaController.selected.estado)}" title="#{bundle.ViewVisitaTitle_estado}"/>
-                        <h:outputText value="#{bundle.ViewVisitaLabel_cliente}"/>
-                        <h:outputText value="#{visitaController.selected.cliente.toString()}" title="#{bundle.ViewVisitaTitle_cliente}"/>
-                        <h:outputText value="#{bundle.ViewVisitaLabel_empleado}"/>
-                        <h:outputText value="#{visitaController.selected.empleado.toString()}" title="#{bundle.ViewVisitaTitle_empleado}"/>
+                    <p:panelGrid columns="2">
+                        <p:panelGrid columns="2" rendered="#{visitaController.selected != null}" style="width: 500px;">
+                            <p:outputLabel value="#{bundle.ViewVisitaLabel_id}"/>
+                            <h:outputText value="#{visitaController.selected.id}"/>
+                            <h:outputText value="#{bundle.ViewVisitaLabel_fecha}"/>
+                            <h:outputText value="#{visitaController.selected.fecha}" title="#{bundle.ViewVisitaTitle_fecha}">
+                                <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
+                            </h:outputText>
+                            <h:outputText value="#{bundle.ViewVisitaLabel_observacionesCliente}"/>
+                            <h:outputText value="#{visitaController.selected.observacionesCliente}" title="#{bundle.ViewVisitaTitle_observacionesCliente}"/>
+                            <h:outputText value="#{bundle.ViewVisitaLabel_calificacionServicio}"/>
+                            <p:rating value="#{visitaController.selected.calificacionServicio}" readonly="true"/>
+                            <h:outputText value="#{bundle.ViewVisitaLabel_puntualidadServicio}"/>
+                            <p:rating value="#{visitaController.selected.puntualidadServicio}" readonly="true"/>
+                            <h:outputText value="#{bundle.ViewVisitaLabel_cumplioExpectativas}"/>
+                            <h:outputText value="#{visitaController.getExpectativasVisita(visitaController.selected.cumplioExpectativas)}"/>
+                            <h:outputText value="#{bundle.ViewVisitaLabel_estado}"/>
+                            <h:outputText value="#{visitaController.getEstadoVisita(visitaController.selected.estado)}" title="#{bundle.ViewVisitaTitle_estado}"/>
+                            <h:outputText value="#{bundle.ViewVisitaLabel_cliente}"/>
+                            <h:outputText value="#{visitaController.selected.cliente.toString()}" title="#{bundle.ViewVisitaTitle_cliente}"/>
+                            <h:outputText value="#{bundle.ViewVisitaLabel_empleado}"/>
+                            <h:outputText value="#{visitaController.selected.empleado.toString()}" title="#{bundle.ViewVisitaTitle_empleado}"/>
+                        </p:panelGrid>
+
+                        <h:form id="tablaProductosByVisita">
+                            <p:panelGrid columns="1">
+                                <p:row>
+                                    <p:column>
+                                        <p:dataTable id="datalistTMP" value="#{visitaProductoController.itemsTMP}" var="itemTMP"
+                                                     paginator="true"
+                                                     rowKey="#{item.id}"
+                                                     rows="8"
+                                                     rowsPerPageTemplate="10,20,30,40,50"
+                                                     emptyMessage="#{bundle.EmptyTable}"
+                                                     paginatorPosition="bottom" style="width: 600px;">
+                                            <p:column>
+                                                <f:facet name="header">
+                                                    <h:outputText value="Producto"/>
+                                                </f:facet>
+                                                <h:outputText value="#{itemTMP.producto.toString()}"/>
+                                            </p:column>
+                                            <p:column width="100">
+                                                <f:facet name="header">
+                                                    <h:outputText value="Cantidad"/>
+                                                </f:facet>
+                                                <h:outputText value="#{itemTMP.cantidad}"/>
+                                            </p:column>
+                                            <p:column>
+                                                <f:facet name="header">
+                                                    <h:outputText value="Observación"/>                                        
+                                                </f:facet>
+                                                <h:outputText value="#{itemTMP.observacion}"/>
+                                            </p:column>
+                                        </p:dataTable>
+                                    </p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column>
+                                        <p:commandButton icon="ui-icon-close" value="Cerrar" type="button"
+                                                         onclick="PF('VisitaViewDialog').hide()"/>
+                                    </p:column>
+                                </p:row>
+                            </p:panelGrid>
+                        </h:form>
+
                     </p:panelGrid>
-                    <p:commandButton value="#{bundle.Close}" type="button" onclick="PF('VisitaViewDialog').hide()"/>
+                    <!--<p:commandButton value="#{bundle.Close}" type="button" onclick="PF('VisitaViewDialog').hide()"/>-->
                 </h:panelGroup>
             </h:form>
         </p:dialog>

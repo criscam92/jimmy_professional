@@ -3,7 +3,6 @@ package jp.controllers;
 import jp.entidades.VisitaProducto;
 import jp.util.JsfUtil;
 import jp.util.JsfUtil.PersistAction;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,8 +17,8 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import jp.entidades.Producto;
 import jp.entidades.Visita;
+import jp.facades.TransactionFacade;
 import jp.facades.VisitaProductoFacade;
 
 @ManagedBean(name = "visitaProductoController")
@@ -28,6 +27,9 @@ public class VisitaProductoController implements Serializable {
 
     @EJB
     private jp.facades.VisitaProductoFacade ejbFacade;
+    @EJB
+    private jp.facades.TransactionFacade ejbTransactionFacade;
+    
     private List<VisitaProducto> items = null;
     private List<VisitaProducto> itemsTMP = null;
     private VisitaProducto selected;
@@ -44,6 +46,14 @@ public class VisitaProductoController implements Serializable {
         this.selected = selected;
     }
 
+    public List<VisitaProducto> getItemsTMP() {
+        return itemsTMP;
+    }
+
+    public void setItemsTMP(List<VisitaProducto> itemsTMP) {
+        this.itemsTMP = itemsTMP;
+    }
+
     protected void setEmbeddableKeys() {
     }
 
@@ -52,6 +62,10 @@ public class VisitaProductoController implements Serializable {
 
     private VisitaProductoFacade getFacade() {
         return ejbFacade;
+    }
+
+    public TransactionFacade getEjbTransactionFacade() {
+        return ejbTransactionFacade;
     }
 
     public VisitaProducto prepareCreate() {
@@ -163,8 +177,9 @@ public class VisitaProductoController implements Serializable {
 
     }
     
-    public List<Producto> getProductosByVisita(Visita visita){
+    public List<VisitaProducto> getProductosByVisita(Visita visita){
         try {
+            itemsTMP = getEjbTransactionFacade().getProductosByVisita(visita);
             return getFacade().getProductosByVisita(visita);
         } catch (Exception e) {
             e.printStackTrace();

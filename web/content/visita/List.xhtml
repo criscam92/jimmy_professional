@@ -34,9 +34,20 @@
                         </div>
                         <div id="acciones">
                             <p:commandButton id="createButton" icon="ui-icon-plus"   value="#{bundle.Create}" actionListener="#{visitaController.prepareCreate}" update=":VisitaCreateForm" oncomplete="PF('VisitaCreateDialog').show()"/>
-                            <p:commandButton id="viewButton"   icon="ui-icon-search" value="#{bundle.View}" update=":VisitaViewForm" oncomplete="PF('VisitaViewDialog').show()" disabled="#{empty visitaController.selected}"/>
-                            <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":VisitaEditForm" oncomplete="PF('VisitaEditDialog').show()" disabled="#{empty visitaController.selected}"/>
-                            <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{visitaController.destroy}" update=":growl,datalist" disabled="#{empty visitaController.selected}"/>
+                            <p:commandButton id="viewButton"   icon="ui-icon-search" value="#{bundle.View}" actionListener="#{visitaProductoController.getProductosByVisita(visitaController.selected)}" 
+                                             update=":VisitaViewForm,:VisitaViewForm:tablaProductosByVisita" oncomplete="PF('VisitaViewDialog').show()" 
+                                             disabled="#{empty visitaController.selected}"/>
+                            <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":VisitaEditForm" oncomplete="PF('VisitaEditDialog').show()" disabled="#{visitaController.disableRealizarVisita() || empty visitaController.selected}"/>
+                            <p:commandButton id="deleteButton" icon="ui-icon-alert" value="#{bundle.Anull}" 
+                                             update=":growl,datalist" disabled="#{visitaController.disableAnularVisita()}">
+                                <p:confirm header="Confirmar Anular" message="¿Seguro de Anular la Visita?" icon="ui-icon-alert"/>
+                            </p:commandButton>
+                            <p:confirmDialog global="true">
+                                <p:commandButton value="Si" icon="ui-icon-check" styleClass="ui-confirmdialog-yes" actionListener="#{visitaController.anullVisitaProducto()}"/>
+                                <p:commandButton value="No" type="button" icon="ui-icon-close" styleClass="ui-confirmdialog-no"/>
+                            </p:confirmDialog>
+                            <p:commandButton id="productos" value="Realizar" update=":formProductos" oncomplete="PF('ProductosByVisitaDialog').show()"
+                                             icon="ui-icon-check" disabled="#{visitaController.disableRealizarVisita() || empty visitaController.selected}"/> 
                         </div>
                     </f:facet>
 
@@ -45,7 +56,7 @@
                             <h:outputText value="#{bundle.ListVisitaTitle_fecha}"/>
                         </f:facet>
                         <h:outputText value="#{item.fecha}">
-                            <f:convertDateTime pattern="dd/MMM/yyyy hh:mm a"  />
+                            <f:convertDateTime pattern="dd-MMM-yyyy h:mm a"/>
                         </h:outputText>
                     </p:column>
                     <p:column>
@@ -89,13 +100,6 @@
                             <h:outputText value="#{bundle.ListVisitaTitle_empleado}"/>
                         </f:facet>
                         <h:outputText value="#{item.empleado.toString()}"/>
-                    </p:column>                    
-                    <p:column style="text-align: center;">
-                        <f:facet name="header">
-                            <h:outputText value="Acciones"/>
-                        </f:facet>
-                        <p:commandButton id="productos" value="Realizar" update=":formProductos" oncomplete="PF('ProductosByVisitaDialog').show()"
-                                         disabled="#{empty visitaController.selected}"/>
                     </p:column>
                 </p:dataTable>
             </h:form>
@@ -103,7 +107,7 @@
             <ui:include src="Create.xhtml"/>
             <ui:include src="Edit.xhtml"/>
             <ui:include src="View.xhtml"/>
-            <ui:include src="ProductosByVisita.xhtml"/>
+            <ui:include src="AddProductosByVisita.xhtml"/>
         </ui:define>
     </ui:composition>
 

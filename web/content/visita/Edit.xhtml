@@ -20,14 +20,8 @@
                             <p:inputTextarea id="observacionesCliente" value="#{visitaController.selected.observacionesCliente}" title="#{bundle.EditVisitaTitle_observacionesCliente}" required="true" requiredMessage="#{bundle.EditVisitaRequiredMessage_observacionesCliente}"/>
                             <p:outputLabel value="#{bundle.EditVisitaLabel_estado}" for="estado" />
                             <p:selectOneMenu id="estado" value="#{visitaController.selected.estado}" required="true" requiredMessage="#{bundle.CreateVisitaRequiredMessage_estado}">
-                                <f:selectItems value="#{visitaController.estadosVisita}" var="item" itemLabel="#{item.detalle}" itemValue="#{item.valor}" />
+                                <f:selectItems value="#{visitaController.estadosVisitas}" var="item" itemLabel="#{item.detalle}" itemValue="#{item.valor}" />
                             </p:selectOneMenu>                        
-                            <p:outputLabel value="#{bundle.EditVisitaLabel_calificacionServicio}" for="calificacionServicio" />
-                            <p:rating id="calificacionServicio" value="#{visitaController.selected.calificacionServicio}"/>
-                            <p:outputLabel value="#{bundle.EditVisitaLabel_puntualidadServicio}" for="puntualidadServicio" />
-                            <p:rating id="puntualidadServicio" value="#{visitaController.selected.puntualidadServicio}"/>
-                            <p:outputLabel value="#{bundle.EditVisitaLabel_cumplioExpectativas}" for="cumplioExpectativas" />
-                            <p:selectBooleanCheckbox id="cumplioExpectativas" value="#{visitaController.selected.cumplioExpectativas}" required="true" requiredMessage="#{bundle.EditVisitaRequiredMessage_cumplioExpectativas}"/>
                             <p:outputLabel value="#{bundle.EditVisitaLabel_cliente}" for="cliente" />
                             <p:selectOneMenu id="cliente" value="#{visitaController.selected.cliente}" required="true" requiredMessage="#{bundle.EditVisitaRequiredMessage_cliente}">
                                 <f:selectItem  itemLabel="#{bundle.SelectOneMessage}"/>
@@ -44,6 +38,9 @@
                             </p:selectOneMenu>
 
                         </p:panelGrid>
+                        <p:commandButton actionListener="#{visitaController.update}" value="#{bundle.Save}" update=":display,:VisitaListForm:datalist,:growl" oncomplete="handleSubmit(args, 'VisitaEditDialog');"/>
+                        <p:commandButton value="#{bundle.Cancel}" type="button" onclick="PF('VisitaEditDialog').hide()"/>
+                        
                     </h:form>
                 </p:panelGrid>
             </h:panelGroup>
