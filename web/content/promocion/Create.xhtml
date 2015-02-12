@@ -26,11 +26,11 @@
                                     <p:panelGrid columns="4">
                                         <p:outputLabel value="#{bundle.CreatePromocionProductoLabel_producto}" for="producto" />
                                         
-                                        <p:autoComplete id="producto" minQueryLength="2" value="#{promocionController.promocionProducto.producto}"
-                                                        completeMethod="#{promocionController.llenarProducto}" effect="fade"/>
+                                        <p:autoComplete id="producto" minQueryLength="3" value="#{promocionController.promocionProducto.producto}" itemValue="#{pro}" 
+                                                        completeMethod="#{promocionController.llenarProducto}" effect="fade" converter="productoconverter" itemLabel="#{pro.toString()}" var="pro" />
                                         
                                         <p:inputText style="width: 30px; " id="cantidad" value="#{promocionController.promocionProducto.cantidad}" title="Cantidad" />
-                                        <p:commandButton icon="ui-icon-plus" value="Agregar" update="listPromocionProductos" actionListener="#{promocionController.addPromocionProducto()}"/>
+                                        <p:commandButton icon="ui-icon-plus" value="Agregar" update="listPromocionProductos, PromocionCreateForm2" actionListener="#{promocionController.addPromocionProducto()}"/>
                                     </p:panelGrid>
                                     <p:dataTable id="listPromocionProductos" style="width: 500px;"  value="#{promocionController.promocionProductosTMP}" var="item"
                                                  selectionMode="single" selection="#{promocionController.promocionProducto}"

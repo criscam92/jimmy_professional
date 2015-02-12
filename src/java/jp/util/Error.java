@@ -2,9 +2,13 @@ package jp.util;
 
 public class Error {
 
-    private String classError;
+    private String classError = "";
 
     public Error() {
+    }
+
+    public Error(String classError) {
+        this.classError = classError;
     }
 
     public String getClassError() {

@@ -29,7 +29,7 @@ public class ProductoController implements Serializable {
     private final Error error;
 
     public ProductoController() {
-        error = new Error();
+        error = new Error("");
     }
 
     public Producto getSelected() {
@@ -131,7 +131,7 @@ public class ProductoController implements Serializable {
         return getFacade().findAll();
     }
 
-    @FacesConverter(forClass = Producto.class)
+    @FacesConverter(forClass = Producto.class, value = "productoconverter")
     public static class ProductoControllerConverter implements Converter {
 
         @Override
@@ -144,13 +144,13 @@ public class ProductoController implements Serializable {
             return controller.getFacade().find(getKey(value));
         }
 
-        java.lang.Long getKey(String value) {
-            java.lang.Long key;
+        Long getKey(String value) {
+            Long key;
             key = Long.valueOf(value);
             return key;
         }
 
-        String getStringKey(java.lang.Long value) {
+        String getStringKey(Long value) {
             StringBuilder sb = new StringBuilder();
             sb.append(value);
             return sb.toString();

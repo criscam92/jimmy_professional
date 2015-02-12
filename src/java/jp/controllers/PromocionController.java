@@ -200,7 +200,8 @@ public class PromocionController implements Serializable {
         return getFacade().getProductosByQuery(query);
     }
 
-    public void addPromocionProducto() {
+    public void addPromocionProducto() {       
+        System.out.println("PRODUCTO PROMOCIÓN");
         promocionProductosTMP.add(promocionProducto);
         promocionProducto = new PromocionProducto();
     }

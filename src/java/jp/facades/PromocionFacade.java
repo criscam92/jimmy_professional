@@ -27,14 +27,9 @@ public class PromocionFacade extends AbstractFacade<Promocion> {
         System.out.println("Hola");
         try {
             Query q = getEntityManager().createQuery("SELECT p FROM Producto p WHERE UPPER(CONCAT(p.codigo,' - ',p.nombre)) LIKE UPPER(:param)");
-            q.setParameter("param", q + "%");
-//            q.setFirstResult(0);
-//            q.setMaxResults(10);
-            for (Producto producto : (List<Producto>) q.getResultList()) {
-                System.out.println("===================");
-                System.out.println("Nombre:" + producto.getCodigo() + " - " + producto.getNombre() + " " + producto.getGramaje() + " ml.");
-                System.out.println("===================");
-            }
+            q.setParameter("param", "%" + query + "%");
+            q.setFirstResult(0);
+            q.setMaxResults(10);
             return q.getResultList();
         } catch (Exception e) {
             e.printStackTrace();
