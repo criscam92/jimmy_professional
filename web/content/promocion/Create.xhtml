@@ -11,58 +11,64 @@
         <p:dialog id="PromocionCreateDlg" widgetVar="PromocionCreateDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.CreatePromocionTitle}">
             <h:form id="PromocionCreateForm">
                 <!--<h:panelGroup id="display">-->
-                    <p:panelGrid columns="2" rendered="#{promocionController.selected != null}">
+                <p:panelGrid columns="2" rendered="#{promocionController.selected != null}">
+                    <p:panel header="Datos Promoción">
                         <p:panelGrid columns="2">
                             <p:outputLabel value="#{bundle.CreatePromocionLabel_descripcion}" for="descripcion" />
-                            <p:inputTextarea id="descripcion" value="#{promocionController.selected.descripcion}" cols="20" style="width: 146px; " title="#{bundle.CreatePromocionTitle_descripcion}" required="true" requiredMessage="#{bundle.CreatePromocionRequiredMessage_descripcion}"/>
+                            <p:inputTextarea id="descripcion" value="#{promocionController.selected.descripcion}" rows="3"  style="width: 146px; height: 147px" title="#{bundle.CreatePromocionTitle_descripcion}" required="true" requiredMessage="#{bundle.CreatePromocionRequiredMessage_descripcion}"/>
 
                             <p:outputLabel value="#{bundle.CreatePromocionLabel_valor}" for="valor" />
                             <p:inputText id="valor" value="#{promocionController.selected.valor}" title="#{bundle.CreatePromocionTitle_valor}" required="true" requiredMessage="#{bundle.CreatePromocionRequiredMessage_valor}"/>
                         </p:panelGrid>
-
+                    </p:panel>
+                    <p:panel header="Productos">
                         <p:panelGrid columns="1">
-                            <h:form id="PromocionCreateForm2">
-                                <p:panelGrid columns="1">
-                                    <p:panelGrid columns="4">
-                                        <p:outputLabel value="#{bundle.CreatePromocionProductoLabel_producto}" for="producto" />
-                                        
-                                        <p:autoComplete id="producto" minQueryLength="3" value="#{promocionController.promocionProducto.producto}" itemValue="#{pro}" 
-                                                        completeMethod="#{promocionController.llenarProducto}" effect="fade" converter="productoconverter" itemLabel="#{pro.toString()}" var="pro" />
-                                        
-                                        <p:inputText style="width: 30px; " id="cantidad" value="#{promocionController.promocionProducto.cantidad}" title="Cantidad" />
-                                        <p:commandButton icon="ui-icon-plus" value="Agregar" update="listPromocionProductos, PromocionCreateForm2" actionListener="#{promocionController.addPromocionProducto()}"/>
-                                    </p:panelGrid>
-                                    <p:dataTable id="listPromocionProductos" style="width: 500px;"  value="#{promocionController.promocionProductosTMP}" var="item"
-                                                 selectionMode="single" selection="#{promocionController.promocionProducto}"
-                                                 paginator="true"
-                                                 rowKey="#{item.id}"
-                                                 rows="10"
-                                                 emptyMessage="#{bundle.EmptyTable}"
-                                                 paginatorPosition="bottom"
-                                                 >
+                            <p:panelGrid columns="4">
+
+                                <p:outputLabel value="#{bundle.CreatePromocionProductoLabel_producto}" for="producto" />
+                                <p:autoComplete id="producto" minQueryLength="3" value="#{promocionController.producto}"
+                                                itemValue="#{pro}" completeMethod="#{promocionController.llenarProducto}" effect="fade"
+                                                converter="productoconverter" itemLabel="#{pro.toString()}" var="pro" />
+
+                                <p:inputText style="width: 30px; " id="cantidad" value="#{promocionController.cantidad}" title="Cantidad" />
+
+                                <p:commandButton icon="ui-icon-plus" value="Agregar" update="listPromocionProductos" action="#{promocionController.addPromocionProducto}"/>
+
+                            </p:panelGrid>
+                            <p:dataTable id="listPromocionProductos" style="width: 450px;"  value="#{promocionController.promocionProductosTMP}" var="item"
+                                         selectionMode="single"
+                                         paginator="true"
+                                         rowKey="#{item.id}"
+                                         rows="3"
+                                         tableStyle="height: 125px;"
+                                         emptyMessage=""
+                                         paginatorPosition="bottom"
+                                         >
+
+                                <p:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="Producto"/>
+                                    </f:facet>
+                                    <h:outputText value="#{item.producto}"/>                        
+                                </p:column>
+                                <p:column width="50">
+                                    <f:facet name="header">
+                                        <h:outputText value="Cantidad"/>
+                                    </f:facet>
+                                    <h:outputText value="#{item.cantidad}"/>
+                                </p:column>
+                                <p:column width="30">
+                                    <f:facet name="header">
+                                        <h:outputText value="Quitar"/>
+                                    </f:facet>
+                                    <p:commandButton icon="ui-icon-close" type="button" update="listPromocionProductos"  action ="#{promocionController.removePromocionProducto(item)}"/>
+                                </p:column>
 
 
-                                        <p:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="Producto"/>
-                                            </f:facet>
-                                            <h:outputText value="#{item.producto}"/>                        
-                                        </p:column>
-                                        <p:column width="50">
-                                            <f:facet name="header">
-                                                <h:outputText value="Cantidad"/>
-                                            </f:facet>
-                                            <h:outputText value="#{item.cantidad}"/>
-                                        </p:column>
-
-                                    </p:dataTable>
-                                </p:panelGrid>
-
-                            </h:form>
+                            </p:dataTable>
                         </p:panelGrid>
-
-                    </p:panelGrid>
-                <!--</h:panelGroup>-->
+                    </p:panel>
+                </p:panelGrid>
                 <div class="botonesDialog">
                     <p:commandButton actionListener="#{promocionController.create}" value="#{bundle.Save}" update=":PromocionListForm:datalist,:growl" oncomplete="handleSubmit(args,'PromocionCreateDialog');"/>
                     <p:commandButton value="#{bundle.Cancel}" type="button" onclick="PF('PromocionCreateDialog').hide()"/>

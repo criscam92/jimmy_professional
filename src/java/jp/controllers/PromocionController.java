@@ -5,6 +5,7 @@ import jp.util.JsfUtil;
 import jp.util.JsfUtil.PersistAction;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -26,14 +27,15 @@ import jp.facades.PromocionFacade;
 public class PromocionController implements Serializable {
 
     @EJB
-    private jp.facades.PromocionFacade ejbFacade;
+    private PromocionFacade ejbFacade;
     private List<Promocion> items = null;
     private Promocion selected;
     private Producto producto;
-    private PromocionProducto promocionProducto;
+    private int cantidad;
     private List<PromocionProducto> promocionProductosTMP = null;
 
     public PromocionController() {
+        promocionProductosTMP = new ArrayList<>();
     }
 
     public Promocion getSelected() {
@@ -44,14 +46,6 @@ public class PromocionController implements Serializable {
         this.selected = selected;
     }
 
-    public Producto getProducto() {
-        return producto;
-    }
-
-    public void setProducto(Producto producto) {
-        this.producto = producto;
-    }
-
     public List<PromocionProducto> getPromocionProductosTMP() {
         return promocionProductosTMP;
     }
@@ -60,12 +54,20 @@ public class PromocionController implements Serializable {
         this.promocionProductosTMP = promocionProductosTMP;
     }
 
-    public PromocionProducto getPromocionProducto() {
-        return promocionProducto;
+    public Producto getProducto() {
+        return producto;
     }
 
-    public void setPromocionProducto(PromocionProducto promocionProducto) {
-        this.promocionProducto = promocionProducto;
+    public void setProducto(Producto producto) {
+        this.producto = producto;
+    }
+
+    public int getCantidad() {
+        return cantidad;
+    }
+
+    public void setCantidad(int cantidad) {
+        this.cantidad = cantidad;
     }
 
     public PromocionFacade getEjbFacade() {
@@ -88,7 +90,6 @@ public class PromocionController implements Serializable {
 
     public Promocion prepareCreate() {
         selected = new Promocion();
-        promocionProducto = new PromocionProducto();
         initializeEmbeddableKey();
         return selected;
     }
@@ -200,10 +201,18 @@ public class PromocionController implements Serializable {
         return getFacade().getProductosByQuery(query);
     }
 
-    public void addPromocionProducto() {       
-        System.out.println("PRODUCTO PROMOCIÓN");
-        promocionProductosTMP.add(promocionProducto);
-        promocionProducto = new PromocionProducto();
+    public void addPromocionProducto() {
+        PromocionProducto pp = new PromocionProducto();
+
+        pp.setId(promocionProductosTMP.size() + 1L);
+        pp.setProducto(producto);
+        pp.setCantidad(cantidad);
+
+        promocionProductosTMP.add(pp);
+    }
+
+    public void removePromocionProducto(PromocionProducto promocionProducto) {
+        promocionProductosTMP.remove(promocionProducto);
     }
 
 }

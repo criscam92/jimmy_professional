@@ -24,7 +24,6 @@ public class PromocionFacade extends AbstractFacade<Promocion> {
     }
 
     public List<Producto> getProductosByQuery(String query) {
-        System.out.println("Hola");
         try {
             Query q = getEntityManager().createQuery("SELECT p FROM Producto p WHERE UPPER(CONCAT(p.codigo,' - ',p.nombre)) LIKE UPPER(:param)");
             q.setParameter("param", "%" + query + "%");
