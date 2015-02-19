@@ -44,7 +44,7 @@ div.ui-menubar ul.ui-menu-list li.menuPrincipal ul.ui-menu-child{
 }
 
 .contenido div.ui-layout-unit-content{
-    padding: 20px;
+    padding: 10px 20px 20px 20px;
 }
 
 div.tabla div.ui-datatable-header {
@@ -87,4 +87,8 @@ div.botonesDialog button{
 .ui-outputlabel-rfi{
     color: #FF0000;
     font-size: 15px;
+}
+
+div.footer-index div{
+    background: none;
 }

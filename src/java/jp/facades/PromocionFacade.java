@@ -3,10 +3,12 @@ package jp.facades;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import jp.entidades.Producto;
 import jp.entidades.Promocion;
+import jp.entidades.PromocionProducto;
 
 @Stateless
 public class PromocionFacade extends AbstractFacade<Promocion> {
@@ -32,6 +34,16 @@ public class PromocionFacade extends AbstractFacade<Promocion> {
             return q.getResultList();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        return null;
+    }
+
+    public List<PromocionProducto> getProductosByPromocion(Promocion promocion) {
+        try {
+            Query query = getEntityManager().createQuery("SELECT pp FROM PromocionProducto pp WHERE pp.promocion.id = :promo");
+            query.setParameter("promo", promocion.getId());
+            return query.getResultList();
+        } catch (NoResultException e) {
         }
         return null;
     }

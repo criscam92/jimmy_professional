@@ -11,6 +11,6 @@
     </application>
     
     <lifecycle>
-        <phase-listener>com.s4.pqrv.util.MultiPageMessagesSupport</phase-listener> 
+        <phase-listener>jp.util.MultiPageMessagesSupport</phase-listener> 
     </lifecycle>
 </faces-config>

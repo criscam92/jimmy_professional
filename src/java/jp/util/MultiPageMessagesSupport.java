@@ -1,4 +1,4 @@
-package com.s4.pqrv.util;
+package jp.util;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -52,8 +52,7 @@ public class MultiPageMessagesSupport implements PhaseListener {
         if (messages.isEmpty())
             return 0;
         Map sessionMap = facesContext.getExternalContext().getSessionMap();        
-        Set<FacesMessage> existingMessages = (Set<FacesMessage>) sessionMap
-                .get(sessionToken);
+        Set<FacesMessage> existingMessages = (Set<FacesMessage>) sessionMap.get(sessionToken);
         if (existingMessages != null) {
             existingMessages.addAll(messages);
         } else {
@@ -65,8 +64,7 @@ public class MultiPageMessagesSupport implements PhaseListener {
     @SuppressWarnings("unchecked")
     private int restoreMessages(FacesContext facesContext) {
         Map sessionMap = facesContext.getExternalContext().getSessionMap();
-        Set<FacesMessage> messages = (Set<FacesMessage>) sessionMap
-                .remove(sessionToken);
+        Set<FacesMessage> messages = (Set<FacesMessage>) sessionMap.remove(sessionToken);
         if (messages == null)
             return 0;
         int restoredCount = messages.size();
