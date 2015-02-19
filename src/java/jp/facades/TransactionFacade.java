@@ -136,7 +136,7 @@ public class TransactionFacade {
         try {
             userTransaction.begin();
             Recargo recargoTMP = new Recargo();
-            
+
             recargoTMP.setId(1);
             recargoTMP.setRecargoLocal(r.getRecargoLocal());
             recargoTMP.setRecargoNacional(r.getRecargoNacional());
@@ -193,5 +193,104 @@ public class TransactionFacade {
             }
         }
         return complete;
+    }
+
+    public boolean createPromocion(Promocion p, List<PromocionProducto> promocionProductos) {
+        userTransaction = sessionContext.getUserTransaction();
+        try {
+            userTransaction.begin();
+
+            Promocion proTMP = new Promocion();
+            proTMP.setDescripcion(p.getDescripcion());
+            proTMP.setValor(p.getValor());
+            getEntityManager().merge(proTMP);
+
+            for (PromocionProducto pp : promocionProductos) {
+                pp.setId(null);
+                pp.setPromocion(proTMP);
+                getEntityManager().merge(pp);
+            }
+
+            userTransaction.commit();
+            return true;
+        } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
+            try {
+                System.out.println("======>");
+                e.printStackTrace();
+                System.out.println("<======");
+                userTransaction.rollback();
+            } catch (IllegalStateException | SecurityException | SystemException es) {
+                System.out.println("======>");
+                es.printStackTrace();
+                System.out.println("<======");
+            }
+        }
+        return false;
+    }
+
+    public boolean updatePromocion(Promocion promocion, List<PromocionProducto> promocionProductosGuardar, List<PromocionProducto> promocionProductosEliminar) {
+        userTransaction = sessionContext.getUserTransaction();
+        try {
+            userTransaction.begin();
+            getEntityManager().merge(promocion);
+
+            for (PromocionProducto pp : promocionProductosEliminar) {
+                System.out.println("Eliminar");
+                PromocionProducto ppTMP = getEntityManager().find(PromocionProducto.class, pp.getId());
+                getEntityManager().remove(ppTMP);
+            }
+
+            System.out.println("Sali Eliminar");
+            for (PromocionProducto pp : promocionProductosGuardar) {
+                pp.setId(null);
+                pp.setPromocion(promocion);
+                getEntityManager().merge(pp);
+            }
+
+            userTransaction.commit();
+            return true;
+        } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
+            try {
+                System.out.println("======>");
+                e.printStackTrace();
+                System.out.println("<======");
+                userTransaction.rollback();
+            } catch (IllegalStateException | SecurityException | SystemException es) {
+                System.out.println("======>");
+                es.printStackTrace();
+                System.out.println("<======");
+            }
+        }
+        return false;
+    }
+
+    public boolean deletePromocion(Promocion promocion) {
+        userTransaction = sessionContext.getUserTransaction();
+        try {
+            userTransaction.begin();
+
+            Query query1 = getEntityManager().createQuery("DELETE FROM PromocionProducto pp WHERE pp.promocion.id = :promo");
+            query1.setParameter("promo", promocion.getId());
+            query1.executeUpdate();
+
+            Query query2 = getEntityManager().createQuery("DELETE FROM Promocion p WHERE p.id = :promo");
+            query2.setParameter("promo", promocion.getId());
+            query2.executeUpdate();
+
+            userTransaction.commit();
+            return true;
+        } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
+            try {
+                System.out.println("======>");
+                e.printStackTrace();
+                System.out.println("<======");
+                userTransaction.rollback();
+            } catch (IllegalStateException | SecurityException | SystemException es) {
+                System.out.println("======>");
+                es.printStackTrace();
+                System.out.println("<======");
+            }
+        }
+        return false;
     }
 }
