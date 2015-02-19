@@ -17,38 +17,45 @@
                             <p:inputText id="nombre" value="#{clienteController.selected.nombre}" title="#{bundle.CreateClienteTitle_nombre}" required="true" requiredMessage="#{bundle.CreateClienteRequiredMessage_nombre}"/>
                             <p:outputLabel value="#{bundle.CreateClienteLabel_direccion}" for="direccion" />
                             <p:inputText id="direccion" value="#{clienteController.selected.direccion}" title="#{bundle.CreateClienteTitle_direccion}" required="true" requiredMessage="#{bundle.CreateClienteRequiredMessage_direccion}"/>
-                            <p:outputLabel value="#{bundle.CreateClienteLabel_barrio}" for="barrio" />
-                            <p:inputText id="barrio" value="#{clienteController.selected.barrio}" title="#{bundle.CreateClienteTitle_barrio}" required="true" requiredMessage="#{bundle.CreateClienteRequiredMessage_barrio}"/>
-                            <p:outputLabel value="#{bundle.CreateClienteLabel_telefonos}" for="telefonos" />
-                            <p:inputText id="telefonos" value="#{clienteController.selected.telefonos}" title="#{bundle.CreateClienteTitle_telefonos}" />
+                            <p:outputLabel value="#{bundle.CreateClienteLabel_ciudad}" for="ciudad" />
+                            <p:selectOneMenu converter="ciudadconverter" style="width: 155px" id="ciudad" value="#{clienteController.selected.ciudad}"
+                                             required="true" requiredMessage="#{bundle.EditClienteRequiredMessage_ciudad}">
+                                <p:ajax update="checkRecargo,tarifaEspecial" listener="#{clienteController.getRecargoByUbicacionCiudad(clienteController.selected.ciudad)}"/>
+                                <f:selectItem itemLabel="#{bundle.SelectOneMessage}" itemValue="#{null}"/>
+                                <f:selectItems  value="#{ciudadController.itemsAvailableSelectOne}"
+                                                var="ciudadItem"
+                                                itemValue="#{ciudadItem}"/>
+                            </p:selectOneMenu>
                             <p:outputLabel value="#{bundle.CreateClienteLabel_cupoCredito}" for="cupoCredito" />
                             <p:inputText id="cupoCredito" value="#{clienteController.selected.cupoCredito}" title="#{bundle.CreateClienteTitle_cupoCredito}" required="true" requiredMessage="#{bundle.CreateClienteRequiredMessage_cupoCredito}"/>
-                        </p:panelGrid>
-                        <p:panelGrid columns="2"> 
-                            <p:outputLabel value="#{bundle.CreateClienteLabel_tarifaEspecial}" for="tarifaEspecial" />
-                            <p:inputText id="tarifaEspecial" value="#{clienteController.selected.tarifaEspecial}" title="#{bundle.CreateClienteTitle_tarifaEspecial}" required="true" requiredMessage="#{bundle.CreateClienteRequiredMessage_tarifaEspecial}"/>
-                            <p:outputLabel value="#{bundle.CreateClienteLabel_ciudad}" for="ciudad" />
-                            <p:selectOneMenu style="width: 155px" id="ciudad" value="#{clienteController.selected.ciudad}" required="true" requiredMessage="#{bundle.EditClienteRequiredMessage_ciudad}">
-                                <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>
-                                <f:selectItems value="#{ciudadController.itemsAvailableSelectOne}"
-                                               var="ciudadItem"
-                                               itemValue="#{ciudadItem}"/>
-                            </p:selectOneMenu>
                             <p:outputLabel value="#{bundle.CreateClienteLabel_empleado}" for="empleado" />
                             <p:selectOneMenu style="width: 155px" id="empleado" value="#{clienteController.selected.empleado}" required="true" requiredMessage="#{bundle.EditClienteRequiredMessage_empleado}">
                                 <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>
                                 <f:selectItems value="#{empleadoController.itemsAvailableSelectOne}"
                                                var="empleadoItem"
                                                itemValue="#{empleadoItem}"/>
-                            </p:selectOneMenu>
+                            </p:selectOneMenu>                            
+                        </p:panelGrid>
+                        <p:panelGrid columns="2"> 
                             <p:outputLabel value="#{bundle.CreateClienteLabel_tipo}" for="tipo" />
-                            <p:selectOneMenu style="width: 155px" id="tipo" value="#{clienteController.selected.tipo}" required="true" requiredMessage="#{bundle.EditClienteRequiredMessage_tipo}">
+                            <p:selectOneMenu style="width: 155px" id="tipo" value="#{clienteController.selected.tipo}"
+                                             required="true" requiredMessage="#{bundle.EditClienteRequiredMessage_tipo}">
                                 <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>
                                 <f:selectItems value="#{tipoClienteController.itemsAvailableSelectOne}"
                                                var="tipoItem"
                                                itemValue="#{tipoItem}"/>
                             </p:selectOneMenu>
-                            <p:outputLabel style="height: 500px"/>
+                            <p:outputLabel value="#{bundle.CreateClienteLabel_barrio}" for="barrio" />
+                            <p:inputText id="barrio" value="#{clienteController.selected.barrio}" title="#{bundle.CreateClienteTitle_barrio}" required="true" requiredMessage="#{bundle.CreateClienteRequiredMessage_barrio}"/>
+                            <p:outputLabel value="#{bundle.CreateClienteLabel_telefonos}" for="telefonos" />
+                            <p:inputText id="telefonos" value="#{clienteController.selected.telefonos}" title="#{bundle.CreateClienteTitle_telefonos}" />
+                            <p:outputLabel value="#{bundle.MessageCreateRecargoForm}"/>
+                            <p:selectBooleanCheckbox id="checkRecargo" value="#{clienteController.recargo}" disabled="#{clienteController.comprobarCiudad()}">
+                                <p:ajax update="tarifaEspecial"/>
+                            </p:selectBooleanCheckbox>
+                            <p:outputLabel value="#{bundle.CreateClienteLabel_tarifaEspecial}" for="tarifaEspecial"/>
+                            <p:inputText id="tarifaEspecial" value="#{clienteController.selected.tarifaEspecial}"
+                                         title="#{bundle.CreateClienteTitle_tarifaEspecial}" disabled="#{!clienteController.recargo}"/>
                         </p:panelGrid>
                     </p:panelGrid>
                 </h:panelGroup>
@@ -58,6 +65,11 @@
                 </div>
             </h:form>
         </p:dialog>
+        <script type="text/javascript">
+            function deshabilitarCheck() {
 
+            }
+
+        </script>
     </ui:composition>
 </html>

@@ -1,122 +1,129 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:f="http://xmlns.jcp.org/jsf/core"
-      xmlns:p="http://primefaces.org/ui">
-
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
     <ui:composition template="/index.xhtml">
-
-
         <ui:define name="title">
             <h:outputText value="#{bundle.ListFacturaTitle}"></h:outputText>
         </ui:define>
-
+        
         <ui:define name="body">
-            <h:form id="FacturaListForm">
-                <p:panel header="#{bundle.ListFacturaTitle}">
-                    <p:dataTable id="datalist" value="#{facturaController.items}" var="item"
-                                 selectionMode="single" selection="#{facturaController.selected}"
-                                 paginator="true"
-                                 rowKey="#{item.id}"
-                                 rows="10"
-                                 rowsPerPageTemplate="10,20,30,40,50"
-                                 >
+            <h:form id="VisitaListForm">
+                <p:dataTable styleClass="tabla" id="datalist" value="#{facturaController.items}" var="item"
+                             selectionMode="single" selection="#{facturaController.selected}" widgetVar="tblFactura"
+                             paginator="true"
+                             rowKey="#{item.id}"
+                             rows="10"
+                             rowsPerPageTemplate="10,20,30,40,50"
+                             emptyMessage="#{bundle.EmptyTable}"
+                             paginatorPosition="bottom"
+                             >
 
-                        <p:ajax event="rowSelect"   update="createButton viewButton editButton deleteButton"/>
-                        <p:ajax event="rowUnselect" update="createButton viewButton editButton deleteButton"/>
+                    <p:ajax event="rowSelect"   update="productos createButton viewButton editButton deleteButton"/>
+                    <p:ajax event="rowUnselect" update="productos createButton viewButton editButton deleteButton"/>
 
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="#{bundle.ListFacturaTitle_id}"/>
-                            </f:facet>
-                            <h:outputText value="#{item.id}"/>
-                        </p:column>
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="#{bundle.ListFacturaTitle_fecha}"/>
-                            </f:facet>
-                            <h:outputText value="#{item.fecha}">
-                                <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
-                            </h:outputText>
-                        </p:column>
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="#{bundle.ListFacturaTitle_fechaVencimiento}"/>
-                            </f:facet>
-                            <h:outputText value="#{item.fechaVencimiento}">
-                                <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
-                            </h:outputText>
-                        </p:column>
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="#{bundle.ListFacturaTitle_totalUnidadVentas}"/>
-                            </f:facet>
-                            <h:outputText value="#{item.totalUnidadVentas}"/>
-                        </p:column>
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="#{bundle.ListFacturaTitle_totalUnidadBonificaciones}"/>
-                            </f:facet>
-                            <h:outputText value="#{item.totalUnidadBonificaciones}"/>
-                        </p:column>
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="#{bundle.ListFacturaTitle_totalBruto}"/>
-                            </f:facet>
-                            <h:outputText value="#{item.totalBruto}"/>
-                        </p:column>
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="#{bundle.ListFacturaTitle_descuento}"/>
-                            </f:facet>
-                            <h:outputText value="#{item.descuento}"/>
-                        </p:column>
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="#{bundle.ListFacturaTitle_subtotal}"/>
-                            </f:facet>
-                            <h:outputText value="#{item.subtotal}"/>
-                        </p:column>
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="#{bundle.ListFacturaTitle_totalPagar}"/>
-                            </f:facet>
-                            <h:outputText value="#{item.totalPagar}"/>
-                        </p:column>
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="#{bundle.ListFacturaTitle_observaciones}"/>
-                            </f:facet>
-                            <h:outputText value="#{item.observaciones}"/>
-                        </p:column>
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="#{bundle.ListFacturaTitle_cliente}"/>
-                            </f:facet>
-                            <h:outputText value="#{item.cliente}"/>
-                        </p:column>
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="#{bundle.ListFacturaTitle_empleado}"/>
-                            </f:facet>
-                            <h:outputText value="#{item.empleado}"/>
-                        </p:column>
-                        <f:facet name="footer">
-                            <p:commandButton id="createButton" icon="ui-icon-plus"   value="#{bundle.Create}" actionListener="#{facturaController.prepareCreate}" update=":FacturaCreateForm" oncomplete="PF('FacturaCreateDialog').show()"/>
-                            <p:commandButton id="viewButton"   icon="ui-icon-search" value="#{bundle.View}" update=":FacturaViewForm" oncomplete="PF('FacturaViewDialog').show()" disabled="#{empty facturaController.selected}"/>
-                            <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":FacturaEditForm" oncomplete="PF('FacturaEditDialog').show()" disabled="#{empty facturaController.selected}"/>
-                            <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{facturaController.destroy}" update=":growl,datalist" disabled="#{empty facturaController.selected}"/>
+                    <f:facet name="header">
+                        <div id="titulo">
+                            Pedido de Productos
+                        </div>
+                        <div id="acciones">
+                            <p:commandButton id="createButton" icon="ui-icon-plus" value="#{bundle.Create}" action="#{facturaController.redirectCreateFactura()}"/>
+                            <p:commandButton id="viewButton"   icon="ui-icon-search" value="#{bundle.View}" actionListener="#{visitaProductoController.getProductosByVisita(visitaController.selected)}" 
+                                             update=":VisitaViewForm,:VisitaViewForm:tablaProductosByVisita" oncomplete="PF('VisitaViewDialog').show()" 
+                                             disabled="#{empty facturaController.selected}"/>
+                            <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":VisitaEditForm" oncomplete="PF('VisitaEditDialog').show()" disabled="#{empty facturaController.selected}"/>
+                            <p:commandButton id="deleteButton" icon="ui-icon-alert" value="#{bundle.Anull}" 
+                                             update=":growl,datalist" disabled="#{empty facturaController.selected}">
+                                <p:confirm header="Confirmar Anular" message="¿Seguro de Anular la Visita?" icon="ui-icon-alert"/>
+                            </p:commandButton>
+                            <p:confirmDialog global="true">
+                                <p:commandButton value="Si" icon="ui-icon-check" styleClass="ui-confirmdialog-yes" actionListener="#{visitaController.anullVisitaProducto()}"/>
+                                <p:commandButton value="No" type="button" icon="ui-icon-close" styleClass="ui-confirmdialog-no"/>
+                            </p:confirmDialog>
+                            <p:commandButton id="productos" value="Realizar" oncomplete="PF('ProductosByVisitaDialog').show()"
+                                             icon="ui-icon-check" disabled="#{empty facturaController.selected}"/> 
+                        </div>
+                    </f:facet>
+
+                    
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.MessageFacturaOrdenPedido}"/>
                         </f:facet>
-                    </p:dataTable>
-                </p:panel>
+                        <h:outputText value="#{item.ordenPedido}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.ListVisitaTitle_fecha}"/>
+                        </f:facet>
+                        <h:outputText value="#{item.fecha}">
+                            <f:convertDateTime pattern="dd-MMM-yyyy h:mm a"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.ListFacturaTitle_cliente}"/>
+                        </f:facet>
+                        <h:outputText value="#{item.cliente}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.ViewClienteTitle_direccion}"/>
+                        </f:facet>
+                        <h:outputText value="#{item.cliente.direccion}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.MeesageTipoPago}"/>
+                        </f:facet>
+                        <h:outputText value="#{item.tipo_pago}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.CreateDevolucionTitle_observaciones}"/>
+                        </f:facet>
+                        <h:outputText value="#{item.observaciones}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.CreateFacturaLabel_totalUnidadVentas}"/>
+                        </f:facet>
+                        <h:outputText value="#{contar}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.CreateFacturaLabel_totalUnidadBonificaciones}"/>
+                        </f:facet>
+                        <h:outputText value="#{contar}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.CreateFacturaTitle_totalBruto}"/>
+                        </f:facet>
+                        <h:outputText value="#{item.totalBruto}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.MessageFacturaDescuento}"/>
+                        </f:facet>
+                        <h:outputText value="#{item.cliente.tarifaEspecial}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.CreateFacturaTitle_totalPagar}"/>
+                        </f:facet>
+                        <h:outputText value="#{item.totalPagar}"/>
+                    </p:column>
+                </p:dataTable>
             </h:form>
-
-            <ui:include src="Create.xhtml"/>
+            
             <ui:include src="Edit.xhtml"/>
             <ui:include src="View.xhtml"/>
         </ui:define>
+        
     </ui:composition>
-
 </html>
+

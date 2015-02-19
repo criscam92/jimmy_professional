@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <ui:composition template="/index.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.MessageRecargoTitle}"></h:outputText>
+        </ui:define>
+
+        <ui:define name="body">
+            <h:form id="formRecargo" >
+                <h:panelGroup id="display">
+
+                    <p:panel header="Datos Recargos">
+                        <p:panelGrid columns="8">
+                            <p:outputLabel value="#{bundle.MessageRecargoLocal}" for="recargo_local"/>
+                            <p:inputText id="recargo_local" value="#{recargoController.selected.recargoLocal}" validatorMessage="El cargo local debe estar entre 0.0 y 100">
+                                <f:validateDoubleRange minimum="0.0" maximum="100" for="recargo_local"/>
+                            </p:inputText>
+                            
+                            <p:outputLabel value="#{bundle.MessageRecargoNacional}" for="recargo_nacional"/>
+                            <p:inputText id="recargo_nacional" value="#{recargoController.selected.recargoNacional}" validatorMessage="El cargo nacional debe estar entre 0.0 y 100">
+                                <f:validateDoubleRange minimum="0.0" maximum="100" for="recargo_nacional"/>
+                            </p:inputText>
+
+                            <p:outputLabel value="#{bundle.MessageRecargoInternacional}" for="recargo_internacional"/>
+                            <p:inputText id="recargo_internacional" value="#{recargoController.selected.recargoInternacional}" validatorMessage="El cargo internacional debe estar entre 0.0 y 100">
+                                <f:validateDoubleRange minimum="0.0" maximum="100" for="recargo_internacional"/>
+                            </p:inputText>
+                            
+                            <p:outputLabel value="#{bundle.CreateClienteLabel_ciudad}" for="ciudad" />
+                            <p:selectOneMenu converter="ciudadconverter" style="width: 155px" id="ciudad" value="#{recargoController.selected.ciudad}" 
+                                             required="true" requiredMessage="#{bundle.EditClienteRequiredMessage_ciudad}">
+                                <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>
+                                <f:selectItems value="#{ciudadController.itemsAvailableSelectOne}"
+                                               var="ciudadItem"
+                                               itemValue="#{ciudadItem}"/>
+                            </p:selectOneMenu>
+                            
+                            <p:commandButton icon="ui-icon-disk" value="#{bundle.Save}" action="#{recargoController.crearRecargo()}"
+                                             update="display,formRecargo,:growl"/>
+                        </p:panelGrid>
+                    </p:panel><br/>
+                </h:panelGroup>
+                
+
+            </h:form>
+        </ui:define>
+
+    </ui:composition>
+</html>
+

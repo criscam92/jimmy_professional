@@ -21,6 +21,7 @@ import javax.transaction.UserTransaction;
 import jp.entidades.Producto;
 import jp.entidades.Promocion;
 import jp.entidades.PromocionProducto;
+import jp.entidades.Recargo;
 import jp.entidades.Visita;
 import jp.entidades.VisitaProducto;
 import jp.util.EstadoVisita;
@@ -55,6 +56,7 @@ public class TransactionFacade {
     }
 
     public boolean createVisitaProducto(List<VisitaProducto> visitaProducto, Visita v) {
+        System.out.println("Creando visitaProducto de la visita-> " + v.getId());
         boolean complete = false;
         userTransaction = sessionContext.getUserTransaction();
         try {
@@ -64,6 +66,9 @@ public class TransactionFacade {
             visitaTMP.setCalificacionServicio(v.getCalificacionServicio());
             visitaTMP.setPuntualidadServicio(v.getPuntualidadServicio());
             visitaTMP.setCumplioExpectativas(v.getCumplioExpectativas());
+            visitaTMP.setObservacionesCliente(v.getObservacionesCliente());
+            System.out.println("Setters de la visita.estado-> " + visitaTMP.getEstado() + "\nSetters de la visita.calificacion-> " + visitaTMP.getCalificacionServicio()
+                    + "\nSetters de la visita.puntualidad-> " + visitaTMP.getPuntualidadServicio() + "\nSetters de la visita.expectativas-> " + visitaTMP.getCumplioExpectativas());
             em.merge(visitaTMP);
             if (!visitaProducto.isEmpty()) {
                 for (VisitaProducto visitasProductoTMP : visitaProducto) {
@@ -121,6 +126,41 @@ public class TransactionFacade {
         }
 
         return result;
+    }
+
+    public boolean createUpdateRecargo(Recargo r) {
+        System.out.println("Parametros del recargo nuevo-> \n0- " + r.getId() + " \n1-" + r.getRecargoLocal() + "\n2-" + r.getRecargoNacional()
+                + "\n3-" + r.getRecargoInternacional() + "\n4-" + r.getCiudad());
+        boolean complete = false;
+        userTransaction = sessionContext.getUserTransaction();
+        try {
+            userTransaction.begin();
+            Recargo recargoTMP = new Recargo();
+            
+            recargoTMP.setId(1);
+            recargoTMP.setRecargoLocal(r.getRecargoLocal());
+            recargoTMP.setRecargoNacional(r.getRecargoNacional());
+            recargoTMP.setRecargoInternacional(r.getRecargoInternacional());
+            recargoTMP.setCiudad(r.getCiudad());
+
+            em.merge(recargoTMP);
+            userTransaction.commit();
+            complete = true;
+
+        } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
+            complete = false;
+            try {
+                System.out.println("======>");
+                e.printStackTrace();
+                System.out.println("<======");
+                userTransaction.rollback();
+            } catch (IllegalStateException | SecurityException | SystemException es) {
+                System.out.println("======>");
+                es.printStackTrace();
+                System.out.println("<======");
+            }
+        }
+        return complete;
     }
 
     public boolean addPromocionProducto(List<Producto> productos, Promocion promocion) {

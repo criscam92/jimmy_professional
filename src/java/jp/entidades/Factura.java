@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package jp.entidades;
 
 import java.io.Serializable;
@@ -29,25 +24,18 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-/**
- *
- * @author CRISTIAN
- */
 @Entity
 @Table(catalog = "jimmy_professional", schema = "public")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Factura.findAll", query = "SELECT f FROM Factura f"),
     @NamedQuery(name = "Factura.findById", query = "SELECT f FROM Factura f WHERE f.id = :id"),
+    @NamedQuery(name = "Factura.findByCodigo", query = "SELECT f FROM Factura f WHERE f.orden_pedido = :orden_pedido"),
     @NamedQuery(name = "Factura.findByFecha", query = "SELECT f FROM Factura f WHERE f.fecha = :fecha"),
-    @NamedQuery(name = "Factura.findByFechaVencimiento", query = "SELECT f FROM Factura f WHERE f.fechaVencimiento = :fechaVencimiento"),
-    @NamedQuery(name = "Factura.findByTotalUnidadVentas", query = "SELECT f FROM Factura f WHERE f.totalUnidadVentas = :totalUnidadVentas"),
-    @NamedQuery(name = "Factura.findByTotalUnidadBonificaciones", query = "SELECT f FROM Factura f WHERE f.totalUnidadBonificaciones = :totalUnidadBonificaciones"),
+    @NamedQuery(name = "Factura.findByObservaciones", query = "SELECT f FROM Factura f WHERE f.observaciones = :observaciones"),
     @NamedQuery(name = "Factura.findByTotalBruto", query = "SELECT f FROM Factura f WHERE f.totalBruto = :totalBruto"),
     @NamedQuery(name = "Factura.findByDescuento", query = "SELECT f FROM Factura f WHERE f.descuento = :descuento"),
-    @NamedQuery(name = "Factura.findBySubtotal", query = "SELECT f FROM Factura f WHERE f.subtotal = :subtotal"),
-    @NamedQuery(name = "Factura.findByTotalPagar", query = "SELECT f FROM Factura f WHERE f.totalPagar = :totalPagar"),
-    @NamedQuery(name = "Factura.findByObservaciones", query = "SELECT f FROM Factura f WHERE f.observaciones = :observaciones")})
+    @NamedQuery(name = "Factura.findByTotalPagar", query = "SELECT f FROM Factura f WHERE f.totalPagar = :totalPagar")})
 public class Factura implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -57,22 +45,21 @@ public class Factura implements Serializable {
     private Long id;
     @Basic(optional = false)
     @NotNull
+    @Size(min = 1, max = 45)
+    @Column(nullable = false, length = 45)
+    private String orden_pedido;
+    @Basic(optional = false)
+    @NotNull
     @Column(nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date fecha;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "fecha_vencimiento", nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date fechaVencimiento;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "total_unidad_ventas", nullable = false)
-    private int totalUnidadVentas;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "total_unidad_bonificaciones", nullable = false)
-    private int totalUnidadBonificaciones;
+    @Column(name = "tipo_pago", nullable = false)
+    private Integer tipo_pago;
+    @Size(max = 200)
+    @Column(length = 200)
+    private String observaciones;
     @Basic(optional = false)
     @NotNull
     @Column(name = "total_bruto", nullable = false)
@@ -82,15 +69,8 @@ public class Factura implements Serializable {
     private Double descuento;
     @Basic(optional = false)
     @NotNull
-    @Column(nullable = false)
-    private double subtotal;
-    @Basic(optional = false)
-    @NotNull
     @Column(name = "total_pagar", nullable = false)
     private double totalPagar;
-    @Size(max = 200)
-    @Column(length = 200)
-    private String observaciones;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "factura", fetch = FetchType.LAZY)
     private List<Pago> pagoList;
     @JoinColumn(name = "cliente", referencedColumnName = "id", nullable = false)
@@ -109,14 +89,11 @@ public class Factura implements Serializable {
         this.id = id;
     }
 
-    public Factura(Long id, Date fecha, Date fechaVencimiento, int totalUnidadVentas, int totalUnidadBonificaciones, double totalBruto, double subtotal, double totalPagar) {
+    public Factura(Long id, String codigo, Date fecha, double totalBruto, double totalPagar) {
         this.id = id;
+        this.orden_pedido = codigo;
         this.fecha = fecha;
-        this.fechaVencimiento = fechaVencimiento;
-        this.totalUnidadVentas = totalUnidadVentas;
-        this.totalUnidadBonificaciones = totalUnidadBonificaciones;
         this.totalBruto = totalBruto;
-        this.subtotal = subtotal;
         this.totalPagar = totalPagar;
     }
 
@@ -128,6 +105,14 @@ public class Factura implements Serializable {
         this.id = id;
     }
 
+    public String getOrdenPedido() {
+        return orden_pedido;
+    }
+
+    public void setOrdenPedido(String codigo) {
+        this.orden_pedido = codigo;
+    }
+
     public Date getFecha() {
         return fecha;
     }
@@ -136,28 +121,20 @@ public class Factura implements Serializable {
         this.fecha = fecha;
     }
 
-    public Date getFechaVencimiento() {
-        return fechaVencimiento;
+    public String getObservaciones() {
+        return observaciones;
     }
 
-    public void setFechaVencimiento(Date fechaVencimiento) {
-        this.fechaVencimiento = fechaVencimiento;
+    public void setObservaciones(String observaciones) {
+        this.observaciones = observaciones;
     }
 
-    public int getTotalUnidadVentas() {
-        return totalUnidadVentas;
+    public Integer getTipo_pago() {
+        return tipo_pago;
     }
 
-    public void setTotalUnidadVentas(int totalUnidadVentas) {
-        this.totalUnidadVentas = totalUnidadVentas;
-    }
-
-    public int getTotalUnidadBonificaciones() {
-        return totalUnidadBonificaciones;
-    }
-
-    public void setTotalUnidadBonificaciones(int totalUnidadBonificaciones) {
-        this.totalUnidadBonificaciones = totalUnidadBonificaciones;
+    public void setTipo_pago(Integer tipo_pago) {
+        this.tipo_pago = tipo_pago;
     }
 
     public double getTotalBruto() {
@@ -176,28 +153,12 @@ public class Factura implements Serializable {
         this.descuento = descuento;
     }
 
-    public double getSubtotal() {
-        return subtotal;
-    }
-
-    public void setSubtotal(double subtotal) {
-        this.subtotal = subtotal;
-    }
-
     public double getTotalPagar() {
         return totalPagar;
     }
 
     public void setTotalPagar(double totalPagar) {
         this.totalPagar = totalPagar;
-    }
-
-    public String getObservaciones() {
-        return observaciones;
-    }
-
-    public void setObservaciones(String observaciones) {
-        this.observaciones = observaciones;
     }
 
     @XmlTransient
@@ -256,7 +217,7 @@ public class Factura implements Serializable {
 
     @Override
     public String toString() {
-        return "jp.entidades.Factura[ id=" + id + " ]";
+        return this.getOrdenPedido()+" - "+this.getCliente();
     }
     
 }

@@ -42,7 +42,7 @@
                                         <p:dataTable id="datalistTMP" value="#{visitaProductoController.itemsTMP}" var="itemTMP"
                                                      paginator="true"
                                                      rowKey="#{item.id}"
-                                                     rows="8"
+                                                     rows="5"
                                                      rowsPerPageTemplate="10,20,30,40,50"
                                                      emptyMessage="#{bundle.EmptyTable}"
                                                      paginatorPosition="bottom" style="width: 600px;">
@@ -57,12 +57,6 @@
                                                     <h:outputText value="Cantidad"/>
                                                 </f:facet>
                                                 <h:outputText value="#{itemTMP.cantidad}"/>
-                                            </p:column>
-                                            <p:column>
-                                                <f:facet name="header">
-                                                    <h:outputText value="Observación"/>                                        
-                                                </f:facet>
-                                                <h:outputText value="#{itemTMP.observacion}"/>
                                             </p:column>
                                         </p:dataTable>
                                     </p:column>

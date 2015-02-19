@@ -6,50 +6,108 @@
       xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:p="http://primefaces.org/ui">
 
-    <ui:composition>
+    <ui:composition template="/index.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.MessageCreateOrdenPedido}"/>
+        </ui:define>
+        <ui:define name="body">
 
-        <p:dialog id="FacturaCreateDlg" widgetVar="FacturaCreateDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.CreateFacturaTitle}">
-            <h:form id="FacturaCreateForm">
-                <h:panelGroup id="display">
-                    <p:panelGrid columns="2" rendered="#{facturaController.selected != null}">
-                        <p:outputLabel value="#{bundle.CreateFacturaLabel_id}" for="id" />
-                        <p:inputText id="id" value="#{facturaController.selected.id}" title="#{bundle.CreateFacturaTitle_id}" required="true" requiredMessage="#{bundle.CreateFacturaRequiredMessage_id}"/>
-                        <p:outputLabel value="#{bundle.CreateFacturaLabel_fecha}" for="fecha" />
-                        <p:calendar id="fecha" pattern="MM/dd/yyyy HH:mm:ss" value="#{facturaController.selected.fecha}" title="#{bundle.EditFacturaTitle_fecha}" required="true" requiredMessage="#{bundle.EditFacturaRequiredMessage_fecha}" showOn="button"/>
-                        <p:outputLabel value="#{bundle.CreateFacturaLabel_fechaVencimiento}" for="fechaVencimiento" />
-                        <p:calendar id="fechaVencimiento" pattern="MM/dd/yyyy HH:mm:ss" value="#{facturaController.selected.fechaVencimiento}" title="#{bundle.EditFacturaTitle_fechaVencimiento}" required="true" requiredMessage="#{bundle.EditFacturaRequiredMessage_fechaVencimiento}" showOn="button"/>
-                        <p:outputLabel value="#{bundle.CreateFacturaLabel_totalUnidadVentas}" for="totalUnidadVentas" />
-                        <p:inputText id="totalUnidadVentas" value="#{facturaController.selected.totalUnidadVentas}" title="#{bundle.CreateFacturaTitle_totalUnidadVentas}" required="true" requiredMessage="#{bundle.CreateFacturaRequiredMessage_totalUnidadVentas}"/>
-                        <p:outputLabel value="#{bundle.CreateFacturaLabel_totalUnidadBonificaciones}" for="totalUnidadBonificaciones" />
-                        <p:inputText id="totalUnidadBonificaciones" value="#{facturaController.selected.totalUnidadBonificaciones}" title="#{bundle.CreateFacturaTitle_totalUnidadBonificaciones}" required="true" requiredMessage="#{bundle.CreateFacturaRequiredMessage_totalUnidadBonificaciones}"/>
-                        <p:outputLabel value="#{bundle.CreateFacturaLabel_totalBruto}" for="totalBruto" />
-                        <p:inputText id="totalBruto" value="#{facturaController.selected.totalBruto}" title="#{bundle.CreateFacturaTitle_totalBruto}" required="true" requiredMessage="#{bundle.CreateFacturaRequiredMessage_totalBruto}"/>
-                        <p:outputLabel value="#{bundle.CreateFacturaLabel_descuento}" for="descuento" />
-                        <p:inputText id="descuento" value="#{facturaController.selected.descuento}" title="#{bundle.CreateFacturaTitle_descuento}" />
-                        <p:outputLabel value="#{bundle.CreateFacturaLabel_subtotal}" for="subtotal" />
-                        <p:inputText id="subtotal" value="#{facturaController.selected.subtotal}" title="#{bundle.CreateFacturaTitle_subtotal}" required="true" requiredMessage="#{bundle.CreateFacturaRequiredMessage_subtotal}"/>
-                        <p:outputLabel value="#{bundle.CreateFacturaLabel_totalPagar}" for="totalPagar" />
-                        <p:inputText id="totalPagar" value="#{facturaController.selected.totalPagar}" title="#{bundle.CreateFacturaTitle_totalPagar}" required="true" requiredMessage="#{bundle.CreateFacturaRequiredMessage_totalPagar}"/>
-                        <p:outputLabel value="#{bundle.CreateFacturaLabel_observaciones}" for="observaciones" />
-                        <p:inputText id="observaciones" value="#{facturaController.selected.observaciones}" title="#{bundle.CreateFacturaTitle_observaciones}" />
-                        <p:outputLabel value="#{bundle.CreateFacturaLabel_cliente}" for="cliente" />
-                        <p:selectOneMenu id="cliente" value="#{facturaController.selected.cliente}" required="true" requiredMessage="#{bundle.EditFacturaRequiredMessage_cliente}">
-                            <f:selectItems value="#{clienteController.itemsAvailableSelectOne}"
-                                           var="clienteItem"
-                                           itemValue="#{clienteItem}"/>
-                        </p:selectOneMenu>
-                        <p:outputLabel value="#{bundle.CreateFacturaLabel_empleado}" for="empleado" />
-                        <p:selectOneMenu id="empleado" value="#{facturaController.selected.empleado}" required="true" requiredMessage="#{bundle.EditFacturaRequiredMessage_empleado}">
-                            <f:selectItems value="#{empleadoController.itemsAvailableSelectOne}"
-                                           var="empleadoItem"
-                                           itemValue="#{empleadoItem}"/>
-                        </p:selectOneMenu>
-                    </p:panelGrid>
-                    <p:commandButton actionListener="#{facturaController.create}" value="#{bundle.Save}" update="display,:FacturaListForm:datalist,:growl" oncomplete="handleSubmit(args,'FacturaCreateDialog');"/>
-                    <p:commandButton value="#{bundle.Cancel}" onclick="FacturaCreateDialog.hide()"/>
+            <h:form id="VisitaCreateForm">
+                <h:panelGroup id="display" >
+                    <p:panel header="Datos Factura">
+                        <p:panelGrid columns="6" >
+                            <p:outputLabel value="#{bundle.CreateVisitaLabel_fecha}" for="fecha"/>
+                            <p:calendar mindate="#{visitaController.fechaActual}" id="fecha" pattern="MM/dd/yyyy HH:mm:ss"
+                                        value="#{visitaController.selected.fecha}" title="#{bundle.EditVisitaTitle_fecha}"
+                                        required="true" requiredMessage="#{bundle.EditVisitaRequiredMessage_fecha}" showOn="button"/>
+                            <p:outputLabel value="#{bundle.CreateCodigoDevolucionLabel_codigo}" for="codigo"/>
+                            <p:inputText id="codigo" value="#{facturaController.selected.ordenPedido}"/>
+                            <p:outputLabel value="#{bundle.MeesageCreateTipoPago}" for="tipo_pago" />
+                            <p:selectOneMenu id="tipo_pago" value="#{null}" required="true" requiredMessage="#{bundle.CreateVisitaRequiredMessage_estado}">
+                                <f:selectItems value="#{facturaController.tiposEstado}" />
+                            </p:selectOneMenu>
+                            <p:outputLabel value="#{bundle.CreateVisitaLabel_cliente}" for="cliente"/>
+                            <p:selectOneMenu id="cliente" value="#{null}" required="true" 
+                                             requiredMessage="#{bundle.EditVisitaRequiredMessage_empleado}">
+                                <f:selectItems value="#{clienteController.itemsAvailableSelectOne}"
+                                               var="clienteItem"
+                                               itemValue="#{clienteItem}"/>
+                            </p:selectOneMenu>
+                            <p:outputLabel value="#{bundle.CreateVisitaLabel_empleado}" for="empleado" />
+                            <p:selectOneMenu id="empleado" value="#{null}" required="true" requiredMessage="#{bundle.EditVisitaRequiredMessage_empleado}">
+                                <f:selectItems value="#{empleadoController.itemsAvailableSelectOne}"
+                                               var="empleadoItem"
+                                               itemValue="#{empleadoItem}"/>
+                            </p:selectOneMenu><h:outputText/><h:outputText/>
+
+                            <p:outputLabel value="#{bundle.CreateDevolucionLabel_observaciones}" for="observaciones"/>
+                            <p:inputTextarea id="observaciones" value="#{facturaController.selected.observaciones}"/>
+
+                        </p:panelGrid>
+                    </p:panel>
+                    <br/>
+                    <p:panel header="Agregar Productos">
+                        <p:panelGrid columns="8">
+                            <p:outputLabel value="#{bundle.CreateFacturaProductoLabel_producto}" for="producto"/>
+                            <p:selectOneMenu id="producto" value="#{null}">
+                                <f:selectItem  itemLabel="#{bundle.SelectOneMessage}"/>
+                                <f:selectItems value="#{productoController.itemsAvailableSelectOne}" var="productoItem" itemValue="#{productoItem}"/>
+                            </p:selectOneMenu>
+
+                            <p:outputLabel value="#{bundle.MessageCreateVenta}" for="venta"/>
+                            <p:spinner min="0" value="#{facturaProductoController.selected.unidadesVenta}" id="venta"/>
+
+                            <p:outputLabel value="#{bundle.MessageCreateBonificacion}" for="bonificacion"/>
+                            <p:spinner min="0" value="#{facturaProductoController.selected.unidadesBonificacion}" id="bonificacion"/>
+
+                            <p:outputLabel value="#{bundle.MessageCreatePrecio}" for="precio"/>
+                            <p:inputText value="#{facturaProductoController.selected.precio}" id="precio"/>
+
+                            <p:commandButton icon="ui-icon-plus" value="#{bundle.AddItem}"/>
+
+                        </p:panelGrid>
+                    </p:panel>
+                    <p:panel>
+                        <p:dataTable styleClass="tabla" emptyMessage="#{bundle.EmptyTable}" id="listaProductos" var="itemTMP"
+                                     paginator="true" selectionMode="single"
+                                     rowKey="#{itemTMP.id}"
+                                     rows="5"
+                                     rowsPerPageTemplate="10,20,30,40,50"
+                                     paginatorPosition="bottom"> 
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListProductoTitle}"/>
+                            </f:facet>
+                            <p:column>
+                                <f:facet name="header">
+                                    Código
+                                </f:facet>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    Descripción
+                                </f:facet>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    Venta
+                                </f:facet>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    Bonificación
+                                </f:facet>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    Precio
+                                </f:facet>
+                            </p:column>
+                        </p:dataTable>
+                    </p:panel>
+                    <p:commandButton actionListener="#{visitaController.create}" value="#{bundle.Save}"
+                                     icon="ui-icon-disk"/>
                 </h:panelGroup>
             </h:form>
-        </p:dialog>
-
+        </ui:define>
     </ui:composition>
 </html>

@@ -16,8 +16,8 @@
         <ui:define name="body">
             <h:form id="VisitaListForm">
                 <p:dataTable styleClass="tabla" id="datalist" value="#{visitaController.items}" var="item"
-                             selectionMode="single" selection="#{visitaController.selected}"
-                             paginator="true"
+                             selectionMode="single" selection="#{visitaController.selected}" widgetVar="tblVisita"
+                             paginator="true" filteredValue="#{visitaController.estadoVisitasFilter}"
                              rowKey="#{item.id}"
                              rows="10"
                              rowsPerPageTemplate="10,20,30,40,50"
@@ -37,7 +37,7 @@
                             <p:commandButton id="viewButton"   icon="ui-icon-search" value="#{bundle.View}" actionListener="#{visitaProductoController.getProductosByVisita(visitaController.selected)}" 
                                              update=":VisitaViewForm,:VisitaViewForm:tablaProductosByVisita" oncomplete="PF('VisitaViewDialog').show()" 
                                              disabled="#{empty visitaController.selected}"/>
-                            <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":VisitaEditForm" oncomplete="PF('VisitaEditDialog').show()" disabled="#{visitaController.disableRealizarVisita() || empty visitaController.selected}"/>
+                            <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":VisitaEditForm" oncomplete="PF('VisitaEditDialog').show()" disabled="#{empty visitaController.selected || visitaController.disableRealizarVisita()}"/>
                             <p:commandButton id="deleteButton" icon="ui-icon-alert" value="#{bundle.Anull}" 
                                              update=":growl,datalist" disabled="#{visitaController.disableAnularVisita()}">
                                 <p:confirm header="Confirmar Anular" message="¿Seguro de Anular la Visita?" icon="ui-icon-alert"/>
@@ -46,8 +46,8 @@
                                 <p:commandButton value="Si" icon="ui-icon-check" styleClass="ui-confirmdialog-yes" actionListener="#{visitaController.anullVisitaProducto()}"/>
                                 <p:commandButton value="No" type="button" icon="ui-icon-close" styleClass="ui-confirmdialog-no"/>
                             </p:confirmDialog>
-                            <p:commandButton id="productos" value="Realizar" update=":formProductos" oncomplete="PF('ProductosByVisitaDialog').show()"
-                                             icon="ui-icon-check" disabled="#{visitaController.disableRealizarVisita() || empty visitaController.selected}"/> 
+                            <p:commandButton id="productos" value="Realizar" icon="ui-icon-check" action="#{visitaController.redireccionarVisita(visitaController.selected)}"
+                                             disabled="#{empty visitaController.selected || visitaController.disableRealizarVisita()}" /> 
                         </div>
                     </f:facet>
 
@@ -83,9 +83,15 @@
                         </f:facet>
                         <h:outputText value="#{visitaController.getExpectativasVisita(item.cumplioExpectativas)}"/>
                     </p:column>
-                    <p:column>
+                    <p:column filterBy="#{item.estado}" filterMatchMode="exact">
                         <f:facet name="header">
                             <h:outputText value="#{bundle.ListVisitaTitle_estado}"/>
+                        </f:facet>
+                        <f:facet name="filter">
+                            <p:selectOneMenu onchange="PF('tblVisita').filter()">
+                                <f:selectItem itemLabel="#{bundle.SelectOneMessage}" itemValue="#{null}" noSelectionOption="true" />
+                                <f:selectItems value="#{visitaController.estadosVisita}" />
+                            </p:selectOneMenu>
                         </f:facet>
                         <h:outputText value="#{visitaController.getEstadoVisita(item.estado)}"/>
                     </p:column>                    
@@ -103,11 +109,10 @@
                     </p:column>
                 </p:dataTable>
             </h:form>
-            
+
             <ui:include src="Create.xhtml"/>
             <ui:include src="Edit.xhtml"/>
             <ui:include src="View.xhtml"/>
-            <ui:include src="AddProductosByVisita.xhtml"/>
         </ui:define>
     </ui:composition>
 

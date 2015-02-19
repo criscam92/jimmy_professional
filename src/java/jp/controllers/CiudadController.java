@@ -18,69 +18,70 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import jp.facades.CiudadFacade;
+import org.primefaces.context.RequestContext;
 
 @ManagedBean(name = "ciudadController")
 @SessionScoped
 public class CiudadController implements Serializable {
-
+    
     @EJB
     private jp.facades.CiudadFacade ejbFacade;
     private List<Ciudad> items = null;
-    private Ciudad selected;
-
+    private Ciudad selected;    
+    
     public CiudadController() {
     }
-
+    
     public Ciudad getSelected() {
         return selected;
     }
-
+    
     public void setSelected(Ciudad selected) {
         this.selected = selected;
     }
-
+    
     protected void setEmbeddableKeys() {
     }
-
+    
     protected void initializeEmbeddableKey() {
     }
-
+    
     private CiudadFacade getFacade() {
         return ejbFacade;
     }
-
+    
     public Ciudad prepareCreate() {
         selected = new Ciudad();
         initializeEmbeddableKey();
         return selected;
     }
-
+    
     public void create() {
-        persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageCiudad","CreateSuccessF"}));
+        persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageCiudad", "CreateSuccessF"}));
         if (!JsfUtil.isValidationFailed()) {
             items = null;    // Invalidate list of items to trigger re-query.
         }
     }
-
+    
     public void update() {
-        persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessageCiudad","UpdateSuccessF"}));
+        persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessageCiudad", "UpdateSuccessF"}));
     }
-
+    
     public void destroy() {
-        persist(PersistAction.DELETE, JsfUtil.getMessageBundle(new String[]{"MessageCiudad","DeleteSuccessF"}));
+        persist(PersistAction.DELETE, JsfUtil.getMessageBundle(new String[]{"MessageCiudad", "DeleteSuccessF"}));
         if (!JsfUtil.isValidationFailed()) {
             selected = null; // Remove selection
             items = null;    // Invalidate list of items to trigger re-query.
         }
     }
-
+    
     public List<Ciudad> getItems() {
         if (items == null) {
             items = getFacade().findAll();
         }
         return items;
     }
-
+    
     private void persist(PersistAction persistAction, String successMessage) {
         if (selected != null) {
             setEmbeddableKeys();
@@ -108,43 +109,48 @@ public class CiudadController implements Serializable {
             }
         }
     }
-
+    
     public List<Ciudad> getItemsAvailableSelectMany() {
         return getFacade().findAll();
     }
-
+    
     public List<Ciudad> getItemsAvailableSelectOne() {
         return getFacade().findAll();
     }
-
-    @FacesConverter(forClass = Ciudad.class)
+    
+    @FacesConverter(forClass = Ciudad.class, value = "ciudadconverter")
     public static class CiudadControllerConverter implements Converter {
-
+        
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
-            if (value == null || value.length() == 0) {
+            
+            if (value == null || value.length() == 0 || value.equals(JsfUtil.getMessageBundle("SelectOneMessage"))) {
                 return null;
             }
             CiudadController controller = (CiudadController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "ciudadController");
             return controller.getFacade().find(getKey(value));
         }
-
+        
         java.lang.Long getKey(String value) {
             java.lang.Long key;
-            key = Long.valueOf(value);
-            return key;
+            try {
+                key = Long.valueOf(value);
+                return key;
+            } catch (Exception e) {
+                return null;
+            }
         }
-
+        
         String getStringKey(java.lang.Long value) {
             StringBuilder sb = new StringBuilder();
             sb.append(value);
             return sb.toString();
         }
-
+        
         @Override
         public String getAsString(FacesContext facesContext, UIComponent component, Object object) {
-            if (object == null) {
+            if (object == null || object.equals(JsfUtil.getMessageBundle("SelectOneMessage"))) {
                 return null;
             }
             if (object instanceof Ciudad) {
@@ -155,7 +161,7 @@ public class CiudadController implements Serializable {
                 return null;
             }
         }
-
+        
     }
-
+    
 }

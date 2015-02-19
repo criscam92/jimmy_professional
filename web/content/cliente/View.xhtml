@@ -26,11 +26,11 @@
                         <h:outputText value="#{bundle.ViewClienteLabel_tarifaEspecial}"/>
                         <h:outputText value="#{clienteController.selected.tarifaEspecial}" title="#{bundle.ViewClienteTitle_tarifaEspecial}"/>
                         <h:outputText value="#{bundle.ViewClienteLabel_ciudad}"/>
-                        <h:outputText value="#{clienteController.selected.ciudad}" title="#{bundle.ViewClienteTitle_ciudad}"/>
+                        <h:outputText value="#{clienteController.selected.ciudad.toString()}" title="#{bundle.ViewClienteTitle_ciudad}"/>
                         <h:outputText value="#{bundle.ViewClienteLabel_empleado}"/>
-                        <h:outputText value="#{clienteController.selected.empleado}" title="#{bundle.ViewClienteTitle_empleado}"/>
+                        <h:outputText value="#{clienteController.selected.empleado.toString()}" title="#{bundle.ViewClienteTitle_empleado}"/>
                         <h:outputText value="#{bundle.ViewClienteLabel_tipo}"/>
-                        <h:outputText value="#{clienteController.selected.tipo}" title="#{bundle.ViewClienteTitle_tipo}"/>
+                        <h:outputText value="#{clienteController.selected.tipo.toString()}" title="#{bundle.ViewClienteTitle_tipo}"/>
                     </p:panelGrid>                    
                 </h:panelGroup>
                 <div class="botonesDialog">

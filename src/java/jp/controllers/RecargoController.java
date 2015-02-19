@@ -1,9 +1,8 @@
 package jp.controllers;
 
-import jp.entidades.Cliente;
+import jp.entidades.Ciudad;
 import jp.util.JsfUtil;
 import jp.util.JsfUtil.PersistAction;
-
 import java.io.Serializable;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -18,55 +17,38 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.faces.event.ValueChangeEvent;
-import jp.entidades.Ciudad;
-import jp.facades.ClienteFacade;
+import javax.persistence.Query;
+import jp.entidades.Recargo;
 import jp.facades.RecargoFacade;
+import jp.facades.TransactionFacade;
 
-@ManagedBean(name = "clienteController")
+@ManagedBean(name = "recargoController")
 @SessionScoped
-public class ClienteController implements Serializable {
+public class RecargoController implements Serializable {
 
     @EJB
-    private jp.facades.ClienteFacade ejbFacade;
+    private jp.facades.RecargoFacade ejbFacade;
     @EJB
-    private RecargoFacade ejbRecargoFacade;
-    private List<Cliente> items = null;
-    private Cliente selected;
-    private Boolean ciudad = false;
-    private boolean recargo = false;
+    private jp.facades.TransactionFacade ejbTransactionFacade;
+    private List<Recargo> items = null;
+    private Recargo selected;
 
-    public ClienteController() {
+    public RecargoController() {
     }
 
     @PostConstruct
     public void init() {
-        ciudad = false;
-        recargo = false;
+//        recargo = new Recargo();
+        selected = new Recargo();
+        comprobarRegistros();
     }
 
-    public Cliente getSelected() {
+    public Recargo getSelected() {
         return selected;
     }
 
-    public void setSelected(Cliente selected) {
+    public void setSelected(Recargo selected) {
         this.selected = selected;
-    }
-
-    public Boolean getCiudad() {
-        return ciudad;
-    }
-
-    public void setCiudad(Boolean ciudad) {
-        this.ciudad = ciudad;
-    }
-
-    public boolean getRecargo() {
-        return recargo;
-    }
-
-    public void setRecargo(boolean recargo) {
-        this.recargo = recargo;
     }
 
     protected void setEmbeddableKeys() {
@@ -75,42 +57,57 @@ public class ClienteController implements Serializable {
     protected void initializeEmbeddableKey() {
     }
 
-    private ClienteFacade getFacade() {
+    private RecargoFacade getFacade() {
         return ejbFacade;
     }
 
-    public RecargoFacade getEjbRecargoFacade() {
-        return ejbRecargoFacade;
+    private TransactionFacade getTransactionFacade() {
+        return ejbTransactionFacade;
     }
 
-    public Cliente prepareCreate() {
-        selected = new Cliente();
+    public Recargo prepareCreate() {
+        selected = new Recargo();
         initializeEmbeddableKey();
-        ciudad = false;
-        recargo = false;
         return selected;
     }
 
     public void create() {
-        persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageCliente", "CreateSuccessM"}));
+        persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageRecargo", "CreateSuccessM"}));
         if (!JsfUtil.isValidationFailed()) {
             items = null;    // Invalidate list of items to trigger re-query.
         }
     }
 
+    public void crearRecargo() {
+        if (selected != null) {
+
+            if (getTransactionFacade().createUpdateRecargo(selected)) {
+                JsfUtil.addSuccessMessage(JsfUtil.getMessageBundle("MessageCreateUpdateRecargo"));
+                if (!JsfUtil.isValidationFailed()) {
+//                    selected = null; // Remove selection
+                    items = null;    // Invalidate list of items to trigger re-query.
+                }
+            } else {
+                JsfUtil.addErrorMessage(JsfUtil.getMessageBundle("ErrorCreateUpdateRecargo"));
+            }
+
+        }
+
+    }
+
     public void update() {
-        persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessageCliente", "UpdateSuccessM"}));
+        persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessageRecargo", "UpdateSuccessM"}));
     }
 
     public void destroy() {
-        persist(PersistAction.DELETE, JsfUtil.getMessageBundle(new String[]{"MessageCliente", "DeleteSuccessM"}));
+        persist(PersistAction.DELETE, JsfUtil.getMessageBundle(new String[]{"MessageRecargo", "DeleteSuccessM"}));
         if (!JsfUtil.isValidationFailed()) {
             selected = null; // Remove selection
             items = null;    // Invalidate list of items to trigger re-query.
         }
     }
 
-    public List<Cliente> getItems() {
+    public List<Recargo> getItems() {
         if (items == null) {
             items = getFacade().findAll();
         }
@@ -145,24 +142,34 @@ public class ClienteController implements Serializable {
         }
     }
 
-    public List<Cliente> getItemsAvailableSelectMany() {
+    public List<Recargo> getItemsAvailableSelectMany() {
         return getFacade().findAll();
     }
 
-    public List<Cliente> getItemsAvailableSelectOne() {
+    public List<Recargo> getItemsAvailableSelectOne() {
         return getFacade().findAll();
     }
 
-    @FacesConverter(forClass = Cliente.class)
-    public static class ClienteControllerConverter implements Converter {
+    private void comprobarRegistros() {
+        if (getFacade().isEntityRecargoEmpty()) {
+            selected = new Recargo();
+        } else {
+            selected = getFacade().getFirstRecargo();
+        }
+    }
+
+    
+
+    @FacesConverter(forClass = Ciudad.class)
+    public static class RecargoControllerConverter implements Converter {
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
             if (value == null || value.length() == 0) {
                 return null;
             }
-            ClienteController controller = (ClienteController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "clienteController");
+            RecargoController controller = (RecargoController) facesContext.getApplication().getELResolver().
+                    getValue(facesContext.getELContext(), null, "recargoController");
             return controller.getFacade().find(getKey(value));
         }
 
@@ -183,44 +190,15 @@ public class ClienteController implements Serializable {
             if (object == null) {
                 return null;
             }
-            if (object instanceof Cliente) {
-                Cliente o = (Cliente) object;
-                return getStringKey(o.getId());
+            if (object instanceof Recargo) {
+                Recargo o = (Recargo) object;
+                return getStringKey(o.getId().longValue());
             } else {
-                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "object {0} is of type {1}; expected type: {2}", new Object[]{object, object.getClass().getName(), Cliente.class.getName()});
+                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "object {0} is of type {1}; expected type: {2}", new Object[]{object, object.getClass().getName(), Ciudad.class.getName()});
                 return null;
             }
         }
 
-    }
-
-    public boolean applyRecargo(Ciudad c) {
-        try {
-            if (getFacade().applyRecargo(c) != null) {
-                ciudad = getFacade().applyRecargo(c).equals(c);
-            } else {
-                ciudad = false;
-            }
-        } catch (Exception e) {
-            ciudad = false;
-        }
-
-        return getFacade().applyRecargo(c).equals(c);
-    }
-
-    public Float getRecargoByUbicacionCiudad(Ciudad c) {
-        try {
-            Float tarifaEspecial = getEjbRecargoFacade().getRecargoByUbicacionCiudad(c);
-            selected.setTarifaEspecial(tarifaEspecial);
-            return getEjbRecargoFacade().getRecargoByUbicacionCiudad(c);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    public boolean comprobarCiudad(){
-        System.out.println("La ciudad = null?"+selected.getCiudad() == null);
-        return selected.getCiudad() == null;
     }
 
 }

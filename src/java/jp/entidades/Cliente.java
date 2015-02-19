@@ -62,9 +62,8 @@ public class Cliente implements Serializable {
     @NotNull
     @Column(name = "cupo_credito", nullable = false)
     private double cupoCredito;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "tarifa_especial", nullable = false)
+    @Basic(optional = true)
+    @Column(name = "tarifa_especial")
     private float tarifaEspecial;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "cliente", fetch = FetchType.LAZY)
     private List<Visita> visitaList;
@@ -216,7 +215,7 @@ public class Cliente implements Serializable {
 
     @Override
     public String toString() {
-        return this.getNombre();
+        return this.getTipo()+", "+this.getNombre();
     }
     
 }

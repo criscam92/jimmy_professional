@@ -43,6 +43,8 @@ public class Ciudad implements Serializable {
     private String nombre;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "ciudad", fetch = FetchType.LAZY)
     private List<Cliente> clienteList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "ciudad", fetch = FetchType.LAZY)
+    private List<Recargo> recargoList;
     @JoinColumn(name = "pais", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Pais pais;
@@ -82,6 +84,14 @@ public class Ciudad implements Serializable {
 
     public void setClienteList(List<Cliente> clienteList) {
         this.clienteList = clienteList;
+    }
+
+    public List<Recargo> getRecargoList() {
+        return recargoList;
+    }
+
+    public void setRecargoList(List<Recargo> recargoList) {
+        this.recargoList = recargoList;
     }
 
     public Pais getPais() {

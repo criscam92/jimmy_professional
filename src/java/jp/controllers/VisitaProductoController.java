@@ -192,18 +192,14 @@ public class VisitaProductoController implements Serializable {
         visitaProducto.setVisita(selected.getVisita());
         visitaProducto.setProducto(selected.getProducto());
         visitaProducto.setCantidad(selected.getCantidad());
-        visitaProducto.setObservacion(selected.getObservacion());
 
         System.out.println("====>" + visitaProducto);
-        System.out.println("Visita--> " + visitaProducto.getCantidad() + "\nProducto--> " + visitaProducto.getObservacion()
-                + "\nCantidad--> " + visitaProducto.getCantidad()+ "\nObservacion--> " + visitaProducto.getObservacion());
         itemsTMP.add(visitaProducto);
 
     }
     
     public void removeVisitaProducto(VisitaProducto visitaProducto) {
         System.out.println("Tamano de lista antes de eliminar-> " + itemsTMP.size());
-        System.out.println("Item a eliminar-> " + visitaProducto.getObservacion());
 
         itemsTMP.remove(visitaProducto);
 

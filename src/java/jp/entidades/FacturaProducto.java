@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package jp.entidades;
 
 import java.io.Serializable;
@@ -18,18 +13,18 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- *
- * @author CRISTIAN
- */
 @Entity
 @Table(name = "factura_producto", catalog = "jimmy_professional", schema = "public")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "FacturaProducto.findAll", query = "SELECT f FROM FacturaProducto f"),
-    @NamedQuery(name = "FacturaProducto.findById", query = "SELECT f FROM FacturaProducto f WHERE f.id = :id")})
+    @NamedQuery(name = "FacturaProducto.findById", query = "SELECT f FROM FacturaProducto f WHERE f.id = :id"),
+    @NamedQuery(name = "FacturaProducto.findByUnidadesVenta", query = "SELECT f FROM FacturaProducto f WHERE f.unidadesVenta = :unidadesVenta"),
+    @NamedQuery(name = "FacturaProducto.findByUnidadesBonificacion", query = "SELECT f FROM FacturaProducto f WHERE f.unidadesBonificacion = :unidadesBonificacion"),
+    @NamedQuery(name = "FacturaProducto.findByPrecio", query = "SELECT f FROM FacturaProducto f WHERE f.precio = :precio")})
 public class FacturaProducto implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -37,6 +32,18 @@ public class FacturaProducto implements Serializable {
     @Basic(optional = false)
     @Column(nullable = false)
     private Long id;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "unidades_venta", nullable = false)
+    private int unidadesVenta;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "unidades_bonificacion", nullable = false)
+    private int unidadesBonificacion;
+    @Basic(optional = false)
+    @NotNull
+    @Column(nullable = false)
+    private int precio;
     @JoinColumn(name = "factura", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Factura factura;
@@ -51,12 +58,43 @@ public class FacturaProducto implements Serializable {
         this.id = id;
     }
 
+    public FacturaProducto(Long id, int unidadesVenta, int unidadesBonificacion, int precio) {
+        this.id = id;
+        this.unidadesVenta = unidadesVenta;
+        this.unidadesBonificacion = unidadesBonificacion;
+        this.precio = precio;
+    }
+
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public int getUnidadesVenta() {
+        return unidadesVenta;
+    }
+
+    public void setUnidadesVenta(int unidadesVenta) {
+        this.unidadesVenta = unidadesVenta;
+    }
+
+    public int getUnidadesBonificacion() {
+        return unidadesBonificacion;
+    }
+
+    public void setUnidadesBonificacion(int unidadesBonificacion) {
+        this.unidadesBonificacion = unidadesBonificacion;
+    }
+
+    public int getPrecio() {
+        return precio;
+    }
+
+    public void setPrecio(int precio) {
+        this.precio = precio;
     }
 
     public Factura getFactura() {
@@ -97,7 +135,7 @@ public class FacturaProducto implements Serializable {
 
     @Override
     public String toString() {
-        return "jp.entidades.FacturaProducto[ id=" + id + " ]";
+        return "entidades.otras.FacturaProducto[ id=" + id + " ]";
     }
     
 }

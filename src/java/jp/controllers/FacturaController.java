@@ -6,6 +6,7 @@ import jp.util.JsfUtil.PersistAction;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,6 +19,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import jp.facades.FacturaFacade;
+import jp.util.TipoPago;
 
 @ManagedBean(name = "facturaController")
 @SessionScoped
@@ -155,7 +157,14 @@ public class FacturaController implements Serializable {
                 return null;
             }
         }
-
+    }
+    
+    public Map<String, Integer> getTiposEstado(){
+        return TipoPago.getMapaEstados();
+    }
+    
+    public String redirectCreateFactura(){
+        return "Create.xhtml?faces-redirect=true";
     }
 
 }

@@ -22,8 +22,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "VisitaProducto.findAll", query = "SELECT v FROM VisitaProducto v"),
     @NamedQuery(name = "VisitaProducto.findById", query = "SELECT v FROM VisitaProducto v WHERE v.id = :id"),
-    @NamedQuery(name = "VisitaProducto.findByCantidad", query = "SELECT v FROM VisitaProducto v WHERE v.cantidad = :cantidad"),
-    @NamedQuery(name = "VisitaProducto.findByObservacion", query = "SELECT v FROM VisitaProducto v WHERE v.observacion = :observacion")})
+    @NamedQuery(name = "VisitaProducto.findByCantidad", query = "SELECT v FROM VisitaProducto v WHERE v.cantidad = :cantidad")})
 public class VisitaProducto implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -32,9 +31,6 @@ public class VisitaProducto implements Serializable {
     @Column(nullable = false)
     private Long id;
     private Integer cantidad;
-    @Size(max = 300)
-    @Column(length = 300)
-    private String observacion;
     @JoinColumn(name = "producto", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Producto producto;
@@ -64,15 +60,7 @@ public class VisitaProducto implements Serializable {
     public void setCantidad(Integer cantidad) {
         this.cantidad = cantidad;
     }
-
-    public String getObservacion() {
-        return observacion;
-    }
-
-    public void setObservacion(String observacion) {
-        this.observacion = observacion;
-    }
-
+    
     public Producto getProducto() {
         return producto;
     }

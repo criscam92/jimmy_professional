@@ -68,31 +68,33 @@
                         <f:facet name="header">
                             <h:outputText value="#{bundle.ListClienteTitle_cupoCredito}"/>
                         </f:facet>
-                        <h:outputText value="#{item.cupoCredito}"/>
+                        <h:outputText value="#{item.cupoCredito}">
+                            <f:convertNumber pattern="$ #,##0.00" currencySymbol="$" />
+                        </h:outputText>
                     </p:column>
                     <p:column>
                         <f:facet name="header">
                             <h:outputText value="#{bundle.ListClienteTitle_tarifaEspecial}"/>
                         </f:facet>
-                        <h:outputText value="#{item.tarifaEspecial}"/>
+                        <h:outputText value="#{item.tarifaEspecial} %"/>
                     </p:column>
                     <p:column>
                         <f:facet name="header">
                             <h:outputText value="#{bundle.ListClienteTitle_ciudad}"/>
                         </f:facet>
-                        <h:outputText value="#{item.ciudad}"/>
+                        <h:outputText value="#{item.ciudad.toString()}"/>
                     </p:column>
                     <p:column>
                         <f:facet name="header">
                             <h:outputText value="#{bundle.ListClienteTitle_empleado}"/>
                         </f:facet>
-                        <h:outputText value="#{item.empleado}"/>
+                        <h:outputText value="#{item.empleado.toString()}"/>
                     </p:column>
                     <p:column>
                         <f:facet name="header">
                             <h:outputText value="#{bundle.ListClienteTitle_tipo}"/>
                         </f:facet>
-                        <h:outputText value="#{item.tipo}"/>
+                        <h:outputText value="#{item.tipo.toString()}"/>
                     </p:column>
                 </p:dataTable>
             </h:form>
