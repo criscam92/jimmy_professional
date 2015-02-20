@@ -106,5 +106,5 @@ public class PromocionProducto implements Serializable {
     public String toString() {
         return "jp.entidades.PromocionProducto[ id=" + id + " ]";
     }
-    
-}
+
+    }

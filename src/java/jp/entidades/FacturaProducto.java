@@ -43,7 +43,7 @@ public class FacturaProducto implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Column(nullable = false)
-    private int precio;
+    private double precio;
     @JoinColumn(name = "factura", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Factura factura;
@@ -58,7 +58,7 @@ public class FacturaProducto implements Serializable {
         this.id = id;
     }
 
-    public FacturaProducto(Long id, int unidadesVenta, int unidadesBonificacion, int precio) {
+    public FacturaProducto(Long id, int unidadesVenta, int unidadesBonificacion, double precio) {
         this.id = id;
         this.unidadesVenta = unidadesVenta;
         this.unidadesBonificacion = unidadesBonificacion;
@@ -89,11 +89,11 @@ public class FacturaProducto implements Serializable {
         this.unidadesBonificacion = unidadesBonificacion;
     }
 
-    public int getPrecio() {
+    public double getPrecio() {
         return precio;
     }
 
-    public void setPrecio(int precio) {
+    public void setPrecio(double precio) {
         this.precio = precio;
     }
 
@@ -137,5 +137,5 @@ public class FacturaProducto implements Serializable {
     public String toString() {
         return "entidades.otras.FacturaProducto[ id=" + id + " ]";
     }
-    
-}
+
+    }

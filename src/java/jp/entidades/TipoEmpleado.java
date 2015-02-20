@@ -109,4 +109,4 @@ public class TipoEmpleado implements Serializable, Codificable {
         return null;
     }
 
-}
+    }

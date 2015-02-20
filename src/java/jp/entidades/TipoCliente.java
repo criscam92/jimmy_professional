@@ -109,4 +109,4 @@ public class TipoCliente implements Serializable, Codificable {
         return null;
     }
 
-}
+    }

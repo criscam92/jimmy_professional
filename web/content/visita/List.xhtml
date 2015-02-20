@@ -38,14 +38,9 @@
                                              update=":VisitaViewForm,:VisitaViewForm:tablaProductosByVisita" oncomplete="PF('VisitaViewDialog').show()" 
                                              disabled="#{empty visitaController.selected}"/>
                             <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":VisitaEditForm" oncomplete="PF('VisitaEditDialog').show()" disabled="#{empty visitaController.selected || visitaController.disableRealizarVisita()}"/>
-                            <p:commandButton id="deleteButton" icon="ui-icon-alert" value="#{bundle.Anull}" 
-                                             update=":growl,datalist" disabled="#{visitaController.disableAnularVisita()}">
-                                <p:confirm header="Confirmar Anular" message="¿Seguro de Anular la Visita?" icon="ui-icon-alert"/>
-                            </p:commandButton>
-                            <p:confirmDialog global="true">
-                                <p:commandButton value="Si" icon="ui-icon-check" styleClass="ui-confirmdialog-yes" actionListener="#{visitaController.anullVisitaProducto()}"/>
-                                <p:commandButton value="No" type="button" icon="ui-icon-close" styleClass="ui-confirmdialog-no"/>
-                            </p:confirmDialog>
+                            <p:commandButton id="deleteButton" icon="ui-icon-alert" value="#{bundle.Anull}" actionListener="#{visitaController.anullVisitaProducto()}"
+                                             update=":growl,datalist" disabled="#{visitaController.disableAnularVisita()}"/>
+                                
                             <p:commandButton id="productos" value="Realizar" icon="ui-icon-check" action="#{visitaController.redireccionarVisita(visitaController.selected)}"
                                              disabled="#{empty visitaController.selected || visitaController.disableRealizarVisita()}" /> 
                         </div>

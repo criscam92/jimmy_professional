@@ -101,5 +101,5 @@ public class VisitaProducto implements Serializable {
     public String toString() {
         return "jp.entidades.VisitaProducto[ id=" + id + " ]";
     }
-    
-}
+
+    }

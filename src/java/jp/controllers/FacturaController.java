@@ -5,11 +5,13 @@ import jp.util.JsfUtil;
 import jp.util.JsfUtil.PersistAction;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.faces.bean.ManagedBean;
@@ -18,7 +20,11 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import jp.entidades.Ciudad;
+import jp.entidades.Cliente;
+import jp.entidades.FacturaProducto;
 import jp.facades.FacturaFacade;
+import jp.facades.RecargoFacade;
 import jp.util.TipoPago;
 
 @ManagedBean(name = "facturaController")
@@ -27,10 +33,20 @@ public class FacturaController implements Serializable {
 
     @EJB
     private jp.facades.FacturaFacade ejbFacade;
+    @EJB
+    private jp.facades.RecargoFacade ejbRecargoFacade;
     private List<Factura> items = null;
+    private List<FacturaProducto> itemsTMP = null;
     private Factura selected;
+    private FacturaProducto facturaProducto;
 
     public FacturaController() {
+        itemsTMP = new ArrayList<>();
+    }
+
+    @PostConstruct
+    public void init() {
+        facturaProducto = new FacturaProducto();
     }
 
     public Factura getSelected() {
@@ -41,6 +57,22 @@ public class FacturaController implements Serializable {
         this.selected = selected;
     }
 
+    public FacturaProducto getFacturaProducto() {
+        return facturaProducto;
+    }
+
+    public void setFacturaProducto(FacturaProducto facturaProducto) {
+        this.facturaProducto = facturaProducto;
+    }
+
+    public List<FacturaProducto> getItemsTMP() {
+        return itemsTMP;
+    }
+
+    public void setItemsTMP(List<FacturaProducto> itemsTMP) {
+        this.itemsTMP = itemsTMP;
+    }
+
     protected void setEmbeddableKeys() {
     }
 
@@ -49,6 +81,10 @@ public class FacturaController implements Serializable {
 
     private FacturaFacade getFacade() {
         return ejbFacade;
+    }
+
+    public RecargoFacade getEjbRecargoFacade() {
+        return ejbRecargoFacade;
     }
 
     public Factura prepareCreate() {
@@ -158,13 +194,79 @@ public class FacturaController implements Serializable {
             }
         }
     }
-    
-    public Map<String, Integer> getTiposEstado(){
+
+    public Map<String, Integer> getTiposEstado() {
         return TipoPago.getMapaEstados();
     }
-    
-    public String redirectCreateFactura(){
+
+    public String redirectCreateFactura() {
+        selected = new Factura();
+        facturaProducto = new FacturaProducto();
+        itemsTMP = new ArrayList<>();
         return "Create.xhtml?faces-redirect=true";
     }
 
+    public void addFacturaProducto() {
+        if (facturaProducto.getProducto() != null && facturaProducto.getUnidadesVenta() > 0
+                && facturaProducto.getPrecio() > 0 && facturaProducto.getUnidadesVenta() > 0) {
+            FacturaProducto facturaProductoTMP = new FacturaProducto();
+            facturaProductoTMP.setProducto(facturaProducto.getProducto());
+            facturaProductoTMP.setUnidadesVenta(facturaProducto.getUnidadesVenta());
+            facturaProductoTMP.setUnidadesBonificacion(facturaProducto.getUnidadesBonificacion());
+            facturaProductoTMP.setPrecio(facturaProducto.getPrecio());
+            facturaProductoTMP.setId(itemsTMP.size() + 1l);
+
+            itemsTMP.add(facturaProductoTMP);
+        }
+    }
+
+    public void removeFacturaProducto(FacturaProducto facturaProductoArg) {
+        itemsTMP.remove(facturaProductoArg);
+    }
+
+    public int getTotalUnidadVentas() {
+        int sum = 0;
+        for (FacturaProducto fp : itemsTMP) {
+            sum += fp.getUnidadesVenta();
+        }
+        return sum;
+    }
+
+    public int getTotalUnidadBonificaciones() {
+        int sum = 0;
+        for (FacturaProducto fp : itemsTMP) {
+            sum += fp.getUnidadesBonificacion();
+        }
+        return sum;
+    }
+    
+    public double getTotalPrecioBruto() {
+        int sum = 0;
+        for (FacturaProducto fp : itemsTMP) {
+            sum += fp.getPrecio();
+        }
+        return sum;
+    }
+    
+    public double getTotalAPagar() {
+        double sum = 0;
+        double descuento = 0;
+        if (selected.getDescuento() != null) {
+            descuento = selected.getDescuento();
+        }
+        for (FacturaProducto fp : itemsTMP) {
+            sum += fp.getPrecio();
+        }
+        descuento = sum * descuento / 100;
+        return sum - descuento;
+    }
+    
+    public void getDescuentobyCliente(Cliente c){
+        if (c.getTarifaEspecial() != null) {
+            selected.setDescuento(c.getTarifaEspecial().doubleValue());
+        }else{
+            Float descuento = getEjbRecargoFacade().getRecargoByCiudad(c.getCiudad());
+            selected.setDescuento(descuento.doubleValue());
+        }
+    }
 }

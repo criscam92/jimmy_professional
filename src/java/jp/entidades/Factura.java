@@ -219,5 +219,5 @@ public class Factura implements Serializable {
     public String toString() {
         return this.getOrdenPedido()+" - "+this.getCliente();
     }
-    
+
 }

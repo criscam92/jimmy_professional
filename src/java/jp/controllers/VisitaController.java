@@ -59,7 +59,7 @@ public class VisitaController implements Serializable {
             
             System.out.println("Calif-> "+visita.getCalificacionServicio());
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("No se recibió parametro por GET");
         }
         visitaProducto = new VisitaProducto();
     }
@@ -305,7 +305,7 @@ public class VisitaController implements Serializable {
 
     public void anullVisitaProducto() {
         if (!JsfUtil.isValidationFailed() && getEjbTransactionFacade().anullVisitaProducto(selected)) {
-            JsfUtil.addSuccessMessage(JsfUtil.getMessageBundle(new String[]{"MessageVisitat", "AnullSuccessF"}));
+            JsfUtil.addSuccessMessage(JsfUtil.getMessageBundle(new String[]{"MessageVisita", "AnullSuccessF"}));
             selected = null; // Remove selection
             items = null;    // Invalidate list of items to trigger re-query.
         }

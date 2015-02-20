@@ -172,4 +172,4 @@ public class Empleado implements Serializable, Codificable {
     public String getTipo() {
         return null;
     }
-}
+    }

@@ -8,33 +8,26 @@ package jp.entidades;
 import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
+import javax.persistence.MappedSuperclass;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+import jp.entidades.Producto;
 
 /**
  *
- * @author CRISTIAN
+ * @author arturo
  */
-@Entity
-@Table(name = "devolucion_producto", catalog = "jimmy_professional", schema = "public")
+@MappedSuperclass
+@Table(name = "ingreso_producto", catalog = "jimmy_professional", schema = "public")
 @XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "DevolucionProducto.findAll", query = "SELECT d FROM DevolucionProducto d"),
-    @NamedQuery(name = "DevolucionProducto.findById", query = "SELECT d FROM DevolucionProducto d WHERE d.id = :id"),
-    @NamedQuery(name = "DevolucionProducto.findByCantidad", query = "SELECT d FROM DevolucionProducto d WHERE d.cantidad = :cantidad"),
-    @NamedQuery(name = "DevolucionProducto.findByDetalle", query = "SELECT d FROM DevolucionProducto d WHERE d.detalle = :detalle")})
-public class DevolucionProducto implements Serializable {
+public class IngresoProducto implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,24 +38,21 @@ public class DevolucionProducto implements Serializable {
     @NotNull
     @Column(nullable = false)
     private int cantidad;
-    @Size(max = 300)
-    @Column(length = 300)
-    private String detalle;
-    @JoinColumn(name = "devolucion", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "ingreso", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    private Devolucion devolucion;
+    private Ingreso ingreso;
     @JoinColumn(name = "producto", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Producto producto;
 
-    public DevolucionProducto() {
+    public IngresoProducto() {
     }
 
-    public DevolucionProducto(Long id) {
+    public IngresoProducto(Long id) {
         this.id = id;
     }
 
-    public DevolucionProducto(Long id, int cantidad) {
+    public IngresoProducto(Long id, int cantidad) {
         this.id = id;
         this.cantidad = cantidad;
     }
@@ -83,20 +73,12 @@ public class DevolucionProducto implements Serializable {
         this.cantidad = cantidad;
     }
 
-    public String getDetalle() {
-        return detalle;
+    public Ingreso getIngreso() {
+        return ingreso;
     }
 
-    public void setDetalle(String detalle) {
-        this.detalle = detalle;
-    }
-
-    public Devolucion getDevolucion() {
-        return devolucion;
-    }
-
-    public void setDevolucion(Devolucion devolucion) {
-        this.devolucion = devolucion;
+    public void setIngreso(Ingreso ingreso) {
+        this.ingreso = ingreso;
     }
 
     public Producto getProducto() {
@@ -117,10 +99,10 @@ public class DevolucionProducto implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof DevolucionProducto)) {
+        if (!(object instanceof IngresoProducto)) {
             return false;
         }
-        DevolucionProducto other = (DevolucionProducto) object;
+        IngresoProducto other = (IngresoProducto) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -129,7 +111,7 @@ public class DevolucionProducto implements Serializable {
 
     @Override
     public String toString() {
-        return ""+this.getDevolucion().getCodigo()+this.getProducto().toString();
+        return "jp.entidades.test.IngresoProducto[ id=" + id + " ]";
     }
-
-    }
+    
+}

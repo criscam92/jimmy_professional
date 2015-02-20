@@ -11,65 +11,64 @@
             <h:outputText value="#{bundle.MessageCreateOrdenPedido}"/>
         </ui:define>
         <ui:define name="body">
-
-            <h:form id="VisitaCreateForm">
+            <h:form id="FacturaCreateForm">
                 <h:panelGroup id="display" >
                     <p:panel header="Datos Factura">
-                        <p:panelGrid columns="6" >
+                        <p:panelGrid columns="6">
                             <p:outputLabel value="#{bundle.CreateVisitaLabel_fecha}" for="fecha"/>
                             <p:calendar mindate="#{visitaController.fechaActual}" id="fecha" pattern="MM/dd/yyyy HH:mm:ss"
-                                        value="#{visitaController.selected.fecha}" title="#{bundle.EditVisitaTitle_fecha}"
+                                        value="#{facturaController.selected.fecha}" title="#{bundle.EditVisitaTitle_fecha}"
                                         required="true" requiredMessage="#{bundle.EditVisitaRequiredMessage_fecha}" showOn="button"/>
-                            <p:outputLabel value="#{bundle.CreateCodigoDevolucionLabel_codigo}" for="codigo"/>
+                            <p:outputLabel value="#{bundle.MessageCodigoPedido}" for="codigo"/>
                             <p:inputText id="codigo" value="#{facturaController.selected.ordenPedido}"/>
-                            <p:outputLabel value="#{bundle.MeesageCreateTipoPago}" for="tipo_pago" />
-                            <p:selectOneMenu id="tipo_pago" value="#{null}" required="true" requiredMessage="#{bundle.CreateVisitaRequiredMessage_estado}">
+                            <p:outputLabel value="#{bundle.MessageCreateTipoPago}" for="tipo_pago" />
+                            <p:selectOneMenu id="tipo_pago" value="#{facturaController.selected.tipo_pago}" 
+                                             required="true" requiredMessage="#{bundle.CreateVisitaRequiredMessage_estado}">
+                                <f:selectItem  itemLabel="#{bundle.SelectOneMessage}"/>
                                 <f:selectItems value="#{facturaController.tiposEstado}" />
                             </p:selectOneMenu>
                             <p:outputLabel value="#{bundle.CreateVisitaLabel_cliente}" for="cliente"/>
-                            <p:selectOneMenu id="cliente" value="#{null}" required="true" 
+                            <p:selectOneMenu id="cliente" value="#{facturaController.selected.cliente}" required="true"
                                              requiredMessage="#{bundle.EditVisitaRequiredMessage_empleado}">
+                                <p:ajax update="listaProductos" listener="#{facturaController.getDescuentobyCliente(facturaController.selected.cliente)}"/>
+                                <f:selectItem  itemLabel="#{bundle.SelectOneMessage}"/>
                                 <f:selectItems value="#{clienteController.itemsAvailableSelectOne}"
                                                var="clienteItem"
                                                itemValue="#{clienteItem}"/>
                             </p:selectOneMenu>
                             <p:outputLabel value="#{bundle.CreateVisitaLabel_empleado}" for="empleado" />
-                            <p:selectOneMenu id="empleado" value="#{null}" required="true" requiredMessage="#{bundle.EditVisitaRequiredMessage_empleado}">
+                            <p:selectOneMenu id="empleado" value="#{facturaController.selected.empleado}" required="true" requiredMessage="#{bundle.EditVisitaRequiredMessage_empleado}">
+                                <f:selectItem  itemLabel="#{bundle.SelectOneMessage}"/>
                                 <f:selectItems value="#{empleadoController.itemsAvailableSelectOne}"
                                                var="empleadoItem"
                                                itemValue="#{empleadoItem}"/>
                             </p:selectOneMenu><h:outputText/><h:outputText/>
-
                             <p:outputLabel value="#{bundle.CreateDevolucionLabel_observaciones}" for="observaciones"/>
                             <p:inputTextarea id="observaciones" value="#{facturaController.selected.observaciones}"/>
-
                         </p:panelGrid>
                     </p:panel>
+
                     <br/>
                     <p:panel header="Agregar Productos">
-                        <p:panelGrid columns="8">
-                            <p:outputLabel value="#{bundle.CreateFacturaProductoLabel_producto}" for="producto"/>
-                            <p:selectOneMenu id="producto" value="#{null}">
-                                <f:selectItem  itemLabel="#{bundle.SelectOneMessage}"/>
-                                <f:selectItems value="#{productoController.itemsAvailableSelectOne}" var="productoItem" itemValue="#{productoItem}"/>
-                            </p:selectOneMenu>
+                        <p:panelGrid columns="9">
+                            <p:outputLabel value="#{bundle.CreateProductoLabel_producto}"/>
+                            <p:autoComplete id="producto" minQueryLength="3" value="#{facturaController.facturaProducto.producto}" itemValue="#{pro}" 
+                                            completeMethod="#{promocionController.llenarProducto}" effect="fade" converter="productoconverter" itemLabel="#{pro.toString()}" var="pro" />
 
                             <p:outputLabel value="#{bundle.MessageCreateVenta}" for="venta"/>
-                            <p:spinner min="0" value="#{facturaProductoController.selected.unidadesVenta}" id="venta"/>
+                            <p:inputText value="#{facturaController.facturaProducto.unidadesVenta}" id="venta"/>
 
                             <p:outputLabel value="#{bundle.MessageCreateBonificacion}" for="bonificacion"/>
-                            <p:spinner min="0" value="#{facturaProductoController.selected.unidadesBonificacion}" id="bonificacion"/>
+                            <p:inputText value="#{facturaController.facturaProducto.unidadesBonificacion}" id="bonificacion"/>
 
                             <p:outputLabel value="#{bundle.MessageCreatePrecio}" for="precio"/>
-                            <p:inputText value="#{facturaProductoController.selected.precio}" id="precio"/>
-
-                            <p:commandButton icon="ui-icon-plus" value="#{bundle.AddItem}"/>
-
+                            <p:inputText value="#{facturaController.facturaProducto.precio}" id="precio"/>
+                            <p:commandButton value="#{bundle.AddItem}" icon="ui-icon-plus"
+                                             actionListener="#{facturaController.addFacturaProducto()}" update="listaProductos"/>
                         </p:panelGrid>
-                    </p:panel>
-                    <p:panel>
+                        <br/>
                         <p:dataTable styleClass="tabla" emptyMessage="#{bundle.EmptyTable}" id="listaProductos" var="itemTMP"
-                                     paginator="true" selectionMode="single"
+                                     paginator="true" selectionMode="single" value="#{facturaController.itemsTMP}"
                                      rowKey="#{itemTMP.id}"
                                      rows="5"
                                      rowsPerPageTemplate="10,20,30,40,50"
@@ -77,37 +76,77 @@
                             <f:facet name="header">
                                 <h:outputText value="#{bundle.ListProductoTitle}"/>
                             </f:facet>
-                            <p:column>
+                            <p:column width="120">
                                 <f:facet name="header">
                                     Código
                                 </f:facet>
+                                <h:outputText value="#{itemTMP.producto.codigo}"/>
                             </p:column>
                             <p:column>
                                 <f:facet name="header">
                                     Descripción
                                 </f:facet>
+                                <h:outputText value="#{itemTMP.producto.descripcion}"/>
                             </p:column>
-                            <p:column>
+                            <p:column style="text-align: center;" width="80">
                                 <f:facet name="header">
                                     Venta
                                 </f:facet>
+                                <h:outputText value="#{itemTMP.unidadesVenta}"/>
                             </p:column>
-                            <p:column>
+                            <p:column style="text-align: center;" width="80">
                                 <f:facet name="header">
                                     Bonificación
                                 </f:facet>
+                                <h:outputText value="#{itemTMP.unidadesBonificacion}"/>
                             </p:column>
-                            <p:column>
+                            <p:column style="text-align: center;" width="150">
                                 <f:facet name="header">
                                     Precio
                                 </f:facet>
+                                <h:outputText value="#{itemTMP.precio}"/>
                             </p:column>
+                            <p:column style="text-align: center;" width="80">
+                                <f:facet name="header">
+                                    <h:outputText value="Quitar"/>
+                                </f:facet>
+                                <p:commandButton icon="ui-icon-closethick" update="listaProductos"
+                                                 actionListener="#{facturaController.removeFacturaProducto(itemTMP)}"/>
+                            </p:column>
+                            <p:columnGroup type="footer">
+                                <p:row>
+                                    <p:column footerText="Totales: " style="text-align:right; font-weight: bold;" colspan="2" rowspan="2"/>
+                                    <p:column footerText="#{facturaController.totalUnidadVentas}" />
+                                    <p:column footerText="#{facturaController.totalUnidadBonificaciones}" />
+                                    <p:column style="font-weight: bold;" footerText="#{bundle.ViewFacturaLabel_totalBruto}"/>
+                                    <p:column>
+                                        <f:facet name="footer">
+                                            <h:outputText value ="#{facturaController.totalPrecioBruto}">
+                                                <f:convertNumber type="currency"  currencySymbol="$"/>
+                                            </h:outputText>
+                                        </f:facet>  
+                                    </p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column style="font-weight: bold;" footerText="#{bundle.EditFacturaLabel_descuento}"/>
+                                    <p:column footerText="% #{facturaController.selected.descuento}"/>
+                                    <p:column style="font-weight: bold;" footerText="#{bundle.CreateFacturaTitle_totalPagarForm}"/>
+                                    <p:column>
+                                        <f:facet name="footer">
+                                            <h:outputText value ="#{facturaController.totalAPagar}">
+                                                <f:convertNumber type="currency"  currencySymbol="$"/>
+                                            </h:outputText>
+                                        </f:facet>  
+                                    </p:column>
+                                </p:row>
+                            </p:columnGroup>
                         </p:dataTable>
                     </p:panel>
-                    <p:commandButton actionListener="#{visitaController.create}" value="#{bundle.Save}"
+                    <p:commandButton actionListener="#{facturaController.create}" value="#{bundle.Save}"
                                      icon="ui-icon-disk"/>
                 </h:panelGroup>
-            </h:form>
+            </h:form>            
         </ui:define>
+
     </ui:composition>
 </html>
