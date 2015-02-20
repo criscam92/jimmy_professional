@@ -37,17 +37,18 @@
 
                             <p:outputLabel value="Pais" for="pais" />
                             <p:selectOneMenu converter="ciudadconverter" style="width: 155px" id="pais" value="#{recargoController.pais}">
+                                <p:ajax update="ciudad" listener="#{recargoController.onchange}" immediate="true"/>
                                 <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>
-                                <f:selectItems value="#{ciudadController.itemsAvailableSelectOne}"
+                                <f:selectItems value="#{paisController.itemsAvailableSelectOne}"
                                                var="paisItem"
-                                               itemValue="#{ciudadItem.nombre}"/>
+                                               itemValue="#{paisItem.nombre}"/>
                             </p:selectOneMenu>
 
                             <p:outputLabel value="#{bundle.CreateClienteLabel_ciudad}" for="ciudad" />
                             <p:selectOneMenu converter="ciudadconverter" style="width: 155px" id="ciudad" value="#{recargoController.selected.ciudad}" 
                                              required="true" requiredMessage="#{bundle.EditClienteRequiredMessage_ciudad}">
                                 <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>
-                                <f:selectItems value="#{ciudadController.ciudades}"
+                                <f:selectItems value="#{recargoController.ciudades}"
                                                var="ciudadItem"
                                                itemValue="#{ciudadItem.nombre}"/>
                             </p:selectOneMenu>
