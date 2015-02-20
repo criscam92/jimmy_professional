@@ -21,7 +21,6 @@ import jp.entidades.Pais;
  */
 @Stateless
 public class CiudadFacade extends AbstractFacade<Ciudad> {
-
     @PersistenceContext(unitName = "jimmy_professionalPU")
     private EntityManager em;
 
@@ -37,12 +36,13 @@ public class CiudadFacade extends AbstractFacade<Ciudad> {
     public List<Ciudad> getCiudadesByPais(Pais pais) {
         try {
             Query query = getEntityManager().createQuery("SELECT c FROM Ciudad c WHERE c.pais.id = :pais");
-            query.setParameter("pais", pais.getId());
-            List<Ciudad> ciudades = query.getResultList();
+            query.setParameter("pais", pais.getId());            
+            List<Ciudad> ciudades = query.getResultList();            
             return ciudades;
+            
         } catch (NoResultException e) {
         }
         return new ArrayList<>();
     }
-
+    
 }

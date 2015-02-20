@@ -1,7 +1,5 @@
 package jp.facades;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -25,40 +23,15 @@ public class RecargoFacade extends AbstractFacade<Recargo> {
         super(Recargo.class);
     }
 
-    public boolean isEntityRecargoEmpty() {
-        List<Recargo> recargos = new ArrayList<>();
-        boolean vacio;
+    public Recargo getRecargo() {
         try {
-            Query query = em.createQuery("SELECT r FROM Recargo r");
-            recargos = query.getResultList();
-            if (!recargos.isEmpty()) {
-                vacio = false;
-            } else {
-                vacio = true;
-            }
-        } catch (Exception e) {
-            vacio = false;
-            e.printStackTrace();
-        }
-        return vacio;
-    }
-
-    public Recargo getFirstRecargo() {
-        Recargo recargo = new Recargo();
-        try {
-            Query query = em.createQuery("SELECT r FROM Recargo r");
+            Query query = getEntityManager().createQuery("SELECT r FROM Recargo r");
             query.setMaxResults(1);
-            recargo = (Recargo) query.getSingleResult();
-            if (recargo != null) {
-                return recargo;
-            } else {
-                recargo = null;
-            }
-        } catch (Exception e) {
-            recargo = null;
-            e.printStackTrace();
+            Recargo recargo = (Recargo) query.getSingleResult();
+            return recargo;
+        } catch (NoResultException e) {
         }
-        return recargo;
+        return null;
     }
 
     public Float getRecargoByCiudad(Ciudad c) {

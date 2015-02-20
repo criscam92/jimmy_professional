@@ -15,11 +15,10 @@ import javax.ejb.EJBException;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.component.UIComponent;
-import javax.faces.component.UISelectOne;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.faces.event.AjaxBehaviorEvent;
+import javax.faces.event.ValueChangeEvent;
 import jp.entidades.Pais;
 import jp.entidades.Recargo;
 import jp.facades.CiudadFacade;
@@ -46,7 +45,6 @@ public class RecargoController implements Serializable {
 
     @PostConstruct
     public void init() {
-//        recargo = new Recargo();
         selected = new Recargo();
         comprobarRegistros();
         ciudades = new ArrayList<>();
@@ -113,19 +111,15 @@ public class RecargoController implements Serializable {
 
     public void crearRecargo() {
         if (selected != null) {
-
             if (getTransactionFacade().createUpdateRecargo(selected)) {
                 JsfUtil.addSuccessMessage(JsfUtil.getMessageBundle("MessageCreateUpdateRecargo"));
                 if (!JsfUtil.isValidationFailed()) {
-//                    selected = null; // Remove selection
                     items = null;    // Invalidate list of items to trigger re-query.
                 }
             } else {
                 JsfUtil.addErrorMessage(JsfUtil.getMessageBundle("ErrorCreateUpdateRecargo"));
             }
-
         }
-
     }
 
     public void update() {
@@ -184,10 +178,12 @@ public class RecargoController implements Serializable {
     }
 
     private void comprobarRegistros() {
-        if (getFacade().isEntityRecargoEmpty()) {
+        selected = getFacade().getRecargo();
+        if (selected == null) {
             selected = new Recargo();
         } else {
-            selected = getFacade().getFirstRecargo();
+            pais = selected.getCiudad().getPais();
+            ciudades = getCiudadFacade().getCiudadesByPais(pais);
         }
     }
 
@@ -204,13 +200,13 @@ public class RecargoController implements Serializable {
             return controller.getFacade().find(getKey(value));
         }
 
-        java.lang.Long getKey(String value) {
-            java.lang.Long key;
+        Long getKey(String value) {
+            Long key;
             key = Long.valueOf(value);
             return key;
         }
 
-        String getStringKey(java.lang.Long value) {
+        String getStringKey(Long value) {
             StringBuilder sb = new StringBuilder();
             sb.append(value);
             return sb.toString();
@@ -232,14 +228,10 @@ public class RecargoController implements Serializable {
 
     }
 
-    public void onchange(AjaxBehaviorEvent e) {
-        if (e != null) {
-            UISelectOne select = (UISelectOne) e.getSource();
-            if (select.getSubmittedValue() != null && !select.getSubmittedValue().toString().equals(JsfUtil.getMessageBundle("SelectOneMessage"))) {
-                ciudades = getCiudadFacade().getCiudadesByPais(pais);
-            } else {
-                ciudades.clear();
-            }
+    public void countryChangeListener(ValueChangeEvent event) {
+        if (event.getNewValue() != null && !event.getNewValue().toString().endsWith(JsfUtil.getMessageBundle("SelectOneMessage"))) {
+            pais = ((Pais) event.getNewValue());
+            ciudades = getCiudadFacade().getCiudadesByPais(pais);
         } else {
             ciudades.clear();
         }

@@ -56,18 +56,18 @@ public class PaisController implements Serializable {
     }
 
     public void create() {
-        persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessagePais","CreateSuccessM"}));
+        persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessagePais", "CreateSuccessM"}));
         if (!JsfUtil.isValidationFailed()) {
             items = null;    // Invalidate list of items to trigger re-query.
         }
     }
 
     public void update() {
-        persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessagePais","UpdateSuccessM"}));
+        persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessagePais", "UpdateSuccessM"}));
     }
 
     public void destroy() {
-        persist(PersistAction.DELETE, JsfUtil.getMessageBundle(new String[]{"MessagePais","DeleteSuccessM"}));
+        persist(PersistAction.DELETE, JsfUtil.getMessageBundle(new String[]{"MessagePais", "DeleteSuccessM"}));
         if (!JsfUtil.isValidationFailed()) {
             selected = null; // Remove selection
             items = null;    // Invalidate list of items to trigger re-query.
@@ -117,12 +117,12 @@ public class PaisController implements Serializable {
         return getFacade().findAll();
     }
 
-    @FacesConverter(forClass = Pais.class)
+    @FacesConverter(forClass = Pais.class, value = "paisconverter")
     public static class PaisControllerConverter implements Converter {
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
-            if (value == null || value.length() == 0) {
+            if (value == null || value.length() == 0 || value.equals(JsfUtil.getMessageBundle("SelectOneMessage"))) {
                 return null;
             }
             PaisController controller = (PaisController) facesContext.getApplication().getELResolver().
@@ -144,7 +144,7 @@ public class PaisController implements Serializable {
 
         @Override
         public String getAsString(FacesContext facesContext, UIComponent component, Object object) {
-            if (object == null) {
+            if (object == null || object.equals(JsfUtil.getMessageBundle("SelectOneMessage"))) {
                 return null;
             }
             if (object instanceof Pais) {

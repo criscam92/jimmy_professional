@@ -36,12 +36,13 @@
                             <p:outputLabel/>
 
                             <p:outputLabel value="Pais" for="pais" />
-                            <p:selectOneMenu converter="ciudadconverter" style="width: 155px" id="pais" value="#{recargoController.pais}">
-                                <p:ajax update="ciudad" listener="#{recargoController.onchange}" immediate="true"/>
+                            <p:selectOneMenu valueChangeListener="#{recargoController.countryChangeListener}" value="#{recargoController.pais}" style="width: 155px" id="pais" converter="paisconverter" required="true">
+                                <p:ajax update="ciudad"/>
                                 <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>
                                 <f:selectItems value="#{paisController.itemsAvailableSelectOne}"
                                                var="paisItem"
-                                               itemValue="#{paisItem.nombre}"/>
+                                               itemValue="#{paisItem}"
+                                               itemLabel="#{paisItem.nombre}"/>
                             </p:selectOneMenu>
 
                             <p:outputLabel value="#{bundle.CreateClienteLabel_ciudad}" for="ciudad" />
@@ -50,7 +51,8 @@
                                 <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>
                                 <f:selectItems value="#{recargoController.ciudades}"
                                                var="ciudadItem"
-                                               itemValue="#{ciudadItem.nombre}"/>
+                                               itemValue="#{ciudadItem}"
+                                               itemLabel="#{ciudadItem.nombre}"/>
                             </p:selectOneMenu>
 
                         </p:panelGrid>
@@ -61,8 +63,6 @@
                         </f:facet>
                     </p:panel>
                 </h:panelGroup>
-
-
             </h:form>
         </ui:define>
 
