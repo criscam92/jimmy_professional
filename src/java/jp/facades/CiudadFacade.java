@@ -5,10 +5,15 @@
  */
 package jp.facades;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import jp.entidades.Ciudad;
+import jp.entidades.Pais;
 
 /**
  *
@@ -26,6 +31,18 @@ public class CiudadFacade extends AbstractFacade<Ciudad> {
 
     public CiudadFacade() {
         super(Ciudad.class);
+    }
+
+    public List<Ciudad> getCiudadesByPais(Pais pais) {
+        try {
+            Query query = getEntityManager().createQuery("SELECT c FROM Ciudad c WHERE c.pais.id = :pais");
+            query.setParameter("pais", pais.getId());
+            
+            List<Ciudad> ciudades = query.
+            
+        } catch (NoResultException e) {
+        }
+        return new ArrayList<>();
     }
     
 }

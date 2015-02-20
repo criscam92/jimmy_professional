@@ -4,6 +4,7 @@ import jp.entidades.Ciudad;
 import jp.util.JsfUtil;
 import jp.util.JsfUtil.PersistAction;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -14,11 +15,14 @@ import javax.ejb.EJBException;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.component.UIComponent;
+import javax.faces.component.UISelectOne;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.persistence.Query;
+import javax.faces.event.AjaxBehaviorEvent;
+import jp.entidades.Pais;
 import jp.entidades.Recargo;
+import jp.facades.CiudadFacade;
 import jp.facades.RecargoFacade;
 import jp.facades.TransactionFacade;
 
@@ -27,11 +31,15 @@ import jp.facades.TransactionFacade;
 public class RecargoController implements Serializable {
 
     @EJB
-    private jp.facades.RecargoFacade ejbFacade;
+    private RecargoFacade ejbFacade;
     @EJB
-    private jp.facades.TransactionFacade ejbTransactionFacade;
+    private TransactionFacade ejbTransactionFacade;
+    @EJB
+    private CiudadFacade ciudadFacade;
     private List<Recargo> items = null;
     private Recargo selected;
+    private Pais pais;
+    private List<Ciudad> ciudades;
 
     public RecargoController() {
     }
@@ -41,6 +49,7 @@ public class RecargoController implements Serializable {
 //        recargo = new Recargo();
         selected = new Recargo();
         comprobarRegistros();
+        ciudades = new ArrayList<>();
     }
 
     public Recargo getSelected() {
@@ -51,10 +60,34 @@ public class RecargoController implements Serializable {
         this.selected = selected;
     }
 
+    public Pais getPais() {
+        return pais;
+    }
+
+    public void setPais(Pais pais) {
+        this.pais = pais;
+    }
+
     protected void setEmbeddableKeys() {
     }
 
     protected void initializeEmbeddableKey() {
+    }
+
+    public List<Ciudad> getCiudades() {
+        return ciudades;
+    }
+
+    public CiudadFacade getCiudadFacade() {
+        return ciudadFacade;
+    }
+
+    public void setCiudadFacade(CiudadFacade ciudadFacade) {
+        this.ciudadFacade = ciudadFacade;
+    }
+
+    public void setCiudades(List<Ciudad> ciudades) {
+        this.ciudades = ciudades;
     }
 
     private RecargoFacade getFacade() {
@@ -158,8 +191,6 @@ public class RecargoController implements Serializable {
         }
     }
 
-    
-
     @FacesConverter(forClass = Ciudad.class)
     public static class RecargoControllerConverter implements Converter {
 
@@ -199,6 +230,19 @@ public class RecargoController implements Serializable {
             }
         }
 
+    }
+
+    public void onchange(AjaxBehaviorEvent e) {
+        if (e != null) {
+            UISelectOne select = (UISelectOne) e.getSource();
+            if (select.getSubmittedValue() != null && !select.getSubmittedValue().toString().equals(JsfUtil.getMessageBundle("SelectOneMessage"))) {
+                ciudades = getCiudadFacade().getCiudadesByPais(pais);
+            } else {
+                ciudades.clear();
+            }
+        } else {
+            ciudades.clear();
+        }
     }
 
 }

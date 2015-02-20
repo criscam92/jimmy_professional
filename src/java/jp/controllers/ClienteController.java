@@ -15,11 +15,11 @@ import javax.ejb.EJBException;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.component.UIComponent;
+import javax.faces.component.UISelectOne;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.faces.event.ValueChangeEvent;
-import jp.entidades.Ciudad;
+import javax.faces.event.AjaxBehaviorEvent;
 import jp.facades.ClienteFacade;
 import jp.facades.RecargoFacade;
 
@@ -33,16 +33,17 @@ public class ClienteController implements Serializable {
     private RecargoFacade ejbRecargoFacade;
     private List<Cliente> items = null;
     private Cliente selected;
-    private Boolean ciudad = false;
+    private Boolean disable = false;
     private boolean recargo = false;
+    private int valorSelect;
+    private String visibility;
+    private String header;
 
     public ClienteController() {
     }
 
     @PostConstruct
     public void init() {
-        ciudad = false;
-        recargo = false;
     }
 
     public Cliente getSelected() {
@@ -53,12 +54,20 @@ public class ClienteController implements Serializable {
         this.selected = selected;
     }
 
-    public Boolean getCiudad() {
-        return ciudad;
+    public Boolean getDisable() {
+        return disable;
     }
 
-    public void setCiudad(Boolean ciudad) {
-        this.ciudad = ciudad;
+    public void setDisable(Boolean disable) {
+        this.disable = disable;
+    }
+
+    public String getVisibility() {
+        return visibility;
+    }
+
+    public void setVisibility(String visibility) {
+        this.visibility = visibility;
     }
 
     public boolean getRecargo() {
@@ -67,6 +76,14 @@ public class ClienteController implements Serializable {
 
     public void setRecargo(boolean recargo) {
         this.recargo = recargo;
+    }
+
+    public int getValorSelect() {
+        return valorSelect;
+    }
+
+    public void setValorSelect(int valorSelect) {
+        this.valorSelect = valorSelect;
     }
 
     protected void setEmbeddableKeys() {
@@ -83,23 +100,63 @@ public class ClienteController implements Serializable {
         return ejbRecargoFacade;
     }
 
+    public String getHeader() {
+        return header;
+    }
+
+    public void setHeader(String header) {
+        this.header = header;
+    }
+
     public Cliente prepareCreate() {
         selected = new Cliente();
         initializeEmbeddableKey();
-        ciudad = false;
+        disable = true;
         recargo = false;
+        visibility = "hidden";
+        header = JsfUtil.getMessageBundle("CreateClienteTitle");
         return selected;
     }
 
-    public void create() {
-        persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageCliente", "CreateSuccessM"}));
-        if (!JsfUtil.isValidationFailed()) {
-            items = null;    // Invalidate list of items to trigger re-query.
+    public void prepareEdit() {
+        header = JsfUtil.getMessageBundle("EditClienteTitle");
+        if (selected.getTarifaEspecial() == null) {
+            recargo = false;
+            disable = false;
+            visibility = "hidden";
+        } else if (selected.getTarifaEspecial() >= 0.0f) {
+            recargo = true;
+            disable = false;
+            visibility = "visible";
+        } else {
+            recargo = false;
+            disable = true;
+            visibility = "hidden";
         }
     }
 
-    public void update() {
-        persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessageCliente", "UpdateSuccessM"}));
+    public void createOrEdit() {
+
+        System.out.println("============== DATOS ==============");
+        System.out.println("BARRIO: " + selected.getBarrio());
+        System.out.println("CIUDAD: " + selected.getCiudad().getNombre());
+        System.out.println("CUPO CREDITO: " + selected.getCupoCredito());
+        System.out.println("DIRECCION" + selected.getDireccion());
+        System.out.println("EMPLEADO: " + selected.getEmpleado().getNombre());
+        System.out.println("NOMBRE: " + selected.getNombre());
+        System.out.println("TARIFA ESPECIAL: " + selected.getTarifaEspecial());
+        System.out.println("TELEFONOS: " + selected.getTelefonos());
+        System.out.println("TIPO: " + selected.getTipo());
+        System.out.println("============== DATOS ==============");
+
+        String msm = (selected.getId() != null ? JsfUtil.getMessageBundle(new String[]{"MessageCliente", "UpdateSuccessM"})
+                : JsfUtil.getMessageBundle(new String[]{"MessageCliente", "CreateSuccessM"}));
+
+        persist(PersistAction.CREATE, msm);
+
+        if (!JsfUtil.isValidationFailed() && selected.getId() == null) {
+            items = null;    // Invalidate list of items to trigger re-query.
+        }
     }
 
     public void destroy() {
@@ -136,11 +193,11 @@ public class ClienteController implements Serializable {
                 if (msg.length() > 0) {
                     JsfUtil.addErrorMessage(msg);
                 } else {
-                    JsfUtil.addErrorMessage(ex, ResourceBundle.getBundle("languages/Bundle").getString("PersistenceErrorOccured"));
+                    JsfUtil.addErrorMessage(ex, JsfUtil.getMessageBundle("PersistenceErrorOccured"));
                 }
             } catch (Exception ex) {
                 Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
-                JsfUtil.addErrorMessage(ex, ResourceBundle.getBundle("languages/Bundle").getString("PersistenceErrorOccured"));
+                JsfUtil.addErrorMessage(ex, JsfUtil.getMessageBundle("PersistenceErrorOccured"));
             }
         }
     }
@@ -194,33 +251,26 @@ public class ClienteController implements Serializable {
 
     }
 
-    public boolean applyRecargo(Ciudad c) {
-        try {
-            if (getFacade().applyRecargo(c) != null) {
-                ciudad = getFacade().applyRecargo(c).equals(c);
-            } else {
-                ciudad = false;
-            }
-        } catch (Exception e) {
-            ciudad = false;
+    public void onchange(AjaxBehaviorEvent e) {
+        if (e != null) {
+            UISelectOne select = (UISelectOne) e.getSource();
+            disable = (select.getSubmittedValue() == null || select.getSubmittedValue().toString().equals(JsfUtil.getMessageBundle("SelectOneMessage")));
+        } else {
+            disable = true;
         }
-
-        return getFacade().applyRecargo(c).equals(c);
+        recargo = false;
+        visibility = "hidden";
+        selected.setTarifaEspecial(null);
     }
 
-    public Float getRecargoByUbicacionCiudad(Ciudad c) {
-        try {
-            Float tarifaEspecial = getEjbRecargoFacade().getRecargoByUbicacionCiudad(c);
-            selected.setTarifaEspecial(tarifaEspecial);
-            return getEjbRecargoFacade().getRecargoByUbicacionCiudad(c);
-        } catch (Exception e) {
-            return null;
+    public void showTarifaEspecial() {
+        if (recargo) {
+            visibility = "visible";
+            selected.setTarifaEspecial(getEjbRecargoFacade().getRecargoByCiudad(selected.getCiudad()));
+        } else {
+            visibility = "hidden";
+            selected.setTarifaEspecial(null);
         }
-    }
-
-    public boolean comprobarCiudad(){
-        System.out.println("La ciudad = null?"+selected.getCiudad() == null);
-        return selected.getCiudad() == null;
     }
 
 }

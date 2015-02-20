@@ -14,38 +14,53 @@
             <h:form id="formRecargo" >
                 <h:panelGroup id="display">
 
-                    <p:panel header="Datos Recargos">
-                        <p:panelGrid columns="8">
-                            <p:outputLabel value="#{bundle.MessageRecargoLocal}" for="recargo_local"/>
-                            <p:inputText id="recargo_local" value="#{recargoController.selected.recargoLocal}" validatorMessage="El cargo local debe estar entre 0.0 y 100">
-                                <f:validateDoubleRange minimum="0.0" maximum="100" for="recargo_local"/>
-                            </p:inputText>
-                            
-                            <p:outputLabel value="#{bundle.MessageRecargoNacional}" for="recargo_nacional"/>
-                            <p:inputText id="recargo_nacional" value="#{recargoController.selected.recargoNacional}" validatorMessage="El cargo nacional debe estar entre 0.0 y 100">
-                                <f:validateDoubleRange minimum="0.0" maximum="100" for="recargo_nacional"/>
-                            </p:inputText>
+                    <p:panel header="Datos Recargos" style="width: 915px;">
+                        <p:panelGrid columns="6">
 
                             <p:outputLabel value="#{bundle.MessageRecargoInternacional}" for="recargo_internacional"/>
-                            <p:inputText id="recargo_internacional" value="#{recargoController.selected.recargoInternacional}" validatorMessage="El cargo internacional debe estar entre 0.0 y 100">
-                                <f:validateDoubleRange minimum="0.0" maximum="100" for="recargo_internacional"/>
+                            <p:inputText id="recargo_internacional" value="#{recargoController.selected.recargoInternacional}" validatorMessage="El cargo internacional debe estar entre 0 y 100">
+                                <f:validateDoubleRange minimum="0" maximum="100"/>
                             </p:inputText>
-                            
+
+                            <p:outputLabel value="#{bundle.MessageRecargoNacional}" for="recargo_nacional"/>
+                            <p:inputText id="recargo_nacional" value="#{recargoController.selected.recargoNacional}" validatorMessage="El cargo nacional debe estar entre 0 y 100">
+                                <f:validateDoubleRange minimum="0" maximum="100"/>
+                            </p:inputText>
+
+                            <p:outputLabel value="#{bundle.MessageRecargoLocal}" for="recargo_local"/>
+                            <p:inputText id="recargo_local" value="#{recargoController.selected.recargoLocal}" validatorMessage="El cargo local debe estar entre 0 y 100">
+                                <f:validateDoubleRange minimum="0" maximum="100"/>
+                            </p:inputText>
+
+                            <p:outputLabel/>
+                            <p:outputLabel/>
+
+                            <p:outputLabel value="Pais" for="pais" />
+                            <p:selectOneMenu converter="ciudadconverter" style="width: 155px" id="pais" value="#{recargoController.pais}">
+                                <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>
+                                <f:selectItems value="#{ciudadController.itemsAvailableSelectOne}"
+                                               var="paisItem"
+                                               itemValue="#{ciudadItem.nombre}"/>
+                            </p:selectOneMenu>
+
                             <p:outputLabel value="#{bundle.CreateClienteLabel_ciudad}" for="ciudad" />
                             <p:selectOneMenu converter="ciudadconverter" style="width: 155px" id="ciudad" value="#{recargoController.selected.ciudad}" 
                                              required="true" requiredMessage="#{bundle.EditClienteRequiredMessage_ciudad}">
                                 <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>
-                                <f:selectItems value="#{ciudadController.itemsAvailableSelectOne}"
+                                <f:selectItems value="#{ciudadController.ciudades}"
                                                var="ciudadItem"
-                                               itemValue="#{ciudadItem}"/>
+                                               itemValue="#{ciudadItem.nombre}"/>
                             </p:selectOneMenu>
-                            
+
+                        </p:panelGrid>
+
+                        <f:facet name="footer">
                             <p:commandButton icon="ui-icon-disk" value="#{bundle.Save}" action="#{recargoController.crearRecargo()}"
                                              update="display,formRecargo,:growl"/>
-                        </p:panelGrid>
-                    </p:panel><br/>
+                        </f:facet>
+                    </p:panel>
                 </h:panelGroup>
-                
+
 
             </h:form>
         </ui:define>

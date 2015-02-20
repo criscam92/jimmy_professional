@@ -61,40 +61,22 @@ public class RecargoFacade extends AbstractFacade<Recargo> {
         return recargo;
     }
 
-    public Float getRecargoByUbicacionCiudad(Ciudad c) {
-        System.out.println("Consultando el recargo de= " + c);
-        Float cantidadRecargo = 0f;
-        Recargo recargo = null;
-        String queryGlobal = "SELECT r.ciudad FROM Recargo r WHERE r.ciudad.id= :id";
+    public Float getRecargoByCiudad(Ciudad c) {
+        try {
+            Query query = getEntityManager().createQuery("SELECT r FROM Recargo r");
+            query.setMaxResults(1);
+            Recargo r = (Recargo) query.getSingleResult();
 
-        Query queryRecargo = em.createQuery("SELECT r FROM Recargo r");
-        if (queryRecargo.getResultList().size() > 0) {
-            recargo = (Recargo) queryRecargo.getSingleResult();
-        }else{
-            return cantidadRecargo;
-        }
-        
-        Query queryLocal = em.createQuery(queryGlobal);
-        queryLocal.setParameter("id", c.getId());
-        System.out.println("Size-> " + queryLocal.getResultList().size());
-        if (queryLocal.getResultList().size() > 0) {
-            System.out.println("La ciudad es local");
-            cantidadRecargo = recargo.getRecargoLocal();
-            System.out.println("Cantidad recargo-> " + cantidadRecargo);
-        } else {
-            String queryPais = "SELECT r FROM Recargo r WHERE r.ciudad.pais.id= :pais";
-            Query queryNacional = em.createQuery(queryPais);
-            queryNacional.setParameter("pais", c.getPais().getId());
-            if (queryNacional.getResultList().size() > 0) {
-                recargo = (Recargo) queryNacional.getSingleResult();
-                cantidadRecargo = recargo.getRecargoNacional();
-                System.out.println("Cantidad recargo-> " + cantidadRecargo);
-            }else{
-                System.out.println("Ciudad es Internacional");
-                cantidadRecargo = recargo.getRecargoInternacional();
-                System.out.println("Cantidad recargo-> " + cantidadRecargo);
+            if ((r.getCiudad().getPais().equals(c.getPais())) && (r.getCiudad().equals(c))) {
+                return r.getRecargoLocal();
+            } else if ((r.getCiudad().getPais().equals(c.getPais())) && !(r.getCiudad().equals(c))) {
+                return r.getRecargoNacional();
+            } else {
+                return r.getRecargoInternacional();
             }
+        } catch (NoResultException nre) {
+
         }
-        return cantidadRecargo;
+        return 0f;
     }
 }

@@ -64,7 +64,7 @@ public class Cliente implements Serializable {
     private double cupoCredito;
     @Basic(optional = true)
     @Column(name = "tarifa_especial")
-    private float tarifaEspecial;
+    private Float tarifaEspecial;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "cliente", fetch = FetchType.LAZY)
     private List<Visita> visitaList;
     @JoinColumn(name = "ciudad", referencedColumnName = "id", nullable = false)
@@ -86,7 +86,7 @@ public class Cliente implements Serializable {
         this.id = id;
     }
 
-    public Cliente(Long id, String nombre, String direccion, String barrio, double cupoCredito, float tarifaEspecial) {
+    public Cliente(Long id, String nombre, String direccion, String barrio, double cupoCredito, Float tarifaEspecial) {
         this.id = id;
         this.nombre = nombre;
         this.direccion = direccion;
@@ -143,11 +143,11 @@ public class Cliente implements Serializable {
         this.cupoCredito = cupoCredito;
     }
 
-    public float getTarifaEspecial() {
+    public Float getTarifaEspecial() {
         return tarifaEspecial;
     }
 
-    public void setTarifaEspecial(float tarifaEspecial) {
+    public void setTarifaEspecial(Float tarifaEspecial) {
         this.tarifaEspecial = tarifaEspecial;
     }
 
