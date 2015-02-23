@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package jp.entidades;
 
 import java.io.Serializable;
@@ -19,10 +14,6 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- *
- * @author arturo
- */
 @MappedSuperclass
 @Table(name = "factura_promocion", catalog = "jimmy_professional", schema = "public")
 @XmlRootElement
@@ -33,6 +24,14 @@ public class FacturaPromocion implements Serializable {
     @Basic(optional = false)
     @Column(nullable = false)
     private Long id;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "unidades_venta", nullable = false)
+    private int unidadesVenta;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "unidades_bonificacion", nullable = false)
+    private int unidadesBonificacion;
     @Basic(optional = false)
     @NotNull
     @Column(nullable = false)
@@ -51,9 +50,11 @@ public class FacturaPromocion implements Serializable {
         this.id = id;
     }
 
-    public FacturaPromocion(Long id, double precio) {
+    public FacturaPromocion(Long id, double precio, int unidVenta, int unidBonif) {
         this.id = id;
         this.precio = precio;
+        this.unidadesVenta = unidVenta;
+        this.unidadesBonificacion = unidBonif;
     }
 
     public Long getId() {
@@ -62,6 +63,22 @@ public class FacturaPromocion implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public int getUnidadesVenta() {
+        return unidadesVenta;
+    }
+
+    public void setUnidadesVenta(int unidadesVenta) {
+        this.unidadesVenta = unidadesVenta;
+    }
+
+    public int getUnidadesBonificacion() {
+        return unidadesBonificacion;
+    }
+
+    public void setUnidadesBonificacion(int unidadesBonificacion) {
+        this.unidadesBonificacion = unidadesBonificacion;
     }
 
     public double getPrecio() {

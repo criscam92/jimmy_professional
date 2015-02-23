@@ -14,7 +14,7 @@
             <h:form id="VisitaListForm">
                 <p:dataTable styleClass="tabla" id="datalist" value="#{facturaController.items}" var="item"
                              selectionMode="single" selection="#{facturaController.selected}" widgetVar="tblFactura"
-                             paginator="true"
+                             paginator="true" style="text-align: center"
                              rowKey="#{item.id}"
                              rows="10"
                              rowsPerPageTemplate="10,20,30,40,50"
@@ -43,7 +43,7 @@
                                 <p:commandButton value="Si" icon="ui-icon-check" styleClass="ui-confirmdialog-yes" actionListener="#{visitaController.anullVisitaProducto()}"/>
                                 <p:commandButton value="No" type="button" icon="ui-icon-close" styleClass="ui-confirmdialog-no"/>
                             </p:confirmDialog>
-                            <p:commandButton id="productos" value="Realizar" oncomplete="PF('ProductosByVisitaDialog').show()"
+                            <p:commandButton id="productos" value="#{bundle.MessageDespacharFactura}" oncomplete="PF('ProductosByVisitaDialog').show()"
                                              icon="ui-icon-check" disabled="#{empty facturaController.selected}"/> 
                         </div>
                     </f:facet>
@@ -67,7 +67,7 @@
                         <f:facet name="header">
                             <h:outputText value="#{bundle.ListFacturaTitle_cliente}"/>
                         </f:facet>
-                        <h:outputText value="#{item.cliente}"/>
+                        <h:outputText value="#{item.cliente.toString()}"/>
                     </p:column>
                     <p:column>
                         <f:facet name="header">
@@ -79,7 +79,7 @@
                         <f:facet name="header">
                             <h:outputText value="#{bundle.MeesageTipoPago}"/>
                         </f:facet>
-                        <h:outputText value="#{item.tipo_pago}"/>
+                        <h:outputText value="#{facturaController.getTipoPagofactura(item.tipo_pago)}"/>
                     </p:column>
                     <p:column>
                         <f:facet name="header">
@@ -91,31 +91,35 @@
                         <f:facet name="header">
                             <h:outputText value="#{bundle.CreateFacturaLabel_totalUnidadVentas}"/>
                         </f:facet>
-                        <h:outputText value="#{contar}"/>
+                        <h:outputText value="#{facturaController.getCantidadVentasByFactura(item)}"/>
                     </p:column>
                     <p:column>
                         <f:facet name="header">
                             <h:outputText value="#{bundle.CreateFacturaLabel_totalUnidadBonificaciones}"/>
                         </f:facet>
-                        <h:outputText value="#{contar}"/>
+                        <h:outputText value="#{facturaController.getCantidadBonificacionesByFactura(item)}"/>
                     </p:column>
                     <p:column>
                         <f:facet name="header">
                             <h:outputText value="#{bundle.CreateFacturaTitle_totalBruto}"/>
                         </f:facet>
-                        <h:outputText value="#{item.totalBruto}"/>
+                        <h:outputText value="#{item.totalBruto}">
+                            <f:convertNumber type="currency"  currencySymbol="$"/>
+                        </h:outputText>
                     </p:column>
                     <p:column>
                         <f:facet name="header">
                             <h:outputText value="#{bundle.MessageFacturaDescuento}"/>
                         </f:facet>
-                        <h:outputText value="#{item.cliente.tarifaEspecial}"/>
+                        <h:outputText value="#{item.cliente.tarifaEspecial} %"/>
                     </p:column>
                     <p:column>
                         <f:facet name="header">
                             <h:outputText value="#{bundle.CreateFacturaTitle_totalPagar}"/>
                         </f:facet>
-                        <h:outputText value="#{item.totalPagar}"/>
+                        <h:outputText value="#{item.totalPagar}">
+                            <f:convertNumber type="currency"  currencySymbol="$"/>
+                        </h:outputText>
                     </p:column>
                 </p:dataTable>
             </h:form>
