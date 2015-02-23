@@ -6,7 +6,7 @@
       xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:p="http://primefaces.org/ui">
 
-    <ui:composition template="/template.xhtml">
+    <ui:composition template="/index.xhtml">
 
 
         <ui:define name="title">
@@ -15,52 +15,61 @@
 
         <ui:define name="body">
             <h:form id="IngresoListForm">
-                <p:panel header="#{bundle.ListIngresoTitle}">
-                    <p:dataTable id="datalist" value="#{ingresoController.items}" var="item"
-                                 selectionMode="single" selection="#{ingresoController.selected}"
-                                 paginator="true"
-                                 rowKey="#{item.id}"
-                                 rows="10"
-                                 rowsPerPageTemplate="10,20,30,40,50"
-                                 >
+<!--                <p:panel header="#{bundle.ListIngresoTitle}">-->
+                <p:dataTable id="datalist" value="#{ingresoController.items}" var="item"
+                             selectionMode="single" selection="#{ingresoController.selected}"
+                             paginator="true"
+                             rowKey="#{item.id}"
+                             rows="10"
+                             rowsPerPageTemplate="10,20,30,40,50"
+                             styleClass="tabla"
+                             emptyMessage="#{bundle.EmptyTable}"
+                             paginatorPosition="bottom"
+                             >
 
-                        <p:ajax event="rowSelect"   update="createButton viewButton editButton deleteButton"/>
-                        <p:ajax event="rowUnselect" update="createButton viewButton editButton deleteButton"/>
+                    <p:ajax event="rowSelect"   update="createButton viewButton editButton deleteButton"/>
+                    <p:ajax event="rowUnselect" update="createButton viewButton editButton deleteButton"/>
 
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="#{bundle.ListIngresoTitle_id}"/>
-                            </f:facet>
-                            <h:outputText value="#{item.id}"/>
-                        </p:column>
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="#{bundle.ListIngresoTitle_fechaIngreso}"/>
-                            </f:facet>
-                            <h:outputText value="#{item.fechaIngreso}">
-                                <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
-                            </h:outputText>
-                        </p:column>
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="#{bundle.ListIngresoTitle_observaciones}"/>
-                            </f:facet>
-                            <h:outputText value="#{item.observaciones}"/>
-                        </p:column>
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="#{bundle.ListIngresoTitle_usuario}"/>
-                            </f:facet>
-                            <h:outputText value="#{item.usuario}"/>
-                        </p:column>
-                        <f:facet name="footer">
+                    <f:facet name="header">
+                        <div id="titulo">
+                            Ingresos
+                        </div>
+                        <div id="acciones">
                             <p:commandButton id="createButton" icon="ui-icon-plus"   value="#{bundle.Create}" actionListener="#{ingresoController.prepareCreate}" update=":IngresoCreateForm" oncomplete="PF('IngresoCreateDialog').show()"/>
                             <p:commandButton id="viewButton"   icon="ui-icon-search" value="#{bundle.View}" update=":IngresoViewForm" oncomplete="PF('IngresoViewDialog').show()" disabled="#{empty ingresoController.selected}"/>
                             <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":IngresoEditForm" oncomplete="PF('IngresoEditDialog').show()" disabled="#{empty ingresoController.selected}"/>
                             <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{ingresoController.destroy}" update=":growl,datalist" disabled="#{empty ingresoController.selected}"/>
+                        </div>
+                    </f:facet>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.ListIngresoTitle_id}"/>
                         </f:facet>
-                    </p:dataTable>
-                </p:panel>
+                        <h:outputText value="#{item.id}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.ListIngresoTitle_fechaIngreso}"/>
+                        </f:facet>
+                        <h:outputText value="#{item.fechaIngreso}">
+                            <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
+                        </h:outputText>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.ListIngresoTitle_observaciones}"/>
+                        </f:facet>
+                        <h:outputText value="#{item.observaciones}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.ListIngresoTitle_usuario}"/>
+                        </f:facet>
+                        <h:outputText value="#{item.usuario}"/>
+                    </p:column>
+                </p:dataTable>
+                <!--                </p:panel>-->
             </h:form>
 
             <ui:include src="Create.xhtml"/>

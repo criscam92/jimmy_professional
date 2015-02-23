@@ -42,10 +42,18 @@
 
                     <p:column>
                         <f:facet name="header">
+                            <h:outputText value="Codigo"/>
+                        </f:facet>
+                        <h:outputText value="#{item.codigo}"/>                        
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">
                             <h:outputText value="#{bundle.ListPromocionTitle_descripcion}"/>
                         </f:facet>
                         <h:outputText value="#{item.descripcion}"/>                        
                     </p:column>
+                    
                     <p:column>
                         <f:facet name="header">
                             <h:outputText value="#{bundle.ListPromocionTitle_valor}"/>

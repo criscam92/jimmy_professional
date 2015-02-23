@@ -18,6 +18,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import jp.entidades.Producto;
 
 @ManagedBean(name = "ingresoController")
 @SessionScoped
@@ -27,6 +28,7 @@ public class IngresoController implements Serializable {
     private jp.facades.IngresoFacade ejbFacade;
     private List<Ingreso> items = null;
     private Ingreso selected;
+    private Producto producto;
 
     public IngresoController() {
     }
@@ -43,6 +45,14 @@ public class IngresoController implements Serializable {
     }
 
     protected void initializeEmbeddableKey() {
+    }
+
+    public Producto getProducto() {
+        return producto;
+    }
+
+    public void setProducto(Producto producto) {
+        this.producto = producto;
     }
 
     private IngresoFacade getFacade() {

@@ -18,21 +18,29 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import jp.entidades.auxiliar.Codificable;
 
 @Entity
 @Table(catalog = "jimmy_professional", schema = "public")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Promocion.findAll", query = "SELECT p FROM Promocion p"),
+    @NamedQuery(name = "Promocion.findByCodigo", query = "SELECT p FROM Promocion p WHERE p.codigo = :codigo"),
     @NamedQuery(name = "Promocion.findById", query = "SELECT p FROM Promocion p WHERE p.id = :id"),
     @NamedQuery(name = "Promocion.findByDescripcion", query = "SELECT p FROM Promocion p WHERE p.descripcion = :descripcion")})
-public class Promocion implements Serializable {
+public class Promocion implements Serializable, Codificable{
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(nullable = false)
     private Long id;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 45)
+    @Column(nullable = false, length = 45)
+    private String codigo;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 100)
@@ -52,18 +60,29 @@ public class Promocion implements Serializable {
         this.id = id;
     }
 
-    public Promocion(Long id, String descripcion, double valor) {
+    public Promocion(Long id, String codigo, String descripcion, double valor) {
         this.id = id;
         this.descripcion = descripcion;
         this.valor = valor;
+        this.codigo = codigo;
     }
 
+    @Override
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    @Override
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
     }
 
     public String getDescripcion() {
@@ -105,15 +124,17 @@ public class Promocion implements Serializable {
             return false;
         }
         Promocion other = (Promocion) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return !((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)));
     }
 
     @Override
     public String toString() {
         return this.getDescripcion();
     }
-    
+
+    @Override
+    public String getTipo() {
+        return null;
+    }
+
 }

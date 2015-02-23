@@ -12,28 +12,30 @@
             <h:form id="PromocionCreateForm">
                 <!--<h:panelGroup id="display">-->
                 <p:panelGrid columns="1" rendered="#{promocionController.selected != null}">
-                    <p:panelGrid columns="1">
-                        <p:panelGrid columns="2">
-                            <p:outputLabel value="#{bundle.CreatePromocionLabel_descripcion}" for="descripcion" />
-                            <p:inputTextarea id="descripcion" value="#{promocionController.selected.descripcion}" rows="3"  style="width: 400px; height: 40px" title="#{bundle.CreatePromocionTitle_descripcion}" required="true" requiredMessage="#{bundle.CreatePromocionRequiredMessage_descripcion}"/>
+                    <p:panelGrid columns="4">
+                        <p:outputLabel value="Codigo: " for="codigo" style="margin-right: 22px;"/>
+                        <p:inputText id="codigo" value="#{promocionController.selected.codigo}" title="Codigo" required="true" requiredMessage="El campo codigo es requerido"/>
 
-                            <p:outputLabel value="#{bundle.CreatePromocionLabel_valor}" for="valor" />
-                            <p:inputText id="valor" value="#{promocionController.selected.valor}" title="#{bundle.CreatePromocionTitle_valor}" required="true" requiredMessage="#{bundle.CreatePromocionRequiredMessage_valor}"/>
-                        </p:panelGrid>
-                        <p:panelGrid columns="5">
-                            <p:outputLabel style="margin-right: 28px;" value="#{bundle.CreatePromocionProductoLabel_producto}" for="producto" />
-                            <p:autoComplete id="producto" minQueryLength="3" value="#{promocionController.producto}"
-                                            itemValue="#{pro}" completeMethod="#{promocionController.llenarProducto}" effect="fade"
-                                            converter="productoconverter" itemLabel="#{pro.toString()}" var="pro" />
+                        <p:outputLabel value="#{bundle.CreatePromocionLabel_valor}" for="valor" />
+                        <p:inputText id="valor" style="width: 160px;" value="#{promocionController.selected.valor}" title="#{bundle.CreatePromocionTitle_valor}" required="true" requiredMessage="#{bundle.CreatePromocionRequiredMessage_valor}"/>
+                    </p:panelGrid>
+                    <p:panelGrid columns="2">
+                        <p:outputLabel value="#{bundle.CreatePromocionLabel_descripcion}" for="descripcion" />
+                        <p:inputTextarea id="descripcion" value="#{promocionController.selected.descripcion}" rows="3"  style="width: 400px; height: 40px" title="#{bundle.CreatePromocionTitle_descripcion}" required="true" requiredMessage="#{bundle.CreatePromocionRequiredMessage_descripcion}"/>
+                    </p:panelGrid>
+                    <p:panelGrid columns="5">
+                        <p:outputLabel style="margin-right: 28px;" value="#{bundle.CreatePromocionProductoLabel_producto}" for="producto" />
+                        <p:autoComplete id="producto" minQueryLength="3" value="#{promocionController.producto}"
+                                        itemValue="#{pro}" completeMethod="#{promocionController.llenarProducto}" effect="fade"
+                                        converter="productoconverter" itemLabel="#{pro.toString()}" var="pro" />
 
-                            <p:outputLabel value="Cantidad:" rendered="true" for="cantidad" />
-                            <p:inputText style="width: 48px; " id="cantidad" value="#{promocionController.cantidad}" title="Cantidad" />
+                        <p:outputLabel value="Cantidad:" rendered="true" for="cantidad" />
+                        <p:inputText style="width: 48px; " id="cantidad" value="#{promocionController.cantidad}" title="Cantidad" />
 
-                            <p:commandButton icon="ui-icon-plus" value="Agregar" update="listPromocionProductos,producto,cantidad,:growl"  actionListener="#{promocionController.addPromocionProducto}"/>
-                        </p:panelGrid>
+                        <p:commandButton icon="ui-icon-plus" value="Agregar" update="listPromocionProductos,producto,cantidad,:growl"  actionListener="#{promocionController.addPromocionProducto}"/>
                     </p:panelGrid>
                     <p:panelGrid columns="1">
-                        <p:dataTable id="listPromocionProductos" style="width:533px;"  value="#{promocionController.promocionProductos}" var="item"
+                        <p:dataTable id="listPromocionProductos" style="width:510px;"  value="#{promocionController.promocionProductos}" var="item"
                                      selectionMode="single"
                                      paginator="true"
                                      rowKey="#{item.id}"

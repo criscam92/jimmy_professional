@@ -16,7 +16,7 @@ import jp.entidades.IngresoProducto;
  */
 @Stateless
 public class IngresoProductoFacade extends AbstractFacade<IngresoProducto> {
-    @PersistenceContext(unitName = "WebApplication1PU")
+    @PersistenceContext(unitName = "jimmy_professionalPU")
     private EntityManager em;
 
     @Override
