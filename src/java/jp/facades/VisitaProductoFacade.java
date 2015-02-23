@@ -26,13 +26,9 @@ import jp.util.EstadoVisita;
 @LocalBean
 @TransactionManagement(TransactionManagementType.BEAN)
 public class VisitaProductoFacade extends AbstractFacade<VisitaProducto> {
-    @PersistenceContext(unitName = "jimmy_professionalPU", type = PersistenceContextType.EXTENDED)
+    @PersistenceContext(unitName = "jimmy_professionalPU")
     private EntityManager em;
-    private UserTransaction userTransaction;    
     
-    @Resource
-    private SessionContext sessionContext;
-
     @Override
     protected EntityManager getEntityManager() {
         return em;
@@ -53,40 +49,6 @@ public class VisitaProductoFacade extends AbstractFacade<VisitaProducto> {
             return null;
         }
         return visitaProductosTMP;
-    }
-    
-    public boolean createVisitaProducto(List<VisitaProducto> visitaProducto, Visita v) {
-        boolean complete = false;
-        userTransaction = sessionContext.getUserTransaction();
-        try {
-            userTransaction.begin();
-            Visita visitaTMP = em.find(Visita.class, v.getId());
-            visitaTMP.setEstado(EstadoVisita.REALIZADA.getValor());
-            visitaTMP.setCalificacionServicio(v.getCalificacionServicio());            
-            visitaTMP.setPuntualidadServicio(v.getPuntualidadServicio());
-            visitaTMP.setCumplioExpectativas(v.getCumplioExpectativas());
-            em.merge(visitaTMP);
-            for (VisitaProducto visitasProductoTMP : visitaProducto) {
-                visitasProductoTMP.setId(null);
-                visitasProductoTMP.setVisita(visitaTMP);
-                em.persist(visitasProductoTMP);
-            }
-            userTransaction.commit();
-            complete = true;
-        } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
-
-            try {
-                System.out.println("======>");
-                e.printStackTrace();
-                System.out.println("<======");
-                userTransaction.rollback();
-            } catch (IllegalStateException | SecurityException | SystemException es) {
-                System.out.println("======>");
-                es.printStackTrace();
-                System.out.println("<======");
-            }
-        }
-        return complete;
     }
     
 }

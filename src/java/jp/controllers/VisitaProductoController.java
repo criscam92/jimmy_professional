@@ -179,7 +179,7 @@ public class VisitaProductoController implements Serializable {
     
     public List<VisitaProducto> getProductosByVisita(Visita visita){
         try {
-            itemsTMP = getEjbTransactionFacade().getProductosByVisita(visita);
+            itemsTMP = getFacade().getProductosByVisita(visita);
             return getFacade().getProductosByVisita(visita);
         } catch (Exception e) {
             e.printStackTrace();

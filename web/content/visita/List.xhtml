@@ -41,7 +41,7 @@
                             <p:commandButton id="deleteButton" icon="ui-icon-alert" value="#{bundle.Anull}" actionListener="#{visitaController.anullVisitaProducto()}"
                                              update=":growl,datalist" disabled="#{visitaController.disableAnularVisita()}"/>
                                 
-                            <p:commandButton id="productos" value="Realizar" icon="ui-icon-check" action="#{visitaController.redireccionarVisita(visitaController.selected)}"
+                            <p:commandButton id="productos" value="#{bundle.MessageRealizarVisita}" icon="ui-icon-check" action="#{visitaController.redireccionarVisita(visitaController.selected)}"
                                              disabled="#{empty visitaController.selected || visitaController.disableRealizarVisita()}" /> 
                         </div>
                     </f:facet>

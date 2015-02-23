@@ -238,7 +238,6 @@ public class VisitaController implements Serializable {
     }
 
     public String getEstadoVisita(int tipo) {
-        System.out.println("Tipo--> " + tipo);
         return EstadoVisita.getFromValue(tipo).getDetalle();
     }
 

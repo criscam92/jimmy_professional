@@ -18,6 +18,9 @@ import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
+import jp.entidades.Factura;
+import jp.entidades.FacturaProducto;
+import jp.entidades.FacturaPromocion;
 import jp.entidades.Producto;
 import jp.entidades.Promocion;
 import jp.entidades.PromocionProducto;
@@ -42,21 +45,7 @@ public class TransactionFacade {
         return em;
     }
 
-    public List<VisitaProducto> getProductosByVisita(Visita visita) {
-        List<VisitaProducto> visitaProductosTMP = new ArrayList<>();
-        try {
-            Query q = em.createQuery("SELECT vp FROM VisitaProducto vp WHERE vp.visita.id= :visita");
-            q.setParameter("visita", visita.getId());
-            visitaProductosTMP = q.getResultList();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-        return visitaProductosTMP;
-    }
-
     public boolean createVisitaProducto(List<VisitaProducto> visitaProducto, Visita v) {
-        System.out.println("Creando visitaProducto de la visita-> " + v.getId());
         boolean complete = false;
         userTransaction = sessionContext.getUserTransaction();
         try {
@@ -67,8 +56,6 @@ public class TransactionFacade {
             visitaTMP.setPuntualidadServicio(v.getPuntualidadServicio());
             visitaTMP.setCumplioExpectativas(v.getCumplioExpectativas());
             visitaTMP.setObservacionesCliente(v.getObservacionesCliente());
-            System.out.println("Setters de la visita.estado-> " + visitaTMP.getEstado() + "\nSetters de la visita.calificacion-> " + visitaTMP.getCalificacionServicio()
-                    + "\nSetters de la visita.puntualidad-> " + visitaTMP.getPuntualidadServicio() + "\nSetters de la visita.expectativas-> " + visitaTMP.getCumplioExpectativas());
             em.merge(visitaTMP);
             if (!visitaProducto.isEmpty()) {
                 for (VisitaProducto visitasProductoTMP : visitaProducto) {
@@ -100,8 +87,6 @@ public class TransactionFacade {
         boolean result = false;
         Visita visitaTMP;
 
-        List<VisitaProducto> visitaProductosDelete = new ArrayList<>();
-
         userTransaction = sessionContext.getUserTransaction();
 
         try {
@@ -129,8 +114,6 @@ public class TransactionFacade {
     }
 
     public boolean createUpdateRecargo(Recargo r) {
-        System.out.println("Parametros del recargo nuevo-> \n0- " + r.getId() + " \n1-" + r.getRecargoLocal() + "\n2-" + r.getRecargoNacional()
-                + "\n3-" + r.getRecargoInternacional() + "\n4-" + r.getCiudad());
         boolean complete = false;
         userTransaction = sessionContext.getUserTransaction();
         try {
@@ -276,6 +259,53 @@ public class TransactionFacade {
             Query query2 = getEntityManager().createQuery("DELETE FROM Promocion p WHERE p.id = :promo");
             query2.setParameter("promo", promocion.getId());
             query2.executeUpdate();
+
+            userTransaction.commit();
+            return true;
+        } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
+            try {
+                System.out.println("======>");
+                e.printStackTrace();
+                System.out.println("<======");
+                userTransaction.rollback();
+            } catch (IllegalStateException | SecurityException | SystemException es) {
+                System.out.println("======>");
+                es.printStackTrace();
+                System.out.println("<======");
+            }
+        }
+        return false;
+    }
+    
+    public boolean createFacturaProductoPromocion(Factura factura, List<FacturaProducto> facturaProductos, List<FacturaPromocion> facturaPromociones){
+        userTransaction = sessionContext.getUserTransaction();
+        try {
+            userTransaction.begin();
+
+            Factura facturaTMP = new Factura();
+            facturaTMP.setOrdenPedido(factura.getOrdenPedido());
+            facturaTMP.setFecha(factura.getFecha());
+            facturaTMP.setCliente(factura.getCliente());
+            facturaTMP.setCliente(factura.getCliente());
+            facturaTMP.setEmpleado(factura.getEmpleado());
+            facturaTMP.setTipo_pago(factura.getTipo_pago());
+            facturaTMP.setObservaciones(factura.getObservaciones());
+            facturaTMP.setTotalBruto(factura.getTotalBruto());
+            facturaTMP.setDescuento(factura.getDescuento());
+            facturaTMP.setTotalPagar(factura.getTotalPagar());
+            getEntityManager().merge(facturaTMP);
+
+            for (FacturaProducto fp : facturaProductos) {
+                fp.setId(null);
+                fp.setFactura(facturaTMP);
+                getEntityManager().merge(fp);
+            }
+            
+            for (FacturaPromocion fp : facturaPromociones) {
+                fp.setId(null);
+                fp.setFactura(facturaTMP);
+                getEntityManager().merge(fp);
+            }
 
             userTransaction.commit();
             return true;

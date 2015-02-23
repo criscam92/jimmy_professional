@@ -52,23 +52,23 @@
                     <p:panel header="Agregar Productos">
                         <p:panelGrid columns="9">
                             <p:outputLabel value="#{bundle.CreateProductoLabel_producto}"/>
-                            <p:autoComplete id="producto" minQueryLength="3" value="#{facturaController.facturaProducto.producto}" itemValue="#{pro}" 
-                                            completeMethod="#{promocionController.llenarProducto}" effect="fade" converter="productoconverter" itemLabel="#{pro.toString()}" var="pro" />
+                            <p:autoComplete id="producto" minQueryLength="3" value="#{facturaController.productoPromocion}" itemValue="#{pro}" 
+                                            completeMethod="#{facturaController.llenarProductoPromocion}" effect="fade" converter="productoconverter" itemLabel="#{pro.toString()}" var="pro" />
 
                             <p:outputLabel value="#{bundle.MessageCreateVenta}" for="venta"/>
-                            <p:inputText value="#{facturaController.facturaProducto.unidadesVenta}" id="venta"/>
+                            <p:inputText value="#{facturaController.unidadesVenta}" id="venta"/>
 
                             <p:outputLabel value="#{bundle.MessageCreateBonificacion}" for="bonificacion"/>
-                            <p:inputText value="#{facturaController.facturaProducto.unidadesBonificacion}" id="bonificacion"/>
+                            <p:inputText value="#{facturaController.unidadesBonificacion}" id="bonificacion"/>
 
                             <p:outputLabel value="#{bundle.MessageCreatePrecio}" for="precio"/>
-                            <p:inputText value="#{facturaController.facturaProducto.precio}" id="precio"/>
+                            <p:inputText value="#{facturaController.precio}" id="precio"/>
                             <p:commandButton value="#{bundle.AddItem}" icon="ui-icon-plus"
                                              actionListener="#{facturaController.addFacturaProducto()}" update="listaProductos"/>
                         </p:panelGrid>
                         <br/>
                         <p:dataTable styleClass="tabla" emptyMessage="#{bundle.EmptyTable}" id="listaProductos" var="itemTMP"
-                                     paginator="true" selectionMode="single" value="#{facturaController.itemsTMP}"
+                                     paginator="true" selectionMode="single" value="#{facturaController.objects}"
                                      rowKey="#{itemTMP.id}"
                                      rows="5"
                                      rowsPerPageTemplate="10,20,30,40,50"
@@ -104,21 +104,23 @@
                                 <f:facet name="header">
                                     Precio
                                 </f:facet>
-                                <h:outputText value="#{itemTMP.precio}"/>
+                                <h:outputText value="#{itemTMP.precio}">
+                                    <f:convertNumber type="currency"  currencySymbol="$"/>
+                                </h:outputText>
                             </p:column>
                             <p:column style="text-align: center;" width="80">
                                 <f:facet name="header">
                                     <h:outputText value="Quitar"/>
                                 </f:facet>
                                 <p:commandButton icon="ui-icon-closethick" update="listaProductos"
-                                                 actionListener="#{facturaController.removeFacturaProducto(itemTMP)}"/>
+                                                 actionListener="#{facturaController.removeFacturaProductoPromocion()}"/>
                             </p:column>
                             <p:columnGroup type="footer">
                                 <p:row>
                                     <p:column footerText="Totales: " style="text-align:right; font-weight: bold;" colspan="2" rowspan="2"/>
                                     <p:column footerText="#{facturaController.totalUnidadVentas}" />
                                     <p:column footerText="#{facturaController.totalUnidadBonificaciones}" />
-                                    <p:column style="font-weight: bold;" footerText="#{bundle.ViewFacturaLabel_totalBruto}"/>
+                                    <p:column style="font-weight: bold; text-align:right;" footerText="#{bundle.ViewFacturaLabel_totalBruto}"/>
                                     <p:column>
                                         <f:facet name="footer">
                                             <h:outputText value ="#{facturaController.totalPrecioBruto}">
@@ -128,9 +130,9 @@
                                     </p:column>
                                 </p:row>
                                 <p:row>
-                                    <p:column style="font-weight: bold;" footerText="#{bundle.EditFacturaLabel_descuento}"/>
-                                    <p:column footerText="% #{facturaController.selected.descuento}"/>
-                                    <p:column style="font-weight: bold;" footerText="#{bundle.CreateFacturaTitle_totalPagarForm}"/>
+                                    <p:column style="font-weight: bold; text-align:right;" footerText="#{bundle.EditFacturaLabel_descuento}"/>
+                                    <p:column footerText="#{facturaController.selected.descuento} %"/>
+                                    <p:column style="font-weight: bold; text-align:right;" footerText="#{bundle.CreateFacturaTitle_totalPagarForm}"/>
                                     <p:column>
                                         <f:facet name="footer">
                                             <h:outputText value ="#{facturaController.totalAPagar}">
