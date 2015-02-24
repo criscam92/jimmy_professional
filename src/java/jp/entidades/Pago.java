@@ -6,6 +6,7 @@
 package jp.entidades;
 
 import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,9 +16,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -28,10 +30,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @Table(catalog = "jimmy_professional", schema = "public")
 @XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "Pago.findAll", query = "SELECT p FROM Pago p"),
-    @NamedQuery(name = "Pago.findById", query = "SELECT p FROM Pago p WHERE p.id = :id"),
-    @NamedQuery(name = "Pago.findByPendiente", query = "SELECT p FROM Pago p WHERE p.pendiente = :pendiente")})
 public class Pago implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -39,12 +37,28 @@ public class Pago implements Serializable {
     @Basic(optional = false)
     @Column(nullable = false)
     private Long id;
-    @Size(max = 45)
-    @Column(length = 45)
-    private String pendiente;
     @JoinColumn(name = "factura", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Factura factura;
+    @Basic(optional = false)
+    @NotNull
+    @Column(nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date fecha;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "forma_pago", nullable = false)
+    private Integer formaPago;
+    @Size(max = 400)
+    @Column(length = 400)
+    private String observaciones;
+    @Size(max = 100)
+    @Column(length = 100, name = "numero_cheque")
+    private String numeroCheque;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "valor_total", nullable = false)
+    private double valorTotal;
     
     public Pago() {
     }
@@ -59,14 +73,6 @@ public class Pago implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getPendiente() {
-        return pendiente;
-    }
-
-    public void setPendiente(String pendiente) {
-        this.pendiente = pendiente;
     }
 
     public Factura getFactura() {
@@ -100,6 +106,46 @@ public class Pago implements Serializable {
     @Override
     public String toString() {
         return "jp.entidades.Pago[ id=" + id + " ]";
+    }
+
+    public Date getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(Date fecha) {
+        this.fecha = fecha;
+    }
+
+    public Integer getFormaPago() {
+        return formaPago;
+    }
+
+    public void setFormaPago(Integer formaPago) {
+        this.formaPago = formaPago;
+    }
+
+    public String getObservaciones() {
+        return observaciones;
+    }
+
+    public void setObservaciones(String observaciones) {
+        this.observaciones = observaciones;
+    }
+
+    public String getNumeroCheque() {
+        return numeroCheque;
+    }
+
+    public void setNumeroCheque(String numeroCheque) {
+        this.numeroCheque = numeroCheque;
+    }
+
+    public double getValorTotal() {
+        return valorTotal;
+    }
+
+    public void setValorTotal(double valorTotal) {
+        this.valorTotal = valorTotal;
     }
     
 }
