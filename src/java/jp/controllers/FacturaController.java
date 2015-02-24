@@ -3,7 +3,6 @@ package jp.controllers;
 import jp.entidades.Factura;
 import jp.util.JsfUtil;
 import jp.util.JsfUtil.PersistAction;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +22,6 @@ import javax.faces.convert.FacesConverter;
 import jp.entidades.Cliente;
 import jp.entidades.FacturaProducto;
 import jp.entidades.FacturaPromocion;
-import jp.entidades.Producto;
 import jp.entidades.ProductoPromocionHelper;
 import jp.entidades.Promocion;
 import jp.facades.FacturaFacade;
@@ -45,20 +43,16 @@ public class FacturaController implements Serializable {
     @EJB
     private jp.facades.TransactionFacade ejbTransactionFacade;
     private List<Factura> items = null;
-    private List<Object> objects = new ArrayList<>();
+    private List<ProductoPromocionHelper> objects;
     private List<FacturaProducto> itemsProducto = null;
     private List<FacturaPromocion> itemsPromocion = null;
     private Factura selected;
     private ProductoPromocionHelper object;
     private FacturaProducto facturaProducto;
     private FacturaPromocion facturaPromocion;
-    private int unidadesVenta;
-    private int unidadesBonificacion;
-    private double precio;
-    private Object productoPromocion;
 
     public FacturaController() {
-        items = new ArrayList<>();
+        this.objects = new ArrayList<>();
         itemsProducto = new ArrayList<>();
         itemsPromocion = new ArrayList<>();
     }
@@ -102,43 +96,11 @@ public class FacturaController implements Serializable {
         this.facturaPromocion = facturaPromocion;
     }
 
-    public int getUnidadesVenta() {
-        return unidadesVenta;
-    }
-
-    public void setUnidadesVenta(int unidadesVenta) {
-        this.unidadesVenta = unidadesVenta;
-    }
-
-    public int getUnidadesBonificacion() {
-        return unidadesBonificacion;
-    }
-
-    public void setUnidadesBonificacion(int unidadesBonificacion) {
-        this.unidadesBonificacion = unidadesBonificacion;
-    }
-
-    public double getPrecio() {
-        return precio;
-    }
-
-    public void setPrecio(double precio) {
-        this.precio = precio;
-    }
-
-    public Object getProductoPromocion() {
-        return productoPromocion;
-    }
-
-    public void setProductoPromocion(Object productoPromocion) {
-        this.productoPromocion = productoPromocion;
-    }
-
-    public List<Object> getObjects() {
+    public List<ProductoPromocionHelper> getObjects() {
         return objects;
     }
 
-    public void setObjects(List<Object> objects) {
+    public void setObjects(List<ProductoPromocionHelper> objects) {
         this.objects = objects;
     }
 
@@ -188,17 +150,22 @@ public class FacturaController implements Serializable {
 
     public void create() {
         if (objects.size() > 0) {
-            getEjbTransactionFacade().createFacturaProductoPromocion(selected, itemsProducto, itemsPromocion);
-            if (!JsfUtil.isValidationFailed()) {
-                items = null;    // Invalidate list of items to trigger re-query.
-                selected = new Factura();
-                itemsProducto.clear();
-                itemsPromocion.clear();
-                objects.clear();
-                redireccionarFormulario();
-            } else {
-                JsfUtil.addErrorMessage("NO SE HA PODIDO GUARDAR LA PROMOCION");
+            try {
+                getEjbTransactionFacade().createFacturaProductoPromocion(selected, itemsProducto, itemsPromocion);
+                if (!JsfUtil.isValidationFailed()) {
+                    items = null;    // Invalidate list of items to trigger re-query.
+                    selected = new Factura();
+                    itemsProducto.clear();
+                    itemsPromocion.clear();
+                    objects.clear();
+                    redireccionarFormulario();
+                } else {
+                    JsfUtil.addErrorMessage("NO SE HA PODIDO GUARDAR LA PROMOCION");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+
         } else {
             JsfUtil.addErrorMessage("La factura debe tener como minimo un producto");
         }
@@ -306,6 +273,9 @@ public class FacturaController implements Serializable {
 
     public String redirectCreateFactura() {
         selected = new Factura();
+        if (getEjbFacturaProductoFacade().getNumOrden() != null) {
+            selected.setOrdenPedido(getEjbFacturaProductoFacade().getNumOrden());
+        }
         object = new ProductoPromocionHelper();
         facturaProducto = new FacturaProducto();
         facturaPromocion = new FacturaPromocion();
@@ -316,48 +286,53 @@ public class FacturaController implements Serializable {
     }
 
     public void addFacturaProducto() {
-        objects = new ArrayList<>();
-        if (this.productoPromocion instanceof Producto) {
-            if (this.getProductoPromocion() != null && this.getUnidadesVenta() > 0
-                    && this.getPrecio() > 0 && this.getUnidadesVenta() > 0) {
-                FacturaProducto facturaProductoTMP = new FacturaProducto();
-                facturaProductoTMP.setProducto((Producto) this.getProductoPromocion());
-                facturaProductoTMP.setUnidadesVenta(this.getUnidadesVenta());
-                facturaProductoTMP.setUnidadesBonificacion(this.getUnidadesBonificacion());
-                facturaProductoTMP.setPrecio(object.getPrecio() * this.getUnidadesVenta());
-                facturaProductoTMP.setId(itemsProducto.size() + 1l);
+        if (facturaProducto.getProducto() != null && facturaProducto.getUnidadesVenta() > 0
+                && facturaProducto.getPrecio() > 0 && facturaProducto.getUnidadesVenta() > 0) {
+            FacturaProducto facturaProductoTMP = new FacturaProducto();
+            facturaProductoTMP.setProducto(facturaProducto.getProducto());
+            facturaProductoTMP.setUnidadesVenta(facturaProducto.getUnidadesVenta());
+            facturaProductoTMP.setUnidadesBonificacion(facturaProducto.getUnidadesBonificacion());
+            facturaProductoTMP.setPrecio(facturaProducto.getPrecio() * facturaProducto.getUnidadesVenta());
+            facturaProductoTMP.setId(itemsProducto.size() + 1l);
 
-                itemsProducto.add(facturaProductoTMP);
-                objects.addAll(itemsProducto);
-            }
-        } else if (this.productoPromocion instanceof Promocion) {
-            if (this.getProductoPromocion() != null && this.getUnidadesVenta() > 0
-                    && this.getPrecio() > 0 && this.getUnidadesVenta() > 0) {
-                FacturaPromocion facturaPromocionTMP = new FacturaPromocion();
-                facturaPromocionTMP.setPromocion((Promocion) this.getProductoPromocion());
-                facturaPromocionTMP.setUnidadesVenta(this.getUnidadesVenta());
-                facturaPromocionTMP.setUnidadesBonificacion(this.getUnidadesBonificacion());
-                facturaPromocionTMP.setPrecio(this.getPrecio() * this.getUnidadesVenta());
-                facturaPromocionTMP.setId(itemsProducto.size() + 1l);
-
-                itemsPromocion.add(facturaPromocionTMP);
-                objects.addAll(itemsProducto);
-            }
+            itemsProducto.add(facturaProductoTMP);
+            ProductoPromocionHelper pph = new ProductoPromocionHelper();
+            pph.setProductoPromocion(facturaProductoTMP.getProducto());
+            pph.setUnidadesVenta(facturaProductoTMP.getUnidadesVenta());
+            pph.setUnidadesBonificacion(facturaProductoTMP.getUnidadesBonificacion());
+            pph.setPrecio(facturaProductoTMP.getPrecio());
+            objects.add(pph);
         }
     }
 
-    public void removeFacturaProductoPromocion(Object obj) {
-        if (obj instanceof FacturaProducto) {
-            itemsProducto.remove(obj);
-        } else if (obj instanceof FacturaPromocion) {
-            itemsPromocion.remove(obj);
+    public void addFacturaPromocion() {
+        if (facturaPromocion.getPromocion() != null && facturaPromocion.getUnidadesVenta() > 0
+                && facturaPromocion.getPrecio() > 0 && facturaPromocion.getUnidadesVenta() > 0) {
+            FacturaPromocion facturaPromocionTMP = new FacturaPromocion();
+            facturaPromocionTMP.setPromocion(facturaPromocion.getPromocion());
+            facturaPromocionTMP.setUnidadesVenta(facturaPromocion.getUnidadesVenta());
+            facturaPromocionTMP.setUnidadesBonificacion(facturaPromocion.getUnidadesBonificacion());
+            facturaPromocionTMP.setPrecio(facturaPromocion.getPrecio() * facturaPromocion.getUnidadesVenta());
+            facturaPromocionTMP.setId(itemsPromocion.size() + 1l);
+
+            itemsPromocion.add(facturaPromocionTMP);
+            ProductoPromocionHelper pph = new ProductoPromocionHelper();
+            pph.setProductoPromocion(facturaPromocionTMP.getPromocion());
+            pph.setUnidadesVenta(facturaPromocionTMP.getUnidadesVenta());
+            pph.setUnidadesBonificacion(facturaPromocionTMP.getUnidadesBonificacion());
+            pph.setPrecio(facturaPromocionTMP.getPrecio());
+            objects.add(pph);
         }
 
+    }
+
+    public void removeFacturaProductoPromocion(ProductoPromocionHelper pph) {
+        objects.remove(pph);
     }
 
     public int getTotalUnidadVentas() {
         int sum = 0;
-        for (FacturaProducto fp : itemsProducto) {
+        for (ProductoPromocionHelper fp : objects) {
             sum += fp.getUnidadesVenta();
         }
         return sum;
@@ -365,7 +340,7 @@ public class FacturaController implements Serializable {
 
     public int getTotalUnidadBonificaciones() {
         int sum = 0;
-        for (FacturaProducto fp : itemsProducto) {
+        for (ProductoPromocionHelper fp : objects) {
             sum += fp.getUnidadesBonificacion();
         }
         return sum;
@@ -373,7 +348,7 @@ public class FacturaController implements Serializable {
 
     public double getTotalPrecioBruto() {
         int sum = 0;
-        for (FacturaProducto fp : itemsProducto) {
+        for (ProductoPromocionHelper fp : objects) {
             sum += fp.getPrecio();
         }
         if (selected != null) {
@@ -388,7 +363,7 @@ public class FacturaController implements Serializable {
         if (selected.getDescuento() != null) {
             descuento = selected.getDescuento();
         }
-        for (FacturaProducto fp : itemsProducto) {
+        for (ProductoPromocionHelper fp : objects) {
             sum += fp.getPrecio();
         }
         descuento = sum * descuento / 100;
@@ -427,7 +402,7 @@ public class FacturaController implements Serializable {
         }
     }
 
-    public List<Object> llenarProductoPromocion(String query) {
-        return getFacade().getProductosPromocionByQuery(query);
+    public List<Promocion> llenarPromocion(String query) {
+        return getFacade().getPromocionByQuery(query);
     }
 }

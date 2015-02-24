@@ -16,6 +16,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -43,6 +44,7 @@ public class Factura implements Serializable {
     @Basic(optional = false)
     @Column(nullable = false)
     private Long id;
+    @SequenceGenerator(initialValue = 1, sequenceName = "factura_num_orden", name = "FACTURA_NUM_ORDEN")
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 45)

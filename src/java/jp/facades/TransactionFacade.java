@@ -186,6 +186,7 @@ public class TransactionFacade {
             Promocion proTMP = new Promocion();
             proTMP.setDescripcion(p.getDescripcion());
             proTMP.setValor(p.getValor());
+            proTMP.setCodigo(p.getCodigo());
             getEntityManager().merge(proTMP);
 
             for (PromocionProducto pp : promocionProductos) {

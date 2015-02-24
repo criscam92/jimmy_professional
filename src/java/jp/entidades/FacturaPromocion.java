@@ -3,18 +3,18 @@ package jp.entidades;
 import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.MappedSuperclass;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@MappedSuperclass
+@Entity
 @Table(name = "factura_promocion", catalog = "jimmy_professional", schema = "public")
 @XmlRootElement
 public class FacturaPromocion implements Serializable {

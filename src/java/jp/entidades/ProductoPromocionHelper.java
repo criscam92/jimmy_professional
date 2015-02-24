@@ -1,6 +1,6 @@
 package jp.entidades;
 
-public class ProductoPromocionHelper {
+public class ProductoPromocionHelper{
     private int unidadesVenta;
     private int unidadesBonificacion;
     private double precio;
