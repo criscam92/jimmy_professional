@@ -221,16 +221,13 @@ public class PromocionController implements Serializable {
     }
 
     private boolean promocionProductoValido() {
-        System.out.println("ff");
         boolean productoNulo = false, cantidadMayorCero = true;
         if (producto == null) {
-            System.out.println("fff");
             productoNulo = true;
             JsfUtil.addErrorMessage("El campo producto es obligatorio");
         }
 
         if (cantidad <= 0) {
-            System.out.println("ffff");
             cantidadMayorCero = false;
             JsfUtil.addErrorMessage("el campo cantidad debe se mayor a cero");
         }
@@ -238,7 +235,7 @@ public class PromocionController implements Serializable {
         return !productoNulo && cantidadMayorCero;
     }
 
-    @FacesConverter(forClass = Promocion.class)
+    @FacesConverter(forClass = Promocion.class, value = "promocionconverter")
     public static class PromocionControllerConverter implements Converter {
 
         @Override

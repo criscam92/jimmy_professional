@@ -21,6 +21,8 @@ import javax.transaction.UserTransaction;
 import jp.entidades.Factura;
 import jp.entidades.FacturaProducto;
 import jp.entidades.FacturaPromocion;
+import jp.entidades.Ingreso;
+import jp.entidades.IngresoProducto;
 import jp.entidades.Producto;
 import jp.entidades.Promocion;
 import jp.entidades.PromocionProducto;
@@ -146,38 +148,6 @@ public class TransactionFacade {
         return complete;
     }
 
-    public boolean addPromocionProducto(List<Producto> productos, Promocion promocion) {
-        boolean complete = false;
-        userTransaction = sessionContext.getUserTransaction();
-        try {
-            userTransaction.begin();
-            getEntityManager().persist(promocion);
-            Promocion promoTMP = getEntityManager().find(Promocion.class, promocion.getId());
-
-            PromocionProducto promocionProducto;
-            for (Producto producto : productos) {
-                promocionProducto = new PromocionProducto();
-//                promocionProducto.                
-            }
-
-            userTransaction.commit();
-            complete = true;
-        } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
-
-            try {
-                System.out.println("======>");
-                e.printStackTrace();
-                System.out.println("<======");
-                userTransaction.rollback();
-            } catch (IllegalStateException | SecurityException | SystemException es) {
-                System.out.println("======>");
-                es.printStackTrace();
-                System.out.println("<======");
-            }
-        }
-        return complete;
-    }
-
     public boolean createPromocion(Promocion p, List<PromocionProducto> promocionProductos) {
         userTransaction = sessionContext.getUserTransaction();
         try {
@@ -277,8 +247,8 @@ public class TransactionFacade {
         }
         return false;
     }
-    
-    public boolean createFacturaProductoPromocion(Factura factura, List<FacturaProducto> facturaProductos, List<FacturaPromocion> facturaPromociones){
+
+    public boolean createFacturaProductoPromocion(Factura factura, List<FacturaProducto> facturaProductos, List<FacturaPromocion> facturaPromociones) {
         userTransaction = sessionContext.getUserTransaction();
         try {
             userTransaction.begin();
@@ -301,12 +271,110 @@ public class TransactionFacade {
                 fp.setFactura(facturaTMP);
                 getEntityManager().merge(fp);
             }
-            
+
             for (FacturaPromocion fp : facturaPromociones) {
                 fp.setId(null);
                 fp.setFactura(facturaTMP);
                 getEntityManager().merge(fp);
             }
+
+            userTransaction.commit();
+            return true;
+        } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
+            try {
+                System.out.println("======>");
+                e.printStackTrace();
+                System.out.println("<======");
+                userTransaction.rollback();
+            } catch (IllegalStateException | SecurityException | SystemException es) {
+                System.out.println("======>");
+                es.printStackTrace();
+                System.out.println("<======");
+            }
+        }
+        return false;
+    }
+
+    public boolean createIngreso(Ingreso i, List<IngresoProducto> ingresoProductos) {
+        userTransaction = sessionContext.getUserTransaction();
+        try {
+            userTransaction.begin();
+
+            Ingreso ingreTMP = new Ingreso();
+            ingreTMP.setObservaciones(i.getObservaciones());
+            ingreTMP.setFechaIngreso(i.getFechaIngreso());
+            ingreTMP.setUsuario(i.getUsuario());
+            getEntityManager().merge(ingreTMP);
+
+            for (IngresoProducto ip : ingresoProductos) {
+                ip.setId(null);
+                ip.setIngreso(ingreTMP);
+                getEntityManager().merge(ip);
+            }
+
+            userTransaction.commit();
+            return true;
+        } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
+            try {
+                System.out.println("======>");
+                e.printStackTrace();
+                System.out.println("<======");
+                userTransaction.rollback();
+            } catch (IllegalStateException | SecurityException | SystemException es) {
+                System.out.println("======>");
+                es.printStackTrace();
+                System.out.println("<======");
+            }
+        }
+        return false;
+    }
+
+    public boolean updateIngreso(Ingreso ingreso, List<IngresoProducto> ingresoProductosGuardar, List<IngresoProducto> ingresoProductosEliminar) {
+        userTransaction = sessionContext.getUserTransaction();
+        try {
+            userTransaction.begin();
+            getEntityManager().merge(ingreso);
+
+            for (IngresoProducto ip : ingresoProductosEliminar) {
+                PromocionProducto ppTMP = getEntityManager().find(PromocionProducto.class, ip.getId());
+                getEntityManager().remove(ppTMP);
+            }
+
+            for (IngresoProducto ip : ingresoProductosGuardar) {
+                ip.setId(null);
+                ip.setIngreso(ingreso);
+                getEntityManager().merge(ip);
+            }
+
+            userTransaction.commit();
+            return true;
+        } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
+            try {
+                System.out.println("======>");
+                e.printStackTrace();
+                System.out.println("<======");
+                userTransaction.rollback();
+            } catch (IllegalStateException | SecurityException | SystemException es) {
+                System.out.println("======>");
+                es.printStackTrace();
+                System.out.println("<======");
+            }
+        }
+        return false;
+    }
+
+    public boolean deleteIngreso(Ingreso ingreso) {
+        userTransaction = sessionContext.getUserTransaction();
+        try {
+            userTransaction.begin();
+
+            Query query1 = getEntityManager().createQuery("DELETE FROM IngresoProducto ip WHERE ip.ingreso.id = :ingre");
+            query1.setParameter("ingre", ingreso.getId());
+            query1.executeUpdate();
+
+            Query query2 = getEntityManager().createQuery("DELETE FROM Ingreso i WHERE i.id = :ingre");
+            query2.setParameter("ingre", ingreso.getId());
+            query2.executeUpdate();
 
             userTransaction.commit();
             return true;
