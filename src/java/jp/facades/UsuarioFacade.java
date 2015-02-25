@@ -1,44 +1,36 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package jp.facades;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import jp.entidades.Usuario;
-import jp.entidades.Usuario_;
+import jp.seguridad.Encrypt;
 
-/**
- *
- * @author CRISTIAN
- */
 @Stateless
 public class UsuarioFacade extends AbstractFacade<Usuario> {
-
+    
     @PersistenceContext(unitName = "jimmy_professionalPU")
     private EntityManager em;
-
+    
     @Override
     protected EntityManager getEntityManager() {
         return em;
     }
-
+    
     public UsuarioFacade() {
         super(Usuario.class);
     }
-
+    
     public boolean getUsuarioByNombre(Usuario usuario) {
         try {
             Query query = getEntityManager().createNamedQuery("Usuario.findByUsuario");
             query.setParameter("usuario", usuario.getUsuario());
             query.setMaxResults(1);
-
+            
             Usuario user = (Usuario) query.getSingleResult();
-
+            
             if (user != null) {
                 if (usuario.getId() != null) {
                     return !user.getId().equals(usuario.getId());
@@ -46,11 +38,26 @@ public class UsuarioFacade extends AbstractFacade<Usuario> {
                     return true;
                 }
             }
-
+            
         } catch (Exception e) {
             
         }
         return false;
     }
-
+    
+    public Usuario login(String userName, String password) {
+        Usuario usuario = null;
+        try {
+            Query query = getEntityManager().createQuery("SELECT u FROM Usuario u WHERE u.usuario = :usuario AND u.contrasena = :contrasena");
+            query.setParameter("usuario", userName);
+            query.setParameter("contrasena", Encrypt.getStringMessageDigest(password));
+            usuario = (Usuario) query.getSingleResult();
+        } catch (NoResultException e) {
+            System.out.println("\n======================= ERROR CONSULTANDO EL USUARIO Y CONTRASENA ======================");
+//            e.printStackTrace();
+            System.out.println("======================= ERROR CONSULTANDO EL USUARIO Y CONTRASENA ======================\n");
+        }
+        return usuario;
+    }
+    
 }

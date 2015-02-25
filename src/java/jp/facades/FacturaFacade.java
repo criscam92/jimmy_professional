@@ -24,29 +24,17 @@ public class FacturaFacade extends AbstractFacade<Factura> {
         super(Factura.class);
     }
     
-    public List<Object> getProductosPromocionByQuery(String query) {
+    public List<Promocion> getPromocionByQuery(String query) {
         try {
-            List<Producto> productos = new ArrayList<>();
-            Query q = getEntityManager().createQuery("SELECT p FROM Producto p WHERE UPPER(CONCAT(p.codigo,' - ',p.nombre)) LIKE UPPER(:param)");
-            q.setParameter("param", "%" + query + "%");
-            productos = q.getResultList();
-            
             List<Promocion> promociones = new ArrayList<>();
             Query queryPromocion = getEntityManager().createQuery("SELECT p FROM Promocion p WHERE UPPER(CONCAT(p.codigo,' - ',p.descripcion)) LIKE UPPER(:param)");
             queryPromocion.setParameter("param", "%" + query + "%");
             promociones = queryPromocion.getResultList();
             
-            List<Object> objects = new ArrayList<>();
-            objects.addAll(productos);
-            objects.addAll(promociones);
-            
-            q.setFirstResult(0);
-            q.setMaxResults(10);
-            
             queryPromocion.setFirstResult(0);
             queryPromocion.setMaxResults(10);
             
-            return objects;
+            return promociones;
         } catch (Exception e) {
             e.printStackTrace();
         }

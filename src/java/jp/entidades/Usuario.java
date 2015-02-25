@@ -13,6 +13,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+import jp.util.TipoUsuario;
 
 @Entity
 @Table(catalog = "jimmy_professional", schema = "public")
@@ -113,6 +114,10 @@ public class Usuario implements Serializable {
     @Override
     public String toString() {
         return usuario;
+    }
+
+    public boolean isAdmin() {
+        return getTipo() == TipoUsuario.Administrador.getValor();
     }
 
 }
