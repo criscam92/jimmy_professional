@@ -37,7 +37,7 @@
                             <f:facet name="header">
                                 <h:outputText value="#{bundle.ListPagoTitle_pendiente}"/>
                             </f:facet>
-                            <h:outputText value="#{item.pendiente}"/>
+                            <h:outputText value="#{item.observaciones}"/>
                         </p:column>
                         <p:column>
                             <f:facet name="header">
@@ -49,10 +49,10 @@
                             <f:facet name="header">
                                 <h:outputText value="#{bundle.ListPagoTitle_tipo}"/>
                             </f:facet>
-                            <h:outputText value="#{item.tipo}"/>
+                            <h:outputText value="#{item.formaPago}"/>
                         </p:column>
                         <f:facet name="footer">
-                            <p:commandButton id="createButton" icon="ui-icon-plus"   value="#{bundle.Create}" actionListener="#{pagoController.prepareCreate}" update=":PagoCreateForm" oncomplete="PF('PagoCreateDialog').show()"/>
+                            <p:commandButton id="createButton" icon="ui-icon-plus" value="#{bundle.Create}"  action="./Create.xhtml?faces-redirect=true"/>
                             <p:commandButton id="viewButton"   icon="ui-icon-search" value="#{bundle.View}" update=":PagoViewForm" oncomplete="PF('PagoViewDialog').show()" disabled="#{empty pagoController.selected}"/>
                             <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":PagoEditForm" oncomplete="PF('PagoEditDialog').show()" disabled="#{empty pagoController.selected}"/>
                             <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{pagoController.destroy}" update=":growl,datalist" disabled="#{empty pagoController.selected}"/>
@@ -60,8 +60,7 @@
                     </p:dataTable>
                 </p:panel>
             </h:form>
-
-            <ui:include src="Create.xhtml"/>
+            
             <ui:include src="Edit.xhtml"/>
             <ui:include src="View.xhtml"/>
         </ui:define>

@@ -55,7 +55,10 @@
                                 <p:menuitem value="Códigos de Devolución" outcome="/content/codigoDevolucion/List.xhtml" />
                                 <p:menuitem value="Devoluciones" outcome="/content/devolucion/List.xhtml" />
                                 <p:menuitem value="Devoluciones de Productos" outcome="/content/devolucionProducto/List.xhtml" />                                
-                                <p:menuitem value="Pagos" outcome="/content/pago/List.xhtml" />
+                                <p:submenu label="Pagos">
+                                    <p:menuitem value="Nuevo Pago" outcome="/content/pago/Create.xhtml" />
+                                    <p:menuitem value="Consulta de Pagos" outcome="/content/pago/List.xhtml" />
+                                </p:submenu>
                             </p:submenu>
 
                             <p:menuitem value="Programación de Visitas" outcome="/content/visita/List.xhtml" />
