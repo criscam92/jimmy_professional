@@ -28,12 +28,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @Table(name = "factura_promocion", catalog = "jimmy_professional", schema = "public")
 @XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "FacturaPromocion.findAll", query = "SELECT f FROM FacturaPromocion f"),
-    @NamedQuery(name = "FacturaPromocion.findById", query = "SELECT f FROM FacturaPromocion f WHERE f.id = :id"),
-    @NamedQuery(name = "FacturaPromocion.findByUnidadesVenta", query = "SELECT f FROM FacturaPromocion f WHERE f.unidadesVenta = :unidadesVenta"),
-    @NamedQuery(name = "FacturaPromocion.findByUnidadesBonifciacion", query = "SELECT f FROM FacturaPromocion f WHERE f.unidadesBonifciacion = :unidadesBonifciacion"),
-    @NamedQuery(name = "FacturaPromocion.findByPrecio", query = "SELECT f FROM FacturaPromocion f WHERE f.precio = :precio")})
 public class FacturaPromocion implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -48,7 +42,7 @@ public class FacturaPromocion implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Column(name = "unidades_bonifciacion", nullable = false)
-    private int unidadesBonificiacion;
+    private int unidadesBonificacion;
     @Basic(optional = false)
     @NotNull
     @Column(nullable = false)
@@ -70,7 +64,7 @@ public class FacturaPromocion implements Serializable {
     public FacturaPromocion(Long id, int unidadesVenta, int unidadesBonifciacion, double precio) {
         this.id = id;
         this.unidadesVenta = unidadesVenta;
-        this.unidadesBonificiacion = unidadesBonifciacion;
+        this.unidadesBonificacion = unidadesBonifciacion;
         this.precio = precio;
     }
 
@@ -91,11 +85,11 @@ public class FacturaPromocion implements Serializable {
     }
 
     public int getUnidadesBonificacion() {
-        return unidadesBonificiacion;
+        return unidadesBonificacion;
     }
 
     public void setUnidadesBonificacion(int unidadesBonifciacion) {
-        this.unidadesBonificiacion = unidadesBonifciacion;
+        this.unidadesBonificacion = unidadesBonifciacion;
     }
 
     public double getPrecio() {
