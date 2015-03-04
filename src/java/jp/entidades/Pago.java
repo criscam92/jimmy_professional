@@ -59,6 +59,10 @@ public class Pago implements Serializable {
     @NotNull
     @Column(name = "valor_total", nullable = false)
     private double valorTotal;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "estado", nullable = false)
+    private Integer estado;
     
     public Pago() {
     }
@@ -97,10 +101,7 @@ public class Pago implements Serializable {
             return false;
         }
         Pago other = (Pago) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return !((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)));
     }
 
     @Override
@@ -146,6 +147,14 @@ public class Pago implements Serializable {
 
     public void setValorTotal(double valorTotal) {
         this.valorTotal = valorTotal;
+    }
+
+    public Integer getEstado() {
+        return estado;
+    }
+
+    public void setEstado(Integer estado) {
+        this.estado = estado;
     }
     
 }

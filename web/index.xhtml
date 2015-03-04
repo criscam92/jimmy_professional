@@ -26,10 +26,10 @@
             <p:layoutUnit position="north" size="135">
                 <div id="logo"></div>
                 <h:form id="menuForm">
-
-                    <p:menubar>
+                    
+                    <p:menubar rendered="#{loginController.user == null}">
                         <p:menuitem class="menuPrincipal" value="#{bundle.Home}" outcome="/index" icon="ui-icon-home"/>
-                        <p:submenu class="menuPrincipal" label="#{bundle.Maintenance}" rendered="#{loginController.user != null}">
+                        <p:submenu class="menuPrincipal" label="#{bundle.Maintenance}">
 
                             <p:submenu label="Ciudades">
                                 <p:menuitem value="Paises" outcome="/content/pais/List.xhtml" />
@@ -72,7 +72,7 @@
                 <ui:insert name="body"/>
 
                 <p:outputPanel id="panelCentral">
-                    <h:form id="UserLoginForm" rendered="#{loginController.user==null}">
+                    <h:form id="UserLoginForm" rendered="#{loginController.user!=null}">
                         <p:panel id="login" header="Ingresar a la Aplicación" style="width: 350px; margin: 0px auto;">
                             <h:panelGrid columns="2" cellpadding="10">
                                 <p:outputLabel value="#{bundle.CreateUsuarioLabel_usuario}" for="username" />

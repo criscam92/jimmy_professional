@@ -17,7 +17,10 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import jp.entidades.Factura;
+import jp.facades.FacturaFacade;
 import jp.facades.PagoFacade;
+import jp.util.TipoPago;
 
 @ManagedBean(name = "pagoController")
 @SessionScoped
@@ -25,8 +28,15 @@ public class PagoController implements Serializable {
 
     @EJB
     private jp.facades.PagoFacade ejbFacade;
+    
+    @EJB
+    private FacturaFacade facturaFacade;
+    
     private List<Pago> items = null;
     private Pago selected;
+    
+    private String numeroFactura;
+    private Double valorPendiente;
 
     public PagoController() {
     }
@@ -47,6 +57,10 @@ public class PagoController implements Serializable {
 
     private PagoFacade getFacade() {
         return ejbFacade;
+    }
+    
+    private FacturaFacade getFacturaFacade(){
+        return facturaFacade;
     }
 
     public Pago prepareCreate() {
@@ -73,12 +87,62 @@ public class PagoController implements Serializable {
             items = null;    // Invalidate list of items to trigger re-query.
         }
     }
+    
+    public void buscar(){
+        
+        if(numeroFactura==null || numeroFactura.trim().isEmpty()){
+            JsfUtil.addWarnMessage("No indicó un número de factura");
+        }else{
+            try {
+                Factura factura = getFacturaFacade().findFacturaByOrdenPedido(numeroFactura);
+                if(factura!=null){
+                    
+                    double valorPendienteTMP = getFacturaFacade().getValorPendientePagoFactura(factura);
+                    if(valorPendienteTMP==-1){
+                        valorPendiente = 0d;
+                    }else{
+                        valorPendiente = valorPendienteTMP;
+                    }
+                    
+                    JsfUtil.addSuccessMessage("Se cargó la factura indicada");
+                    selected = new Pago();
+                    selected.setFactura(factura);
+                }else{
+                    JsfUtil.addWarnMessage("No se encontró la Factura indicada.");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                JsfUtil.addErrorMessage("No se encontró la Factura indicada.");
+            }
+            
+        }
+    }
+    
+    public TipoPago[] getTiposPago(){
+        return new TipoPago[]{TipoPago.EFECTIVO,TipoPago.CHEQUE};
+    }
 
     public List<Pago> getItems() {
         if (items == null) {
             items = getFacade().findAll();
         }
         return items;
+    }
+
+    public String getNumeroFactura() {
+        return numeroFactura;
+    }
+
+    public void setNumeroFactura(String numeroFactura) {
+        this.numeroFactura = numeroFactura;
+    }
+
+    public Double getValorPendiente() {
+        return valorPendiente;
+    }
+
+    public void setValorPendiente(Double valorPendiente) {
+        this.valorPendiente = valorPendiente;
     }
 
     private void persist(PersistAction persistAction, String successMessage) {

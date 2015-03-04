@@ -3,22 +3,21 @@ package jp.util;
 import java.util.HashMap;
 import java.util.Map;
 
-public enum TipoPago {
+public enum EstadoPago {
 
-    EFECTIVO(0, "Efectivo"),
-    CHEQUE(1, "Cheque"),
-    CREDITO(2, "Crédito");
+    REALIZADA(1, "Realizado"),
+    CANCELADA(2, "Anulado");
 
     private int valor;
     private String detalle;
 
-    private TipoPago(int valor, String detalle) {
+    private EstadoPago(int valor, String detalle) {
         this.valor = valor;
         this.detalle = detalle;
     }
 
-    public static TipoPago getFromValue(int value) {
-        for (TipoPago tipo : TipoPago.values()) {
+    public static EstadoPago getFromValue(int value) {
+        for (EstadoPago tipo : EstadoPago.values()) {
             if (tipo.getValor() == value) {
                 return tipo;
             }
@@ -26,21 +25,21 @@ public enum TipoPago {
         return null;
     }
 
-    public static TipoPago[] getFromValue(Integer[] arre) {
-        TipoPago[] tiposPagosTMP = new TipoPago[arre.length];
+    public static EstadoPago[] getFromValue(Integer[] arre) {
+        EstadoPago[] estadoVisitasTMP = new EstadoPago[arre.length];
         int count = 0;
         for (int b : arre) {
-            tiposPagosTMP[count] = getFromValue(b);
+            estadoVisitasTMP[count] = getFromValue(b);
             count++;
         }
-//        System.out.println("Size-> "+tiposPagosTMP.length);
-        return tiposPagosTMP;
+        return estadoVisitasTMP;
     }
 
-    public static Map<String, Integer> getMapaEstados() {
-        Map<String, Integer> mapTMP = new HashMap<>();
-        for (TipoPago tipoPago : TipoPago.values()) {
-            mapTMP.put(tipoPago.getDetalle(), tipoPago.getValor());
+    public static Map<Integer, String> getMapaEstados() {
+        Map<Integer, String> mapTMP = new HashMap<>();
+        for (EstadoPago estadoVisita : EstadoPago.values()) {
+            mapTMP.put(estadoVisita.getValor(), estadoVisita.getDetalle());
+
         }
         return mapTMP;
     }

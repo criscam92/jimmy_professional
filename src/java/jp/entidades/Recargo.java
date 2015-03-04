@@ -43,6 +43,14 @@ public class Recargo implements Serializable {
     @NotNull
     @Column(name = "recargo_internacional", nullable = false)
     private float recargoInternacional;
+    @Basic(optional = true)
+    @NotNull
+    @Column(name = "porcentaje_publicidad", nullable = false)
+    private float porcentajePublicidad;
+    @Basic(optional = true)
+    @NotNull
+    @Column(name = "porcentaje_comision", nullable = false)
+    private float porcentajeComision;
     @JoinColumn(name = "ciudad", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Ciudad ciudad;
@@ -54,11 +62,13 @@ public class Recargo implements Serializable {
         this.id = id;
     }
 
-    public Recargo(Integer id, float recargoLocal, float recargoNacional, float recargoInternacional, Ciudad ciudad) {
+    public Recargo(Integer id, float recargoLocal, float recargoNacional, float recargoInternacional, float porcentajePublicidad, float porcentajeComision, Ciudad ciudad) {
         this.id = id;
         this.recargoLocal = recargoLocal;
         this.recargoNacional = recargoNacional;
         this.recargoInternacional = recargoInternacional;
+        this.porcentajeComision = porcentajeComision;
+        this.porcentajePublicidad = porcentajePublicidad;
         this.ciudad = ciudad;
     }
 
@@ -100,6 +110,22 @@ public class Recargo implements Serializable {
 
     public void setCiudad(Ciudad ciudad) {
         this.ciudad = ciudad;
+    }
+
+    public float getPorcentajePublicidad() {
+        return porcentajePublicidad;
+    }
+
+    public void setPorcentajePublicidad(float porcentajePublicidad) {
+        this.porcentajePublicidad = porcentajePublicidad;
+    }
+
+    public float getPorcentajeComision() {
+        return porcentajeComision;
+    }
+
+    public void setPorcentajeComision(float porcentajeComision) {
+        this.porcentajeComision = porcentajeComision;
     }
 
     @Override
