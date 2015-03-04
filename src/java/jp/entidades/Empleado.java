@@ -1,3 +1,8 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package jp.entidades;
 
 import java.io.Serializable;
@@ -23,8 +28,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import jp.entidades.auxiliar.Codificable;
 
+/**
+ *
+ * @author arturo
+ */
 @Entity
-@Table(name = "empleado", catalog = "jimmy_professional", schema = "public", uniqueConstraints = {
+@Table(catalog = "jimmy_professional", schema = "public", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"codigo"})})
 @XmlRootElement
 @NamedQueries({
@@ -34,7 +43,6 @@ import jp.entidades.auxiliar.Codificable;
     @NamedQuery(name = "Empleado.findByCodigo", query = "SELECT e FROM Empleado e WHERE e.codigo = :codigo"),
     @NamedQuery(name = "Empleado.findByTelefonos", query = "SELECT e FROM Empleado e WHERE e.telefonos = :telefonos")})
 public class Empleado implements Serializable, Codificable {
-
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,14 +63,18 @@ public class Empleado implements Serializable, Codificable {
     @Column(length = 100)
     private String telefonos;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "empleado", fetch = FetchType.LAZY)
-    private List<Visita> visitaList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "empleado", fetch = FetchType.LAZY)
-    private List<Cliente> clienteList;
+    private List<Talonario> talonarioList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "empleado", fetch = FetchType.LAZY)
     private List<Factura> facturaList;
     @JoinColumn(name = "tipo", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private TipoEmpleado tipoEmpleado;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "empleado", fetch = FetchType.LAZY)
+    private List<Despacho> despachoList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "empleado", fetch = FetchType.LAZY)
+    private List<Visita> visitaList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "empleado", fetch = FetchType.LAZY)
+    private List<Cliente> clienteList;
 
     public Empleado() {
     }
@@ -112,6 +124,41 @@ public class Empleado implements Serializable, Codificable {
     }
 
     @XmlTransient
+    public List<Talonario> getTalonarioList() {
+        return talonarioList;
+    }
+
+    public void setTalonarioList(List<Talonario> talonarioList) {
+        this.talonarioList = talonarioList;
+    }
+
+    @XmlTransient
+    public List<Factura> getFacturaList() {
+        return facturaList;
+    }
+
+    public void setFacturaList(List<Factura> facturaList) {
+        this.facturaList = facturaList;
+    }
+
+    public TipoEmpleado getTipoEmpleado() {
+        return tipoEmpleado;
+    }
+
+    public void setTipoEmpleado(TipoEmpleado tipo) {
+        this.tipoEmpleado = tipo;
+    }
+
+    @XmlTransient
+    public List<Despacho> getDespachoList() {
+        return despachoList;
+    }
+
+    public void setDespachoList(List<Despacho> despachoList) {
+        this.despachoList = despachoList;
+    }
+
+    @XmlTransient
     public List<Visita> getVisitaList() {
         return visitaList;
     }
@@ -129,23 +176,6 @@ public class Empleado implements Serializable, Codificable {
         this.clienteList = clienteList;
     }
 
-    @XmlTransient
-    public List<Factura> getFacturaList() {
-        return facturaList;
-    }
-
-    public void setFacturaList(List<Factura> facturaList) {
-        this.facturaList = facturaList;
-    }
-
-    public TipoEmpleado getTipoEmpleado() {
-        return tipoEmpleado;
-    }
-
-    public void setTipoEmpleado(TipoEmpleado tipoEmpleado) {
-        this.tipoEmpleado = tipoEmpleado;
-    }
-
     @Override
     public int hashCode() {
         int hash = 0;
@@ -160,16 +190,20 @@ public class Empleado implements Serializable, Codificable {
             return false;
         }
         Empleado other = (Empleado) object;
-        return !((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)));
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
     }
 
     @Override
     public String toString() {
-        return codigo + " - " + nombre;
+        return "entidades.Empleado[ id=" + id + " ]";
     }
 
     @Override
     public String getTipo() {
         return null;
     }
-    }
+    
+}

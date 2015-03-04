@@ -1,3 +1,8 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package jp.entidades;
 
 import java.io.Serializable;
@@ -14,38 +19,39 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import jp.entidades.auxiliar.Codificable;
 
+/**
+ *
+ * @author arturo
+ */
 @Entity
-@Table(name="producto", catalog = "jimmy_professional", schema = "public")
+@Table(catalog = "jimmy_professional", schema = "public", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"codigo"})})
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Producto.findAll", query = "SELECT p FROM Producto p"),
     @NamedQuery(name = "Producto.findById", query = "SELECT p FROM Producto p WHERE p.id = :id"),
-    @NamedQuery(name = "Producto.findByCodigo", query = "SELECT p FROM Producto p WHERE p.codigo = :codigo"),
     @NamedQuery(name = "Producto.findByNombre", query = "SELECT p FROM Producto p WHERE p.nombre = :nombre"),
     @NamedQuery(name = "Producto.findByDescripcion", query = "SELECT p FROM Producto p WHERE p.descripcion = :descripcion"),
     @NamedQuery(name = "Producto.findByGramaje", query = "SELECT p FROM Producto p WHERE p.gramaje = :gramaje"),
     @NamedQuery(name = "Producto.findByValorCosto", query = "SELECT p FROM Producto p WHERE p.valorCosto = :valorCosto"),
     @NamedQuery(name = "Producto.findByValorVenta", query = "SELECT p FROM Producto p WHERE p.valorVenta = :valorVenta"),
-    @NamedQuery(name = "Producto.findByValorVentaUsd", query = "SELECT p FROM Producto p WHERE p.valorVentaUsd = :valorVentaUsd")})
+    @NamedQuery(name = "Producto.findByValorVentaUsd", query = "SELECT p FROM Producto p WHERE p.valorVentaUsd = :valorVentaUsd"),
+    @NamedQuery(name = "Producto.findByVentaPublico", query = "SELECT p FROM Producto p WHERE p.ventaPublico = :ventaPublico"),
+    @NamedQuery(name = "Producto.findByCodigo", query = "SELECT p FROM Producto p WHERE p.codigo = :codigo")})
 public class Producto implements Serializable, Codificable {
-
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(nullable = false)
     private Long id;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 45)
-    @Column(nullable = false, length = 45)
-    private String codigo;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 100)
@@ -56,8 +62,8 @@ public class Producto implements Serializable, Codificable {
     @Size(min = 1, max = 100)
     @Column(nullable = false, length = 100)
     private String descripcion;
-    @Size(min = 1, max = 100)
-    @Column(nullable = false, length = 100)
+    @Size(max = 100)
+    @Column(length = 100)
     private String gramaje;
     @Basic(optional = false)
     @NotNull
@@ -70,14 +76,27 @@ public class Producto implements Serializable, Codificable {
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "valor_venta_usd", precision = 17, scale = 17)
     private Double valorVentaUsd;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "venta_publico", nullable = false)
+    private boolean ventaPublico;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 45)
+    @Column(nullable = false, length = 45)
+    private String codigo;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "producto", fetch = FetchType.LAZY)
+    private List<IngresoProducto> ingresoProductoList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "producto", fetch = FetchType.LAZY)
     private List<DevolucionProducto> devolucionProductoList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "producto", fetch = FetchType.LAZY)
     private List<VisitaProducto> visitaProductoList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "producto", fetch = FetchType.LAZY)
-    private List<PromocionProducto> promocionProductoList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "producto", fetch = FetchType.LAZY)
     private List<FacturaProducto> facturaProductoList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "producto", fetch = FetchType.LAZY)
+    private List<DespachoFacturaProducto> despachoFacturaProductoList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "producto", fetch = FetchType.LAZY)
+    private List<PromocionProducto> promocionProductoList;
 
     public Producto() {
     }
@@ -86,13 +105,13 @@ public class Producto implements Serializable, Codificable {
         this.id = id;
     }
 
-    public Producto(Long id, String nombre, String descripcion, String gramaje, double valorCosto, double valorVenta, String codigo) {
+    public Producto(Long id, String nombre, String descripcion, double valorCosto, double valorVenta, boolean ventaPublico, String codigo) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
-        this.gramaje = gramaje;
         this.valorCosto = valorCosto;
         this.valorVenta = valorVenta;
+        this.ventaPublico = ventaPublico;
         this.codigo = codigo;
     }
 
@@ -103,15 +122,6 @@ public class Producto implements Serializable, Codificable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    @Override
-    public String getCodigo() {
-        return codigo;
-    }
-
-    public void setCodigo(String codigo) {
-        this.codigo = codigo;
     }
 
     public String getNombre() {
@@ -162,6 +172,31 @@ public class Producto implements Serializable, Codificable {
         this.valorVentaUsd = valorVentaUsd;
     }
 
+    public boolean getVentaPublico() {
+        return ventaPublico;
+    }
+
+    public void setVentaPublico(boolean ventaPublico) {
+        this.ventaPublico = ventaPublico;
+    }
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
+    }
+
+    @XmlTransient
+    public List<IngresoProducto> getIngresoProductoList() {
+        return ingresoProductoList;
+    }
+
+    public void setIngresoProductoList(List<IngresoProducto> ingresoProductoList) {
+        this.ingresoProductoList = ingresoProductoList;
+    }
+
     @XmlTransient
     public List<DevolucionProducto> getDevolucionProductoList() {
         return devolucionProductoList;
@@ -181,21 +216,30 @@ public class Producto implements Serializable, Codificable {
     }
 
     @XmlTransient
-    public List<PromocionProducto> getPromocionProductoList() {
-        return promocionProductoList;
-    }
-
-    public void setPromocionProductoList(List<PromocionProducto> promocionProductoList) {
-        this.promocionProductoList = promocionProductoList;
-    }
-
-    @XmlTransient
     public List<FacturaProducto> getFacturaProductoList() {
         return facturaProductoList;
     }
 
     public void setFacturaProductoList(List<FacturaProducto> facturaProductoList) {
         this.facturaProductoList = facturaProductoList;
+    }
+
+    @XmlTransient
+    public List<DespachoFacturaProducto> getDespachoFacturaProductoList() {
+        return despachoFacturaProductoList;
+    }
+
+    public void setDespachoFacturaProductoList(List<DespachoFacturaProducto> despachoFacturaProductoList) {
+        this.despachoFacturaProductoList = despachoFacturaProductoList;
+    }
+
+    @XmlTransient
+    public List<PromocionProducto> getPromocionProductoList() {
+        return promocionProductoList;
+    }
+
+    public void setPromocionProductoList(List<PromocionProducto> promocionProductoList) {
+        this.promocionProductoList = promocionProductoList;
     }
 
     @Override
@@ -212,17 +256,20 @@ public class Producto implements Serializable, Codificable {
             return false;
         }
         Producto other = (Producto) object;
-        return !((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)));
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
     }
 
     @Override
     public String toString() {
-        return codigo + " - " + nombre + " " + gramaje;
+        return "entidades.Producto[ id=" + id + " ]";
     }
 
     @Override
     public String getTipo() {
         return null;
     }
-
-    }
+    
+}

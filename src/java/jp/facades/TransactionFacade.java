@@ -1,6 +1,5 @@
 package jp.facades;
 
-import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Resource;
 import javax.ejb.LocalBean;
@@ -23,10 +22,9 @@ import jp.entidades.FacturaProducto;
 import jp.entidades.FacturaPromocion;
 import jp.entidades.Ingreso;
 import jp.entidades.IngresoProducto;
-import jp.entidades.Producto;
 import jp.entidades.Promocion;
 import jp.entidades.PromocionProducto;
-import jp.entidades.Recargo;
+import jp.entidades.Parametros;
 import jp.entidades.Visita;
 import jp.entidades.VisitaProducto;
 import jp.util.EstadoVisita;
@@ -115,20 +113,20 @@ public class TransactionFacade {
         return result;
     }
 
-    public boolean createUpdateRecargo(Recargo r) {
+    public boolean createUpdateRecargo(Parametros p) {
         boolean complete = false;
         userTransaction = sessionContext.getUserTransaction();
         try {
             userTransaction.begin();
-            Recargo recargoTMP = new Recargo();
+            Parametros parametroTMP = new Parametros();
 
-            recargoTMP.setId(1);
-            recargoTMP.setRecargoLocal(r.getRecargoLocal());
-            recargoTMP.setRecargoNacional(r.getRecargoNacional());
-            recargoTMP.setRecargoInternacional(r.getRecargoInternacional());
-            recargoTMP.setCiudad(r.getCiudad());
+            parametroTMP.setId(1);
+            parametroTMP.setRecargoLocal(p.getRecargoLocal());
+            parametroTMP.setRecargoNacional(p.getRecargoNacional());
+            parametroTMP.setRecargoInternacional(p.getRecargoInternacional());
+            parametroTMP.setCiudad(p.getCiudad());
 
-            em.merge(recargoTMP);
+            em.merge(parametroTMP);
             userTransaction.commit();
             complete = true;
 
@@ -259,7 +257,7 @@ public class TransactionFacade {
             facturaTMP.setCliente(factura.getCliente());
             facturaTMP.setCliente(factura.getCliente());
             facturaTMP.setEmpleado(factura.getEmpleado());
-            facturaTMP.setTipo_pago(factura.getTipo_pago());
+            facturaTMP.setTipoPago(factura.getTipoPago());
             facturaTMP.setObservaciones(factura.getObservaciones());
             facturaTMP.setTotalBruto(factura.getTotalBruto());
             facturaTMP.setDescuento(factura.getDescuento());

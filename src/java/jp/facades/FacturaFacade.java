@@ -38,7 +38,7 @@ public class FacturaFacade extends AbstractFacade<Factura> {
         CriteriaQuery cq = cb.createQuery();
         Root<Factura> fac = cq.from(Factura.class);
         cq.select(fac);
-        cq.where(cb.equal(fac.get(Factura_.orden_pedido), ordenPedido));
+        cq.where(cb.equal(fac.get(Factura_.ordenPedido), ordenPedido));
         TypedQuery<Factura> q = getEntityManager().createQuery(cq);
         q.setFirstResult(1);
         return q.getSingleResult();
@@ -47,7 +47,12 @@ public class FacturaFacade extends AbstractFacade<Factura> {
     public double getValorPendientePagoFactura(Factura factura){
         try {
             CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-            CriteriaQuery cq = cb.createQuery();
+            CriteriaQuery cq = cb.createQuery();/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
             Root<Pago> fac = cq.from(Pago.class);
             cq.select(cb.sum(fac.get(Pago_.valorTotal)));
             cq.where(cb.and(cb.equal(fac.get(Pago_.factura), factura),

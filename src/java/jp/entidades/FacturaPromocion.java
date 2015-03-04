@@ -1,3 +1,8 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package jp.entidades;
 
 import java.io.Serializable;
@@ -10,13 +15,25 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ *
+ * @author arturo
+ */
 @Entity
 @Table(name = "factura_promocion", catalog = "jimmy_professional", schema = "public")
 @XmlRootElement
+@NamedQueries({
+    @NamedQuery(name = "FacturaPromocion.findAll", query = "SELECT f FROM FacturaPromocion f"),
+    @NamedQuery(name = "FacturaPromocion.findById", query = "SELECT f FROM FacturaPromocion f WHERE f.id = :id"),
+    @NamedQuery(name = "FacturaPromocion.findByUnidadesVenta", query = "SELECT f FROM FacturaPromocion f WHERE f.unidadesVenta = :unidadesVenta"),
+    @NamedQuery(name = "FacturaPromocion.findByUnidadesBonifciacion", query = "SELECT f FROM FacturaPromocion f WHERE f.unidadesBonifciacion = :unidadesBonifciacion"),
+    @NamedQuery(name = "FacturaPromocion.findByPrecio", query = "SELECT f FROM FacturaPromocion f WHERE f.precio = :precio")})
 public class FacturaPromocion implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -30,8 +47,8 @@ public class FacturaPromocion implements Serializable {
     private int unidadesVenta;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "unidades_bonificacion", nullable = false)
-    private int unidadesBonificacion;
+    @Column(name = "unidades_bonifciacion", nullable = false)
+    private int unidadesBonificiacion;
     @Basic(optional = false)
     @NotNull
     @Column(nullable = false)
@@ -50,11 +67,11 @@ public class FacturaPromocion implements Serializable {
         this.id = id;
     }
 
-    public FacturaPromocion(Long id, double precio, int unidVenta, int unidBonif) {
+    public FacturaPromocion(Long id, int unidadesVenta, int unidadesBonifciacion, double precio) {
         this.id = id;
+        this.unidadesVenta = unidadesVenta;
+        this.unidadesBonificiacion = unidadesBonifciacion;
         this.precio = precio;
-        this.unidadesVenta = unidVenta;
-        this.unidadesBonificacion = unidBonif;
     }
 
     public Long getId() {
@@ -74,11 +91,11 @@ public class FacturaPromocion implements Serializable {
     }
 
     public int getUnidadesBonificacion() {
-        return unidadesBonificacion;
+        return unidadesBonificiacion;
     }
 
-    public void setUnidadesBonificacion(int unidadesBonificacion) {
-        this.unidadesBonificacion = unidadesBonificacion;
+    public void setUnidadesBonificacion(int unidadesBonifciacion) {
+        this.unidadesBonificiacion = unidadesBonifciacion;
     }
 
     public double getPrecio() {
@@ -127,7 +144,7 @@ public class FacturaPromocion implements Serializable {
 
     @Override
     public String toString() {
-        return "jp.entidades.test.FacturaPromocion[ id=" + id + " ]";
+        return "entidades.FacturaPromocion[ id=" + id + " ]";
     }
     
 }

@@ -377,7 +377,7 @@ public class FacturaController implements Serializable {
         if (c.getTarifaEspecial() != null) {
             selected.setDescuento(c.getTarifaEspecial().doubleValue());
         } else {
-            Float descuento = getEjbRecargoFacade().getRecargoByCiudad(c.getCiudad());
+            Float descuento = getEjbRecargoFacade().getParametrosByCiudad(c.getCiudad());
             selected.setDescuento(descuento.doubleValue());
         }
     }

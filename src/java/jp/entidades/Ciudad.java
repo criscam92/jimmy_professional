@@ -29,7 +29,6 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Ciudad.findById", query = "SELECT c FROM Ciudad c WHERE c.id = :id"),
     @NamedQuery(name = "Ciudad.findByNombre", query = "SELECT c FROM Ciudad c WHERE c.nombre = :nombre")})
 public class Ciudad implements Serializable {
-
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,9 +41,9 @@ public class Ciudad implements Serializable {
     @Column(nullable = false, length = 100)
     private String nombre;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "ciudad", fetch = FetchType.LAZY)
-    private List<Cliente> clienteList;
+    private List<Parametros> parametrosList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "ciudad", fetch = FetchType.LAZY)
-    private List<Recargo> recargoList;
+    private List<Cliente> clienteList;
     @JoinColumn(name = "pais", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Pais pais;
@@ -78,20 +77,21 @@ public class Ciudad implements Serializable {
     }
 
     @XmlTransient
+    public List<Parametros> getParametrosList() {
+        return parametrosList;
+    }
+
+    public void setParametrosList(List<Parametros> parametrosList) {
+        this.parametrosList = parametrosList;
+    }
+
+    @XmlTransient
     public List<Cliente> getClienteList() {
         return clienteList;
     }
 
     public void setClienteList(List<Cliente> clienteList) {
         this.clienteList = clienteList;
-    }
-
-    public List<Recargo> getRecargoList() {
-        return recargoList;
-    }
-
-    public void setRecargoList(List<Recargo> recargoList) {
-        this.recargoList = recargoList;
     }
 
     public Pais getPais() {
@@ -116,12 +116,15 @@ public class Ciudad implements Serializable {
             return false;
         }
         Ciudad other = (Ciudad) object;
-        return !((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)));
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
     }
 
     @Override
     public String toString() {
         return this.getNombre()+", "+this.getPais().getNombre();
     }
-
+    
 }

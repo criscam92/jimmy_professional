@@ -1,3 +1,8 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package jp.entidades;
 
 import java.io.Serializable;
@@ -16,6 +21,10 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ *
+ * @author arturo
+ */
 @Entity
 @Table(name = "factura_producto", catalog = "jimmy_professional", schema = "public")
 @XmlRootElement
@@ -135,7 +144,7 @@ public class FacturaProducto implements Serializable {
 
     @Override
     public String toString() {
-        return "entidades.otras.FacturaProducto[ id=" + id + " ]";
+        return "entidades.FacturaProducto[ id=" + id + " ]";
     }
-
-    }
+    
+}

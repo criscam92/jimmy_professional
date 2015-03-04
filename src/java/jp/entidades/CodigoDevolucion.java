@@ -1,3 +1,8 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package jp.entidades;
 
 import java.io.Serializable;
@@ -21,8 +26,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import jp.entidades.auxiliar.Codificable;
 
+/**
+ *
+ * @author arturo
+ */
 @Entity
-@Table(name = "codigo_devolucion", uniqueConstraints = {
+@Table(name = "codigo_devolucion", catalog = "jimmy_professional", schema = "public", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"codigo"})})
 @XmlRootElement
 @NamedQueries({
@@ -31,7 +40,6 @@ import jp.entidades.auxiliar.Codificable;
     @NamedQuery(name = "CodigoDevolucion.findByCodigo", query = "SELECT c FROM CodigoDevolucion c WHERE c.codigo = :codigo"),
     @NamedQuery(name = "CodigoDevolucion.findByDescripcion", query = "SELECT c FROM CodigoDevolucion c WHERE c.descripcion = :descripcion")})
 public class CodigoDevolucion implements Serializable, Codificable {
-
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,8 +56,8 @@ public class CodigoDevolucion implements Serializable, Codificable {
     @Size(min = 1, max = 100)
     @Column(nullable = false, length = 100)
     private String descripcion;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "codigo", fetch = FetchType.LAZY)
-    private List<Devolucion> devolucionList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "codigoDevolucion", fetch = FetchType.LAZY)
+    private List<DevolucionProducto> devolucionProductoList;
 
     public CodigoDevolucion() {
     }
@@ -91,12 +99,12 @@ public class CodigoDevolucion implements Serializable, Codificable {
     }
 
     @XmlTransient
-    public List<Devolucion> getDevolucionList() {
-        return devolucionList;
+    public List<DevolucionProducto> getDevolucionProductoList() {
+        return devolucionProductoList;
     }
 
-    public void setDevolucionList(List<Devolucion> devolucionList) {
-        this.devolucionList = devolucionList;
+    public void setDevolucionProductoList(List<DevolucionProducto> devolucionProductoList) {
+        this.devolucionProductoList = devolucionProductoList;
     }
 
     @Override
@@ -121,12 +129,12 @@ public class CodigoDevolucion implements Serializable, Codificable {
 
     @Override
     public String toString() {
-        return this.getCodigo() + " - " + this.getDescripcion();
+        return "entidades.CodigoDevolucion[ id=" + id + " ]";
     }
 
     @Override
     public String getTipo() {
         return null;
     }
-
-    }
+    
+}

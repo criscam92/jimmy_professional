@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package jp.facades;
 
 import javax.ejb.Stateless;
@@ -12,12 +7,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import jp.entidades.Ciudad;
 import jp.entidades.Cliente;
-import jp.entidades.Recargo;
 
-/**
- *
- * @author CRISTIAN
- */
 @Stateless
 public class ClienteFacade extends AbstractFacade<Cliente> {
 
@@ -37,7 +27,7 @@ public class ClienteFacade extends AbstractFacade<Cliente> {
         Ciudad ciudadTMP = null;
         try {
 //            Recargo recargo;
-            Query query = em.createQuery("SELECT r.ciudad FROM Recargo r WHERE r.ciudad.id= :ciu");
+            Query query = em.createQuery("SELECT p.ciudad FROM Parametros p WHERE p.ciudad.id= :ciu");
             query.setParameter("ciu", c.getId());
 
             if (query.getSingleResult() != null) {

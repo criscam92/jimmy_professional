@@ -1,3 +1,8 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package jp.entidades;
 
 import java.io.Serializable;
@@ -24,6 +29,10 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+/**
+ *
+ * @author arturo
+ */
 @Entity
 @Table(catalog = "jimmy_professional", schema = "public")
 @XmlRootElement
@@ -48,9 +57,8 @@ public class Visita implements Serializable {
     @Column(nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date fecha;
-    @Basic(optional = false)
-    @Size(min = 1, max = 200)
-    @Column(name = "observaciones_cliente", nullable = true, length = 200)
+    @Size(max = 200)
+    @Column(name = "observaciones_cliente", length = 200)
     private String observacionesCliente;
     @Column(name = "calificacion_servicio")
     private Integer calificacionServicio;
@@ -62,16 +70,19 @@ public class Visita implements Serializable {
     private boolean cumplioExpectativas;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "estado", nullable = false)
-    private Integer estado;
+    @Column(nullable = false)
+    private int estado;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "visita", fetch = FetchType.LAZY)
+    private List<VisitaProducto> visitaProductoList;
     @JoinColumn(name = "cliente", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Cliente cliente;
     @JoinColumn(name = "empleado", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Empleado empleado;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "visita", fetch = FetchType.LAZY)
-    private List<VisitaProducto> visitaProductoList;
+    @JoinColumn(name = "procedimiento", referencedColumnName = "id", nullable = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private Procedimiento procedimiento;
 
     public Visita() {
     }
@@ -80,11 +91,11 @@ public class Visita implements Serializable {
         this.id = id;
     }
 
-    public Visita(Long id, Date fecha, String observacionesCliente, boolean cumplioExpectativas) {
+    public Visita(Long id, Date fecha, boolean cumplioExpectativas, int estado) {
         this.id = id;
         this.fecha = fecha;
-        this.observacionesCliente = observacionesCliente;
         this.cumplioExpectativas = cumplioExpectativas;
+        this.estado = estado;
     }
 
     public Long getId() {
@@ -135,12 +146,21 @@ public class Visita implements Serializable {
         this.cumplioExpectativas = cumplioExpectativas;
     }
 
-    public Integer getEstado() {
+    public int getEstado() {
         return estado;
     }
 
-    public void setEstado(Integer estado) {
+    public void setEstado(int estado) {
         this.estado = estado;
+    }
+
+    @XmlTransient
+    public List<VisitaProducto> getVisitaProductoList() {
+        return visitaProductoList;
+    }
+
+    public void setVisitaProductoList(List<VisitaProducto> visitaProductoList) {
+        this.visitaProductoList = visitaProductoList;
     }
 
     public Cliente getCliente() {
@@ -159,13 +179,12 @@ public class Visita implements Serializable {
         this.empleado = empleado;
     }
 
-    @XmlTransient
-    public List<VisitaProducto> getVisitaProductoList() {
-        return visitaProductoList;
+    public Procedimiento getProcedimiento() {
+        return procedimiento;
     }
 
-    public void setVisitaProductoList(List<VisitaProducto> visitaProductoList) {
-        this.visitaProductoList = visitaProductoList;
+    public void setProcedimiento(Procedimiento procedimiento) {
+        this.procedimiento = procedimiento;
     }
 
     @Override
@@ -190,7 +209,7 @@ public class Visita implements Serializable {
 
     @Override
     public String toString() {
-        return "jp.entidades.Visita[ id=" + id + " ]";
+        return "entidades.Visita[ id=" + id + " ]";
     }
     
 }

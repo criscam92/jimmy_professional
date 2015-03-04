@@ -1,3 +1,8 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package jp.entidades;
 
 import java.io.Serializable;
@@ -16,6 +21,10 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ *
+ * @author arturo
+ */
 @Entity
 @Table(name = "promocion_producto", catalog = "jimmy_professional", schema = "public")
 @XmlRootElement
@@ -30,18 +39,18 @@ public class PromocionProducto implements Serializable {
     @Basic(optional = false)
     @Column(nullable = false)
     private Long id;
+    @Basic(optional = false)
+    @NotNull
+    @Column(nullable = false)
+    private int cantidad;
     @JoinColumn(name = "producto", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Producto producto;
     @JoinColumn(name = "promocion", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Promocion promocion;
-    @Basic(optional = false)
-    @NotNull
-    @Column(nullable = false)
-    private int cantidad;
 
-    public PromocionProducto() {        
+    public PromocionProducto() {
     }
 
     public PromocionProducto(Long id) {
@@ -61,6 +70,14 @@ public class PromocionProducto implements Serializable {
         this.id = id;
     }
 
+    public int getCantidad() {
+        return cantidad;
+    }
+
+    public void setCantidad(int cantidad) {
+        this.cantidad = cantidad;
+    }
+
     public Producto getProducto() {
         return producto;
     }
@@ -77,14 +94,6 @@ public class PromocionProducto implements Serializable {
         this.promocion = promocion;
     }
 
-    public int getCantidad() {
-        return cantidad;
-    }
-
-    public void setCantidad(int cantidad) {
-        this.cantidad = cantidad;
-    }
-
     @Override
     public int hashCode() {
         int hash = 0;
@@ -99,12 +108,15 @@ public class PromocionProducto implements Serializable {
             return false;
         }
         PromocionProducto other = (PromocionProducto) object;
-        return !((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)));
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
     }
 
     @Override
     public String toString() {
-        return "jp.entidades.PromocionProducto[ id=" + id + " ]";
+        return "entidades.PromocionProducto[ id=" + id + " ]";
     }
-
-    }
+    
+}

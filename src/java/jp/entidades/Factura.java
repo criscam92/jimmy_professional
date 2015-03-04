@@ -1,3 +1,8 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package jp.entidades;
 
 import java.io.Serializable;
@@ -16,7 +21,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -25,18 +29,24 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+/**
+ *
+ * @author arturo
+ */
 @Entity
 @Table(catalog = "jimmy_professional", schema = "public")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Factura.findAll", query = "SELECT f FROM Factura f"),
     @NamedQuery(name = "Factura.findById", query = "SELECT f FROM Factura f WHERE f.id = :id"),
-    @NamedQuery(name = "Factura.findByCodigo", query = "SELECT f FROM Factura f WHERE f.orden_pedido = :orden_pedido"),
     @NamedQuery(name = "Factura.findByFecha", query = "SELECT f FROM Factura f WHERE f.fecha = :fecha"),
+    @NamedQuery(name = "Factura.findByTipoPago", query = "SELECT f FROM Factura f WHERE f.tipoPago = :tipoPago"),
     @NamedQuery(name = "Factura.findByObservaciones", query = "SELECT f FROM Factura f WHERE f.observaciones = :observaciones"),
     @NamedQuery(name = "Factura.findByTotalBruto", query = "SELECT f FROM Factura f WHERE f.totalBruto = :totalBruto"),
     @NamedQuery(name = "Factura.findByDescuento", query = "SELECT f FROM Factura f WHERE f.descuento = :descuento"),
-    @NamedQuery(name = "Factura.findByTotalPagar", query = "SELECT f FROM Factura f WHERE f.totalPagar = :totalPagar")})
+    @NamedQuery(name = "Factura.findByTotalPagar", query = "SELECT f FROM Factura f WHERE f.totalPagar = :totalPagar"),
+    @NamedQuery(name = "Factura.findByEstado", query = "SELECT f FROM Factura f WHERE f.estado = :estado"),
+    @NamedQuery(name = "Factura.findByDolar", query = "SELECT f FROM Factura f WHERE f.dolar = :dolar")})
 public class Factura implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -44,12 +54,6 @@ public class Factura implements Serializable {
     @Basic(optional = false)
     @Column(nullable = false)
     private Long id;
-    @SequenceGenerator(initialValue = 1, sequenceName = "factura_num_orden", name = "FACTURA_NUM_ORDEN")
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 45)
-    @Column(nullable = false, length = 45)
-    private String orden_pedido;
     @Basic(optional = false)
     @NotNull
     @Column(nullable = false)
@@ -58,7 +62,7 @@ public class Factura implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Column(name = "tipo_pago", nullable = false)
-    private Integer tipo_pago;
+    private int tipoPago;
     @Size(max = 200)
     @Column(length = 200)
     private String observaciones;
@@ -73,8 +77,21 @@ public class Factura implements Serializable {
     @NotNull
     @Column(name = "total_pagar", nullable = false)
     private double totalPagar;
+    @Basic(optional = false)
+    @NotNull
+    @Column(nullable = false)
+    private int estado;
+    @Basic(optional = false)
+    @NotNull
+    @Column(nullable = false)
+    private boolean dolar;
+    @Size(max = 30)
+    @Column(length = 30)
+    private String ordenPedido;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "factura", fetch = FetchType.LAZY)
-    private List<Pago> pagoList;
+    private List<FacturaPromocion> facturaPromocionList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "factura", fetch = FetchType.LAZY)
+    private List<CambioDevolucion> cambioDevolucionList;
     @JoinColumn(name = "cliente", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Cliente cliente;
@@ -83,6 +100,10 @@ public class Factura implements Serializable {
     private Empleado empleado;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "factura", fetch = FetchType.LAZY)
     private List<FacturaProducto> facturaProductoList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "factura", fetch = FetchType.LAZY)
+    private List<Pago> pagoList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "factura", fetch = FetchType.LAZY)
+    private List<DespachoFactura> despachoFacturaList;
 
     public Factura() {
     }
@@ -91,12 +112,14 @@ public class Factura implements Serializable {
         this.id = id;
     }
 
-    public Factura(Long id, String codigo, Date fecha, double totalBruto, double totalPagar) {
+    public Factura(Long id, Date fecha, int tipoPago, double totalBruto, double totalPagar, int estado, boolean dolar) {
         this.id = id;
-        this.orden_pedido = codigo;
         this.fecha = fecha;
+        this.tipoPago = tipoPago;
         this.totalBruto = totalBruto;
         this.totalPagar = totalPagar;
+        this.estado = estado;
+        this.dolar = dolar;
     }
 
     public Long getId() {
@@ -107,14 +130,6 @@ public class Factura implements Serializable {
         this.id = id;
     }
 
-    public String getOrdenPedido() {
-        return orden_pedido;
-    }
-
-    public void setOrdenPedido(String codigo) {
-        this.orden_pedido = codigo;
-    }
-
     public Date getFecha() {
         return fecha;
     }
@@ -123,20 +138,20 @@ public class Factura implements Serializable {
         this.fecha = fecha;
     }
 
+    public int getTipoPago() {
+        return tipoPago;
+    }
+
+    public void setTipoPago(int tipoPago) {
+        this.tipoPago = tipoPago;
+    }
+
     public String getObservaciones() {
         return observaciones;
     }
 
     public void setObservaciones(String observaciones) {
         this.observaciones = observaciones;
-    }
-
-    public Integer getTipo_pago() {
-        return tipo_pago;
-    }
-
-    public void setTipo_pago(Integer tipo_pago) {
-        this.tipo_pago = tipo_pago;
     }
 
     public double getTotalBruto() {
@@ -163,13 +178,46 @@ public class Factura implements Serializable {
         this.totalPagar = totalPagar;
     }
 
-    @XmlTransient
-    public List<Pago> getPagoList() {
-        return pagoList;
+    public int getEstado() {
+        return estado;
     }
 
-    public void setPagoList(List<Pago> pagoList) {
-        this.pagoList = pagoList;
+    public void setEstado(int estado) {
+        this.estado = estado;
+    }
+
+    public boolean getDolar() {
+        return dolar;
+    }
+
+    public void setDolar(boolean dolar) {
+        this.dolar = dolar;
+    }
+
+    public String getOrdenPedido() {
+        return ordenPedido;
+    }
+
+    public void setOrdenPedido(String ordenPedido) {
+        this.ordenPedido = ordenPedido;
+    }
+
+    @XmlTransient
+    public List<FacturaPromocion> getFacturaPromocionList() {
+        return facturaPromocionList;
+    }
+
+    public void setFacturaPromocionList(List<FacturaPromocion> facturaPromocionList) {
+        this.facturaPromocionList = facturaPromocionList;
+    }
+
+    @XmlTransient
+    public List<CambioDevolucion> getCambioDevolucionList() {
+        return cambioDevolucionList;
+    }
+
+    public void setCambioDevolucionList(List<CambioDevolucion> cambioDevolucionList) {
+        this.cambioDevolucionList = cambioDevolucionList;
     }
 
     public Cliente getCliente() {
@@ -197,6 +245,24 @@ public class Factura implements Serializable {
         this.facturaProductoList = facturaProductoList;
     }
 
+    @XmlTransient
+    public List<Pago> getPagoList() {
+        return pagoList;
+    }
+
+    public void setPagoList(List<Pago> pagoList) {
+        this.pagoList = pagoList;
+    }
+
+    @XmlTransient
+    public List<DespachoFactura> getDespachoFacturaList() {
+        return despachoFacturaList;
+    }
+
+    public void setDespachoFacturaList(List<DespachoFactura> despachoFacturaList) {
+        this.despachoFacturaList = despachoFacturaList;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -219,7 +285,7 @@ public class Factura implements Serializable {
 
     @Override
     public String toString() {
-        return this.getOrdenPedido()+" - "+this.getCliente();
+        return "entidades.Factura[ id=" + id + " ]";
     }
-
+    
 }

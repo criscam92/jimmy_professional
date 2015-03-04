@@ -1,3 +1,8 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package jp.entidades;
 
 import java.io.Serializable;
@@ -14,21 +19,26 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import jp.entidades.auxiliar.Codificable;
 
+/**
+ *
+ * @author arturo
+ */
 @Entity
-@Table(name = "tipo_empleado", catalog = "jimmy_professional", schema = "public")
+@Table(name = "tipo_empleado", catalog = "jimmy_professional", schema = "public", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"tipo"})})
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "TipoEmpleado.findAll", query = "SELECT t FROM TipoEmpleado t"),
     @NamedQuery(name = "TipoEmpleado.findById", query = "SELECT t FROM TipoEmpleado t WHERE t.id = :id"),
     @NamedQuery(name = "TipoEmpleado.findByTipo", query = "SELECT t FROM TipoEmpleado t WHERE t.tipo = :tipo")})
 public class TipoEmpleado implements Serializable, Codificable {
-
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,7 +62,7 @@ public class TipoEmpleado implements Serializable, Codificable {
 
     public TipoEmpleado(Long id, String tipo) {
         this.id = id;
-        this.tipo = tipo.toUpperCase();
+        this.tipo = tipo;
     }
 
     @Override
@@ -70,7 +80,7 @@ public class TipoEmpleado implements Serializable, Codificable {
     }
 
     public void setTipo(String tipo) {
-        this.tipo = tipo.toUpperCase();
+        this.tipo = tipo;
     }
 
     @XmlTransient
@@ -96,17 +106,20 @@ public class TipoEmpleado implements Serializable, Codificable {
             return false;
         }
         TipoEmpleado other = (TipoEmpleado) object;
-        return !((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)));
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
     }
 
     @Override
     public String toString() {
-        return this.getTipo();
+        return "entidades.TipoEmpleado[ id=" + id + " ]";
     }
 
     @Override
     public String getCodigo() {
         return null;
     }
-
-    }
+    
+}

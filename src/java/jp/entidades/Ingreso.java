@@ -1,3 +1,8 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package jp.entidades;
 
 import java.io.Serializable;
@@ -13,6 +18,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -22,9 +29,18 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+/**
+ *
+ * @author arturo
+ */
 @Entity
 @Table(catalog = "jimmy_professional", schema = "public")
 @XmlRootElement
+@NamedQueries({
+    @NamedQuery(name = "Ingreso.findAll", query = "SELECT i FROM Ingreso i"),
+    @NamedQuery(name = "Ingreso.findById", query = "SELECT i FROM Ingreso i WHERE i.id = :id"),
+    @NamedQuery(name = "Ingreso.findByFechaIngreso", query = "SELECT i FROM Ingreso i WHERE i.fechaIngreso = :fechaIngreso"),
+    @NamedQuery(name = "Ingreso.findByObservaciones", query = "SELECT i FROM Ingreso i WHERE i.observaciones = :observaciones")})
 public class Ingreso implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -113,12 +129,15 @@ public class Ingreso implements Serializable {
             return false;
         }
         Ingreso other = (Ingreso) object;
-        return !((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)));
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
     }
 
     @Override
     public String toString() {
-        return "jp.entidades.test.Ingreso[ id=" + id + " ]";
+        return "entidades.Ingreso[ id=" + id + " ]";
     }
     
 }

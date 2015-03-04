@@ -266,7 +266,7 @@ public class ClienteController implements Serializable {
     public void showTarifaEspecial() {
         if (recargo) {
             visibility = "visible";
-            selected.setTarifaEspecial(getEjbRecargoFacade().getRecargoByCiudad(selected.getCiudad()));
+            selected.setTarifaEspecial(getEjbRecargoFacade().getParametrosByCiudad(selected.getCiudad()));
         } else {
             visibility = "hidden";
             selected.setTarifaEspecial(null);

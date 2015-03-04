@@ -1,6 +1,7 @@
 package jp.entidades;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -16,6 +17,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -27,9 +30,13 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "Cliente.findAll", query = "SELECT c FROM Cliente c"),
     @NamedQuery(name = "Cliente.findById", query = "SELECT c FROM Cliente c WHERE c.id = :id"),
+    @NamedQuery(name = "Cliente.findByDocumento", query = "SELECT c FROM Cliente c WHERE c.documento = :documento"),
     @NamedQuery(name = "Cliente.findByNombre", query = "SELECT c FROM Cliente c WHERE c.nombre = :nombre"),
     @NamedQuery(name = "Cliente.findByDireccion", query = "SELECT c FROM Cliente c WHERE c.direccion = :direccion"),
+    @NamedQuery(name = "Cliente.findByReferenciaDireccion", query = "SELECT c FROM Cliente c WHERE c.referenciaDireccion = :referenciaDireccion"),
     @NamedQuery(name = "Cliente.findByBarrio", query = "SELECT c FROM Cliente c WHERE c.barrio = :barrio"),
+    @NamedQuery(name = "Cliente.findByContacto", query = "SELECT c FROM Cliente c WHERE c.contacto = :contacto"),
+    @NamedQuery(name = "Cliente.findByFechaCumpleanos", query = "SELECT c FROM Cliente c WHERE c.fechaCumpleanos = :fechaCumpleanos"),
     @NamedQuery(name = "Cliente.findByTelefonos", query = "SELECT c FROM Cliente c WHERE c.telefonos = :telefonos"),
     @NamedQuery(name = "Cliente.findByCupoCredito", query = "SELECT c FROM Cliente c WHERE c.cupoCredito = :cupoCredito"),
     @NamedQuery(name = "Cliente.findByTarifaEspecial", query = "SELECT c FROM Cliente c WHERE c.tarifaEspecial = :tarifaEspecial")})
@@ -40,6 +47,9 @@ public class Cliente implements Serializable {
     @Basic(optional = false)
     @Column(nullable = false)
     private Long id;
+    @Size(max = 15)
+    @Column(length = 15)
+    private String documento;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 100)
@@ -50,11 +60,18 @@ public class Cliente implements Serializable {
     @Size(min = 1, max = 100)
     @Column(nullable = false, length = 100)
     private String direccion;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 100)
-    @Column(nullable = false, length = 100)
+    @Size(max = 100)
+    @Column(name = "referencia_direccion", length = 100)
+    private String referenciaDireccion;
+    @Size(max = 100)
+    @Column(length = 100)
     private String barrio;
+    @Size(max = 100)
+    @Column(length = 100)
+    private String contacto;
+    @Column(name = "fecha_cumpleanos")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date fechaCumpleanos;
     @Size(max = 100)
     @Column(length = 100)
     private String telefonos;
@@ -62,9 +79,11 @@ public class Cliente implements Serializable {
     @NotNull
     @Column(name = "cupo_credito", nullable = false)
     private double cupoCredito;
-    @Basic(optional = true)
-    @Column(name = "tarifa_especial")
+    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
+    @Column(name = "tarifa_especial", precision = 8, scale = 8)
     private Float tarifaEspecial;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "cliente", fetch = FetchType.LAZY)
+    private List<Factura> facturaList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "cliente", fetch = FetchType.LAZY)
     private List<Visita> visitaList;
     @JoinColumn(name = "ciudad", referencedColumnName = "id", nullable = false)
@@ -76,8 +95,9 @@ public class Cliente implements Serializable {
     @JoinColumn(name = "tipo", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private TipoCliente tipo;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "cliente", fetch = FetchType.LAZY)
-    private List<Factura> facturaList;
+    @JoinColumn(name = "zona", referencedColumnName = "id", nullable = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private Zona zona;
 
     public Cliente() {
     }
@@ -86,13 +106,11 @@ public class Cliente implements Serializable {
         this.id = id;
     }
 
-    public Cliente(Long id, String nombre, String direccion, String barrio, double cupoCredito, Float tarifaEspecial) {
+    public Cliente(Long id, String nombre, String direccion, double cupoCredito) {
         this.id = id;
         this.nombre = nombre;
         this.direccion = direccion;
-        this.barrio = barrio;
         this.cupoCredito = cupoCredito;
-        this.tarifaEspecial = tarifaEspecial;
     }
 
     public Long getId() {
@@ -101,6 +119,14 @@ public class Cliente implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getDocumento() {
+        return documento;
+    }
+
+    public void setDocumento(String documento) {
+        this.documento = documento;
     }
 
     public String getNombre() {
@@ -119,12 +145,36 @@ public class Cliente implements Serializable {
         this.direccion = direccion;
     }
 
+    public String getReferenciaDireccion() {
+        return referenciaDireccion;
+    }
+
+    public void setReferenciaDireccion(String referenciaDireccion) {
+        this.referenciaDireccion = referenciaDireccion;
+    }
+
     public String getBarrio() {
         return barrio;
     }
 
     public void setBarrio(String barrio) {
         this.barrio = barrio;
+    }
+
+    public String getContacto() {
+        return contacto;
+    }
+
+    public void setContacto(String contacto) {
+        this.contacto = contacto;
+    }
+
+    public Date getFechaCumpleanos() {
+        return fechaCumpleanos;
+    }
+
+    public void setFechaCumpleanos(Date fechaCumpleanos) {
+        this.fechaCumpleanos = fechaCumpleanos;
     }
 
     public String getTelefonos() {
@@ -149,6 +199,15 @@ public class Cliente implements Serializable {
 
     public void setTarifaEspecial(Float tarifaEspecial) {
         this.tarifaEspecial = tarifaEspecial;
+    }
+
+    @XmlTransient
+    public List<Factura> getFacturaList() {
+        return facturaList;
+    }
+
+    public void setFacturaList(List<Factura> facturaList) {
+        this.facturaList = facturaList;
     }
 
     @XmlTransient
@@ -184,13 +243,12 @@ public class Cliente implements Serializable {
         this.tipo = tipo;
     }
 
-    @XmlTransient
-    public List<Factura> getFacturaList() {
-        return facturaList;
+    public Zona getZona() {
+        return zona;
     }
 
-    public void setFacturaList(List<Factura> facturaList) {
-        this.facturaList = facturaList;
+    public void setZona(Zona zona) {
+        this.zona = zona;
     }
 
     @Override

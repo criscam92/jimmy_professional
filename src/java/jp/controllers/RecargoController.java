@@ -20,7 +20,7 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import javax.faces.event.ValueChangeEvent;
 import jp.entidades.Pais;
-import jp.entidades.Recargo;
+import jp.entidades.Parametros;
 import jp.facades.CiudadFacade;
 import jp.facades.RecargoFacade;
 import jp.facades.TransactionFacade;
@@ -35,8 +35,8 @@ public class RecargoController implements Serializable {
     private TransactionFacade ejbTransactionFacade;
     @EJB
     private CiudadFacade ciudadFacade;
-    private List<Recargo> items = null;
-    private Recargo selected;
+    private List<Parametros> items = null;
+    private Parametros selected;
     private Pais pais;
     private List<Ciudad> ciudades;
 
@@ -45,16 +45,16 @@ public class RecargoController implements Serializable {
 
     @PostConstruct
     public void init() {
-        selected = new Recargo();
+        selected = new Parametros();
         comprobarRegistros();
         ciudades = new ArrayList<>();
     }
 
-    public Recargo getSelected() {
+    public Parametros getSelected() {
         return selected;
     }
 
-    public void setSelected(Recargo selected) {
+    public void setSelected(Parametros selected) {
         this.selected = selected;
     }
 
@@ -96,8 +96,8 @@ public class RecargoController implements Serializable {
         return ejbTransactionFacade;
     }
 
-    public Recargo prepareCreate() {
-        selected = new Recargo();
+    public Parametros prepareCreate() {
+        selected = new Parametros();
         initializeEmbeddableKey();
         return selected;
     }
@@ -134,7 +134,7 @@ public class RecargoController implements Serializable {
         }
     }
 
-    public List<Recargo> getItems() {
+    public List<Parametros> getItems() {
         if (items == null) {
             items = getFacade().findAll();
         }
@@ -169,18 +169,18 @@ public class RecargoController implements Serializable {
         }
     }
 
-    public List<Recargo> getItemsAvailableSelectMany() {
+    public List<Parametros> getItemsAvailableSelectMany() {
         return getFacade().findAll();
     }
 
-    public List<Recargo> getItemsAvailableSelectOne() {
+    public List<Parametros> getItemsAvailableSelectOne() {
         return getFacade().findAll();
     }
 
     private void comprobarRegistros() {
-        selected = getFacade().getRecargo();
+        selected = getFacade().getParametros();
         if (selected == null) {
-            selected = new Recargo();
+            selected = new Parametros();
         } else {
             pais = selected.getCiudad().getPais();
             ciudades = getCiudadFacade().getCiudadesByPais(pais);
@@ -217,9 +217,9 @@ public class RecargoController implements Serializable {
             if (object == null) {
                 return null;
             }
-            if (object instanceof Recargo) {
-                Recargo o = (Recargo) object;
-                return getStringKey(o.getId().longValue());
+            if (object instanceof Parametros) {
+                Parametros p = (Parametros) object;
+                return getStringKey(p.getId().longValue());
             } else {
                 Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "object {0} is of type {1}; expected type: {2}", new Object[]{object, object.getClass().getName(), Ciudad.class.getName()});
                 return null;
