@@ -4,12 +4,15 @@ import jp.entidades.Despacho;
 import jp.util.JsfUtil;
 import jp.util.JsfUtil.PersistAction;
 import jp.facades.DespachoFacade;
-
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.faces.bean.ManagedBean;
@@ -18,17 +21,42 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import jp.entidades.Factura;
+import jp.entidades.FacturaProducto;
+import jp.entidades.FacturaPromocion;
+import jp.entidades.Producto;
+import jp.entidades.PromocionProducto;
+import jp.entidades.auxiliar.ProductoAux;
+import jp.facades.FacturaFacade;
+import jp.facades.ProductoFacade;
+import jp.facades.PromocionFacade;
 
 @ManagedBean(name = "despachoController")
 @SessionScoped
 public class DespachoController implements Serializable {
 
     @EJB
-    private jp.facades.DespachoFacade ejbFacade;
+    private DespachoFacade ejbFacade;
+    @EJB
+    private FacturaFacade facturaFacade;
+    @EJB
+    private ProductoFacade productoFacade;
+    @EJB
+    private PromocionFacade promocionFacade;
+
     private List<Despacho> items = null;
     private Despacho selected;
+    private Factura factura;
+    private List<ProductoAux> productoAuxiliar = null;
 
     public DespachoController() {
+        productoAuxiliar = new ArrayList<>();
+        factura = new Factura();
+    }
+
+    @PostConstruct
+    public void init() {
+        getListProductos();
     }
 
     public Despacho getSelected() {
@@ -81,6 +109,10 @@ public class DespachoController implements Serializable {
         return items;
     }
 
+    public List<ProductoAux> getProductoAuxiliar() {
+        return productoAuxiliar;
+    }
+
     private void persist(PersistAction persistAction, String successMessage) {
         if (selected != null) {
             setEmbeddableKeys();
@@ -115,6 +147,39 @@ public class DespachoController implements Serializable {
 
     public List<Despacho> getItemsAvailableSelectOne() {
         return getFacade().findAll();
+    }
+
+    private void getListProductos() {
+        Map<String, String> requestMap = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+        FacesContext.getCurrentInstance().getExternalContext().getSession(true);
+        Long idFactura = Long.parseLong(requestMap.get("factura"));
+
+        factura = facturaFacade.getFacturaById(idFactura);
+
+        Map<Producto, Integer> mapProductos = new HashMap<>();
+        if (factura != null) {
+            List<FacturaProducto> facturaProductos = productoFacade.getFacturaProductosByFactura(factura);
+            List<FacturaPromocion> facturaPromociones = promocionFacade.getFacturaPromocionByFactura(factura);
+
+            for (FacturaProducto fp : facturaProductos) {
+                mapProductos.put(fp.getProducto(), fp.getUnidadesVenta() + fp.getUnidadesBonificacion());
+            }
+
+            for (FacturaPromocion fp : facturaPromociones) {
+                int cantidadPromociones = fp.getUnidadesVenta() + fp.getUnidadesBonificacion();
+                for (PromocionProducto pp : fp.getPromocion().getPromocionProductoList()) {
+                    if (mapProductos.containsKey(pp.getProducto())) {
+                        mapProductos.put(pp.getProducto(), mapProductos.get(pp.getProducto()) + (pp.getCantidad() * cantidadPromociones));
+                    } else {
+                        mapProductos.put(pp.getProducto(), pp.getCantidad() * cantidadPromociones);
+                    }
+                }
+            }
+
+            for (Map.Entry<Producto, Integer> entrySet : mapProductos.entrySet()) {
+                productoAuxiliar.add(new ProductoAux(productoAuxiliar.size() + 1, entrySet.getKey(), entrySet.getValue()));
+            }
+        }
     }
 
     @FacesConverter(forClass = Despacho.class)

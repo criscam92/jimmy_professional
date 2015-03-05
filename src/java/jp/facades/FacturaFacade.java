@@ -21,6 +21,7 @@ import jp.util.EstadoPago;
 
 @Stateless
 public class FacturaFacade extends AbstractFacade<Factura> {
+
     @PersistenceContext(unitName = "jimmy_professionalPU")
     private EntityManager em;
 
@@ -32,8 +33,8 @@ public class FacturaFacade extends AbstractFacade<Factura> {
     public FacturaFacade() {
         super(Factura.class);
     }
-    
-    public Factura findFacturaByOrdenPedido(String ordenPedido){
+
+    public Factura findFacturaByOrdenPedido(String ordenPedido) {
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery cq = cb.createQuery();
         Root<Factura> fac = cq.from(Factura.class);
@@ -43,15 +44,15 @@ public class FacturaFacade extends AbstractFacade<Factura> {
         q.setFirstResult(1);
         return q.getSingleResult();
     }
-    
-    public double getValorPendientePagoFactura(Factura factura){
+
+    public double getValorPendientePagoFactura(Factura factura) {
         try {
             CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
             CriteriaQuery cq = cb.createQuery();/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+             * To change this license header, choose License Headers in Project Properties.
+             * To change this template file, choose Tools | Templates
+             * and open the template in the editor.
+             */
 
             Root<Pago> fac = cq.from(Pago.class);
             cq.select(cb.sum(fac.get(Pago_.valorTotal)));
@@ -60,35 +61,43 @@ public class FacturaFacade extends AbstractFacade<Factura> {
             TypedQuery<Double> q = getEntityManager().createQuery(cq);
             Double valorAbono = q.getSingleResult();
 
-            if(valorAbono==null){
+            if (valorAbono == null) {
                 valorAbono = 0.0d;
             }
-            
-            System.out.println("Valor Factura: ".concat(factura.getTotalPagar()+""));
-            System.out.println("Valor Abono: ".concat(valorAbono+""));
-            return factura.getTotalPagar()-valorAbono;
+
+            System.out.println("Valor Factura: ".concat(factura.getTotalPagar() + ""));
+            System.out.println("Valor Abono: ".concat(valorAbono + ""));
+            return factura.getTotalPagar() - valorAbono;
         } catch (Exception e) {
             e.printStackTrace();
             return -1;
         }
-        
+
     }
-    
+
     public List<Promocion> getPromocionByQuery(String query) {
         try {
             List<Promocion> promociones;
             Query queryPromocion = getEntityManager().createQuery("SELECT p FROM Promocion p WHERE UPPER(CONCAT(p.codigo,' - ',p.descripcion)) LIKE UPPER(:param)");
             queryPromocion.setParameter("param", "%" + query + "%");
             promociones = queryPromocion.getResultList();
-            
+
             queryPromocion.setFirstResult(0);
             queryPromocion.setMaxResults(10);
-            
+
             return promociones;
         } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
-    
+
+    public Factura getFacturaById(Long idFactura) {
+        try {
+            return getEntityManager().find(Factura.class, idFactura);
+        } catch (NoResultException e) {
+        }
+        return null;
+    }
+
 }
