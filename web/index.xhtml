@@ -26,7 +26,7 @@
             <p:layoutUnit position="north" size="135">
                 <div id="logo"></div>
                 <h:form id="menuForm">
-                    
+
                     <p:menubar rendered="#{loginController.user == null}">
                         <p:menuitem class="menuPrincipal" value="#{bundle.Home}" outcome="/index" icon="ui-icon-home"/>
                         <p:submenu class="menuPrincipal" label="#{bundle.Maintenance}">
@@ -61,7 +61,12 @@
                                 </p:submenu>
                             </p:submenu>
 
-                            <p:menuitem value="Programación de Visitas" outcome="/content/visita/List.xhtml" />
+                            <p:submenu label="Visitas">
+                                <p:menuitem value="Procedimientos" outcome="/content/procedimiento/List.xhtml" />
+                                <p:menuitem value="Programación de Visitas" outcome="/content/visita/List.xhtml" />
+                            </p:submenu>
+
+                            <p:menuitem value="Tipo Publicidad" outcome="/content/tipoPublicidad/List.xhtml" />
                             <p:menuitem value="Usuarios" outcome="/content/usuario/List.xhtml" />
                         </p:submenu>
                     </p:menubar>

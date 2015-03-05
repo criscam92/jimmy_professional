@@ -98,6 +98,9 @@ public class Cliente implements Serializable {
     @JoinColumn(name = "zona", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Zona zona;
+    @JoinColumn(name = "categoria", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Categoria categoria;
 
     public Cliente() {
     }
@@ -249,6 +252,14 @@ public class Cliente implements Serializable {
 
     public void setZona(Zona zona) {
         this.zona = zona;
+    }
+
+    public Categoria getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
     }
 
     @Override

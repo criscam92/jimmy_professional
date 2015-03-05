@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <ui:composition>
+
+        <p:dialog id="TipoPublicidadEditDlg" widgetVar="TipoPublicidadEditDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.EditTipoEmpleadoTitle}">
+            <h:form id="TipoPublicidadEditForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{tipoPublicidadController.selected != null}">
+                        <p:outputLabel value="#{bundle.EditTipoEmpleadoLabel_tipo}" for="tipo" />
+                        <p:inputText id="tipo" value="#{tipoPublicidadController.selected.detalle}" title="#{bundle.EditTipoPublicidadTitle_det}"
+                                     required="true" requiredMessage="#{bundle.EditTipoPublicidadRequiredMessage_det}"/>
+                    </p:panelGrid>                    
+                </h:panelGroup>
+                <div class="botonesDialog">
+                    <p:commandButton actionListener="#{tipoPublicidadController.update}" value="#{bundle.Save}" update="display,:TipoPublicidadListForm:datalist,:growl"/>
+                    <p:commandButton type="button" value="#{bundle.Cancel}" onclick="PF('TipoPublicidadEditDialog').hide()"/>
+                </div>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>
+

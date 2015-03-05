@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <ui:composition>
+        <p:dialog id="ProcedimientoEditDlg" widgetVar="ProcedimientoEditDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.EditProcedimientoTitle}">
+            <h:form id="ProcedimientoEditForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{procedimientoController.selected != null}">
+                        <p:outputLabel value="#{bundle.EditProcedimientoLabel_desc}" for="descripcion"/>
+                        <p:inputText id="descripcion" value="#{procedimientoController.selected.descripcion}" title="#{bundle.EditProcedimientoTitle_desc}"
+                                     required="true" requiredMessage="#{bundle.EditProcedimientoRequiredMessage_desc}"/>
+                    </p:panelGrid>
+                </h:panelGroup>
+                <div class="botonesDialog">
+                    <p:commandButton actionListener="#{procedimientoController.update()}" value="#{bundle.Save}" update="display,:ProcedimientoListForm:datalist,:growl"
+                                     oncomplete="handleSubmit(args, 'ProcedimientoEditDialog');"/>
+                    <p:commandButton type="button" value="#{bundle.Cancel}" onclick="PF('ProcedimientoEditDialog').hide()"/>
+                </div>
+            </h:form>
+        </p:dialog>
+    </ui:composition>
+</html>
+

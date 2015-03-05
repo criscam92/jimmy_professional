@@ -12,7 +12,8 @@
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{tipoEmpleadoController.selected != null}">
                         <p:outputLabel styleClass="#{tipoEmpleadoController.classError()}" value="#{bundle.CreateTipoEmpleadoLabel_tipo}" for="tipo" />
-                        <p:inputText styleClass="#{tipoEmpleadoController.classError()}"  id="tipo" value="#{tipoEmpleadoController.selected.tipo}" title="#{bundle.CreateTipoEmpleadoTitle_tipo}" required="true" requiredMessage="#{bundle.CreateTipoEmpleadoRequiredMessage_tipo}"/>
+                        <p:inputText styleClass="#{tipoEmpleadoController.classError()}"  id="tipo" value="#{tipoEmpleadoController.selected.tipo}"
+                                     title="#{bundle.CreateTipoEmpleadoTitle_tipo}" required="true" requiredMessage="#{bundle.CreateTipoEmpleadoRequiredMessage_tipo}"/>
                     </p:panelGrid>
                 </h:panelGroup>
                 <div class="botonesDialog">

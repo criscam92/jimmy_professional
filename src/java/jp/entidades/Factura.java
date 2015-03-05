@@ -86,7 +86,7 @@ public class Factura implements Serializable {
     @Column(nullable = false)
     private boolean dolar;
     @Size(max = 30)
-    @Column(length = 30)
+    @Column(length = 30, name = "orden_pedido")
     private String ordenPedido;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "factura", fetch = FetchType.LAZY)
     private List<FacturaPromocion> facturaPromocionList;
