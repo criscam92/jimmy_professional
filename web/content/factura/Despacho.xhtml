@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/index.xhtml">
+        <ui:define name="title">
+            <h:outputText value="Despachar Factura"/>
+        </ui:define>
+        <ui:define name="body">
+            <h:form id="DespacharForm">                    
+                <p:dataTable id="listaProductos"
+                             value="#{despachoController.productoAuxiliar}" var="item"
+                             paginator="true" rows="20" rowKey="#{item.id}"
+                             rowsPerPageTemplate="10,20,30,40,50"
+                             paginatorPosition="bottom"> 
+
+                    <f:facet name="header">
+                        LISTA DE PRODUTOS FACTURADOS
+                    </f:facet>
+
+                    <p:column>
+                        <f:facet name="header">
+                            Productos
+                        </f:facet>
+                        <h:outputText value="#{item.producto}"/>
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">
+                            Cantidad Facturada
+                        </f:facet>
+                        <h:outputText value="#{item.cantidad}"/>
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">
+                            Cantidad Disponible
+                        </f:facet>
+                        <h:outputText id="cantDisponible" value="#{item.cantDisponible}"/>
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">
+                            Nueva Cantidad
+                        </f:facet>
+<!--                        <p:spinner id="basic" value="#{spinnerView.number1}" />-->
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            Quitar
+                        </f:facet>
+<!--                        <p:selectOneButton value="#{selectOneView.option}">
+                            <f:selectItem itemLabel="x"  itemValue="Xbox One" />
+                        </p:selectOneButton>-->
+                    </p:column>
+
+                </p:dataTable>              
+            </h:form>            
+        </ui:define>
+
+    </ui:composition>
+</html>
