@@ -6,6 +6,9 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://xmlns.jcp.org/jsf/core">
     <ui:composition template="/index.xhtml">
+        
+        <f:loadBundle basename="languages.BundleRecargo" var="bun" />
+        
         <ui:define name="title">
             <h:outputText value="#{bundle.MessageRecargoTitle}"></h:outputText>
         </ui:define>
@@ -13,22 +16,38 @@
         <ui:define name="body">
             <h:form id="formRecargo" >
                 <h:panelGroup id="display">
+                    
+                    <p:panel header="Comisiones y Publicidad" styleClass="tabla_centrada">
+                        <p:panelGrid columns="4">
+
+                            <p:outputLabel value="Porcentaje Comisión" for="comision"/>
+                            <p:inputText id="comision" value="#{parametrosController.selected.porcentajeComision}" validatorMessage="La comisión el vendedor debe estar entre 0 y 100">
+                                <f:validateDoubleRange minimum="0" maximum="100"/>
+                            </p:inputText>
+
+                            <p:outputLabel value="Porcentaje Publicidad" for="publicidad"/>
+                            <p:inputText id="publicidad" value="#{parametrosController.selected.porcentajePublicidad}" validatorMessage="El porcentaje de publicidad debe estar entre 0 y 100">
+                                <f:validateDoubleRange minimum="0" maximum="100"/>
+                            </p:inputText>
+
+                        </p:panelGrid>
+                    </p:panel>
 
                     <p:panel header="Datos Recargos" styleClass="tabla_centrada">
                         <p:panelGrid columns="6">
 
                             <p:outputLabel value="#{bundle.MessageRecargoInternacional}" for="recargo_internacional"/>
-                            <p:inputText id="recargo_internacional" value="#{recargoController.selected.recargoInternacional}" validatorMessage="El cargo internacional debe estar entre 0 y 100">
+                            <p:inputText id="recargo_internacional" value="#{parametrosController.selected.recargoInternacional}" validatorMessage="El cargo internacional debe estar entre 0 y 100">
                                 <f:validateDoubleRange minimum="0" maximum="100"/>
                             </p:inputText>
 
                             <p:outputLabel value="#{bundle.MessageRecargoNacional}" for="recargo_nacional"/>
-                            <p:inputText id="recargo_nacional" value="#{recargoController.selected.recargoNacional}" validatorMessage="El cargo nacional debe estar entre 0 y 100">
+                            <p:inputText id="recargo_nacional" value="#{parametrosController.selected.recargoNacional}" validatorMessage="El cargo nacional debe estar entre 0 y 100">
                                 <f:validateDoubleRange minimum="0" maximum="100"/>
                             </p:inputText>
 
                             <p:outputLabel value="#{bundle.MessageRecargoLocal}" for="recargo_local"/>
-                            <p:inputText id="recargo_local" value="#{recargoController.selected.recargoLocal}" validatorMessage="El cargo local debe estar entre 0 y 100">
+                            <p:inputText id="recargo_local" value="#{parametrosController.selected.recargoLocal}" validatorMessage="El cargo local debe estar entre 0 y 100">
                                 <f:validateDoubleRange minimum="0" maximum="100"/>
                             </p:inputText>
 
@@ -36,7 +55,7 @@
                             <p:outputLabel/>
 
                             <p:outputLabel value="Pais" for="pais" />
-                            <p:selectOneMenu valueChangeListener="#{recargoController.countryChangeListener}" value="#{recargoController.pais}" style="width: 155px" id="pais" converter="paisconverter" required="true">
+                            <p:selectOneMenu valueChangeListener="#{parametrosController.countryChangeListener}" value="#{parametrosController.pais}" style="width: 155px" id="pais" converter="paisconverter" required="true">
                                 <p:ajax update="ciudad"/>
                                 <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>
                                 <f:selectItems value="#{paisController.itemsAvailableSelectOne}"
@@ -46,10 +65,10 @@
                             </p:selectOneMenu>
 
                             <p:outputLabel value="#{bundle.CreateClienteLabel_ciudad}" for="ciudad" />
-                            <p:selectOneMenu converter="ciudadconverter" style="width: 155px" id="ciudad" value="#{recargoController.selected.ciudad}" 
+                            <p:selectOneMenu converter="ciudadconverter" style="width: 155px" id="ciudad" value="#{parametrosController.selected.ciudad}" 
                                              required="true" requiredMessage="#{bundle.EditClienteRequiredMessage_ciudad}">
                                 <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>
-                                <f:selectItems value="#{recargoController.ciudades}"
+                                <f:selectItems value="#{parametrosController.ciudades}"
                                                var="ciudadItem"
                                                itemValue="#{ciudadItem}"
                                                itemLabel="#{ciudadItem.nombre}"/>
@@ -58,23 +77,74 @@
                         </p:panelGrid>
                     </p:panel>
                     
-                    <p:panel header="Comisiones y Publicidad" styleClass="tabla_centrada">
-                        <p:panelGrid columns="4">
+                    
+                    <p:panel header="Descuento por Pronto Pago" styleClass="tabla_centrada">
+                        <p:panelGrid columns="6">
 
-                            <p:outputLabel value="Porcentaje Comisión" for="comision"/>
-                            <p:inputText id="comision" value="#{recargoController.selected.porcentajeComision}" validatorMessage="La comisión el vendedor debe estar entre 0 y 100">
+                            <p:outputLabel value="Días que aplica ProntoPago" for="dias_prontopago"/>
+                            <p:inputText id="dias_prontopago" value="#{parametrosController.selected.diasDescuentoProntoPago}" requiredMessage="Débe indicar los dias para los que aplica el descuento de ProntoPago" required="true"/>
+                            
+                            <p:outputLabel value="Valor mínimo para ProntoPago" for="valor_prontopago"/>
+                            <p:inputText id="valor_prontopago" value="#{parametrosController.selected.valorProntoPago}" requiredMessage="Débe indicar el valor mínimo de la factura para que aplique para ProntoPago" required="true"/>
+
+                            <p:outputLabel value="Porcentaje descuento ProntoPago" for="descuento_prontopago"/>
+                            <p:inputText id="descuento_prontopago" value="#{parametrosController.selected.porcentajeProntoPago}" validatorMessage="El porcentaje de descuento por ProntoPago debe estar entre 0 y 100">
                                 <f:validateDoubleRange minimum="0" maximum="100"/>
                             </p:inputText>
+                            
+                        </p:panelGrid>
+                    </p:panel>
+                    
+                    <div class="ui-grid ui-grid-responsive">
+                    <div class="ui-grid-row">
+                    
+                    <div class="ui-grid-col-4">
+                    
+                        <p:panel header="Recargo productos para venta al público" styleClass="tabla_centrada">
+                            <p:panelGrid columns="2">
 
-                            <p:outputLabel value="Porcentaje Publicidad" for="publicidad"/>
-                            <p:inputText id="publicidad" value="#{recargoController.selected.porcentajePublicidad}" validatorMessage="El porcentaje de publicidad debe estar entre 0 y 100">
-                                <f:validateDoubleRange minimum="0" maximum="100"/>
+                                <p:outputLabel value="Porcentaje Recargo Venta al Público" for="recargo_venta_publico"/>
+                                <p:inputText id="recargo_venta_publico" value="#{parametrosController.selected.porcentajeVentaPublic}" validatorMessage="El porcentaje de recargo debe estar en 0 y 100">
+                                    <f:validateDoubleRange minimum="0" maximum="100"/>
+                                </p:inputText>
+
+                            </p:panelGrid>
+                        </p:panel>
+                        
+                    </div>
+                    
+                        <div class="ui-grid-col-4">
+                        
+                    <p:panel header="Correo electrónico para notificaciones" styleClass="tabla_centrada">
+                        <p:panelGrid columns="2">
+
+                            <p:outputLabel value="Dirección correo electrónico" for="correo_electronico"/>
+                            <p:inputText id="correo_electronico" value="#{parametrosController.selected.correo}" validatorMessage="Debe establecer una dirección de correo válida">
+                                <f:validateRegex pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$" />
                             </p:inputText>
 
                         </p:panelGrid>
                     </p:panel>
+                            
+                        </div>
+                        
+                        <div class="ui-grid-col-4">
+                    <p:panel header="Valor Actual Dolar" styleClass="tabla_centrada">
+                        <p:panelGrid columns="2">
+
+                            <p:outputLabel value="Valor Dolar" for="valor_dolar"/>
+                            <p:inputText id="valor_dolar" value="#{parametrosController.selected.precioDolar}" requiredMessage="Débe indicar el valor actual del dolar" required="true"/>
+
+                        </p:panelGrid>
+                    </p:panel>
+                    </div>
+                        
+                    </div>
+                    </div>
                     
-                    <p:commandButton icon="ui-icon-disk" value="#{bundle.Save}" action="#{recargoController.crearRecargo()}"
+                    
+                    
+                    <p:commandButton icon="ui-icon-disk" value="#{bundle.Save}" action="#{parametrosController.crearRecargo()}"
                                              update="display,formRecargo,:growl"/>
                 </h:panelGroup>
             </h:form>

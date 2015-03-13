@@ -10,23 +10,28 @@ import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.faces.bean.ViewScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import jp.facades.ProductoFacade;
+import jp.facades.RecargoFacade;
 import jp.util.Error;
 
 @ManagedBean(name = "productoController")
-@SessionScoped
+@ViewScoped
 public class ProductoController implements Serializable {
 
     @EJB
     private jp.facades.ProductoFacade ejbFacade;
+    @EJB
+    private RecargoFacade recargoFacade;
     private List<Producto> items = null;
     private Producto selected;
     private final Error error;
+
+    private Float recargoPublico;
 
     public ProductoController() {
         error = new Error("");
@@ -54,6 +59,24 @@ public class ProductoController implements Serializable {
         selected = new Producto();
         initializeEmbeddableKey();
         return selected;
+    }
+
+    public String getValorRecargoPublico(Producto producto, float valor) {
+
+        if (producto.getVentaPublico()) {
+
+            if (recargoPublico == null) {
+                recargoPublico = recargoFacade.getParametros().getPorcentajeVentaPublic();
+                recargoPublico = (recargoPublico / 100) + 1;
+                if (recargoPublico == null) {
+                    recargoPublico = 1.0f;
+                }
+            }
+
+            return Float.toString(valor * recargoPublico);
+        } else {
+            return "No aplica";
+        }
     }
 
     public void create() {
@@ -171,9 +194,4 @@ public class ProductoController implements Serializable {
         }
 
     }
-
-    public String classError() {
-        return error.getClassError();
-    }
-
 }

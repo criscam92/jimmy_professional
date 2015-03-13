@@ -114,7 +114,7 @@ public class TransactionFacade {
     }
 
     public boolean createUpdateRecargo(Parametros p) {
-        boolean complete = false;
+        boolean complete;
         userTransaction = sessionContext.getUserTransaction();
         try {
             userTransaction.begin();
@@ -125,7 +125,15 @@ public class TransactionFacade {
             parametroTMP.setRecargoNacional(p.getRecargoNacional());
             parametroTMP.setRecargoInternacional(p.getRecargoInternacional());
             parametroTMP.setCiudad(p.getCiudad());
-
+            parametroTMP.setCorreo(p.getCorreo());
+            parametroTMP.setDiasDescuentoProntoPago(p.getDiasDescuentoProntoPago());
+            parametroTMP.setPorcentajeComision(p.getPorcentajeComision());
+            parametroTMP.setPorcentajeProntoPago(p.getPorcentajeProntoPago());
+            parametroTMP.setPorcentajePublicidad(p.getPorcentajePublicidad());
+            parametroTMP.setPorcentajeVentaPublic(p.getPorcentajeVentaPublic());
+            parametroTMP.setPrecioDolar(p.getPrecioDolar());
+            parametroTMP.setValorProntoPago(p.getValorProntoPago());
+            
             em.merge(parametroTMP);
             userTransaction.commit();
             complete = true;

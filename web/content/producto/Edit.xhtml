@@ -23,6 +23,9 @@
                         <p:inputText id="valorVenta" value="#{productoController.selected.valorVenta}" title="#{bundle.EditProductoTitle_valorVenta}" required="true" requiredMessage="#{bundle.EditProductoRequiredMessage_valorVenta}"/>
                         <p:outputLabel value="#{bundle.EditProductoLabel_valorVentaUsd}" for="valorVentaUsd" />
                         <p:inputText id="valorVentaUsd" value="#{productoController.selected.valorVentaUsd}" title="#{bundle.EditProductoTitle_valorVentaUsd}" />
+                        <p:outputLabel value="#{bun.CreateProductoLabel_venta_publico}" for="ventapublico"/>
+                        <p:selectBooleanCheckbox value="#{productoController.selected.ventaPublico}" id="ventapublico">
+                        </p:selectBooleanCheckbox>
                     </p:panelGrid>                   
                 </h:panelGroup>
                 <div class="botonesDialog">

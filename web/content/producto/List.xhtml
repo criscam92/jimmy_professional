@@ -7,7 +7,8 @@
       xmlns:p="http://primefaces.org/ui">
 
     <ui:composition template="/index.xhtml">
-
+        
+        <f:loadBundle basename="languages.BundleProducto" var="bun" />
 
         <ui:define name="title">
             <h:outputText value="#{bundle.ListProductoTitle}"></h:outputText>
@@ -25,18 +26,20 @@
                              paginatorPosition="bottom"
                              >
 
-                    <p:ajax event="rowSelect"   update="createButton viewButton editButton deleteButton"/>
-                    <p:ajax event="rowUnselect" update="createButton viewButton editButton deleteButton"/>
-
+                    <p:ajax event="rowSelect"   update="createButton editButton deleteButton"/>
+                    <p:ajax event="rowUnselect" update="createButton editButton deleteButton"/>
+                    
                     <f:facet name="header">
                         <div id="titulo">
                             Productos
                         </div>
                         <div id="acciones">
                             <p:commandButton id="createButton" icon="ui-icon-plus"   value="#{bundle.Create}" actionListener="#{productoController.prepareCreate}" update=":ProductoCreateForm" oncomplete="PF('ProductoCreateDialog').show()"/>
-                            <p:commandButton id="viewButton"   icon="ui-icon-search" value="#{bundle.View}" update=":ProductoViewForm" oncomplete="PF('ProductoViewDialog').show()" disabled="#{empty productoController.selected}"/>
                             <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":ProductoEditForm" oncomplete="PF('ProductoEditDialog').show()" disabled="#{empty productoController.selected}"/>
                             <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{productoController.destroy}" update=":growl,datalist" disabled="#{empty productoController.selected}"/>
+                            <p:commandButton icon="fa fa-table" value="Excel" ajax="false">
+                                <p:dataExporter type="xls" target="datalist" fileName="cars" />
+                            </p:commandButton>
                         </div>
                     </f:facet>
 
@@ -85,16 +88,41 @@
                             <h:outputText value="#{bundle.ListProductoTitle_valorVentaUsd}"/>
                         </f:facet>
                         <h:outputText value="#{item.valorVentaUsd}">
+                            <f:convertNumber type="currency" currencySymbol="USD " locale="en_US" />
+                        </h:outputText>
+                    </p:column>
+                    
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bun.ListProductoTitle_ventaPublico}" />
+                        </f:facet>
+                        <h:outputText value="#{item.ventaPublico? 'Si' : 'No'}" />
+                    </p:column>
+                    
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bun.ListProductoTitle_valorVentaPublico}"/>
+                        </f:facet>
+                        <h:outputText value="#{productoController.getValorRecargoPublico(item,item.valorVenta)}">
+                            <f:convertNumber pattern="$ #,##0.00" currencySymbol="$" />
+                        </h:outputText>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bun.ListProductoTitle_valorVentaUsdPublico}"/>
+                        </f:facet>
+                        <h:outputText value="#{productoController.getValorRecargoPublico(item,item.valorVentaUsd)}">
                             <f:convertNumber type="currency" currencySymbol="$ " locale="en_US" />
                         </h:outputText>
                     </p:column>
+                    
+                    
 
                 </p:dataTable>
             </h:form>
 
             <ui:include src="Create.xhtml"/>
             <ui:include src="Edit.xhtml"/>
-            <ui:include src="View.xhtml"/>
         </ui:define>
     </ui:composition>
 

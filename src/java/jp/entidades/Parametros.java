@@ -13,8 +13,6 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -27,20 +25,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @Table(catalog = "jimmy_professional", schema = "public")
 @XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "Parametros.findAll", query = "SELECT p FROM Parametros p"),
-    @NamedQuery(name = "Parametros.findById", query = "SELECT p FROM Parametros p WHERE p.id = :id"),
-    @NamedQuery(name = "Parametros.findByRecargoLocal", query = "SELECT p FROM Parametros p WHERE p.recargoLocal = :recargoLocal"),
-    @NamedQuery(name = "Parametros.findByRecargoNacional", query = "SELECT p FROM Parametros p WHERE p.recargoNacional = :recargoNacional"),
-    @NamedQuery(name = "Parametros.findByRecargoInternacional", query = "SELECT p FROM Parametros p WHERE p.recargoInternacional = :recargoInternacional"),
-    @NamedQuery(name = "Parametros.findByPorcentajePublicidad", query = "SELECT p FROM Parametros p WHERE p.porcentajePublicidad = :porcentajePublicidad"),
-    @NamedQuery(name = "Parametros.findByPorcentajeComision", query = "SELECT p FROM Parametros p WHERE p.porcentajeComision = :porcentajeComision"),
-    @NamedQuery(name = "Parametros.findByPorcentajeVentaPublic", query = "SELECT p FROM Parametros p WHERE p.porcentajeVentaPublic = :porcentajeVentaPublic"),
-    @NamedQuery(name = "Parametros.findByPrecioDolar", query = "SELECT p FROM Parametros p WHERE p.precioDolar = :precioDolar"),
-    @NamedQuery(name = "Parametros.findByValorProntoPago", query = "SELECT p FROM Parametros p WHERE p.valorProntoPago = :valorProntoPago"),
-    @NamedQuery(name = "Parametros.findByPorcentajeProntoPago", query = "SELECT p FROM Parametros p WHERE p.porcentajeProntoPago = :porcentajeProntoPago"),
-    @NamedQuery(name = "Parametros.findByDiasDescuentoProntoPago", query = "SELECT p FROM Parametros p WHERE p.diasDescuentoProntoPago = :diasDescuentoProntoPago"),
-    @NamedQuery(name = "Parametros.findByCorreo", query = "SELECT p FROM Parametros p WHERE p.correo = :correo")})
 public class Parametros implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id

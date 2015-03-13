@@ -34,17 +34,6 @@ import jp.entidades.auxiliar.Codificable;
 @Table(catalog = "jimmy_professional", schema = "public", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"codigo"})})
 @XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "Producto.findAll", query = "SELECT p FROM Producto p"),
-    @NamedQuery(name = "Producto.findById", query = "SELECT p FROM Producto p WHERE p.id = :id"),
-    @NamedQuery(name = "Producto.findByNombre", query = "SELECT p FROM Producto p WHERE p.nombre = :nombre"),
-    @NamedQuery(name = "Producto.findByDescripcion", query = "SELECT p FROM Producto p WHERE p.descripcion = :descripcion"),
-    @NamedQuery(name = "Producto.findByGramaje", query = "SELECT p FROM Producto p WHERE p.gramaje = :gramaje"),
-    @NamedQuery(name = "Producto.findByValorCosto", query = "SELECT p FROM Producto p WHERE p.valorCosto = :valorCosto"),
-    @NamedQuery(name = "Producto.findByValorVenta", query = "SELECT p FROM Producto p WHERE p.valorVenta = :valorVenta"),
-    @NamedQuery(name = "Producto.findByValorVentaUsd", query = "SELECT p FROM Producto p WHERE p.valorVentaUsd = :valorVentaUsd"),
-    @NamedQuery(name = "Producto.findByVentaPublico", query = "SELECT p FROM Producto p WHERE p.ventaPublico = :ventaPublico"),
-    @NamedQuery(name = "Producto.findByCodigo", query = "SELECT p FROM Producto p WHERE p.codigo = :codigo")})
 public class Producto implements Serializable, Codificable {
     private static final long serialVersionUID = 1L;
     @Id
