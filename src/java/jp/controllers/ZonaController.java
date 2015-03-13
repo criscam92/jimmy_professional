@@ -56,18 +56,23 @@ public class ZonaController implements Serializable {
     }
 
     public void create() {
-        persist(PersistAction.CREATE, ResourceBundle.getBundle("/Bundle").getString("ZonaCreated"));
-        if (!JsfUtil.isValidationFailed()) {
-            items = null;    // Invalidate list of items to trigger re-query.
+        if (!getFacade().getEntityByCodigoOrTipo(selected)) {
+            persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageZona", "CreateSuccessF"}));
+            if (!JsfUtil.isValidationFailed()) {
+                items = null;    // Invalidate list of items to trigger re-query.
+            }
+        } else {
+            JsfUtil.addErrorMessage(JsfUtil.getMessageBundle("MessageEmpleadoCodigoExist").replaceAll("%cod%", selected.getCodigo()));
         }
+
     }
 
     public void update() {
-        persist(PersistAction.UPDATE, ResourceBundle.getBundle("/Bundle").getString("ZonaUpdated"));
+        persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessageZona", "UpdateSuccessF"}));
     }
 
     public void destroy() {
-        persist(PersistAction.DELETE, ResourceBundle.getBundle("/Bundle").getString("ZonaDeleted"));
+        persist(PersistAction.DELETE, JsfUtil.getMessageBundle(new String[]{"MessageZona", "DeleteSuccessF"}));
         if (!JsfUtil.isValidationFailed()) {
             selected = null; // Remove selection
             items = null;    // Invalidate list of items to trigger re-query.
@@ -117,7 +122,7 @@ public class ZonaController implements Serializable {
         return getFacade().findAll();
     }
 
-    @FacesConverter(forClass = Zona.class)
+    @FacesConverter(forClass = Zona.class, value = "zonaconverter")
     public static class ZonaControllerConverter implements Converter {
 
         @Override

@@ -92,6 +92,12 @@
                     </p:column>                    
                     <p:column>
                         <f:facet name="header">
+                            <h:outputText value="#{bundle.ProcedimientoTitle}"/>
+                        </f:facet>
+                        <h:outputText value="#{item.procedimiento.toString()}"/>
+                    </p:column>                    
+                    <p:column>
+                        <f:facet name="header">
                             <h:outputText value="#{bundle.ListVisitaTitle_cliente}"/>
                         </f:facet>
                         <h:outputText value="#{item.cliente.toString()}"/>

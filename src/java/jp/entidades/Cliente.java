@@ -64,7 +64,7 @@ public class Cliente implements Serializable {
     @Column(name = "referencia_direccion", length = 100)
     private String referenciaDireccion;
     @Size(max = 100)
-    @Column(length = 100)
+    @Column(length = 100, nullable = true)
     private String barrio;
     @Size(max = 100)
     @Column(length = 100)

@@ -131,6 +131,7 @@ public class VisitaController implements Serializable {
         System.out.println("Estado-> " + selected.getEstado());
         System.out.println("cliente-> " + selected.getCliente());
         System.out.println("empleado-> " + selected.getEmpleado());
+        System.out.println("Procedimiento-> " + selected.getProcedimiento().getDescripcion());
         persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageVisita", "CreateSuccessF"}));
         if (!JsfUtil.isValidationFailed()) {
             items = null;    // Invalidate list of items to trigger re-query.

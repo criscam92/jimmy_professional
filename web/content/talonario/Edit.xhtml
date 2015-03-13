@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <ui:composition>
+        <p:dialog id="TalonarioEditDlg" widgetVar="TalonarioEditDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.EditTalonarioTitle}">
+            <h:form id="TalonarioEditForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="6" rendered="#{talonarioController.selected != null}">
+                        <p:outputLabel value="#{bundle.EditTalonarioLabel_tip}" for="tipo" />
+                        <p:selectOneMenu id="tipo" value="#{talonarioController.selected.tipo}" required="true" requiredMessage="#{bundle.EditTalonarioRequiredMessage_tip}">
+                            <f:selectItem  itemLabel="#{bundle.SelectOneMessage}"/>
+                            <f:selectItems value="#{talonarioController.tiposTalonarios}" var="item" itemLabel="#{item.detalle}" itemValue="#{item.valor}" />
+                        </p:selectOneMenu>
+                        <p:outputLabel value="#{bundle.CreateVisitaLabel_empleado}" for="empleado" />
+                        <p:selectOneMenu id="empleado" value="#{talonarioController.selected.empleado}" required="true" requiredMessage="#{bundle.EditTalonarioRequiredMessage_emp}">
+                            <f:selectItem  itemLabel="#{bundle.SelectOneMessage}"/>
+                            <f:selectItems value="#{empleadoController.itemsAvailableSelectOne}"
+                                           var="empleadoItem"
+                                           itemValue="#{empleadoItem}"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel value="#{bundle.CreateVisitaLabel_fecha}" for="fecha"/>
+                        <p:calendar id="fecha" pattern="MM/dd/yyyy HH:mm:ss"
+                                    value="#{talonarioController.selected.fecha}" title="#{bundle.EditVisitaTitle_fecha}"
+                                    required="true" requiredMessage="#{bundle.EditVisitaRequiredMessage_fecha}" showOn="button" showOtherMonths="true"/>
+                        <p:outputLabel value="#{bundle.EditTalonarioLabel_ini}" for="inicial"/>
+                        <p:inputText id="inicial" value="#{talonarioController.selected.inicial}"/>
+                        <p:outputLabel value="#{bundle.EditTalonarioLabel_fin}" for="final"/>
+                        <p:inputText id="final" value="#{talonarioController.selected.final1}"/>
+                        <p:outputLabel value="#{bundle.EditTalonarioLabel_act}" for="actual"/>
+                        <p:inputText id="actual" value="#{talonarioController.selected.actual}"/>
+                    </p:panelGrid>
+                </h:panelGroup>
+                <div class="botonesDialog">
+                    <p:commandButton actionListener="#{talonarioController.update()}" value="#{bundle.Save}" update="display,:TalonarioListForm:datalist,:growl"
+                                     oncomplete="handleSubmit(args, 'TalonarioEditDialog');"/>
+                    <p:commandButton type="button" value="#{bundle.Cancel}" onclick="PF('TalonarioEditDialog').hide()"/>
+                </div>
+            </h:form>
+        </p:dialog>
+    </ui:composition>
+</html>
+

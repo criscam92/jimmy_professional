@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package jp.entidades;
 
 import java.io.Serializable;
@@ -23,11 +18,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import jp.entidades.auxiliar.Codificable;
 
-/**
- *
- * @author arturo
- */
 @Entity
 @Table(catalog = "jimmy_professional", schema = "public", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"codigo"})})
@@ -37,7 +29,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Categoria.findById", query = "SELECT c FROM Categoria c WHERE c.id = :id"),
     @NamedQuery(name = "Categoria.findByCodigo", query = "SELECT c FROM Categoria c WHERE c.codigo = :codigo"),
     @NamedQuery(name = "Categoria.findByDescripcion", query = "SELECT c FROM Categoria c WHERE c.descripcion = :descripcion")})
-public class Categoria implements Serializable {
+public class Categoria implements Serializable, Codificable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -122,7 +114,12 @@ public class Categoria implements Serializable {
 
     @Override
     public String toString() {
-        return "entidades.Categoria[ id=" + id + " ]";
+        return this.getCodigo()+" - "+this.getDescripcion();
+    }
+
+    @Override
+    public String getTipo() {
+        return null;
     }
     
 }

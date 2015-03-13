@@ -1,7 +1,7 @@
 package jp.entidades.auxiliar;
 
 public interface Codificable {
-    public Long getId();
+    public Object getId();
     public String getCodigo();
     public String getTipo();
 }

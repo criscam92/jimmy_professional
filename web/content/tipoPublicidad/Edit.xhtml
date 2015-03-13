@@ -16,7 +16,8 @@
                     </p:panelGrid>                    
                 </h:panelGroup>
                 <div class="botonesDialog">
-                    <p:commandButton actionListener="#{tipoPublicidadController.update}" value="#{bundle.Save}" update="display,:TipoPublicidadListForm:datalist,:growl"/>
+                    <p:commandButton actionListener="#{tipoPublicidadController.update}" value="#{bundle.Save}"
+                                     update="display,:TipoPublicidadListForm:datalist,:growl" oncomplete="handleSubmit(args, 'TipoPublicidadEditDialog');"/>
                     <p:commandButton type="button" value="#{bundle.Cancel}" onclick="PF('TipoPublicidadEditDialog').hide()"/>
                 </div>
             </h:form>

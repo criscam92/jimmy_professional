@@ -25,6 +25,24 @@
                              emptyMessage="#{bundle.EmptyTable}"
                              >
 
+                    <f:facet name="{Exporters}">
+                        <h:commandLink>
+                            <p:dataExporter type="xls" target="tbl" fileName="cars" />
+                        </h:commandLink>
+
+                        <h:commandLink>
+                            <p:dataExporter type="pdf" target="tbl" fileName="cars"/>
+                        </h:commandLink>
+
+                        <h:commandLink>
+                            <p:dataExporter type="csv" target="tbl" fileName="cars" />
+                        </h:commandLink>
+
+                        <h:commandLink>
+                            <p:dataExporter type="xml" target="tbl" fileName="cars" />
+                        </h:commandLink>
+                    </f:facet>
+
                     <f:facet name="header">
                         <div id="titulo">
                             Clientes
@@ -48,15 +66,45 @@
                     </p:column>
                     <p:column>
                         <f:facet name="header">
+                            <h:outputText value="#{bundle.CreateClienteTitle_documento}"/>
+                        </f:facet>
+                        <h:outputText value="#{item.documento}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
                             <h:outputText value="#{bundle.ListClienteTitle_direccion}"/>
                         </f:facet>
                         <h:outputText value="#{item.direccion}"/>
                     </p:column>
                     <p:column>
                         <f:facet name="header">
+                            <h:outputText value="#{bundle.CreateClienteTitle_refe}"/>
+                        </f:facet>
+                        <h:outputText value="#{item.referenciaDireccion}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
                             <h:outputText value="#{bundle.ListClienteTitle_barrio}"/>
                         </f:facet>
                         <h:outputText value="#{item.barrio}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.MessageCreateTitleZona}"/>
+                        </f:facet>
+                        <h:outputText value="#{item.zona.toString()}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.ListClienteTitle_ciudad}"/>
+                        </f:facet>
+                        <h:outputText value="#{item.ciudad.toString()}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.CreateClienteTitle_contacto}"/>
+                        </f:facet>
+                        <h:outputText value="#{item.contacto}"/>
                     </p:column>
                     <p:column>
                         <f:facet name="header">
@@ -77,13 +125,7 @@
                             <h:outputText value="#{bundle.ListClienteTitle_tarifaEspecial}"/>
                         </f:facet>
                         <h:outputText value="#{item.tarifaEspecial} %"/>
-                    </p:column>
-                    <p:column>
-                        <f:facet name="header">
-                            <h:outputText value="#{bundle.ListClienteTitle_ciudad}"/>
-                        </f:facet>
-                        <h:outputText value="#{item.ciudad.toString()}"/>
-                    </p:column>
+                    </p:column>                    
                     <p:column>
                         <f:facet name="header">
                             <h:outputText value="#{bundle.ListClienteTitle_empleado}"/>

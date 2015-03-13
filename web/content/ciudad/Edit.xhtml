@@ -15,7 +15,7 @@
                         <p:outputLabel value="#{bundle.EditCiudadLabel_nombre}" for="nombre" />
                         <p:inputText id="nombre" value="#{ciudadController.selected.nombre}" title="#{bundle.EditCiudadTitle_nombre}" required="true" requiredMessage="#{bundle.EditCiudadRequiredMessage_nombre}"/>
                         <p:outputLabel value="#{bundle.EditCiudadLabel_pais}" for="pais" />
-                        <p:selectOneMenu id="pais" value="#{ciudadController.selected.pais}" required="true" requiredMessage="#{bundle.EditCiudadRequiredMessage_pais}">
+                        <p:selectOneMenu converter="paisconverter" id="pais" value="#{ciudadController.selected.pais}" required="true" requiredMessage="#{bundle.EditCiudadRequiredMessage_pais}">
                             <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>
                             <f:selectItems value="#{paisController.itemsAvailableSelectOne}"
                                            var="paisItem"

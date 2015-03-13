@@ -18,6 +18,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import jp.util.TipoCuentaBancaria;
 
 @ManagedBean(name = "cuentaBancariaController")
 @SessionScoped
@@ -52,22 +53,23 @@ public class CuentaBancariaController implements Serializable {
     public CuentaBancaria prepareCreate() {
         selected = new CuentaBancaria();
         initializeEmbeddableKey();
+        selected.setTipoCuenta(9);
         return selected;
     }
 
     public void create() {
-        persist(PersistAction.CREATE, ResourceBundle.getBundle("/Bundle").getString("CuentaBancariaCreated"));
+        persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageCuentaBancaria", "CreateSuccessF"}));
         if (!JsfUtil.isValidationFailed()) {
             items = null;    // Invalidate list of items to trigger re-query.
         }
     }
 
     public void update() {
-        persist(PersistAction.UPDATE, ResourceBundle.getBundle("/Bundle").getString("CuentaBancariaUpdated"));
+        persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessageCuentaBancaria", "UpdateSuccessF"}));
     }
 
     public void destroy() {
-        persist(PersistAction.DELETE, ResourceBundle.getBundle("/Bundle").getString("CuentaBancariaDeleted"));
+        persist(PersistAction.DELETE, JsfUtil.getMessageBundle(new String[]{"MessageCuentaBancaria", "DeleteSuccessF"}));
         if (!JsfUtil.isValidationFailed()) {
             selected = null; // Remove selection
             items = null;    // Invalidate list of items to trigger re-query.
@@ -156,6 +158,14 @@ public class CuentaBancariaController implements Serializable {
             }
         }
 
+    }
+    
+    public TipoCuentaBancaria[] getTiposCuentasBancarias() {
+        return TipoCuentaBancaria.values();
+    }
+    
+    public String getTipoCuentaBancaria(int tipo) {
+        return TipoCuentaBancaria.getFromValue(tipo).getDetalle();
     }
 
 }

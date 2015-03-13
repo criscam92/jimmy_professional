@@ -18,6 +18,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import jp.util.TipoTalonario;
 
 @ManagedBean(name = "talonarioController")
 @SessionScoped
@@ -52,22 +53,23 @@ public class TalonarioController implements Serializable {
     public Talonario prepareCreate() {
         selected = new Talonario();
         initializeEmbeddableKey();
+        selected.setTipo(9);
         return selected;
     }
 
     public void create() {
-        persist(PersistAction.CREATE, ResourceBundle.getBundle("/Bundle").getString("TalonarioCreated"));
+        persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageTalonario", "CreateSuccessM"}));
         if (!JsfUtil.isValidationFailed()) {
             items = null;    // Invalidate list of items to trigger re-query.
         }
     }
 
     public void update() {
-        persist(PersistAction.UPDATE, ResourceBundle.getBundle("/Bundle").getString("TalonarioUpdated"));
+        persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessageTalonario", "UpdateSuccessM"}));
     }
 
     public void destroy() {
-        persist(PersistAction.DELETE, ResourceBundle.getBundle("/Bundle").getString("TalonarioDeleted"));
+        persist(PersistAction.DELETE, JsfUtil.getMessageBundle(new String[]{"MessageTalonario", "DeleteSuccessM"}));
         if (!JsfUtil.isValidationFailed()) {
             selected = null; // Remove selection
             items = null;    // Invalidate list of items to trigger re-query.
@@ -156,6 +158,14 @@ public class TalonarioController implements Serializable {
             }
         }
 
+    }
+    
+    public TipoTalonario[] getTiposTalonarios() {
+        return TipoTalonario.values();
+    }
+    
+    public String getTipoTalonario(int tipo) {
+        return TipoTalonario.getFromValue(tipo).getDetalle();
     }
 
 }

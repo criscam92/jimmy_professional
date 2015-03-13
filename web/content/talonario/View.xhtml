@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <ui:composition>
+
+        <p:dialog id="TalonarioViewDlg" widgetVar="TalonarioViewDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.ViewTalonarioTitle}">
+            <h:form id="TalonarioViewForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="6" rendered="#{talonarioController.selected != null}">
+                        <h:outputText value="#{bundle.EditTalonarioLabel_tip}"/>
+                        <h:outputText value="#{talonarioController.getTipoTalonario(talonarioController.selected.tipo)}" title="#{bundle.EditTalonarioTitle_tip}"/>
+                        <h:outputText value="#{bundle.EditTalonarioLabel_emp}"/>
+                        <h:outputText value="#{talonarioController.selected.empleado.toString()}" title="#{bundle.EditTalonarioTitle_emp}"/>
+                        <h:outputText value="#{bundle.EditTalonarioLabel_fec}"/>
+                        <h:outputText value="#{talonarioController.selected.fecha}" title="#{bundle.EditTalonarioTitle_fec}">
+                            <f:convertDateTime pattern="dd-MMM-yyyy h:mm a"/>
+                        </h:outputText>
+                        
+                        <h:outputText value="#{bundle.EditTalonarioLabel_ini}"/>
+                        <h:outputText value="#{talonarioController.selected.inicial}" title="#{bundle.EditTalonarioTitle_ini}"/>
+                        <h:outputText value="#{bundle.EditTalonarioLabel_fin}"/>
+                        <h:outputText value="#{talonarioController.selected.final1}" title="#{bundle.EditTalonarioTitle_fin}"/>
+                        <h:outputText value="#{bundle.EditTalonarioLabel_act}"/>
+                        <h:outputText value="#{talonarioController.selected.actual}" title="#{bundle.EditTalonarioTitle_act}"/>
+                    </p:panelGrid>                   
+                </h:panelGroup>
+                <div class="botonesDialog">
+                    <p:commandButton value="#{bundle.Close}" type="button" onclick="PF('TalonarioViewDialog').hide()"/>
+                </div>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>
+

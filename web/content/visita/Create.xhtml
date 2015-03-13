@@ -26,6 +26,12 @@
                                            var="empleadoItem"
                                            itemValue="#{empleadoItem}"/>
                         </p:selectOneMenu>
+                        <p:outputLabel value="#{bundle.CreateProcedimientoTitle}" for="procedimiento" />
+                        <p:selectOneMenu id="procedimiento" value="#{visitaController.selected.procedimiento}" required="true" requiredMessage="#{bundle.MessageProcedimientoRequired}">
+                            <f:selectItems value="#{procedimientoController.itemsAvailableSelectOne}"
+                                           var="procedimientoItem"
+                                           itemValue="#{procedimientoItem}"/>
+                        </p:selectOneMenu>
                     </p:panelGrid>
                     <p:commandButton actionListener="#{visitaController.create}" value="#{bundle.Save}" update="display,:VisitaListForm:datalist,:growl" oncomplete="handleSubmit(args,'VisitaCreateDialog');"/>
                     <p:commandButton value="#{bundle.Cancel}" type="button" onclick="PF('VisitaCreateDialog').hide()"/>

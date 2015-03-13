@@ -6,7 +6,6 @@ import jp.util.JsfUtil.PersistAction;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;

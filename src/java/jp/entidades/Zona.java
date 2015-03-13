@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package jp.entidades;
 
 import java.io.Serializable;
@@ -24,11 +19,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import jp.entidades.auxiliar.Codificable;
 
-/**
- *
- * @author arturo
- */
 @Entity
 @Table(catalog = "jimmy_professional", schema = "public", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"codigo"})})
@@ -38,7 +30,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Zona.findById", query = "SELECT z FROM Zona z WHERE z.id = :id"),
     @NamedQuery(name = "Zona.findByCodigo", query = "SELECT z FROM Zona z WHERE z.codigo = :codigo"),
     @NamedQuery(name = "Zona.findByNombre", query = "SELECT z FROM Zona z WHERE z.nombre = :nombre")})
-public class Zona implements Serializable {
+public class Zona implements Serializable, Codificable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -71,6 +63,7 @@ public class Zona implements Serializable {
         this.nombre = nombre;
     }
 
+    @Override
     public Integer getId() {
         return id;
     }
@@ -126,7 +119,12 @@ public class Zona implements Serializable {
 
     @Override
     public String toString() {
-        return "entidades.Zona[ id=" + id + " ]";
+        return this.getCodigo()+" - "+this.getNombre();
+    }
+
+    @Override
+    public String getTipo() {
+        return null;
     }
     
 }

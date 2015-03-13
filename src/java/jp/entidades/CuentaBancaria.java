@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package jp.entidades;
 
 import java.io.Serializable;
@@ -23,11 +18,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import jp.entidades.auxiliar.Codificable;
 
-/**
- *
- * @author arturo
- */
 @Entity
 @Table(name = "cuenta_bancaria", catalog = "jimmy_professional", schema = "public", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"nombre"})})
@@ -38,7 +30,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "CuentaBancaria.findByNombre", query = "SELECT c FROM CuentaBancaria c WHERE c.nombre = :nombre"),
     @NamedQuery(name = "CuentaBancaria.findByNumeroCuenta", query = "SELECT c FROM CuentaBancaria c WHERE c.numeroCuenta = :numeroCuenta"),
     @NamedQuery(name = "CuentaBancaria.findByTipoCuenta", query = "SELECT c FROM CuentaBancaria c WHERE c.tipoCuenta = :tipoCuenta")})
-public class CuentaBancaria implements Serializable {
+public class CuentaBancaria implements Serializable, Codificable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -139,7 +131,17 @@ public class CuentaBancaria implements Serializable {
 
     @Override
     public String toString() {
-        return "entidades.CuentaBancaria[ id=" + id + " ]";
+        return this.getNombre()+", "+this.getNumeroCuenta();
+    }
+
+    @Override
+    public String getCodigo() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getTipo() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }

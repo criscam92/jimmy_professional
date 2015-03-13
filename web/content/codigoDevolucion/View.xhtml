@@ -19,7 +19,7 @@
                         <h:outputText value="#{bundle.ViewCodigoDevolucionLabel_descripcion}"/>
                         <h:outputText value="#{codigoDevolucionController.selected.descripcion}" title="#{bundle.ViewCodigoDevolucionTitle_descripcion}"/>
                     </p:panelGrid>
-                    <p:commandButton value="#{bundle.Close}" onclick="CodigoDevolucionViewDialog.hide()"/>
+                    <p:commandButton value="#{bundle.Close}" type="button" onclick="PF('CodigoDevolucionViewDialog').hide()"/>
                 </h:panelGroup>
             </h:form>
         </p:dialog>

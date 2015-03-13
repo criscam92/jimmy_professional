@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package jp.entidades;
 
 import java.io.Serializable;
@@ -26,10 +21,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import jp.entidades.auxiliar.Codificable;
 
-/**
- *
- * @author arturo
- */
 @Entity
 @Table(name = "tipo_cliente", catalog = "jimmy_professional", schema = "public", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"tipo"})})
@@ -114,7 +105,7 @@ public class TipoCliente implements Serializable, Codificable {
 
     @Override
     public String toString() {
-        return "entidades.TipoCliente[ id=" + id + " ]";
+        return this.getTipo();
     }
 
     @Override

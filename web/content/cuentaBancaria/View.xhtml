@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      >
+    <ui:composition>
+
+        <p:dialog id="CuentaBancariaViewDlg" widgetVar="CuentaBancariaViewDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.ViewTalonarioTitle}">
+            <h:form id="CuentaBancariaViewForm">
+                <h:panelGroup id="display">
+                    
+                    <p:panelGrid columns="6" rendered="#{cuentaBancariaController.selected != null}">
+                        
+                        <h:outputText style="font-weight: bold;" value="#{bundle.EditCuentaBancariaLabel_nom}"/>
+                        <h:outputText value="#{cuentaBancariaController.selected.nombre}" title="#{bundle.EditCuentaBancariaTitle_nom}"/>
+                        <h:outputText style="font-weight: bold;" value="#{bundle.EditCuentaBancariaLabel_num}"/>
+                        <h:outputText value="#{cuentaBancariaController.selected.numeroCuenta}" title="#{bundle.EditCuentaBancariaTitle_num}"/>
+                        <h:outputText style="font-weight: bold;" value="#{bundle.EditCuentaBancariaLabel_tip}"/>
+                        <h:outputText value="#{cuentaBancariaController.getTipoCuentaBancaria(item.tipoCuenta)}" title="#{bundle.EditCuentaBancariaTitle_tip}"/>
+                        
+                    </p:panelGrid>                   
+                </h:panelGroup>
+                <div class="botonesDialog">
+                    <p:commandButton value="#{bundle.Close}" type="button" onclick="PF('CuentaBancariaViewDialog').hide()"/>
+                </div>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>
+
