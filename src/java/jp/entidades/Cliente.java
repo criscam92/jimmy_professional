@@ -41,6 +41,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Cliente.findByCupoCredito", query = "SELECT c FROM Cliente c WHERE c.cupoCredito = :cupoCredito"),
     @NamedQuery(name = "Cliente.findByTarifaEspecial", query = "SELECT c FROM Cliente c WHERE c.tarifaEspecial = :tarifaEspecial")})
 public class Cliente implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -64,7 +65,7 @@ public class Cliente implements Serializable {
     @Column(name = "referencia_direccion", length = 100)
     private String referenciaDireccion;
     @Size(max = 100)
-    @Column(length = 100, nullable = true)
+    @Column(length = 100)
     private String barrio;
     @Size(max = 100)
     @Column(length = 100)
@@ -276,15 +277,12 @@ public class Cliente implements Serializable {
             return false;
         }
         Cliente other = (Cliente) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return !((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)));
     }
 
     @Override
     public String toString() {
-        return this.getTipo()+", "+this.getNombre();
+        return this.getTipo() + ", " + this.getNombre();
     }
-    
+
 }

@@ -1,5 +1,6 @@
 package jp.controllers;
 
+import static com.sun.xml.internal.ws.spi.db.BindingContextFactory.LOGGER;
 import jp.entidades.Factura;
 import jp.util.JsfUtil;
 import jp.util.JsfUtil.PersistAction;
@@ -19,6 +20,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import javax.faces.event.AjaxBehaviorEvent;
 import jp.entidades.Cliente;
 import jp.entidades.FacturaProducto;
 import jp.entidades.FacturaPromocion;
@@ -50,8 +52,10 @@ public class FacturaController implements Serializable {
     private ProductoPromocionHelper object;
     private FacturaProducto facturaProducto;
     private FacturaPromocion facturaPromocion;
+    private int selectOneButton;
 
     public FacturaController() {
+        selectOneButton = 1;
         this.objects = new ArrayList<>();
         itemsProducto = new ArrayList<>();
         itemsPromocion = new ArrayList<>();
@@ -62,6 +66,14 @@ public class FacturaController implements Serializable {
         object = new ProductoPromocionHelper();
         facturaProducto = new FacturaProducto();
         facturaPromocion = new FacturaPromocion();
+    }
+
+    public int getSelectOneButton() {
+        return selectOneButton;
+    }
+
+    public void setSelectOneButton(int selectOneButton) {
+        this.selectOneButton = selectOneButton;
     }
 
     public Factura getSelected() {
@@ -267,15 +279,15 @@ public class FacturaController implements Serializable {
         }
     }
 
-    public Map<String, Integer> getTiposEstado() {
+    public Map<String, Integer> getTiposPagos() {
         return TipoPago.getMapaEstados();
     }
 
     public String redirectCreateFactura() {
         selected = new Factura();
-        if (getEjbFacturaProductoFacade().getNumOrden() != null) {
-            selected.setOrdenPedido(getEjbFacturaProductoFacade().getNumOrden());
-        }
+//        if (getEjbFacturaProductoFacade().getNumOrden() != null) {
+//            selected.setOrdenPedido(getEjbFacturaProductoFacade().getNumOrden());
+//        }
         object = new ProductoPromocionHelper();
         facturaProducto = new FacturaProducto();
         facturaPromocion = new FacturaPromocion();
@@ -405,4 +417,10 @@ public class FacturaController implements Serializable {
     public List<Promocion> llenarPromocion(String query) {
         return getFacade().getPromocionByQuery(query);
     }
+
+    public void changeView(AjaxBehaviorEvent event) {
+        LOGGER.info(this.getSelectOneButton() + "");
+        System.out.println("" + this.getSelectOneButton());
+    }
+
 }

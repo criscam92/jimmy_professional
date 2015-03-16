@@ -9,10 +9,10 @@ public enum TipoPago {
     CHEQUE(1, "Cheque"),
     CREDITO(2, "Crédito");
 
-    private int valor;
+    private Integer valor;
     private String detalle;
 
-    private TipoPago(int valor, String detalle) {
+    private TipoPago(Integer valor, String detalle) {
         this.valor = valor;
         this.detalle = detalle;
     }
@@ -33,7 +33,6 @@ public enum TipoPago {
             tiposPagosTMP[count] = getFromValue(b);
             count++;
         }
-//        System.out.println("Size-> "+tiposPagosTMP.length);
         return tiposPagosTMP;
     }
 
@@ -49,7 +48,7 @@ public enum TipoPago {
         return valor;
     }
 
-    public void setValor(int valor) {
+    public void setValor(Integer valor) {
         this.valor = valor;
     }
 

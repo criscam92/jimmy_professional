@@ -34,6 +34,7 @@ import jp.entidades.auxiliar.Codificable;
     @NamedQuery(name = "Empleado.findByCodigo", query = "SELECT e FROM Empleado e WHERE e.codigo = :codigo"),
     @NamedQuery(name = "Empleado.findByTelefonos", query = "SELECT e FROM Empleado e WHERE e.telefonos = :telefonos")})
 public class Empleado implements Serializable, Codificable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -181,20 +182,17 @@ public class Empleado implements Serializable, Codificable {
             return false;
         }
         Empleado other = (Empleado) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return !((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)));
     }
 
     @Override
     public String toString() {
-        return this.getCodigo()+" - "+this.getNombre();
+        return nombre;
     }
 
     @Override
     public String getTipo() {
         return null;
     }
-    
+
 }

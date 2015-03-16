@@ -109,3 +109,8 @@ div.footer-index div{
 .tabla_centrada{
     display: table; margin: 10px auto;
 }
+
+form#FacturaCreateForm div.ui-button-text-only span.ui-button-text {    
+    padding: 0.8em 2em;
+}
+
