@@ -18,6 +18,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import jp.entidades.auxiliar.Codificable;
 
 @Entity
 @Table(catalog = "jimmy_professional", schema = "public")
@@ -26,7 +27,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Pais.findAll", query = "SELECT p FROM Pais p"),
     @NamedQuery(name = "Pais.findById", query = "SELECT p FROM Pais p WHERE p.id = :id"),
     @NamedQuery(name = "Pais.findByNombre", query = "SELECT p FROM Pais p WHERE p.nombre = :nombre")})
-public class Pais implements Serializable {
+public class Pais implements Serializable, Codificable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,6 +54,7 @@ public class Pais implements Serializable {
         this.nombre = nombre;
     }
 
+    @Override
     public Long getId() {
         return id;
     }
@@ -61,6 +63,7 @@ public class Pais implements Serializable {
         this.id = id;
     }
 
+    @Override
     public String getNombre() {
         return nombre;
     }
@@ -101,6 +104,16 @@ public class Pais implements Serializable {
     @Override
     public String toString() {
         return this.getNombre();
+    }
+
+    @Override
+    public String getCodigo() {
+        return null;
+    }
+
+    @Override
+    public String getTipo() {
+        return null;
     }
     
 }

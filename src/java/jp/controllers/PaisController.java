@@ -3,7 +3,6 @@ package jp.controllers;
 import jp.entidades.Pais;
 import jp.util.JsfUtil;
 import jp.util.JsfUtil.PersistAction;
-
 import java.io.Serializable;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -18,6 +17,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import jp.facades.PaisFacade;
+import org.primefaces.context.RequestContext;
 
 @ManagedBean(name = "paisController")
 @SessionScoped
@@ -27,8 +27,10 @@ public class PaisController implements Serializable {
     private jp.facades.PaisFacade ejbFacade;
     private List<Pais> items = null;
     private Pais selected;
+    private String uiError, error;
 
     public PaisController() {
+        uiError = "ui-state-error";
     }
 
     public Pais getSelected() {
@@ -56,14 +58,33 @@ public class PaisController implements Serializable {
     }
 
     public void create() {
-        persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessagePais", "CreateSuccessM"}));
-        if (!JsfUtil.isValidationFailed()) {
-            items = null;    // Invalidate list of items to trigger re-query.
+        if (!getFacade().getEntityByCodigoOrTipo(selected)) {
+            persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessagePais", "CreateSuccessM"}));
+            if (!JsfUtil.isValidationFailed()) {
+                items = null;    // Invalidate list of items to trigger re-query.
+                setError("");
+                RequestContext.getCurrentInstance().execute("PF('PaisCreateDialog').hide()");
+            }
+        } else {
+            setError(uiError);
+            JsfUtil.addErrorMessage("Ya existe el Pais " + selected.getNombre());
         }
+
     }
 
     public void update() {
-        persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessagePais", "UpdateSuccessM"}));
+        if (!getFacade().getEntityByCodigoOrTipo(selected)) {
+            persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessagePais", "UpdateSuccessM"}));
+            if (!JsfUtil.isValidationFailed()) {
+                items = null;    // Invalidate list of items to trigger re-query.
+                setError("");
+                RequestContext.getCurrentInstance().execute("PF('PaisEditDialog').hide()");
+            }
+        } else {
+            items = null;
+            setError(uiError);
+            JsfUtil.addErrorMessage("Ya existe el Pais " + selected.getNombre());
+        }
     }
 
     public void destroy() {
@@ -115,6 +136,14 @@ public class PaisController implements Serializable {
 
     public List<Pais> getItemsAvailableSelectOne() {
         return getFacade().findAll();
+    }
+
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
     }
 
     @FacesConverter(forClass = Pais.class, value = "paisconverter")

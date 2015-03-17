@@ -111,4 +111,9 @@ public class TipoEmpleado implements Serializable, Codificable {
         return null;
     }
 
+    @Override
+    public String getNombre() {
+        return null;
+    }
+
 }

@@ -18,6 +18,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import org.primefaces.context.RequestContext;
 
 @ManagedBean(name = "categoriaController")
 @SessionScoped
@@ -27,8 +28,10 @@ public class CategoriaController implements Serializable {
     private jp.facades.CategoriaFacade ejbFacade;
     private List<Categoria> items = null;
     private Categoria selected;
+    private String uiError, error;
 
     public CategoriaController() {
+        uiError = "ui-state-error";
     }
 
     public Categoria getSelected() {
@@ -60,15 +63,32 @@ public class CategoriaController implements Serializable {
             persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageCategoria", "CreateSuccessF"}));
             if (!JsfUtil.isValidationFailed()) {
                 items = null;    // Invalidate list of items to trigger re-query.
+                setError("");
+                RequestContext.getCurrentInstance().execute("PF('CategoriaCreateDialog').hide()");
             }
         }else{
-            JsfUtil.addErrorMessage("Ya existe la Categoria");
+            setError(uiError);
+            JsfUtil.addErrorMessage("Ya existe el Código " + selected.getCodigo());
         }
 
     }
 
     public void update() {
-        persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessageCategoria", "UpdateSuccessF"}));
+        
+        if (!getFacade().getEntityByCodigoOrTipo(selected)) {
+            persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessageCategoria", "UpdateSuccessF"}));
+            if (!JsfUtil.isValidationFailed()) {
+                items = null;    // Invalidate list of items to trigger re-query.
+                setError("");
+                RequestContext.getCurrentInstance().execute("PF('CategoriaEditDialog').hide()");
+            }
+        } else {
+            items = null;
+            setError(uiError);
+            JsfUtil.addErrorMessage("Ya existe el Código " + selected.getCodigo());
+        }
+        
+        
     }
 
     public void destroy() {
@@ -120,6 +140,14 @@ public class CategoriaController implements Serializable {
 
     public List<Categoria> getItemsAvailableSelectOne() {
         return getFacade().findAll();
+    }
+
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
     }
 
     @FacesConverter(forClass = Categoria.class, value = "categoriaconverter")

@@ -60,6 +60,18 @@
                         </f:facet>
                         <h:outputText value="#{item.valor}"/>
                     </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.CreateProductoLabel_valorVentaUsd}"/>
+                        </f:facet>
+                        <h:outputText value="#{item.valorVentaUsd}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.CreateClienteTitle_cat}"/>
+                        </f:facet>
+                        <h:outputText value="#{item.categoria}"/>
+                    </p:column>
                 </p:dataTable>
             </h:form>
 

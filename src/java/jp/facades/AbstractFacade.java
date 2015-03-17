@@ -8,6 +8,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import jp.entidades.auxiliar.Codificable;
 
+
 public abstract class AbstractFacade<T> {
 
     private final Class<T> entityClass;
@@ -60,10 +61,25 @@ public abstract class AbstractFacade<T> {
     public <U extends Codificable> Boolean getEntityByCodigoOrTipo(U entity) {
         try {
             String sql = "SELECT e FROM " + entityClass.getSimpleName() + " e WHERE";
-            sql += (entity.getTipo() != null && !entity.getTipo().trim().isEmpty()) ? " e.tipo = :param" : " e.codigo = :param";
+
+            if (entity.getTipo() != null && !entity.getTipo().trim().isEmpty()) {
+                sql += " UPPER(e.tipo)= :param";
+            } else if (entity.getCodigo() != null && !entity.getCodigo().trim().isEmpty()) {
+                sql += " UPPER(e.codigo)= :param";
+            } else {
+                sql += " UPPER(e.nombre)= :param";
+            }
 
             Query query = getEntityManager().createQuery(sql);
-            query.setParameter("param", sql.contains("tipo") ? entity.getTipo() : entity.getCodigo());
+
+            if (entity.getTipo() != null && !entity.getTipo().trim().isEmpty()) {
+                query.setParameter("param", entity.getTipo().toUpperCase());
+            } else if (entity.getCodigo() != null && !entity.getCodigo().trim().isEmpty()) {
+                query.setParameter("param", entity.getCodigo().toUpperCase());
+            } else {
+                query.setParameter("param", entity.getNombre().toUpperCase());
+            }
+
             U entidad = (U) query.getSingleResult();
 
             if (entidad != null) {

@@ -72,6 +72,7 @@ public class Zona implements Serializable, Codificable {
         this.id = id;
     }
 
+    @Override
     public String getCodigo() {
         return codigo;
     }
@@ -80,6 +81,7 @@ public class Zona implements Serializable, Codificable {
         this.codigo = codigo;
     }
 
+    @Override
     public String getNombre() {
         return nombre;
     }

@@ -112,5 +112,10 @@ public class TipoCliente implements Serializable, Codificable {
     public String getCodigo() {
         return null;
     }
+
+    @Override
+    public String getNombre() {
+        return null;
+    }
     
 }

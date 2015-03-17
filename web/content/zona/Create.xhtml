@@ -12,12 +12,12 @@
             <h:form id="ZonaCreateForm">
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{zonaController.selected != null}">
-                        <p:outputLabel value="#{bundle.EditZonaLabel_cod}" for="codigo" />
-                        <p:inputText id="codigo" value="#{zonaController.selected.codigo}" title="#{bundle.EditZonaTitle_cod}" required="true" requiredMessage="#{bundle.EditZonaRequiredMessage_cod}"/>
+                        <p:outputLabel styleClass="#{zonaController.error}" value="#{bundle.EditZonaLabel_cod}" for="codigo" />
+                        <p:inputText styleClass="#{zonaController.error}" id="codigo" value="#{zonaController.selected.codigo}" title="#{bundle.EditZonaTitle_cod}" required="true" requiredMessage="#{bundle.EditZonaRequiredMessage_cod}"/>
                         <p:outputLabel value="#{bundle.EditZonaLabel_nom}" for="descripcion" />
                         <p:inputText id="descripcion" value="#{zonaController.selected.nombre}" title="#{bundle.EditZonaTitle_nom}" required="true" requiredMessage="#{bundle.EditZonaRequiredMessage_nom}"/>
                     </p:panelGrid>
-                    <p:commandButton actionListener="#{zonaController.create}" value="#{bundle.Save}" update="display,:ZonaListForm:datalist,:growl" oncomplete="handleSubmit(args,'ZonaCreateDialog');"/>
+                    <p:commandButton actionListener="#{zonaController.create}" value="#{bundle.Save}" update="display,:ZonaListForm:datalist,:growl"/>
                     <p:commandButton type="button" value="#{bundle.Cancel}" onclick="PF('ZonaCreateDialog').hide()"/>
                 </h:panelGroup>
             </h:form>

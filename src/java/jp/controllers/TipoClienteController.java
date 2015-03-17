@@ -17,7 +17,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import jp.facades.TipoClienteFacade;
-import jp.util.Error;
 import org.primefaces.context.RequestContext;
 
 @ManagedBean(name = "tipoClienteController")
@@ -28,10 +27,10 @@ public class TipoClienteController implements Serializable {
     private jp.facades.TipoClienteFacade ejbFacade;
     private List<TipoCliente> items = null;
     private TipoCliente selected;
-    private final Error error;
+    private String uiError, error;
 
     public TipoClienteController() {
-        error = new Error();
+        uiError = "ui-state-error";
     }
 
     public TipoCliente getSelected() {
@@ -64,12 +63,12 @@ public class TipoClienteController implements Serializable {
             if (!JsfUtil.isValidationFailed()) {
                 selected = null;
                 items = null;    // Invalidate list of items to trigger re-query.
-                error.cleanError();
+                setError("");
                 RequestContext.getCurrentInstance().execute("PF('TipoClienteCreateDialog').hide()");
             }
         } else {
-            JsfUtil.addErrorMessage("YA EXISTE EL TIPO");
-            error.addError();
+            setError(uiError);
+            JsfUtil.addErrorMessage("Ya existe el Tipo de Cliente: "+selected.getTipo());
         }
 
     }
@@ -77,11 +76,16 @@ public class TipoClienteController implements Serializable {
     public void update() {
         if (!getFacade().getEntityByCodigoOrTipo(selected)) {
             persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessageTipoCliente", "UpdateSuccessM"}));
-            error.cleanError();
-            RequestContext.getCurrentInstance().execute("PF('TipoClienteEditDialog').hide()");
+            if (!JsfUtil.isValidationFailed()) {
+                items = null;
+                setError("");
+                RequestContext.getCurrentInstance().execute("PF('TipoClienteEditDialog').hide()");
+            }
+            
         } else {
-            JsfUtil.addErrorMessage("YA EXISTE EL TIPO");
-            error.addError();
+            items = null;
+            setError(uiError);
+            JsfUtil.addErrorMessage("Ya existe el Tipo de Cliente: "+selected.getTipo());
         }
     }
 
@@ -136,6 +140,14 @@ public class TipoClienteController implements Serializable {
         return getFacade().findAll();
     }
 
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
+    }
+
     @FacesConverter(forClass = TipoCliente.class)
     public static class TipoClienteControllerConverter implements Converter {
 
@@ -175,10 +187,6 @@ public class TipoClienteController implements Serializable {
             }
         }
 
-    }
-    
-    public String classError(){
-        return error.getClassError();
     }
 
 }

@@ -17,7 +17,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import jp.facades.TipoEmpleadoFacade;
-import jp.util.Error;
 import org.primefaces.context.RequestContext;
 
 @ManagedBean(name = "tipoEmpleadoController")
@@ -28,10 +27,10 @@ public class TipoEmpleadoController implements Serializable {
     private jp.facades.TipoEmpleadoFacade ejbFacade;
     private List<TipoEmpleado> items = null;
     private TipoEmpleado selected;
-    private final Error error;
+    private String uiError, error;
 
     public TipoEmpleadoController() {
-        error = new Error();
+        uiError = "ui-state-error";
     }
 
     public TipoEmpleado getSelected() {
@@ -64,23 +63,28 @@ public class TipoEmpleadoController implements Serializable {
             if (!JsfUtil.isValidationFailed()) {
                 selected = null; // Remove selection
                 items = null;    // Invalidate list of items to trigger re-query.
-                error.cleanError();
+                setError("");
                 RequestContext.getCurrentInstance().execute("PF('TipoEmpleadoCreateDialog').hide()");
             }
         } else {
-            JsfUtil.addErrorMessage("YA EXISTE EL TIPO");
-            error.addError();
+            setError(uiError);
+            JsfUtil.addErrorMessage("Ya existe el Tipo de Empleado: "+selected.getTipo());
         }
     }
 
     public void update() {
         if (!getFacade().getEntityByCodigoOrTipo(selected)) {
             persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessageTipoEmpleado", "UpdateSuccessM"}));
-            error.cleanError();
-            RequestContext.getCurrentInstance().execute("PF('TipoEmpleadoEditDialog').hide()");
+            if (!JsfUtil.isValidationFailed()) {
+                items = null;
+                setError("");
+                RequestContext.getCurrentInstance().execute("PF('TipoEmpleadoEditDialog').hide()");
+            }
+            
         } else {
-            JsfUtil.addErrorMessage("YA EXISTE EL TIPO");
-            error.addError();
+            items = null;
+            setError(uiError);
+            JsfUtil.addErrorMessage("Ya existe el Tipo de Empleado: "+selected.getTipo());
         }
     }
 
@@ -89,7 +93,6 @@ public class TipoEmpleadoController implements Serializable {
         if (!JsfUtil.isValidationFailed()) {
             selected = null; // Remove selection
             items = null;    // Invalidate list of items to trigger re-query.
-            error.cleanError();
         }
     }
 
@@ -136,6 +139,14 @@ public class TipoEmpleadoController implements Serializable {
         return getFacade().findAll();
     }
 
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
+    }
+
     @FacesConverter(forClass = TipoEmpleado.class)
     public static class TipoEmpleadoControllerConverter implements Converter {
 
@@ -175,9 +186,4 @@ public class TipoEmpleadoController implements Serializable {
             }
         }
     }
-
-    public String classError() {
-        return error.getClassError();
-    }
-
 }

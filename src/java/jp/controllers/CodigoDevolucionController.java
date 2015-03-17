@@ -18,6 +18,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import jp.facades.CodigoDevolucionFacade;
+import org.primefaces.context.RequestContext;
 
 @ManagedBean(name = "codigoDevolucionController")
 @SessionScoped
@@ -27,8 +28,10 @@ public class CodigoDevolucionController implements Serializable {
     private jp.facades.CodigoDevolucionFacade ejbFacade;
     private List<CodigoDevolucion> items = null;
     private CodigoDevolucion selected;
+    private String uiError, error;
 
     public CodigoDevolucionController() {
+        uiError = "ui-state-error";
     }
 
     public CodigoDevolucion getSelected() {
@@ -60,8 +63,11 @@ public class CodigoDevolucionController implements Serializable {
             persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageCodigoDevolucion", "CreateSuccessM"}));
             if (!JsfUtil.isValidationFailed()) {
                 items = null;    // Invalidate list of items to trigger re-query.
+                setError("");
+                RequestContext.getCurrentInstance().execute("PF('CodigoDevolucionCreateDialog').hide()");
             }
         }else{
+            setError(uiError);
             JsfUtil.addErrorMessage(JsfUtil.getMessageBundle("MessageEmpleadoCodigoExist").replaceAll("%cod%", selected.getCodigo()));
         }
 
@@ -70,7 +76,14 @@ public class CodigoDevolucionController implements Serializable {
     public void update() {
         if (!getFacade().getEntityByCodigoOrTipo(selected)) {
             persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessageCodigoDevolucion", "UpdateSuccessM"}));
+            if (!JsfUtil.isValidationFailed()) {
+                items = null;    // Invalidate list of items to trigger re-query.
+                setError("");
+                RequestContext.getCurrentInstance().execute("PF('CodigoDevolucionEditDialog').hide()");
+            }
         }else{
+            items = null;
+            setError(uiError);
             JsfUtil.addErrorMessage(JsfUtil.getMessageBundle("MessageEmpleadoCodigoExist").replaceAll("%cod%", selected.getCodigo()));
         }
         
@@ -125,6 +138,14 @@ public class CodigoDevolucionController implements Serializable {
 
     public List<CodigoDevolucion> getItemsAvailableSelectOne() {
         return getFacade().findAll();
+    }
+
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
     }
 
     @FacesConverter(forClass = CodigoDevolucion.class)

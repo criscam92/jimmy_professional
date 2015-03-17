@@ -133,7 +133,7 @@ public class TransactionFacade {
             parametroTMP.setPorcentajeVentaPublic(p.getPorcentajeVentaPublic());
             parametroTMP.setPrecioDolar(p.getPrecioDolar());
             parametroTMP.setValorProntoPago(p.getValorProntoPago());
-            
+
             em.merge(parametroTMP);
             userTransaction.commit();
             complete = true;
@@ -163,6 +163,13 @@ public class TransactionFacade {
             proTMP.setDescripcion(p.getDescripcion());
             proTMP.setValor(p.getValor());
             proTMP.setCodigo(p.getCodigo());
+            if (p.getCategoria() != null) {
+                proTMP.setCategoria(p.getCategoria());
+            }
+            if (p.getValorVentaUsd() != null) {
+                proTMP.setValorVentaUsd(p.getValorVentaUsd());
+            }
+
             getEntityManager().merge(proTMP);
 
             for (PromocionProducto pp : promocionProductos) {
