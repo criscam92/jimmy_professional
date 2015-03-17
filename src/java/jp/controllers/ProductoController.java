@@ -17,6 +17,7 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import jp.facades.ProductoFacade;
 import jp.facades.RecargoFacade;
+import org.primefaces.context.RequestContext;
 
 @ManagedBean(name = "productoController")
 @ViewScoped
@@ -28,12 +29,12 @@ public class ProductoController implements Serializable {
     private RecargoFacade recargoFacade;
     private List<Producto> items = null;
     private Producto selected;
-    private final Error error;
+    private String uiError, error;
 
     private Float recargoPublico;
 
     public ProductoController() {
-        error = new Error("");
+        uiError = "ui-state-error";
     }
 
     public Producto getSelected() {
@@ -72,7 +73,7 @@ public class ProductoController implements Serializable {
                 }
             }
             String resultado = Float.toString(valor * recargoPublico);
-            return "USD "+resultado;
+            return "USD " + resultado;
         } else {
             return "No aplica";
         }
@@ -83,21 +84,28 @@ public class ProductoController implements Serializable {
             persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageProducto", "CreateSuccessM"}));
             if (!JsfUtil.isValidationFailed()) {
                 items = null;    // Invalidate list of items to trigger re-query.
-                error.cleanError();
+                setError("");
+                RequestContext.getCurrentInstance().execute("PF('ProductoCreateDialog').hide()");
             }
         } else {
-            JsfUtil.addErrorMessage("YA EXISTE EL CODIGO");
-            error.addError();
+            setError(uiError);
+            JsfUtil.addErrorMessage("Ya existe el Código: " + selected.getCodigo());
         }
     }
 
     public void update() {
         if (!getFacade().getEntityByCodigoOrTipo(selected)) {
             persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessageProducto", "UpdateSuccessM"}));
-            error.cleanError();
+            if (!JsfUtil.isValidationFailed()) {
+                items = null;
+                setError("");
+                RequestContext.getCurrentInstance().execute("PF('ProductoEditDialog').hide()");
+            }
+
         } else {
-            JsfUtil.addErrorMessage("YA EXISTE EL CODIGO");
-            error.addError();
+            items = null;
+            setError(uiError);
+            JsfUtil.addErrorMessage("Ya existe el Código: "+selected.getCodigo());
         }
     }
 
@@ -106,7 +114,6 @@ public class ProductoController implements Serializable {
         if (!JsfUtil.isValidationFailed()) {
             selected = null; // Remove selection
             items = null;    // Invalidate list of items to trigger re-query.
-            error.cleanError();
         }
     }
 
@@ -151,6 +158,14 @@ public class ProductoController implements Serializable {
 
     public List<Producto> getItemsAvailableSelectOne() {
         return getFacade().findAll();
+    }
+
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
     }
 
     @FacesConverter(forClass = Producto.class, value = "productoconverter")

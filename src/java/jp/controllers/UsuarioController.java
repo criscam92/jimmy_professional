@@ -30,10 +30,10 @@ public class UsuarioController implements Serializable {
     private List<Usuario> items = null;
     private Usuario selected;
     private String pass;
-    private final Error error;
+    private String uiError, error;
 
     public UsuarioController() {
-        error = new Error();
+        uiError = "ui-state-error";
     }
 
     public Usuario getSelected() {
@@ -75,13 +75,13 @@ public class UsuarioController implements Serializable {
                 if (!JsfUtil.isValidationFailed()) {
                     selected = null;
                     items = null;    // Invalidate list of items to trigger re-query.
-                    error.cleanError();
+                    setError("");
                     RequestContext.getCurrentInstance().execute("PF('UsuarioCreateDialog').hide()");
                 }
             }
         } else {
+            setError(uiError);
             JsfUtil.addErrorMessage(JsfUtil.getMessageBundle("MessengerUserExist").replaceAll("%USUARIO%", selected.getUsuario()));
-            error.addError();
         }
     }
 
@@ -89,12 +89,12 @@ public class UsuarioController implements Serializable {
         if (!getFacade().getUsuarioByNombre(selected)) {
             if (verificarClave()) {
                 persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(JsfUtil.getMessageBundle(new String[]{"MessengerUser", "UpdateSuccessM"})));
-                error.cleanError();
                 RequestContext.getCurrentInstance().execute("PF('UsuarioEditDialog').hide()");
             }
         } else {
+            items = null;
+            setError(uiError);
             JsfUtil.addErrorMessage(JsfUtil.getMessageBundle("MessengerUserExist").replaceAll("%USUARIO%", selected.getUsuario()));
-            error.addError();
         }
     }
 
@@ -103,7 +103,6 @@ public class UsuarioController implements Serializable {
         if (!JsfUtil.isValidationFailed()) {
             selected = null; // Remove selection
             items = null;    // Invalidate list of items to trigger re-query.
-            error.cleanError();
         }
     }
 
@@ -160,6 +159,14 @@ public class UsuarioController implements Serializable {
 
     public List<Usuario> getItemsAvailableSelectOne() {
         return getFacade().findAll();
+    }
+
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
     }
 
     @FacesConverter(forClass = Usuario.class)
@@ -220,9 +227,4 @@ public class UsuarioController implements Serializable {
         }
         return true;
     }
-
-    public String classError() {
-        return error.getClassError();
-    }
-
 }
