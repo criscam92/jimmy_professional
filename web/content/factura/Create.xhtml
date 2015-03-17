@@ -13,7 +13,7 @@
         </ui:define>
         <ui:define name="body">
             <h:form id="FacturaCreateForm">
-                <p:panel  header="DATOS FACTURA" style="margin: auto;width: 945px;">
+                <p:panel  header="DATOS FACTURA" style="margin: auto;width: 950px;">
                     <p:panelGrid columns="2">
                         <p:panelGrid columns="1">
                             <p:panelGrid columns="4">
@@ -32,21 +32,20 @@
                             </p:panelGrid>
                             <p:panelGrid columns="2">
                                 <p:outputLabel value="#{bundle.CreateDevolucionLabel_observaciones}" for="observaciones"/>
-                                <p:inputTextarea style="height: 40px; width: 428px;" id="observaciones" value="#{facturaController.selected.observaciones}" cols="21"/>
+                                <p:inputTextarea style="height: 63px; width: 428px;" id="observaciones" value="#{facturaController.selected.observaciones}" cols="21"/>
                             </p:panelGrid>
                         </p:panelGrid>
                         <p:panelGrid columns="2">
+
                             <p:outputLabel value="#{bundle.MessageCodigoPedido}" for="codigo"/>
-                            <p:inputText id="codigo" value="#{facturaController.selected.ordenPedido}"/>
+                            <p:inputText style="width: 162px;" id="codigo" value="#{facturaController.selected.ordenPedido}"/>
 
                             <p:outputLabel value="#{bundle.CreateVisitaLabel_cliente}" for="cliente"/>
                             <p:selectOneMenu style="width: 170px;" id="cliente" value="#{facturaController.selected.cliente}" required="true"
                                              requiredMessage="#{bundle.EditVisitaRequiredMessage_empleado}">
                                 <p:ajax update="listaProductos" listener="#{facturaController.getDescuentobyCliente(facturaController.selected.cliente)}"/>
                                 <f:selectItem  itemLabel="#{bundle.SelectOneMessage}"/>
-                                <f:selectItems value="#{clienteController.itemsAvailableSelectOne}"
-                                               var="clienteItem"
-                                               itemValue="#{clienteItem}"/>
+                                <f:selectItems value="#{clienteController.itemsAvailableSelectOne}" var="clienteItem" itemValue="#{clienteItem}"/>
                             </p:selectOneMenu>
 
                             <p:outputLabel value="#{bundle.MessageCreateTipoPago}" for="tipoPago" />
@@ -55,6 +54,13 @@
                                 <f:selectItem  itemLabel="#{bundle.SelectOneMessage}"/>
                                 <f:selectItems value="#{facturaController.tiposPagos}" var="tipoPago" />
                             </p:selectOneMenu>
+
+                            <p:outputLabel value="Moneda" for="moneda" />
+                            <p:selectOneMenu style="width: 170px;" id="moneda" value="#{facturaController.moneda}" 
+                                             required="true" requiredMessage="Debe seleccionar la moneda">
+                                <f:selectItems value="#{facturaController.monedas}"/>
+                            </p:selectOneMenu>
+
                         </p:panelGrid>
                     </p:panelGrid>
                 </p:panel>
@@ -74,13 +80,17 @@
                         <c:if test="#{facturaController.selectOneButton == 1}">
                             <p:outputLabel style="margin-right: 10px;" value="#{bundle.EditPromocionProductoLabel_producto}"/>
                             <p:autoComplete id="producto" minQueryLength="3" value="#{facturaController.facturaProducto.producto}" itemValue="#{pro}" 
-                                            completeMethod="#{promocionController.llenarProducto}" effect="fade" converter="productoconverter" itemLabel="#{pro.toString()}" var="pro" />
+                                            completeMethod="#{promocionController.llenarProducto}" effect="fade" converter="productoconverter" itemLabel="#{pro.toString()}" var="pro">
+                                <p:ajax event="itemSelect" listener="#{facturaController.onItemSelectProducto}" update="precio" />
+                            </p:autoComplete>
                         </c:if>
 
                         <c:if test="#{facturaController.selectOneButton == 2}">
                             <p:outputLabel value="#{bundle.CreatePromocionProductoLabel_promocion}" for="promocion"/>
                             <p:autoComplete id="promocion" minQueryLength="3" value="#{facturaController.facturaPromocion.promocion}" itemValue="#{pro}" 
-                                            completeMethod="#{facturaController.llenarPromocion}" effect="fade" converter="promocionconverter" itemLabel="#{pro.toString()}" var="pro" />
+                                            completeMethod="#{facturaController.llenarPromocion}" effect="fade" converter="promocionconverter" itemLabel="#{pro.toString()}" var="pro">
+                                <p:ajax event="itemSelect" listener="#{facturaController.onItemSelectPromocion}" update="precio" />
+                            </p:autoComplete>
                         </c:if>
 
                         <p:outputLabel value="#{bundle.MessageCreateVenta}" for="venta"/>
@@ -90,9 +100,18 @@
                         <p:inputText value="#{facturaController.facturaProducto.unidadesBonificacion}" id="bonificacion"/>
 
                         <p:outputLabel value="#{bundle.MessageCreatePrecio}" for="precio"/>
-                        <p:inputText value="#{facturaController.facturaProducto.precio}" id="precio"/>
-                        <p:commandButton value="#{bundle.AddItem}" icon="ui-icon-plus"
-                                         actionListener="#{facturaController.addFacturaProducto()}" update="listaProductos"/>
+                        <p:inputText value="#{facturaController.precio}" id="precio"/>
+
+                        <c:if test="#{facturaController.selectOneButton == 1}">
+                            <p:commandButton value="#{bundle.AddItem}" icon="ui-icon-plus"
+                                             actionListener="#{facturaController.addProductoOrPromocion(true)}" update="listaProductos"/>
+                        </c:if>
+                        <c:if test="#{facturaController.selectOneButton == 2}">
+                            <p:commandButton value="#{bundle.AddItem}" icon="ui-icon-plus"
+                                             actionListener="#{facturaController.addProductoOrPromocion(false)}" update="listaProductos" />
+                        </c:if>
+
+
                     </p:panelGrid>
 
                     <br/>
@@ -154,7 +173,13 @@
                             </p:row>
                             <p:row>
                                 <p:column style="font-weight: bold; text-align:right;" footerText="#{bundle.EditFacturaLabel_descuento}"/>
-                                <p:column footerText="#{facturaController.selected.descuento} %"/>
+                                <p:column >
+                                    <f:facet name="footer">
+                                        <h:outputText value="#{facturaController.selected.descuento}">
+                                            <f:convertNumber maxFractionDigits="2" groupingUsed="false" type="currency"  currencySymbol="%"/>
+                                        </h:outputText>
+                                    </f:facet>
+                                </p:column>
                                 <p:column style="font-weight: bold; text-align:right;" footerText="#{bundle.CreateFacturaTitle_totalPagarForm}"/>
                                 <p:column>
                                     <f:facet name="footer">

@@ -15,7 +15,7 @@ import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.faces.bean.ViewScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
@@ -24,16 +24,19 @@ import javax.faces.event.AjaxBehaviorEvent;
 import jp.entidades.Cliente;
 import jp.entidades.FacturaProducto;
 import jp.entidades.FacturaPromocion;
+import jp.entidades.Producto;
 import jp.entidades.ProductoPromocionHelper;
 import jp.entidades.Promocion;
 import jp.facades.FacturaFacade;
 import jp.facades.FacturaProductoFacade;
 import jp.facades.RecargoFacade;
 import jp.facades.TransactionFacade;
+import jp.util.Moneda;
 import jp.util.TipoPago;
+import org.primefaces.event.SelectEvent;
 
 @ManagedBean(name = "facturaController")
-@SessionScoped
+@ViewScoped
 public class FacturaController implements Serializable {
 
     @EJB
@@ -53,6 +56,8 @@ public class FacturaController implements Serializable {
     private FacturaProducto facturaProducto;
     private FacturaPromocion facturaPromocion;
     private int selectOneButton;
+    private int moneda;
+    private double precio;
 
     public FacturaController() {
         selectOneButton = 1;
@@ -63,9 +68,27 @@ public class FacturaController implements Serializable {
 
     @PostConstruct
     public void init() {
+        selected = new Factura();
+        selected.setDescuento(0.0);
         object = new ProductoPromocionHelper();
         facturaProducto = new FacturaProducto();
         facturaPromocion = new FacturaPromocion();
+    }
+
+    public double getPrecio() {
+        return precio;
+    }
+
+    public void setPrecio(double precio) {
+        this.precio = precio;
+    }
+
+    public int getMoneda() {
+        return moneda;
+    }
+
+    public void setMoneda(int moneda) {
+        this.moneda = moneda;
     }
 
     public int getSelectOneButton() {
@@ -283,11 +306,12 @@ public class FacturaController implements Serializable {
         return TipoPago.getMapaEstados();
     }
 
+    public Map<String, Integer> getMonedas() {
+        return Moneda.getMonedas();
+    }
+
     public String redirectCreateFactura() {
         selected = new Factura();
-//        if (getEjbFacturaProductoFacade().getNumOrden() != null) {
-//            selected.setOrdenPedido(getEjbFacturaProductoFacade().getNumOrden());
-//        }
         object = new ProductoPromocionHelper();
         facturaProducto = new FacturaProducto();
         facturaPromocion = new FacturaPromocion();
@@ -297,43 +321,43 @@ public class FacturaController implements Serializable {
         return "Create.xhtml?faces-redirect=true";
     }
 
-    public void addFacturaProducto() {
-        if (facturaProducto.getProducto() != null && facturaProducto.getUnidadesVenta() > 0
-                && facturaProducto.getPrecio() > 0 && facturaProducto.getUnidadesVenta() > 0) {
-            FacturaProducto facturaProductoTMP = new FacturaProducto();
-            facturaProductoTMP.setProducto(facturaProducto.getProducto());
-            facturaProductoTMP.setUnidadesVenta(facturaProducto.getUnidadesVenta());
-            facturaProductoTMP.setUnidadesBonificacion(facturaProducto.getUnidadesBonificacion());
-            facturaProductoTMP.setPrecio(facturaProducto.getPrecio() * facturaProducto.getUnidadesVenta());
-            facturaProductoTMP.setId(itemsProducto.size() + 1l);
+    public void addProductoOrPromocion(boolean isProducto) {
+        if (isProducto) {
+            System.out.println("ESTOY AGREGANDO UN PRODUCTO");
+            if (facturaProducto.getProducto() != null && facturaProducto.getUnidadesVenta() > 0 && facturaProducto.getPrecio() > 0) {
+                FacturaProducto facturaProductoTMP = new FacturaProducto();
+                facturaProductoTMP.setProducto(facturaProducto.getProducto());
+                facturaProductoTMP.setUnidadesVenta(facturaProducto.getUnidadesVenta());
+                facturaProductoTMP.setUnidadesBonificacion(facturaProducto.getUnidadesBonificacion());
+                facturaProductoTMP.setPrecio(facturaProducto.getPrecio() * facturaProducto.getUnidadesVenta());
+                facturaProductoTMP.setId(itemsProducto.size() + 1l);
 
-            itemsProducto.add(facturaProductoTMP);
-            ProductoPromocionHelper pph = new ProductoPromocionHelper();
-            pph.setProductoPromocion(facturaProductoTMP.getProducto());
-            pph.setUnidadesVenta(facturaProductoTMP.getUnidadesVenta());
-            pph.setUnidadesBonificacion(facturaProductoTMP.getUnidadesBonificacion());
-            pph.setPrecio(facturaProductoTMP.getPrecio());
-            objects.add(pph);
-        }
-    }
+                itemsProducto.add(facturaProductoTMP);
+                ProductoPromocionHelper pph = new ProductoPromocionHelper();
+                pph.setProductoPromocion(facturaProductoTMP.getProducto());
+                pph.setUnidadesVenta(facturaProductoTMP.getUnidadesVenta());
+                pph.setUnidadesBonificacion(facturaProductoTMP.getUnidadesBonificacion());
+                pph.setPrecio(facturaProductoTMP.getPrecio());
+                objects.add(pph);
+            }
+        } else {
+            System.out.println("ESTOY AGREGANDO UNA PROMOCION");
+            if (facturaPromocion.getPromocion() != null && facturaPromocion.getUnidadesVenta() > 0 && facturaPromocion.getPrecio() > 0) {
+                FacturaPromocion facturaPromocionTMP = new FacturaPromocion();
+                facturaPromocionTMP.setPromocion(facturaPromocion.getPromocion());
+                facturaPromocionTMP.setUnidadesVenta(facturaPromocion.getUnidadesVenta());
+                facturaPromocionTMP.setUnidadesBonificacion(facturaPromocion.getUnidadesBonificacion());
+                facturaPromocionTMP.setPrecio(facturaPromocion.getPrecio() * facturaPromocion.getUnidadesVenta());
+                facturaPromocionTMP.setId(itemsPromocion.size() + 1l);
 
-    public void addFacturaPromocion() {
-        if (facturaPromocion.getPromocion() != null && facturaPromocion.getUnidadesVenta() > 0
-                && facturaPromocion.getPrecio() > 0 && facturaPromocion.getUnidadesVenta() > 0) {
-            FacturaPromocion facturaPromocionTMP = new FacturaPromocion();
-            facturaPromocionTMP.setPromocion(facturaPromocion.getPromocion());
-            facturaPromocionTMP.setUnidadesVenta(facturaPromocion.getUnidadesVenta());
-            facturaPromocionTMP.setUnidadesBonificacion(facturaPromocion.getUnidadesBonificacion());
-            facturaPromocionTMP.setPrecio(facturaPromocion.getPrecio() * facturaPromocion.getUnidadesVenta());
-            facturaPromocionTMP.setId(itemsPromocion.size() + 1l);
-
-            itemsPromocion.add(facturaPromocionTMP);
-            ProductoPromocionHelper pph = new ProductoPromocionHelper();
-            pph.setProductoPromocion(facturaPromocionTMP.getPromocion());
-            pph.setUnidadesVenta(facturaPromocionTMP.getUnidadesVenta());
-            pph.setUnidadesBonificacion(facturaPromocionTMP.getUnidadesBonificacion());
-            pph.setPrecio(facturaPromocionTMP.getPrecio());
-            objects.add(pph);
+                itemsPromocion.add(facturaPromocionTMP);
+                ProductoPromocionHelper pph = new ProductoPromocionHelper();
+                pph.setProductoPromocion(facturaPromocionTMP.getPromocion());
+                pph.setUnidadesVenta(facturaPromocionTMP.getUnidadesVenta());
+                pph.setUnidadesBonificacion(facturaPromocionTMP.getUnidadesBonificacion());
+                pph.setPrecio(facturaPromocionTMP.getPrecio());
+                objects.add(pph);
+            }
         }
 
     }
@@ -419,8 +443,26 @@ public class FacturaController implements Serializable {
     }
 
     public void changeView(AjaxBehaviorEvent event) {
-        LOGGER.info(this.getSelectOneButton() + "");
-        System.out.println("" + this.getSelectOneButton());
+//        LOGGER.info(this.getSelectOneButton() + "");
+//        System.out.println("" + this.getSelectOneButton());
+    }
+
+    public void onItemSelectProducto(SelectEvent event) {
+        Producto p = (Producto) event.getObject();
+
+        if (moneda == 0) {
+            precio = p.getValorVenta();
+        } else {
+            precio = p.getValorVentaUsd();
+        }
+
+        facturaProducto.setPrecio(precio);
+    }
+
+    public void onItemSelectPromocion(SelectEvent event) {
+        Promocion p = (Promocion) event.getObject();
+        precio = p.getValor();
+        facturaPromocion.setPrecio(precio);
     }
 
 }

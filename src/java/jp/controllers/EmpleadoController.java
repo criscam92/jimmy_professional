@@ -17,7 +17,6 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import jp.facades.EmpleadoFacade;
 import org.primefaces.context.RequestContext;
-import jp.util.Error;
 
 @ManagedBean(name = "empleadoController")
 @SessionScoped
@@ -27,14 +26,22 @@ public class EmpleadoController implements Serializable {
     private EmpleadoFacade ejbFacade;
     private List<Empleado> items = null;
     private Empleado selected;
-    private final Error error;
+    private String uiError, error;
 
     public EmpleadoController() {
-        error = new Error();
+        uiError = "ui-state-error";
     }
 
     public Empleado getSelected() {
         return selected;
+    }
+
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
     }
 
     public void setSelected(Empleado selected) {
@@ -63,23 +70,23 @@ public class EmpleadoController implements Serializable {
             if (!JsfUtil.isValidationFailed()) {
                 selected = null; // Remove selection
                 items = null;    // Invalidate list of items to trigger re-query.
-                error.cleanError();
+                setError("");
                 RequestContext.getCurrentInstance().execute("PF('EmpleadoCreateDialog').hide()");
             }
         } else {
+            setError(uiError);
             JsfUtil.addErrorMessage(JsfUtil.getMessageBundle("MessageEmpleadoCodigoExist").replaceAll("%cod%", selected.getCodigo()));
-            error.addError();
         }
     }
 
     public void update() {
         if (!getFacade().getEntityByCodigoOrTipo(selected)) {
             persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessageEmpleado", "UpdateSuccessM"}));
-            error.cleanError();
+            setError("");
             RequestContext.getCurrentInstance().execute("PF('EmpleadoEditDialog').hide()");
         } else {
+            setError(uiError);
             JsfUtil.addErrorMessage(JsfUtil.getMessageBundle("MessageEmpleadoCodigoExist").replaceAll("%cod%", selected.getCodigo()));
-            error.addError();
         }
     }
 
@@ -88,7 +95,7 @@ public class EmpleadoController implements Serializable {
         if (!JsfUtil.isValidationFailed()) {
             selected = null; // Remove selection
             items = null;    // Invalidate list of items to trigger re-query.
-            error.cleanError();
+            setError("");
         }
     }
 
@@ -173,9 +180,5 @@ public class EmpleadoController implements Serializable {
                 return null;
             }
         }
-    }
-
-    public String classError() {
-        return error.getClassError();
     }
 }

@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package jp.entidades;
 
 import java.io.Serializable;
@@ -15,8 +10,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -26,15 +19,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import jp.entidades.auxiliar.Codificable;
 
-/**
- *
- * @author arturo
- */
 @Entity
 @Table(catalog = "jimmy_professional", schema = "public", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"codigo"})})
 @XmlRootElement
 public class Producto implements Serializable, Codificable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -62,7 +52,6 @@ public class Producto implements Serializable, Codificable {
     @NotNull
     @Column(name = "valor_venta", nullable = false)
     private double valorVenta;
-    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "valor_venta_usd", precision = 17, scale = 17)
     private Double valorVentaUsd;
     @Basic(optional = false)
@@ -245,20 +234,17 @@ public class Producto implements Serializable, Codificable {
             return false;
         }
         Producto other = (Producto) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return !((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)));
     }
 
     @Override
     public String toString() {
-        return "entidades.Producto[ id=" + id + " ]";
+        return codigo + " - " + nombre;
     }
 
     @Override
     public String getTipo() {
         return null;
     }
-    
+
 }
