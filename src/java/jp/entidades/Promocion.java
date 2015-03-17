@@ -50,6 +50,8 @@ public class Promocion implements Serializable, Codificable {
     @NotNull
     @Column(nullable = false)
     private double valor;
+    @Column(name = "valor_venta_usd", precision = 17, scale = 17)
+    private Double valorVentaUsd;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 45)
@@ -70,11 +72,12 @@ public class Promocion implements Serializable, Codificable {
         this.id = id;
     }
 
-    public Promocion(Long id, String descripcion, double valor, String codigo) {
+    public Promocion(Long id, String descripcion, double valor, String codigo, Double valorVentaUSD) {
         this.id = id;
         this.descripcion = descripcion;
         this.valor = valor;
         this.codigo = codigo;
+        this.valorVentaUsd = valorVentaUSD;
     }
 
     @Override
@@ -100,6 +103,14 @@ public class Promocion implements Serializable, Codificable {
 
     public void setValor(double valor) {
         this.valor = valor;
+    }
+
+    public Double getValorVentaUsd() {
+        return valorVentaUsd;
+    }
+
+    public void setValorVentaUsd(Double valorVentaUsd) {
+        this.valorVentaUsd = valorVentaUsd;
     }
 
     @Override
@@ -161,6 +172,11 @@ public class Promocion implements Serializable, Codificable {
 
     @Override
     public String getTipo() {
+        return null;
+    }
+
+    @Override
+    public String getNombre() {
         return null;
     }
 

@@ -17,7 +17,6 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import jp.facades.ProductoFacade;
 import jp.facades.RecargoFacade;
-import jp.util.Error;
 
 @ManagedBean(name = "productoController")
 @ViewScoped
@@ -72,8 +71,8 @@ public class ProductoController implements Serializable {
                     recargoPublico = 1.0f;
                 }
             }
-
-            return Float.toString(valor * recargoPublico);
+            String resultado = Float.toString(valor * recargoPublico);
+            return "USD "+resultado;
         } else {
             return "No aplica";
         }

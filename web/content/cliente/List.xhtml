@@ -25,24 +25,6 @@
                              emptyMessage="#{bundle.EmptyTable}"
                              >
 
-                    <f:facet name="{Exporters}">
-                        <h:commandLink>
-                            <p:dataExporter type="xls" target="tbl" fileName="cars" />
-                        </h:commandLink>
-
-                        <h:commandLink>
-                            <p:dataExporter type="pdf" target="tbl" fileName="cars"/>
-                        </h:commandLink>
-
-                        <h:commandLink>
-                            <p:dataExporter type="csv" target="tbl" fileName="cars" />
-                        </h:commandLink>
-
-                        <h:commandLink>
-                            <p:dataExporter type="xml" target="tbl" fileName="cars" />
-                        </h:commandLink>
-                    </f:facet>
-
                     <f:facet name="header">
                         <div id="titulo">
                             Clientes
@@ -52,6 +34,9 @@
                             <p:commandButton id="viewButton"   icon="ui-icon-search" value="#{bundle.View}" update=":ClienteViewForm" oncomplete="PF('ClienteViewDialog').show()" disabled="#{empty clienteController.selected}"/>
                             <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}"   actionListener="#{clienteController.prepareEdit}" update=":ClienteFormDlg,:ClienteForm" oncomplete="PF('ClienteFormDialog').show()" disabled="#{empty clienteController.selected}"/>
                             <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{clienteController.destroy}" update=":growl,datalist" disabled="#{empty clienteController.selected}"/>
+                            <p:commandButton icon="fa fa-table" value="Excel" ajax="false">
+                                <p:dataExporter type="xls" target="datalist" fileName="Clientes" />
+                            </p:commandButton>
                         </div>
                     </f:facet>
 
@@ -137,6 +122,12 @@
                             <h:outputText value="#{bundle.ListClienteTitle_tipo}"/>
                         </f:facet>
                         <h:outputText value="#{item.tipo.toString()}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.CreateClienteTitle_cat}"/>
+                        </f:facet>
+                        <h:outputText value="#{item.categoria}"/>
                     </p:column>
                 </p:dataTable>
             </h:form>

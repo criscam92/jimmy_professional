@@ -59,6 +59,7 @@ public class Categoria implements Serializable, Codificable {
         this.codigo = codigo;
     }
 
+    @Override
     public Integer getId() {
         return id;
     }
@@ -119,6 +120,11 @@ public class Categoria implements Serializable, Codificable {
 
     @Override
     public String getTipo() {
+        return null;
+    }
+
+    @Override
+    public String getNombre() {
         return null;
     }
     

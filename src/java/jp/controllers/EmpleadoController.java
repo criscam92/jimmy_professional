@@ -17,7 +17,6 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import jp.facades.EmpleadoFacade;
 import org.primefaces.context.RequestContext;
-import jp.util.Error;
 
 @ManagedBean(name = "empleadoController")
 @SessionScoped

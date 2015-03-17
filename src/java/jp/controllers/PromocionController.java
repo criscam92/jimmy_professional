@@ -130,14 +130,14 @@ public class PromocionController implements Serializable {
                         }
                     }
                 } else {
-                    JsfUtil.addErrorMessage("NO SE A PODIDO GUARDAR LA PROMOCION");
+                    JsfUtil.addErrorMessage("No se ha podido guardar la Promoción");
                 }
 
             } else {
                 JsfUtil.addErrorMessage("La promocion debe tener como minimo un producto");
             }
         } else {
-            JsfUtil.addErrorMessage("ya existe el codigo " + selected.getCodigo());
+            JsfUtil.addErrorMessage("Ya existe el Código " + selected.getCodigo());
         }
     }
 

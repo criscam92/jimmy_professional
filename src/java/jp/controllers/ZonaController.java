@@ -18,6 +18,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import org.primefaces.context.RequestContext;
 
 @ManagedBean(name = "zonaController")
 @SessionScoped
@@ -27,8 +28,10 @@ public class ZonaController implements Serializable {
     private jp.facades.ZonaFacade ejbFacade;
     private List<Zona> items = null;
     private Zona selected;
+    private String uiError, error;
 
     public ZonaController() {
+        uiError = "ui-state-error";
     }
 
     public Zona getSelected() {
@@ -60,15 +63,29 @@ public class ZonaController implements Serializable {
             persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageZona", "CreateSuccessF"}));
             if (!JsfUtil.isValidationFailed()) {
                 items = null;    // Invalidate list of items to trigger re-query.
+                setError("");
+                RequestContext.getCurrentInstance().execute("PF('ZonaCreateDialog').hide()");
             }
         } else {
+            setError(uiError);
             JsfUtil.addErrorMessage(JsfUtil.getMessageBundle("MessageEmpleadoCodigoExist").replaceAll("%cod%", selected.getCodigo()));
         }
 
     }
 
     public void update() {
-        persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessageZona", "UpdateSuccessF"}));
+        if (!getFacade().getEntityByCodigoOrTipo(selected)) {
+            persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessageZona", "UpdateSuccessF"}));
+            if (!JsfUtil.isValidationFailed()) {
+                items = null;    // Invalidate list of items to trigger re-query.
+                setError("");
+                RequestContext.getCurrentInstance().execute("PF('ZonaEditDialog').hide()");
+            }
+        } else {
+            items = null;
+            setError(uiError);
+            JsfUtil.addErrorMessage(JsfUtil.getMessageBundle("MessageEmpleadoCodigoExist").replaceAll("%cod%", selected.getCodigo()));
+        }
     }
 
     public void destroy() {
@@ -120,6 +137,14 @@ public class ZonaController implements Serializable {
 
     public List<Zona> getItemsAvailableSelectOne() {
         return getFacade().findAll();
+    }
+
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
     }
 
     @FacesConverter(forClass = Zona.class, value = "zonaconverter")

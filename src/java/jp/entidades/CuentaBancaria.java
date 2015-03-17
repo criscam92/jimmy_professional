@@ -76,6 +76,7 @@ public class CuentaBancaria implements Serializable, Codificable {
         this.id = id;
     }
 
+    @Override
     public String getNombre() {
         return nombre;
     }
@@ -136,12 +137,12 @@ public class CuentaBancaria implements Serializable, Codificable {
 
     @Override
     public String getCodigo() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return null;
     }
 
     @Override
     public String getTipo() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return null;
     }
     
 }

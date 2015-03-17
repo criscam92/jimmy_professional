@@ -19,7 +19,6 @@ import javax.faces.convert.FacesConverter;
 import jp.facades.UsuarioFacade;
 import jp.seguridad.Encrypt;
 import jp.util.TipoUsuario;
-import jp.util.Error;
 import org.primefaces.context.RequestContext;
 
 @ManagedBean(name = "usuarioController")

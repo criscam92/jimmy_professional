@@ -14,10 +14,22 @@
                 <p:panelGrid columns="1" rendered="#{promocionController.selected != null}">
                     <p:panelGrid columns="4">
                         <p:outputLabel value="Codigo: " for="codigo" style="margin-right: 22px;"/>
-                        <p:inputText id="codigo" value="#{promocionController.selected.codigo}" title="Codigo" required="true" requiredMessage="El campo codigo es requerido"/>
+                        <p:inputText id="codigo" style="width: 70px" value="#{promocionController.selected.codigo}" title="Codigo" required="true" requiredMessage="El campo codigo es requerido"/>
+
+                        <p:outputLabel value="#{bundle.CreateClienteLabel_cat}" for="categoria" />
+                        <p:selectOneMenu converter="categoriaconverter" style="width: 155px" id="categoria" value="#{promocionController.selected.categoria}">
+                            <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>
+                            <f:selectItems  value="#{categoriaController.itemsAvailableSelectOne}"
+                                            var="categoriaItem"
+                                            itemValue="#{categoriaItem}"/>
+                        </p:selectOneMenu>
 
                         <p:outputLabel value="#{bundle.CreatePromocionLabel_valor}" for="valor" />
-                        <p:inputText id="valor" style="width: 160px;" value="#{promocionController.selected.valor}" title="#{bundle.CreatePromocionTitle_valor}" required="true" requiredMessage="#{bundle.CreatePromocionRequiredMessage_valor}"/>
+                        <p:inputText id="valor" style="width: 70px;" value="#{promocionController.selected.valor}" title="#{bundle.CreatePromocionTitle_valor}" required="true" requiredMessage="#{bundle.CreatePromocionRequiredMessage_valor}"/>
+                        
+                        <p:outputLabel value="#{bundle.CreateProductoLabel_valorVentaUsd}" for="valorVentaUsd" />
+                        <p:inputText id="valorVentaUsd" value="#{promocionController.selected.valorVentaUsd}" title="#{bundle.CreateProductoTitle_valorVentaUsd}"/>
+                        
                     </p:panelGrid>
                     <p:panelGrid columns="2">
                         <p:outputLabel value="#{bundle.CreatePromocionLabel_descripcion}" for="descripcion" />
@@ -40,8 +52,8 @@
                                      paginator="true"
                                      rowKey="#{item.id}"
                                      rows="3"
-                                     emptyMessage=""
                                      paginatorPosition="bottom"
+                                     emptyMessage="#{bundle.EmptyTable}"
                                      >
                             <p:column>
                                 <f:facet name="header">

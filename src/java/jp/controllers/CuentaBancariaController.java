@@ -13,23 +13,26 @@ import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.faces.bean.ViewScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import jp.util.TipoCuentaBancaria;
+import org.primefaces.context.RequestContext;
 
 @ManagedBean(name = "cuentaBancariaController")
-@SessionScoped
+@ViewScoped
 public class CuentaBancariaController implements Serializable {
 
     @EJB
     private jp.facades.CuentaBancariaFacade ejbFacade;
     private List<CuentaBancaria> items = null;
     private CuentaBancaria selected;
+    private String uiError, error;
 
     public CuentaBancariaController() {
+        uiError = "ui-state-error";
     }
 
     public CuentaBancaria getSelected() {
@@ -58,14 +61,33 @@ public class CuentaBancariaController implements Serializable {
     }
 
     public void create() {
-        persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageCuentaBancaria", "CreateSuccessF"}));
-        if (!JsfUtil.isValidationFailed()) {
-            items = null;    // Invalidate list of items to trigger re-query.
+        if (!getFacade().getEntityByCodigoOrTipo(selected)) {
+            persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageCuentaBancaria", "CreateSuccessF"}));
+            if (!JsfUtil.isValidationFailed()) {
+                items = null;    // Invalidate list of items to trigger re-query.
+                setError("");
+                RequestContext.getCurrentInstance().execute("PF('CuentaBancariaCreateDialog').hide()");
+            }
+        } else {
+            setError(uiError);
+            JsfUtil.addErrorMessage("Ya existe el Tipo de Cuenta Bancaria " + selected.getNombre());
         }
+
     }
 
     public void update() {
-        persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessageCuentaBancaria", "UpdateSuccessF"}));
+        if (!getFacade().getEntityByCodigoOrTipo(selected)) {
+            persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessageCuentaBancaria", "UpdateSuccessF"}));
+            if (!JsfUtil.isValidationFailed()) {
+                items = null;    // Invalidate list of items to trigger re-query.
+                setError("");
+                RequestContext.getCurrentInstance().execute("PF('CuentaBancariaEditDialog').hide()");
+            }
+        } else {
+            items = null;
+            setError(uiError);
+            JsfUtil.addErrorMessage("Ya existe el Tipo de Cuenta Bancaria " + selected.getNombre());
+        }
     }
 
     public void destroy() {
@@ -119,6 +141,14 @@ public class CuentaBancariaController implements Serializable {
         return getFacade().findAll();
     }
 
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
+    }
+
     @FacesConverter(forClass = CuentaBancaria.class)
     public static class CuentaBancariaControllerConverter implements Converter {
 
@@ -159,11 +189,11 @@ public class CuentaBancariaController implements Serializable {
         }
 
     }
-    
+
     public TipoCuentaBancaria[] getTiposCuentasBancarias() {
         return TipoCuentaBancaria.values();
     }
-    
+
     public String getTipoCuentaBancaria(int tipo) {
         return TipoCuentaBancaria.getFromValue(tipo).getDetalle();
     }

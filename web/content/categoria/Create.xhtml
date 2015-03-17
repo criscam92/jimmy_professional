@@ -11,8 +11,8 @@
             <h:form id="CategoriaCreateForm">
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{categoriaController.selected != null}">
-                        <p:outputLabel value="#{bundle.EditCategoriaLabel_cod}" for="codigo" />
-                        <p:inputText id="codigo" value="#{categoriaController.selected.codigo}"
+                        <p:outputLabel styleClass="#{categoriaController.error}" value="#{bundle.EditCategoriaLabel_cod}" for="codigo" />
+                        <p:inputText styleClass="#{categoriaController.error}" id="codigo" value="#{categoriaController.selected.codigo}"
                                      title="#{bundle.EditCategoriaTitle_cod}" required="true" requiredMessage="#{bundle.EditCategoriaRequiredMessage_cod}"/>
                         <p:outputLabel value="#{bundle.EditCategoriaLabel_desc}" for="descripcion" />
                         <p:inputText id="descripcion" value="#{categoriaController.selected.descripcion}"
@@ -20,8 +20,7 @@
                     </p:panelGrid>
                 </h:panelGroup>
                 <div class="botonesDialog">
-                    <p:commandButton actionListener="#{categoriaController.create}" value="#{bundle.Save}" update="display,:CategoriaListForm:datalist,:growl"
-                                     oncomplete="handleSubmit(args,'CategoriaCreateDialog');"/>
+                    <p:commandButton actionListener="#{categoriaController.create}" value="#{bundle.Save}" update="display,:CategoriaListForm:datalist,:growl"/>
                     <p:commandButton type="button" value="#{bundle.Cancel}" onclick="PF('CategoriaCreateDialog').hide()"/>
                 </div>
             </h:form>
