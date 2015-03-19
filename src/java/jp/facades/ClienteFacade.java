@@ -1,5 +1,6 @@
 package jp.facades;
 
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -41,6 +42,19 @@ public class ClienteFacade extends AbstractFacade<Cliente> {
             e.printStackTrace();
         }
         return ciudadTMP;
+    }
+
+    public List<Cliente> getClienteByQuery(String query) {
+        try {
+            Query q = getEntityManager().createQuery("SELECT c FROM Cliente c WHERE UPPER(CONCAT(c.documento,' - ',c.nombre)) LIKE UPPER(:param)");
+            q.setParameter("param", "%" + query + "%");
+            q.setFirstResult(0);
+            q.setMaxResults(10);
+            return q.getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }

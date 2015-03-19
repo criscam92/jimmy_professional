@@ -1,21 +1,32 @@
 package jp.entidades;
 
-public class ProductoPromocionHelper{
+import javax.persistence.Id;
+
+public class ProductoPromocionHelper {
+
+    @Id
+    private Long id;
     private int unidadesVenta;
     private int unidadesBonificacion;
     private double precio;
     private Object productoPromocion;
+    private boolean isProducto;
 
-    public ProductoPromocionHelper() {
-        
-    }
-
-    
-    public ProductoPromocionHelper(int unidadesVenta, int unidadesBonificacion, double precio, Object productoPromocion) {
+    public ProductoPromocionHelper(Long id, int unidadesVenta, int unidadesBonificacion, double precio, Object productoPromocion, boolean isProducto) {
+        this.id = id;
         this.unidadesVenta = unidadesVenta;
         this.unidadesBonificacion = unidadesBonificacion;
         this.precio = precio;
         this.productoPromocion = productoPromocion;
+        this.isProducto = isProducto;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public int getUnidadesVenta() {
@@ -49,5 +60,12 @@ public class ProductoPromocionHelper{
     public void setProductoPromocion(Object productoPromocion) {
         this.productoPromocion = productoPromocion;
     }
-    
+
+    public boolean isProducto() {
+        return isProducto;
+    }
+
+    public void setProducto(boolean isProducto) {
+        this.isProducto = isProducto;
+    }
 }

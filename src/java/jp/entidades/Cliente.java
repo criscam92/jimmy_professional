@@ -282,7 +282,7 @@ public class Cliente implements Serializable {
 
     @Override
     public String toString() {
-        return this.getTipo() + ", " + this.getNombre();
+        return documento + " - " + nombre;
     }
 
 }

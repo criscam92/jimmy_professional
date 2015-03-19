@@ -25,6 +25,8 @@ import jp.entidades.IngresoProducto;
 import jp.entidades.Promocion;
 import jp.entidades.PromocionProducto;
 import jp.entidades.Parametros;
+import jp.entidades.Producto;
+import jp.entidades.ProductoPromocionHelper;
 import jp.entidades.Visita;
 import jp.entidades.VisitaProducto;
 import jp.util.EstadoVisita;
@@ -261,7 +263,7 @@ public class TransactionFacade {
         return false;
     }
 
-    public boolean createFacturaProductoPromocion(Factura factura, List<FacturaProducto> facturaProductos, List<FacturaPromocion> facturaPromociones) {
+    public void createFacturaProductoPromocion(Factura factura, List<ProductoPromocionHelper> objects) {
         userTransaction = sessionContext.getUserTransaction();
         try {
             userTransaction.begin();
@@ -269,7 +271,6 @@ public class TransactionFacade {
             Factura facturaTMP = new Factura();
             facturaTMP.setOrdenPedido(factura.getOrdenPedido());
             facturaTMP.setFecha(factura.getFecha());
-            facturaTMP.setCliente(factura.getCliente());
             facturaTMP.setCliente(factura.getCliente());
             facturaTMP.setEmpleado(factura.getEmpleado());
             facturaTMP.setTipoPago(factura.getTipoPago());
@@ -279,33 +280,39 @@ public class TransactionFacade {
             facturaTMP.setTotalPagar(factura.getTotalPagar());
             getEntityManager().merge(facturaTMP);
 
-            for (FacturaProducto fp : facturaProductos) {
-                fp.setId(null);
-                fp.setFactura(facturaTMP);
-                getEntityManager().merge(fp);
-            }
-
-            for (FacturaPromocion fp : facturaPromociones) {
-                fp.setId(null);
-                fp.setFactura(facturaTMP);
-                getEntityManager().merge(fp);
+            for (ProductoPromocionHelper pph : objects) {
+                if (pph.isProducto()) {
+                    FacturaProducto fp = new FacturaProducto();
+                    fp.setFactura(facturaTMP);
+                    fp.setId(null);
+                    fp.setPrecio(pph.getPrecio());
+                    fp.setProducto((Producto) pph.getProductoPromocion());
+                    fp.setUnidadesBonificacion(pph.getUnidadesBonificacion());
+                    fp.setUnidadesVenta(pph.getUnidadesVenta());
+                } else {
+                    FacturaPromocion fp = new FacturaPromocion();
+                    fp.setFactura(facturaTMP);
+                    fp.setId(null);
+                    fp.setPrecio(pph.getPrecio());
+                    fp.setPromocion((Promocion) pph.getProductoPromocion());
+                    fp.setUnidadesBonificacion(pph.getUnidadesBonificacion());
+                    fp.setUnidadesVenta(pph.getUnidadesVenta());
+                }
             }
 
             userTransaction.commit();
-            return true;
         } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
             try {
-                System.out.println("======>");
-                e.printStackTrace();
-                System.out.println("<======");
+//                System.out.println("======>");
+//                e.printStackTrace();
+//                System.out.println("<======");
                 userTransaction.rollback();
             } catch (IllegalStateException | SecurityException | SystemException es) {
-                System.out.println("======>");
-                es.printStackTrace();
-                System.out.println("<======");
+//                System.out.println("======>");
+//                es.printStackTrace();
+//                System.out.println("<======");
             }
         }
-        return false;
     }
 
     public boolean createIngreso(Ingreso i, List<IngresoProducto> ingresoProductos) {
@@ -405,4 +412,5 @@ public class TransactionFacade {
         }
         return false;
     }
+
 }

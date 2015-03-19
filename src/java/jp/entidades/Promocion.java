@@ -50,8 +50,10 @@ public class Promocion implements Serializable, Codificable {
     @NotNull
     @Column(nullable = false)
     private double valor;
-    @Column(name = "valor_venta_usd", precision = 17, scale = 17)
-    private Double valorVentaUsd;
+    @Basic(optional = false)
+    @NotNull
+    @Column(nullable = false)
+    private double valorVentaUsd;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 45)

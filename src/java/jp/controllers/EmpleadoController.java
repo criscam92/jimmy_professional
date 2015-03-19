@@ -142,7 +142,7 @@ public class EmpleadoController implements Serializable {
         return getFacade().findAll();
     }
 
-    @FacesConverter(forClass = Empleado.class)
+    @FacesConverter(forClass = Empleado.class, value = "empleadoconverter")
     public static class EmpleadoControllerConverter implements Converter {
 
         @Override
@@ -181,4 +181,9 @@ public class EmpleadoController implements Serializable {
             }
         }
     }
+
+    public List<Empleado> llenarEmpleado(String query) {
+        return getFacade().getEmpleadoByQuery(query);
+    }
+
 }

@@ -135,19 +135,6 @@ public class ClienteController implements Serializable {
     }
 
     public void createOrEdit() {
-
-        System.out.println("============== DATOS ==============");
-        System.out.println("BARRIO: " + selected.getBarrio());
-        System.out.println("CIUDAD: " + selected.getCiudad().getNombre());
-        System.out.println("CUPO CREDITO: " + selected.getCupoCredito());
-        System.out.println("DIRECCION" + selected.getDireccion());
-        System.out.println("EMPLEADO: " + selected.getEmpleado().getNombre());
-        System.out.println("NOMBRE: " + selected.getNombre());
-        System.out.println("TARIFA ESPECIAL: " + selected.getTarifaEspecial());
-        System.out.println("TELEFONOS: " + selected.getTelefonos());
-        System.out.println("TIPO: " + selected.getTipo());
-        System.out.println("============== DATOS ==============");
-
         String msm = (selected.getId() != null ? JsfUtil.getMessageBundle(new String[]{"MessageCliente", "UpdateSuccessM"})
                 : JsfUtil.getMessageBundle(new String[]{"MessageCliente", "CreateSuccessM"}));
 
@@ -209,7 +196,7 @@ public class ClienteController implements Serializable {
         return getFacade().findAll();
     }
 
-    @FacesConverter(forClass = Cliente.class)
+    @FacesConverter(forClass = Cliente.class, value = "clienteconverter")
     public static class ClienteControllerConverter implements Converter {
 
         @Override
@@ -270,6 +257,10 @@ public class ClienteController implements Serializable {
             visibility = "hidden";
             selected.setTarifaEspecial(null);
         }
+    }
+
+    public List<Cliente> llenarCliente(String query) {
+        return getFacade().getClienteByQuery(query);
     }
 
 }
