@@ -13,8 +13,8 @@
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{usuarioController.selected != null}">
 
-                        <p:outputLabel styleClass="#{usuarioController.classError()}" value="#{bundle.EditUsuarioLabel_usuario}" for="usuario" />
-                        <p:inputText styleClass="#{usuarioController.classError()}" id="usuario" value="#{usuarioController.selected.usuario}" title="#{bundle.EditUsuarioTitle_usuario}" required="true" requiredMessage="#{bundle.EditUsuarioRequiredMessage_usuario}"/>
+                        <p:outputLabel styleClass="#{usuarioController.error}" value="#{bundle.EditUsuarioLabel_usuario}" for="usuario" />
+                        <p:inputText styleClass="#{usuarioController.error}" id="usuario" value="#{usuarioController.selected.usuario}" title="#{bundle.EditUsuarioTitle_usuario}" required="true" requiredMessage="#{bundle.EditUsuarioRequiredMessage_usuario}"/>
 
                         <p:outputLabel value="#{bundle.EditUsuarioLabel_contrasena1}" for="contrasena1">
                             <span class="ui-outputlabel-rfi">*</span>

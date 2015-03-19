@@ -12,11 +12,23 @@
             <h:form id="PromocionEditForm">
                 <p:panelGrid columns="1" rendered="#{promocionController.selected != null}">
                     <p:panelGrid columns="4">
+                        <p:outputLabel styleClass="#{promocionController.error}" id="labelCodigo" value="Codigo: " for="codigo" style="margin-right: 22px;"/>
+                        <p:inputText styleClass="#{promocionController.error}" id="codigo" value="#{promocionController.selected.codigo}" title="Codigo" required="true" requiredMessage="El campo codigo es requerido"/>              
+                        
+                        <p:outputLabel value="#{bundle.CreateClienteLabel_cat}" for="categoria" />
+                        <p:selectOneMenu converter="categoriaconverter" style="width: 155px" id="categoria" value="#{promocionController.selected.categoria}">
+                            <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>
+                            <f:selectItems  value="#{categoriaController.itemsAvailableSelectOne}"
+                                            var="categoriaItem"
+                                            itemValue="#{categoriaItem}"/>
+                        </p:selectOneMenu>
+                        
                         <p:outputLabel value="#{bundle.CreatePromocionLabel_valor}" for="valor" />
                         <p:inputText id="valor" style="width: 160px" value="#{promocionController.selected.valor}" title="#{bundle.CreatePromocionTitle_valor}" required="true" requiredMessage="#{bundle.CreatePromocionRequiredMessage_valor}"/>
-
-                        <p:outputLabel value="Codigo: " for="codigo" style="margin-right: 22px;"/>
-                        <p:inputText id="codigo" value="#{promocionController.selected.codigo}" title="Codigo" required="true" requiredMessage="El campo codigo es requerido"/>              
+                        
+                        <p:outputLabel value="#{bundle.CreateProductoLabel_valorVentaUsd}" for="valorVentaUsd" />
+                        <p:inputText id="valorVentaUsd" value="#{promocionController.selected.valorVentaUsd}" title="#{bundle.CreateProductoTitle_valorVentaUsd}"/>
+                        
                     </p:panelGrid>
                     <p:panelGrid columns="2">
                         <p:outputLabel value="#{bundle.CreatePromocionLabel_descripcion}" for="descripcion" />
@@ -64,7 +76,7 @@
                     </p:panelGrid>                    
                 </p:panelGrid>
                 <div class="botonesDialog">
-                    <p:commandButton actionListener="#{promocionController.update}" value="#{bundle.Save}" update=":PromocionListForm:datalist,:growl" oncomplete="handleSubmit(args, 'PromocionEditDialog');"/>                    
+                    <p:commandButton actionListener="#{promocionController.update}" value="#{bundle.Save}" update=":PromocionListForm:datalist,:growl,codigo,labelCodigo"/>
                     <p:commandButton value="#{bundle.Cancel}" type="button" onclick="PF('PromocionEditDialog').hide()"/>
                 </div>
             </h:form>

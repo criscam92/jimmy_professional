@@ -84,8 +84,8 @@
                         </f:facet>
                         <f:facet name="filter">
                             <p:selectOneMenu onchange="PF('tblVisita').filter()">
-                                <f:selectItem itemLabel="#{bundle.SelectOneMessage}" itemValue="#{null}" noSelectionOption="true" />
-                                <f:selectItems value="#{visitaController.estadosVisita}" />
+                                <f:selectItem itemLabel="#{bundle.All}" itemValue="#{null}" noSelectionOption="true" />
+                                <f:selectItems value="#{visitaController.estadosVisita}" var="itemEstado" itemValue="#{itemEstado.valor}"/>
                             </p:selectOneMenu>
                         </f:facet>
                         <h:outputText value="#{visitaController.getEstadoVisita(item.estado)}"/>

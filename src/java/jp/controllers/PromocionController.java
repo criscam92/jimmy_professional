@@ -39,8 +39,10 @@ public class PromocionController implements Serializable {
     private List<PromocionProducto> promocionProductos = null;
     private final List<PromocionProducto> promocionProductosEliminar;
     private final List<PromocionProducto> promocionProductosGuardar;
+    private String uiError, error;
 
     public PromocionController() {
+        uiError = "ui-state-error";
         promocionProductos = new ArrayList<>();
         promocionProductosEliminar = new ArrayList<>();
         promocionProductosGuardar = new ArrayList<>();
@@ -107,6 +109,8 @@ public class PromocionController implements Serializable {
 
     public Promocion prepareCreate() {
         selected = new Promocion();
+        setError("");
+        promocionProductos = new ArrayList<>();
         initializeEmbeddableKey();
         return selected;
     }
@@ -128,15 +132,18 @@ public class PromocionController implements Serializable {
                         if (guardar) {
                             RequestContext.getCurrentInstance().execute("PF('PromocionCreateDialog').hide()");
                         }
+                        setError("");
+                        JsfUtil.addSuccessMessage(JsfUtil.getMessageBundle(new String[] {"MessagePromocion","CreateSuccessF"}));
                     }
                 } else {
                     JsfUtil.addErrorMessage("No se ha podido guardar la Promoción");
                 }
 
             } else {
-                JsfUtil.addErrorMessage("La promocion debe tener como minimo un producto");
+                JsfUtil.addErrorMessage("La promocion debe tener como mínimo un producto");
             }
         } else {
+            setError(uiError);
             JsfUtil.addErrorMessage("Ya existe el Código " + selected.getCodigo());
         }
     }
@@ -153,16 +160,21 @@ public class PromocionController implements Serializable {
                         promocionProductos.clear();
                         promocionProductosGuardar.clear();
                         promocionProductosEliminar.clear();
+                        setError("");
+                        RequestContext.getCurrentInstance().execute("PF('PromocionEditDialog').hide()");
+                        JsfUtil.addSuccessMessage(JsfUtil.getMessageBundle(new String[] {"MessagePromocion","UpdateSuccessF"}));
                     }
                 } else {
-                    JsfUtil.addErrorMessage("NO SE A PODIDO actualizar LA PROMOCION");
+                    JsfUtil.addErrorMessage("No se ha podido actualizar la Promoción");
                 }
 
             } else {
-                JsfUtil.addErrorMessage("La promocion debe tener como minimo un producto");
+                JsfUtil.addErrorMessage("La promoción debe tener como mínimo un producto");
             }
         } else {
-            JsfUtil.addErrorMessage("ya existe el codigo " + selected.getCodigo());
+            items = null;
+            setError(uiError);
+            JsfUtil.addErrorMessage("Ya existe el código " + selected.getCodigo());
         }
     }
 
@@ -233,6 +245,14 @@ public class PromocionController implements Serializable {
         }
 
         return !productoNulo && cantidadMayorCero;
+    }
+
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
     }
 
     @FacesConverter(forClass = Promocion.class, value = "promocionconverter")

@@ -187,7 +187,7 @@ public class Empleado implements Serializable, Codificable {
 
     @Override
     public String toString() {
-        return nombre;
+        return this.getCodigo()+" - "+this.getNombre();
     }
 
     @Override

@@ -58,13 +58,17 @@
                         <f:facet name="header">
                             <h:outputText value="#{bundle.ListPromocionTitle_valor}"/>
                         </f:facet>
-                        <h:outputText value="#{item.valor}"/>
+                        <h:outputText value="#{item.valor}">
+                            <f:convertNumber pattern="$ #,##0.00" currencySymbol="$" />
+                        </h:outputText>
                     </p:column>
                     <p:column>
                         <f:facet name="header">
                             <h:outputText value="#{bundle.CreateProductoLabel_valorVentaUsd}"/>
                         </f:facet>
-                        <h:outputText value="#{item.valorVentaUsd}"/>
+                        <h:outputText value="#{item.valorVentaUsd}">
+                            <f:convertNumber pattern="USD #,##0.00" currencySymbol="USD" />
+                        </h:outputText>
                     </p:column>
                     <p:column>
                         <f:facet name="header">

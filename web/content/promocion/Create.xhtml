@@ -10,15 +10,13 @@
 
         <p:dialog id="PromocionCreateDlg" widgetVar="PromocionCreateDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.CreatePromocionTitle}">
             <h:form id="PromocionCreateForm">
-                <!--<h:panelGroup id="display">-->
                 <p:panelGrid columns="1" rendered="#{promocionController.selected != null}">
                     <p:panelGrid columns="4">
-                        <p:outputLabel value="Codigo: " for="codigo" style="margin-right: 22px;"/>
-                        <p:inputText id="codigo" style="width: 70px" value="#{promocionController.selected.codigo}" title="Codigo" required="true" requiredMessage="El campo codigo es requerido"/>
+                        <p:outputLabel styleClass="#{promocionController.error}" id="labelCodigo" value="#{bundle.EditCodigoDevolucionLabel_codigo}" for="codigo" style="margin-right: 22px;"/>
+                        <p:inputText styleClass="#{promocionController.error}" id="codigo" style="width: 70px" value="#{promocionController.selected.codigo}" title="Codigo" required="true" requiredMessage="El campo codigo es requerido"/>
 
                         <p:outputLabel value="#{bundle.CreateClienteLabel_cat}" for="categoria" />
                         <p:selectOneMenu converter="categoriaconverter" style="width: 155px" id="categoria" value="#{promocionController.selected.categoria}">
-                            <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>
                             <f:selectItems  value="#{categoriaController.itemsAvailableSelectOne}"
                                             var="categoriaItem"
                                             itemValue="#{categoriaItem}"/>
@@ -44,7 +42,8 @@
                         <p:outputLabel value="Cantidad:" rendered="true" for="cantidad" />
                         <p:inputText style="width: 48px; " id="cantidad" value="#{promocionController.cantidad}" title="Cantidad" />
 
-                        <p:commandButton icon="ui-icon-plus" value="Agregar" update="listPromocionProductos,producto,cantidad,:growl"  actionListener="#{promocionController.addPromocionProducto}"/>
+                        <p:commandButton icon="ui-icon-plus" value="#{bundle.AddItem}" update="listPromocionProductos,producto,cantidad,:growl"
+                                         actionListener="#{promocionController.addPromocionProducto}"/>
                     </p:panelGrid>
                     <p:panelGrid columns="1">
                         <p:dataTable id="listPromocionProductos" style="width:510px;"  value="#{promocionController.promocionProductos}" var="item"
@@ -77,8 +76,8 @@
                     </p:panelGrid>
                 </p:panelGrid>
                 <div class="botonesDialog">
-                    <p:commandButton actionListener="#{promocionController.create(true)}" value="#{bundle.Save}" update=":PromocionListForm:datalist,:growl"/>
-                    <p:commandButton actionListener="#{promocionController.create(false)}" value="Nueva Promoción" update=":PromocionListForm:datalist,:growl,@form"/>
+                    <p:commandButton actionListener="#{promocionController.create(true)}" value="#{bundle.Save}" update=":PromocionListForm:datalist,:growl,codigo,labelCodigo"/>
+                    <p:commandButton actionListener="#{promocionController.create(false)}" value="Nueva Promoción" update=":PromocionListForm:datalist,:growl,@form,codigo,labelCodigo"/>
                     <p:commandButton value="#{bundle.Cancel}" type="button" onclick="PF('PromocionCreateDialog').hide()"/>
                 </div>
             </h:form>

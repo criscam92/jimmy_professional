@@ -3,7 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <ui:composition>
 
@@ -13,10 +14,20 @@
                     <p:panelGrid columns="2" rendered="#{promocionController.selected != null}">
                         <h:outputText value="#{bundle.ViewPromocionLabel_id}"/>
                         <h:outputText value="#{promocionController.selected.id}" title="#{bundle.ViewPromocionTitle_id}"/>
+                        <h:outputText value="#{bundle.CreateCodigoDevolucionLabel_codigo}"/>
+                        <h:outputText value="#{promocionController.selected.codigo}" title="#{bundle.CreateCodigoDevolucionTitle_codigo}"/>
                         <h:outputText value="#{bundle.ViewPromocionLabel_descripcion}"/>
                         <h:outputText value="#{promocionController.selected.descripcion}" title="#{bundle.ViewPromocionTitle_descripcion}"/>
                         <h:outputText value="#{bundle.ViewPromocionLabel_valor}"/>
-                        <h:outputText value="#{promocionController.selected.valor}" title="#{bundle.ViewPromocionTitle_valor}"/>
+                        <h:outputText value="#{promocionController.selected.valor}" title="#{bundle.ViewPromocionTitle_valor}">
+                            <f:convertNumber pattern="$ #,##0.00" currencySymbol="$" />
+                        </h:outputText>
+                        <h:outputText value="#{bundle.CreateProductoLabel_valorVentaUsd}"/>
+                        <h:outputText value="#{promocionController.selected.valorVentaUsd}" title="#{bundle.CreateProductoTitle_valorVentaUsd}">
+                            <f:convertNumber pattern="USD #,##0.00" currencySymbol="USD" />
+                        </h:outputText>
+                        <h:outputText value="#{bundle.CreateClienteLabel_cat}"/>
+                        <h:outputText value="#{promocionController.selected.categoria}" title="#{bundle.CreateClienteTitle_cat}"/>
                     </p:panelGrid>                    
                 </h:panelGroup>
                 <div class="botonesDialog">

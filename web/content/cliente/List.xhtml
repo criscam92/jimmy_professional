@@ -23,6 +23,7 @@
                              rowsPerPageTemplate="10,20,30,40,50"
                              paginatorPosition="bottom"
                              emptyMessage="#{bundle.EmptyTable}"
+                             widgetVar="tablaClientes"
                              >
 
                     <f:facet name="header">
@@ -34,7 +35,7 @@
                             <p:commandButton id="viewButton"   icon="ui-icon-search" value="#{bundle.View}" update=":ClienteViewForm" oncomplete="PF('ClienteViewDialog').show()" disabled="#{empty clienteController.selected}"/>
                             <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}"   actionListener="#{clienteController.prepareEdit}" update=":ClienteFormDlg,:ClienteForm" oncomplete="PF('ClienteFormDialog').show()" disabled="#{empty clienteController.selected}"/>
                             <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{clienteController.destroy}" update=":growl,datalist" disabled="#{empty clienteController.selected}"/>
-                            <p:commandButton icon="fa fa-table" value="Excel" ajax="false">
+                            <p:commandButton icon="fa fa-table" value="Excel" ajax="false" disabled="#{clienteController.items == null}">
                                 <p:dataExporter type="xls" target="datalist" fileName="Clientes" />
                             </p:commandButton>
                         </div>
@@ -43,17 +44,14 @@
                     <p:ajax event="rowSelect"   update=":ClienteListForm"/>
                     <p:ajax event="rowUnselect" update=":ClienteListForm"/>
 
+                    <p:column filterStyle="width: 70px" filterBy="#{item.documento}" headerText="#{bundle.CreateClienteTitle_documento}" filterMatchMode="contains" style="text-align: center;">
+                        <h:outputText value="#{item.documento}"/>
+                    </p:column>
                     <p:column>
                         <f:facet name="header">
                             <h:outputText value="#{bundle.ListClienteTitle_nombre}"/>
                         </f:facet>
                         <h:outputText value="#{item.nombre}"/>
-                    </p:column>
-                    <p:column>
-                        <f:facet name="header">
-                            <h:outputText value="#{bundle.CreateClienteTitle_documento}"/>
-                        </f:facet>
-                        <h:outputText value="#{item.documento}"/>
                     </p:column>
                     <p:column>
                         <f:facet name="header">
@@ -63,41 +61,31 @@
                     </p:column>
                     <p:column>
                         <f:facet name="header">
-                            <h:outputText value="#{bundle.CreateClienteTitle_refe}"/>
-                        </f:facet>
-                        <h:outputText value="#{item.referenciaDireccion}"/>
-                    </p:column>
-                    <p:column>
-                        <f:facet name="header">
                             <h:outputText value="#{bundle.ListClienteTitle_barrio}"/>
                         </f:facet>
                         <h:outputText value="#{item.barrio}"/>
                     </p:column>
-                    <p:column>
+                    <p:column width="70">
                         <f:facet name="header">
                             <h:outputText value="#{bundle.MessageCreateTitleZona}"/>
                         </f:facet>
                         <h:outputText value="#{item.zona.toString()}"/>
                     </p:column>
-                    <p:column>
-                        <f:facet name="header">
-                            <h:outputText value="#{bundle.ListClienteTitle_ciudad}"/>
+                    <p:column filterBy="#{item.ciudad}" headerText="Ciudad" filterMatchMode="in">
+                        <f:facet name="filter">
+                            <p:selectCheckboxMenu label="Ciudades" onchange="PF('tablaClientes').filter()" panelStyle="width:210px" scrollHeight="150">
+                                <f:selectItems value="#{ciudadController.itemsAvailableSelectMany}"/>
+                            </p:selectCheckboxMenu>
                         </f:facet>
-                        <h:outputText value="#{item.ciudad.toString()}"/>
+                        <h:outputText value="#{item.ciudad.toString()}" />
                     </p:column>
-                    <p:column>
-                        <f:facet name="header">
-                            <h:outputText value="#{bundle.CreateClienteTitle_contacto}"/>
-                        </f:facet>
-                        <h:outputText value="#{item.contacto}"/>
-                    </p:column>
-                    <p:column>
+                    <p:column width="70">
                         <f:facet name="header">
                             <h:outputText value="#{bundle.ListClienteTitle_telefonos}"/>
                         </f:facet>
                         <h:outputText value="#{item.telefonos}"/>
                     </p:column>
-                    <p:column>
+                    <p:column width="70">
                         <f:facet name="header">
                             <h:outputText value="#{bundle.ListClienteTitle_cupoCredito}"/>
                         </f:facet>
@@ -105,27 +93,30 @@
                             <f:convertNumber pattern="$ #,##0.00" currencySymbol="$" />
                         </h:outputText>
                     </p:column>
-                    <p:column>
+                    <p:column width="40">
                         <f:facet name="header">
                             <h:outputText value="#{bundle.ListClienteTitle_tarifaEspecial}"/>
                         </f:facet>
                         <h:outputText value="#{item.tarifaEspecial} %"/>
                     </p:column>                    
-                    <p:column>
-                        <f:facet name="header">
-                            <h:outputText value="#{bundle.ListClienteTitle_empleado}"/>
-                        </f:facet>
+                    <p:column filterBy="#{item.empleado}" filterMatchMode="contains" headerText="#{bundle.ListClienteTitle_empleado}" filterStyle="width: 70px">
                         <h:outputText value="#{item.empleado.toString()}"/>
                     </p:column>
-                    <p:column>
-                        <f:facet name="header">
-                            <h:outputText value="#{bundle.ListClienteTitle_tipo}"/>
+                    <p:column filterBy="#{item.tipo}" headerText="Tipo" filterMatchMode="exact">
+                        <f:facet name="filter">
+                            <p:selectOneMenu onchange="PF('tablaClientes').filter()" >
+                                <f:selectItem itemLabel="#{bundle.All}" itemValue="#{null}" noSelectionOption="true" />
+                                <f:selectItems value="#{tipoClienteController.itemsAvailableSelectOne}" />
+                            </p:selectOneMenu>
                         </f:facet>
                         <h:outputText value="#{item.tipo.toString()}"/>
                     </p:column>
-                    <p:column>
-                        <f:facet name="header">
-                            <h:outputText value="#{bundle.CreateClienteTitle_cat}"/>
+                    <p:column filterBy="#{item.categoria}" headerText="#{bundle.CreateClienteTitle_cat}" filterMatchMode="exact">
+                        <f:facet name="filter">
+                            <p:selectOneMenu onchange="PF('tablaClientes').filter()" >
+                                <f:selectItem itemLabel="#{bundle.All}" itemValue="#{null}" noSelectionOption="true" />
+                                <f:selectItems value="#{categoriaController.itemsAvailableSelectOne}" />
+                            </p:selectOneMenu>
                         </f:facet>
                         <h:outputText value="#{item.categoria}"/>
                     </p:column>

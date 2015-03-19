@@ -11,11 +11,11 @@
         <p:dialog id="EmpleadoCreateDlg" widgetVar="EmpleadoCreateDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.CreateEmpleadoTitle}">
             <h:form id="EmpleadoCreateForm">
                 <h:panelGroup id="display">
-                    <p:panelGrid columns="2" rendered="#{empleadoController.selected != null}">
-                        <p:outputLabel value="#{bundle.CreateEmpleadoLabel_nombre}" for="nombre" />
-                        <p:inputText id="nombre" value="#{empleadoController.selected.nombre}" title="#{bundle.CreateEmpleadoTitle_nombre}" required="true" requiredMessage="#{bundle.CreateEmpleadoRequiredMessage_nombre}"/>
+                    <p:panelGrid columns="2" rendered="#{empleadoController.selected != null}">                        
                         <p:outputLabel styleClass="#{empleadoController.error}" value="#{bundle.CreateEmpleadoLabel_codigo}" for="codigo" />
                         <p:inputText styleClass="#{empleadoController.error}" id="codigo" value="#{empleadoController.selected.codigo}" title="#{bundle.CreateEmpleadoTitle_codigo}" required="true" requiredMessage="#{bundle.CreateEmpleadoRequiredMessage_codigo}"/>
+                        <p:outputLabel value="#{bundle.CreateEmpleadoLabel_nombre}" for="nombre" />
+                        <p:inputText id="nombre" value="#{empleadoController.selected.nombre}" title="#{bundle.CreateEmpleadoTitle_nombre}" required="true" requiredMessage="#{bundle.CreateEmpleadoRequiredMessage_nombre}"/>
                         <p:outputLabel value="#{bundle.CreateEmpleadoLabel_telefonos}" for="telefonos" />
                         <p:inputText id="telefonos" value="#{empleadoController.selected.telefonos}" title="#{bundle.CreateEmpleadoTitle_telefonos}" />
                         <p:outputLabel value="#{bundle.CreateEmpleadoLabel_tipo}" for="tipo" />

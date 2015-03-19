@@ -11,6 +11,8 @@
             <h:form id="ProductoEditForm">
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{productoController.selected != null}">
+                        <p:outputLabel styleClass="#{productoController.error}" value="#{bundle.EditProductoLabel_nombre}" for="codigo" />
+                        <p:inputText styleClass="#{productoController.error}" id="codigo" value="#{productoController.selected.codigo}" title="#{bundle.CreateCodigoDevolucionTitle_codigo}" required="true" requiredMessage="#{bundle.CreateProductoRequiredMessage_codigo}"/>
                         <p:outputLabel value="#{bundle.EditProductoLabel_nombre}" for="nombre" />
                         <p:inputText id="nombre" value="#{productoController.selected.nombre}" title="#{bundle.EditProductoTitle_nombre}" required="true" requiredMessage="#{bundle.EditProductoRequiredMessage_nombre}"/>
                         <p:outputLabel value="#{bundle.EditProductoLabel_descripcion}" for="descripcion" />
@@ -30,7 +32,7 @@
                 </h:panelGroup>
                 <div class="botonesDialog">
                     <p:commandButton actionListener="#{productoController.update}" value="#{bundle.Save}"
-                                     update="display,:ProductoListForm:datalist,:growl" oncomplete="handleSubmit(args, 'ProductoEditDialog');"/>
+                                     update="display,:ProductoListForm:datalist,:growl"/>
                     <p:commandButton value="#{bundle.Cancel}" type="button" onclick="PF('ProductoEditDialog').hide()"/>
                 </div>
             </h:form>

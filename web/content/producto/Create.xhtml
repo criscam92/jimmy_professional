@@ -14,11 +14,12 @@
             <h:form id="ProductoCreateForm">
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{productoController.selected != null}">
+                        
+                        <p:outputLabel styleClass="#{productoController.error}" value="#{bundle.CreateProductoLabel_codigo}" for="codigo" />
+                        <p:inputText styleClass="#{productoController.error}" id="codigo" value="#{productoController.selected.codigo}" title="#{bundle.CreateProductoTitle_codigo}" required="true" requiredMessage="#{bundle.CreateProductoRequiredMessage_codigo}"/>
+                        
                         <p:outputLabel value="#{bundle.CreateProductoLabel_nombre}" for="nombre" />                        
                         <p:inputText id="nombre" value="#{productoController.selected.nombre}" title="#{bundle.CreateProductoTitle_nombre}" required="true" requiredMessage="#{bundle.CreateProductoRequiredMessage_nombre}"/>
-
-                        <p:outputLabel value="#{bundle.CreateProductoLabel_codigo}" for="codigo" />
-                        <p:inputText id="codigo" value="#{productoController.selected.codigo}" title="#{bundle.CreateProductoTitle_codigo}" required="true" requiredMessage="#{bundle.CreateProductoRequiredMessage_codigo}"/>
 
                         <p:outputLabel value="#{bundle.CreateProductoLabel_descripcion}" for="descripcion" />
                         <p:inputTextarea style="width: 146px; " id="descripcion" cols="18" value="#{productoController.selected.descripcion}" title="#{bundle.CreateProductoTitle_descripcion}" required="true" requiredMessage="#{bundle.CreateProductoRequiredMessage_descripcion}"/>
@@ -42,7 +43,7 @@
                     </p:panelGrid>                    
                 </h:panelGroup>
                 <div class="botonesDialog">
-                    <p:commandButton actionListener="#{productoController.create}" value="#{bundle.Save}" update="display,:ProductoListForm:datalist,:growl" oncomplete="handleSubmit(args,'ProductoCreateDialog');"/>
+                    <p:commandButton actionListener="#{productoController.create}" value="#{bundle.Save}" update="display,:ProductoListForm:datalist,:growl"/>
                     <p:commandButton value="#{bundle.Cancel}" type="button" onclick="PF('ProductoCreateDialog').hide()"/>
                 </div>
             </h:form>

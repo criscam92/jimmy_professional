@@ -88,7 +88,8 @@ public class UsuarioController implements Serializable {
     public void update() {
         if (!getFacade().getUsuarioByNombre(selected)) {
             if (verificarClave()) {
-                persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(JsfUtil.getMessageBundle(new String[]{"MessengerUser", "UpdateSuccessM"})));
+                items = null;
+                persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessengerUser", "UpdateSuccessM"}));
                 RequestContext.getCurrentInstance().execute("PF('UsuarioEditDialog').hide()");
             }
         } else {
