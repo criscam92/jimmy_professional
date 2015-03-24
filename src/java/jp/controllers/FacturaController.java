@@ -173,24 +173,37 @@ public class FacturaController implements Serializable {
         return selected;
     }
 
-    public void create() {
+    public String create(boolean despachar) {
         if (objects.size() > 0) {
-            try {
-                getEjbTransactionFacade().createFacturaProductoPromocion(selected, objects);
-                if (!JsfUtil.isValidationFailed()) {
-                    clean();
-                    redireccionarFormulario();
-                } else {
-                    JsfUtil.addErrorMessage("NO SE HA PODIDO GUARDAR LA PROMOCION");
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
 
+            String opTMP = selected.getOrdenPedido();
+            System.out.println("opTMP: " + opTMP);
+
+            if (getFacade().getFacturaByOrdenPedido(opTMP) == null) {
+                try {
+                    System.out.println("OBJECTS: " + objects.size());
+                    getEjbTransactionFacade().createFacturaProductoPromocion(selected, objects);
+                    if (!JsfUtil.isValidationFailed()) {
+                        clean();
+                        if (despachar) {
+                            return "Despacho.xhtml?fac=" + opTMP + "&faces-redirect=true";
+                        } else {
+                            redireccionarFormulario();
+                        }
+                    } else {
+                        JsfUtil.addErrorMessage("NO SE HA PODIDO GUARDAR LA PROMOCION");
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            } else {
+                JsfUtil.addErrorMessage("El pedido " + selected.getOrdenPedido() + " ya existe");
+            }
         } else {
             JsfUtil.addErrorMessage("La factura debe tener como minimo un producto");
         }
-
+        return "";
     }
 
     public void update() {
@@ -310,7 +323,7 @@ public class FacturaController implements Serializable {
                         || (!pph.isProducto() && ((Promocion) pph.getProductoPromocion()).getId().equals(promocion.getId()))) {
                     existe = true;
                     int io = objects.indexOf(pph);
-                    objects.get(io).setPrecio((precio * (unidadesVenta - unidadesBonificacion) + pph.getPrecio()));
+                    objects.get(io).setPrecio((precio * unidadesVenta) + pph.getPrecio());
                     objects.get(io).setUnidadesBonificacion(unidadesBonificacion + pph.getUnidadesBonificacion());
                     objects.get(io).setUnidadesVenta(unidadesVenta + pph.getUnidadesVenta());
                     break;
@@ -319,7 +332,7 @@ public class FacturaController implements Serializable {
 
             if (!existe) {
                 ProductoPromocionHelper pph = new ProductoPromocionHelper(objects.size() + 1L, unidadesVenta, unidadesBonificacion,
-                        (precio * (unidadesVenta - unidadesBonificacion)), isProducto ? producto : promocion, isProducto);
+                        (precio * unidadesVenta), isProducto ? producto : promocion, isProducto);
                 objects.add(pph);
             }
         }
@@ -362,9 +375,11 @@ public class FacturaController implements Serializable {
         if (selected.getDescuento() != null) {
             descuento = selected.getDescuento();
         }
+
         for (ProductoPromocionHelper fp : objects) {
             sum += fp.getPrecio();
         }
+
         descuento = sum * descuento / 100;
         if (selected != null) {
             selected.setTotalPagar(sum - descuento);

@@ -8,6 +8,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import jp.entidades.Ingreso;
 import jp.entidades.IngresoProducto;
+import jp.entidades.Producto;
 
 @Stateless
 public class IngresoFacade extends AbstractFacade<Ingreso> {
@@ -32,6 +33,16 @@ public class IngresoFacade extends AbstractFacade<Ingreso> {
         } catch (NoResultException e) {
         }
         return null;
+    }
+
+    public Long getCountIngresoByProducto(Producto producto) {
+        try {
+            Query q = getEntityManager().createQuery("SELECT SUM(ip.cantidad) FROM IngresoProducto ip WHERE ip.producto.id = :producto");
+            q.setParameter("producto", producto.getId());
+            return (Long) q.getSingleResult();
+        } catch (Exception e) {
+        }
+        return 0L;
     }
 
 }

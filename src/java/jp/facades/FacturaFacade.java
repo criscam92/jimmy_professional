@@ -96,4 +96,14 @@ public class FacturaFacade extends AbstractFacade<Factura> {
         return null;
     }
 
+    public Factura getFacturaByOrdenPedido(String ordenPedido) {
+        try {
+            Query query = getEntityManager().createQuery("SELECT f FROM Factura f WHERE f.ordenPedido = :op");
+            query.setParameter("op", ordenPedido);
+            query.setMaxResults(1);
+            return (Factura) query.getSingleResult();
+        } catch (NoResultException e) {
+        }
+        return null;
+    }
 }

@@ -289,6 +289,7 @@ public class TransactionFacade {
                     fp.setProducto((Producto) pph.getProductoPromocion());
                     fp.setUnidadesBonificacion(pph.getUnidadesBonificacion());
                     fp.setUnidadesVenta(pph.getUnidadesVenta());
+                    getEntityManager().merge(fp);
                 } else {
                     FacturaPromocion fp = new FacturaPromocion();
                     fp.setFactura(facturaTMP);
@@ -297,6 +298,7 @@ public class TransactionFacade {
                     fp.setPromocion((Promocion) pph.getProductoPromocion());
                     fp.setUnidadesBonificacion(pph.getUnidadesBonificacion());
                     fp.setUnidadesVenta(pph.getUnidadesVenta());
+                    getEntityManager().merge(fp);
                 }
             }
 

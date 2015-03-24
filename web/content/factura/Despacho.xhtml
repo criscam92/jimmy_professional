@@ -11,12 +11,13 @@
             <h:outputText value="Despachar Factura"/>
         </ui:define>
         <ui:define name="body">
-            <h:form id="DespacharForm">                    
-                <p:dataTable id="listaProductos"
-                             value="#{despachoController.productoAuxiliar}" var="item"
-                             paginator="true" rows="20" rowKey="#{item.id}"
-                             rowsPerPageTemplate="10,20,30,40,50"
-                             paginatorPosition="bottom"> 
+            <h:form id="DespacharForm">
+
+                <p:dataTable value="#{despachoFacturaController.productoHelpers}" var="item"
+                             selectionMode="single" paginator="true" rowKey="#{item.id}" rows="10"
+                             rowsPerPageTemplate="10,20,30,40,50" emptyMessage="#{bundle.EmptyTable}"
+                             paginatorPosition="bottom"
+                             >
 
                     <f:facet name="header">
                         LISTA DE PRODUTOS FACTURADOS
@@ -26,36 +27,27 @@
                         <f:facet name="header">
                             Productos
                         </f:facet>
-                        <h:outputText value="#{item.producto}"/>
+                        <h:outputText value="#{item.producto.toString()}"/>
                     </p:column>
 
                     <p:column>
                         <f:facet name="header">
                             Cantidad Facturada
                         </f:facet>
-                        <h:outputText value="#{item.cantidad}"/>
+                        <h:outputText value="#{item.cantidadFacturada}"/>
                     </p:column>
 
                     <p:column>
                         <f:facet name="header">
                             Cantidad Disponible
                         </f:facet>
-                        <h:outputText id="cantDisponible" value="#{item.cantDisponible}"/>
+                        <h:outputText value="#{item.cantidadDisponible}"/>
                     </p:column>
 
                     <p:column>
                         <f:facet name="header">
                             Nueva Cantidad
                         </f:facet>
-<!--                        <p:spinner id="basic" value="#{spinnerView.number1}" />-->
-                    </p:column>
-                    <p:column>
-                        <f:facet name="header">
-                            Quitar
-                        </f:facet>
-<!--                        <p:selectOneButton value="#{selectOneView.option}">
-                            <f:selectItem itemLabel="x"  itemValue="Xbox One" />
-                        </p:selectOneButton>-->
                     </p:column>
 
                 </p:dataTable>              

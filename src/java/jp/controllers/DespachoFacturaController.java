@@ -4,31 +4,104 @@ import jp.entidades.DespachoFactura;
 import jp.util.JsfUtil;
 import jp.util.JsfUtil.PersistAction;
 import jp.facades.DespachoFacturaFacade;
-
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.bean.ViewScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import jp.entidades.Factura;
+import jp.entidades.FacturaProducto;
+import jp.entidades.FacturaPromocion;
+import jp.entidades.ProductoHelper;
+import jp.entidades.PromocionProducto;
+import jp.facades.FacturaFacade;
+import jp.facades.FacturaProductoFacade;
 
 @ManagedBean(name = "despachoFacturaController")
-@SessionScoped
+@ViewScoped
 public class DespachoFacturaController implements Serializable {
 
     @EJB
-    private jp.facades.DespachoFacturaFacade ejbFacade;
+    private DespachoFacturaFacade ejbFacade;
+    @EJB
+    private FacturaFacade facturaFacade;
+    @EJB
+    private FacturaProductoFacade facturaProductoFacade;
     private List<DespachoFactura> items = null;
     private DespachoFactura selected;
+    private List<ProductoHelper> productoHelpers;
 
     public DespachoFacturaController() {
+        productoHelpers = new ArrayList<>();
+    }
+
+    @PostConstruct
+    public void init() {
+        Map<String, String> requestMap = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+        try {
+            FacesContext.getCurrentInstance().getExternalContext().getSession(true);
+            String ordenPedido = requestMap.get("fac");
+            Factura factura = getFacturaFacade().getFacturaByOrdenPedido(ordenPedido);
+
+            System.out.println("Entre: " + factura.getId());
+            System.out.println("Factura Producto: " + factura.getFacturaProductoList().size());
+            
+            for (FacturaProducto fp : factura.getFacturaProductoList()) {
+                System.out.println("factura producto");
+                ProductoHelper ph = new ProductoHelper(productoHelpers.size() + 1, fp.getProducto(), (fp.getUnidadesVenta() + fp.getUnidadesBonificacion()));
+                productoHelpers.add(ph);
+            }
+
+            for (FacturaPromocion fp : factura.getFacturaPromocionList()) {
+                System.out.println("factura promocion");
+                for (PromocionProducto pp : fp.getPromocion().getPromocionProductoList()) {
+                    for (ProductoHelper phr : productoHelpers) {
+                        if (phr.getProducto().getId().equals(pp.getProducto().getId())) {
+                            int index = productoHelpers.indexOf(phr);
+                            productoHelpers.get(index).setCantidadFacturada(phr.getCantidadFacturada() + ((fp.getUnidadesVenta() + fp.getUnidadesBonificacion()) * (pp.getCantidad())));
+                        } else {
+                            ProductoHelper ph = new ProductoHelper(productoHelpers.size() + 1, pp.getProducto(), (fp.getUnidadesVenta() + fp.getUnidadesBonificacion()) * (pp.getCantidad()));
+                            productoHelpers.add(ph);
+                        }
+                    }
+                }
+            }
+
+            System.out.println("Tamaño: " + productoHelpers.size());
+
+        } catch (Exception e) {
+            System.out.println("==========ERROR==========");
+            e.printStackTrace();
+            System.out.println("==========ERROR==========");
+        }
+    }
+
+    public FacturaProductoFacade getFacturaProductoFacade() {
+        return facturaProductoFacade;
+    }
+
+    public List<ProductoHelper> getProductoHelpers() {
+        return productoHelpers;
+    }
+
+    public void setProductoHelpers(List<ProductoHelper> productoHelpers) {
+        this.productoHelpers = productoHelpers;
+    }
+
+    public FacturaFacade getFacturaFacade() {
+        return facturaFacade;
     }
 
     public DespachoFactura getSelected() {

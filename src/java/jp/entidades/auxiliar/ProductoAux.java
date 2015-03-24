@@ -5,9 +5,9 @@ import jp.entidades.Producto;
 import jp.facades.ProductoFacade;
 
 public class ProductoAux {
-
-    @EJB
+    
     private int id;
+    @EJB
     private ProductoFacade ejbFacade;
     private Producto producto;
     private int cantidad;

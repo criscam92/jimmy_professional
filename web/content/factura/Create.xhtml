@@ -29,16 +29,6 @@
                                     <p:ajax event="itemSelect" listener="#{facturaController.onItemSelectEmpleado}" update="codigo" />
                                 </p:autoComplete>
 
-
-<!--                                <p:selectOneMenu style="width: 170px;" id="empleado" value="#{facturaController.selected.empleado}" required="true" requiredMessage="#{bundle.EditVisitaRequiredMessage_empleado}">
-    <f:selectItem  itemLabel="#{bundle.SelectOneMessage}"/>
-    <f:selectItems value="#{empleadoController.itemsAvailableSelectOne}"
-                   var="empleadoItem"
-                   itemValue="#{empleadoItem}"/>
-</p:selectOneMenu>-->
-
-
-
                             </p:panelGrid>
                             <p:panelGrid columns="2">
                                 <p:outputLabel value="#{bundle.CreateDevolucionLabel_observaciones}" for="observaciones"/>
@@ -61,7 +51,7 @@
                             <p:selectOneMenu style="width: 170px;" id="tipoPago" value="#{facturaController.selected.tipoPago}" 
                                              required="true" requiredMessage="#{bundle.CreateVisitaRequiredMessage_estado}">
                                 <f:selectItem  itemLabel="#{bundle.SelectOneMessage}"/>
-                                <f:selectItems value="#{facturaController.tiposPagos}" var="tipoPago" />
+                                <f:selectItems value="#{facturaController.tiposPagos}"/>
                             </p:selectOneMenu>
 
                             <p:outputLabel value="Moneda" for="moneda" />
@@ -160,7 +150,7 @@
                                 <f:convertNumber type="currency"  currencySymbol="$"/>
                             </h:outputText>
                         </p:column>
-                        <p:column style="text-align: center;" width="90">
+                        <p:column style="text-align: center;" width="100">
                             <f:facet name="header">
                                 <h:outputText value="Quitar"/>
                             </f:facet>
@@ -203,12 +193,12 @@
                     </p:dataTable>
                 </p:panel>
                 <div style="margin-top: 10px;">
-                    <p:commandButton actionListener="#{facturaController.create}" value="#{bundle.Save}"
+                    <p:commandButton actionListener="#{facturaController.create(false)}" value="#{bundle.Save}"
                                      icon="ui-icon-disk"/>
-                    <p:commandButton actionListener="#{facturaController.create}" value="#{bundle.MessageGuardarDespacharFactura}"
+                    <p:commandButton action="#{facturaController.create(true)}" value="#{bundle.MessageGuardarDespacharFactura}"
                                      icon="ui-icon-transferthick-e-w"/>
                 </div>
-            </h:form>            
+            </h:form>        
         </ui:define>
 
     </ui:composition>
