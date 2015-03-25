@@ -15,7 +15,6 @@ import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
 import javax.faces.bean.ViewScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -42,9 +41,12 @@ public class DespachoFacturaController implements Serializable {
     private List<DespachoFactura> items = null;
     private DespachoFactura selected;
     private List<ProductoHelper> productoHelpers;
+    private Factura factura;
+    private boolean despachos;
 
     public DespachoFacturaController() {
         productoHelpers = new ArrayList<>();
+        factura = new Factura();
     }
 
     @PostConstruct
@@ -53,39 +55,47 @@ public class DespachoFacturaController implements Serializable {
         try {
             FacesContext.getCurrentInstance().getExternalContext().getSession(true);
             String ordenPedido = requestMap.get("fac");
-            Factura factura = getFacturaFacade().getFacturaByOrdenPedido(ordenPedido);
+            factura = getFacturaFacade().getFacturaByOrdenPedido(ordenPedido);
+            despachos = factura.getDespachoFacturaList().size() > 0;
 
-            System.out.println("Entre: " + factura.getId());
-            System.out.println("Factura Producto: " + factura.getFacturaProductoList().size());
-            
             for (FacturaProducto fp : factura.getFacturaProductoList()) {
-                System.out.println("factura producto");
-                ProductoHelper ph = new ProductoHelper(productoHelpers.size() + 1, fp.getProducto(), (fp.getUnidadesVenta() + fp.getUnidadesBonificacion()));
+                ProductoHelper ph = new ProductoHelper(productoHelpers.size() + 1, fp.getProducto(), (fp.getUnidadesVenta() + fp.getUnidadesBonificacion()), factura, despachos);
                 productoHelpers.add(ph);
             }
 
             for (FacturaPromocion fp : factura.getFacturaPromocionList()) {
-                System.out.println("factura promocion");
                 for (PromocionProducto pp : fp.getPromocion().getPromocionProductoList()) {
                     for (ProductoHelper phr : productoHelpers) {
                         if (phr.getProducto().getId().equals(pp.getProducto().getId())) {
                             int index = productoHelpers.indexOf(phr);
                             productoHelpers.get(index).setCantidadFacturada(phr.getCantidadFacturada() + ((fp.getUnidadesVenta() + fp.getUnidadesBonificacion()) * (pp.getCantidad())));
                         } else {
-                            ProductoHelper ph = new ProductoHelper(productoHelpers.size() + 1, pp.getProducto(), (fp.getUnidadesVenta() + fp.getUnidadesBonificacion()) * (pp.getCantidad()));
+                            ProductoHelper ph = new ProductoHelper(productoHelpers.size() + 1, pp.getProducto(), (fp.getUnidadesVenta() + fp.getUnidadesBonificacion()) * (pp.getCantidad()), factura, despachos);
                             productoHelpers.add(ph);
                         }
                     }
                 }
             }
 
-            System.out.println("Tamaño: " + productoHelpers.size());
-
         } catch (Exception e) {
             System.out.println("==========ERROR==========");
             e.printStackTrace();
             System.out.println("==========ERROR==========");
         }
+
+    }
+
+    public boolean isDespachos() {
+        return despachos;
+    }
+
+    public void setDespachos(boolean despachos) {
+        this.despachos = despachos;
+    }
+
+    public int cantidadMaxima(ProductoHelper ph) {
+        int cantMax = ph.getCantidadFacturada() - ph.getCantidadDespachada();
+        return cantMax > ph.getCantidadDisponible() ? ph.getCantidadDisponible() : cantMax;
     }
 
     public FacturaProductoFacade getFacturaProductoFacade() {
@@ -189,6 +199,8 @@ public class DespachoFacturaController implements Serializable {
     public List<DespachoFactura> getItemsAvailableSelectOne() {
         return getFacade().findAll();
     }
+    
+    
 
     @FacesConverter(forClass = DespachoFactura.class)
     public static class DespachoFacturaControllerConverter implements Converter {

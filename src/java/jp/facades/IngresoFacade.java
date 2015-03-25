@@ -37,10 +37,13 @@ public class IngresoFacade extends AbstractFacade<Ingreso> {
 
     public Long getCountIngresoByProducto(Producto producto) {
         try {
-            Query q = getEntityManager().createQuery("SELECT SUM(ip.cantidad) FROM IngresoProducto ip WHERE ip.producto.id = :producto");
-            q.setParameter("producto", producto.getId());
-            return (Long) q.getSingleResult();
-        } catch (Exception e) {
+            Query query = getEntityManager().createQuery("SELECT SUM(i.cantidad) FROM IngresoProducto i WHERE i.producto.id = :producto");
+            query.setParameter("producto", producto.getId());
+            return (Long) query.getSingleResult();
+        } catch (NoResultException e) {
+            System.out.println("========= ERROR ===========");
+            e.printStackTrace();
+            System.out.println("========= ERROR ===========");
         }
         return 0L;
     }

@@ -2,7 +2,6 @@ package jp.controllers;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;

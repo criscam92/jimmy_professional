@@ -4,7 +4,8 @@
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
     <ui:composition template="/index.xhtml">
         <ui:define name="title">
@@ -30,24 +31,34 @@
                         <h:outputText value="#{item.producto.toString()}"/>
                     </p:column>
 
-                    <p:column>
+                    <p:column width="120">
                         <f:facet name="header">
                             Cantidad Facturada
                         </f:facet>
                         <h:outputText value="#{item.cantidadFacturada}"/>
                     </p:column>
 
-                    <p:column>
+                    <c:if test="#{despachoFacturaController.despachos}">
+                        <p:column width="120">
+                            <f:facet name="header">
+                                Cantidad Despachada
+                            </f:facet>
+                            <h:outputText value="#{item.cantidadDespachada}"/>
+                        </p:column>
+                    </c:if>
+
+                    <p:column width="120">
                         <f:facet name="header">
                             Cantidad Disponible
                         </f:facet>
                         <h:outputText value="#{item.cantidadDisponible}"/>
                     </p:column>
 
-                    <p:column>
+                    <p:column width="120">
                         <f:facet name="header">
                             Nueva Cantidad
                         </f:facet>
+                        <p:spinner size="11" id="minMax" value="#{despachoFacturaController.cantidadMaxima(item)}" min="0" max="#{despachoFacturaController.cantidadMaxima(item)}" />
                     </p:column>
 
                 </p:dataTable>              

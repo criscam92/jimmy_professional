@@ -47,7 +47,6 @@ public class UsuarioFacade extends AbstractFacade<Usuario> {
     
     public Usuario login(String userName, String password) {
         Usuario usuario = null;
-        System.out.println("PASSWORD: " + Encrypt.getStringMessageDigest(password));
         try {
             Query query = getEntityManager().createQuery("SELECT u FROM Usuario u WHERE u.usuario = :usuario AND u.contrasena = :contrasena");
             query.setParameter("usuario", userName);

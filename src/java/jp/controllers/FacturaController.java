@@ -19,7 +19,6 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.faces.event.AjaxBehaviorEvent;
 import jp.entidades.Cliente;
 import jp.entidades.Empleado;
 import jp.entidades.Producto;
@@ -177,11 +176,9 @@ public class FacturaController implements Serializable {
         if (objects.size() > 0) {
 
             String opTMP = selected.getOrdenPedido();
-            System.out.println("opTMP: " + opTMP);
 
             if (getFacade().getFacturaByOrdenPedido(opTMP) == null) {
                 try {
-                    System.out.println("OBJECTS: " + objects.size());
                     getEjbTransactionFacade().createFacturaProductoPromocion(selected, objects);
                     if (!JsfUtil.isValidationFailed()) {
                         clean();
@@ -418,10 +415,6 @@ public class FacturaController implements Serializable {
 
     public List<Promocion> llenarPromocion(String query) {
         return getFacade().getPromocionByQuery(query);
-    }
-
-    public void changeView(AjaxBehaviorEvent event) {
-
     }
 
     public void onItemSelectProducto(SelectEvent event) {

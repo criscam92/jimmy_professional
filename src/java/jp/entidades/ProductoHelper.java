@@ -1,25 +1,22 @@
 package jp.entidades;
 
-import javax.ejb.EJB;
 import javax.persistence.Id;
-import jp.facades.IngresoFacade;
 
 public class ProductoHelper {
-    
-    @EJB
-    private final IngresoFacade ingresoFacade = new IngresoFacade();
-    
+
     @Id
     private int id;
     private Producto producto;
     private int cantidadFacturada;
-    private Long cantidadDisponible;
+    private int cantidadDisponible;
+    private int cantidadDespachada;
 
-    public ProductoHelper(int id, Producto producto, int cantidadFacturada) {
+    public ProductoHelper(int id, Producto producto, int cantidadFacturada, Factura factura, boolean despachados) {
         this.producto = producto;
         this.cantidadFacturada = cantidadFacturada;
         this.id = id;
-        this.cantidadDisponible = ingresoFacade.getCountIngresoByProducto(producto);
+        this.cantidadDisponible = countIngresosByProducto(producto);
+        this.cantidadDespachada = despachados ? getDespachosByProducto(producto, factura) : 0;
     }
 
     public int getId() {
@@ -46,11 +43,40 @@ public class ProductoHelper {
         this.cantidadFacturada = cantidadFacturada;
     }
 
-    public Long getCantidadDisponible() {
+    public int getCantidadDisponible() {
         return cantidadDisponible;
     }
 
-    public void setCantidadDisponible(Long cantidadDisponible) {
+    public void setCantidadDisponible(int cantidadDisponible) {
         this.cantidadDisponible = cantidadDisponible;
     }
+
+    public int getCantidadDespachada() {
+        return cantidadDespachada;
+    }
+
+    public void setCantidadDespachada(int cantidadDespachada) {
+        this.cantidadDespachada = cantidadDespachada;
+    }
+
+    private int countIngresosByProducto(Producto producto) {
+        int count = 0;
+        for (IngresoProducto ip : producto.getIngresoProductoList()) {
+            count += ip.getCantidad();
+        }
+        return count;
+    }
+
+    private int getDespachosByProducto(Producto producto, Factura factura) {
+        int cantDespachada = 0;
+        for (DespachoFactura df : factura.getDespachoFacturaList()) {
+            for (DespachoFacturaProducto dfp : df.getDespachoFacturaProductoList()) {
+                if (dfp.getProducto().getId().equals(producto.getId())) {
+                    cantDespachada += dfp.getCantidad();
+                }
+            }
+        }
+        return cantDespachada;
+    }
+
 }
