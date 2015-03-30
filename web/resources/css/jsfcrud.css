@@ -120,3 +120,8 @@ div.contenido div.ui-layout-unit-content.ui-widget-content{
     background-color: #000000;
 }
 
+.titulo_despacho{
+    font-weight: bold;
+    display: block;
+}
+

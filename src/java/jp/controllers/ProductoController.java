@@ -29,7 +29,8 @@ public class ProductoController implements Serializable {
     private RecargoFacade recargoFacade;
     private List<Producto> items = null;
     private Producto selected;
-    private String uiError, error;
+    private final String uiError;
+    private String error;
 
     private Float recargoPublico;
 
@@ -105,7 +106,7 @@ public class ProductoController implements Serializable {
         } else {
             items = null;
             setError(uiError);
-            JsfUtil.addErrorMessage("Ya existe el Código: "+selected.getCodigo());
+            JsfUtil.addErrorMessage("Ya existe el Código: " + selected.getCodigo());
         }
     }
 
@@ -176,9 +177,17 @@ public class ProductoController implements Serializable {
             if (value == null || value.length() == 0) {
                 return null;
             }
+
             ProductoController controller = (ProductoController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "productoController");
-            return controller.getFacade().find(getKey(value));
+
+            Long key = 0L;
+            try {
+                key = getKey(value);
+                return controller.getFacade().find(key);
+            } catch (NumberFormatException nfe) {
+                return null;
+            }
         }
 
         Long getKey(String value) {

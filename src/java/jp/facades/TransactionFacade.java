@@ -17,6 +17,8 @@ import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
+import jp.entidades.DespachoFactura;
+import jp.entidades.DespachoFacturaProducto;
 import jp.entidades.Factura;
 import jp.entidades.FacturaProducto;
 import jp.entidades.FacturaPromocion;
@@ -26,6 +28,7 @@ import jp.entidades.Promocion;
 import jp.entidades.PromocionProducto;
 import jp.entidades.Parametros;
 import jp.entidades.Producto;
+import jp.entidades.ProductoHelper;
 import jp.entidades.ProductoPromocionHelper;
 import jp.entidades.Visita;
 import jp.entidades.VisitaProducto;
@@ -413,6 +416,39 @@ public class TransactionFacade {
             }
         }
         return false;
+    }
+
+    public void createDespachoFactura(DespachoFactura despachoFactura, List<ProductoHelper> productoHelpers) {
+        userTransaction = sessionContext.getUserTransaction();
+        try {
+            userTransaction.begin();
+            DespachoFactura despachoFacturaTMP = new DespachoFactura();
+            despachoFacturaTMP.setDespacho(despachoFactura.getDespacho());
+            despachoFacturaTMP.setFactura(despachoFactura.getFactura());
+            despachoFacturaTMP.setFecha(despachoFactura.getFecha());
+            despachoFacturaTMP.setRealizado(despachoFactura.getRealizado());
+            getEntityManager().merge(despachoFacturaTMP);
+
+            for (ProductoHelper ph : productoHelpers) {
+                if (ph.getCantidadADespachar() > 0) {
+                    DespachoFacturaProducto dfp = new DespachoFacturaProducto();
+                    dfp.setCantidad(ph.getCantidadADespachar());
+                    dfp.setDespachoFactura(despachoFacturaTMP);
+                    dfp.setId(null);
+                    dfp.setProducto(ph.getProducto());
+                    getEntityManager().merge(dfp);
+                }
+            }
+
+            userTransaction.commit();
+        } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
+            try {
+                userTransaction.rollback();
+            } catch (IllegalStateException | SecurityException | SystemException ex) {
+            }
+        } finally {
+            getEntityManager().clear();
+        }
     }
 
 }

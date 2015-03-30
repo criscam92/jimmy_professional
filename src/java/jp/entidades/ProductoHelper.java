@@ -1,8 +1,9 @@
 package jp.entidades;
 
+import java.io.Serializable;
 import javax.persistence.Id;
 
-public class ProductoHelper {
+public class ProductoHelper implements Serializable{
 
     @Id
     private int id;
@@ -10,13 +11,19 @@ public class ProductoHelper {
     private int cantidadFacturada;
     private int cantidadDisponible;
     private int cantidadDespachada;
+    private int cantidadADespachar;
 
-    public ProductoHelper(int id, Producto producto, int cantidadFacturada, Factura factura, boolean despachados) {
+    public ProductoHelper() {
+    }
+
+    public ProductoHelper(int id, Producto producto, int cantidadFacturada, int cantidadDisponible, int cantidadDespachada) {
+        this.id = id;
         this.producto = producto;
         this.cantidadFacturada = cantidadFacturada;
-        this.id = id;
-        this.cantidadDisponible = countIngresosByProducto(producto);
-        this.cantidadDespachada = despachados ? getDespachosByProducto(producto, factura) : 0;
+        this.cantidadDisponible = cantidadDisponible;
+        this.cantidadDespachada = cantidadDespachada;
+        int cantMax = this.cantidadFacturada - cantidadDespachada;
+        this.cantidadADespachar = cantMax > cantidadDisponible ? cantidadDisponible : cantMax;
     }
 
     public int getId() {
@@ -59,24 +66,12 @@ public class ProductoHelper {
         this.cantidadDespachada = cantidadDespachada;
     }
 
-    private int countIngresosByProducto(Producto producto) {
-        int count = 0;
-        for (IngresoProducto ip : producto.getIngresoProductoList()) {
-            count += ip.getCantidad();
-        }
-        return count;
+    public int getCantidadADespachar() {
+        return cantidadADespachar;
     }
 
-    private int getDespachosByProducto(Producto producto, Factura factura) {
-        int cantDespachada = 0;
-        for (DespachoFactura df : factura.getDespachoFacturaList()) {
-            for (DespachoFacturaProducto dfp : df.getDespachoFacturaProductoList()) {
-                if (dfp.getProducto().getId().equals(producto.getId())) {
-                    cantDespachada += dfp.getCantidad();
-                }
-            }
-        }
-        return cantDespachada;
+    public void setCantidadADespachar(int cantidadADespachar) {
+        this.cantidadADespachar = cantidadADespachar;
     }
 
 }

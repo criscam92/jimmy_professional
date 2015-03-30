@@ -10,7 +10,10 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import jp.entidades.DespachoFactura;
 import jp.entidades.Factura;
+import jp.entidades.FacturaProducto;
+import jp.entidades.FacturaPromocion;
 import jp.entidades.Pago;
 import jp.entidades.Promocion;
 import jp.util.EstadoPago;
@@ -44,11 +47,7 @@ public class FacturaFacade extends AbstractFacade<Factura> {
     public double getValorPendientePagoFactura(Factura factura) {
         try {
             CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-            CriteriaQuery cq = cb.createQuery();/*
-             * To change this license header, choose License Headers in Project Properties.
-             * To change this template file, choose Tools | Templates
-             * and open the template in the editor.
-             */
+            CriteriaQuery cq = cb.createQuery();
 
             Root<Pago> fac = cq.from(Pago.class);
             cq.select(cb.sum(fac.get("valorTotal").as(Double.class)));
@@ -103,6 +102,26 @@ public class FacturaFacade extends AbstractFacade<Factura> {
             query.setMaxResults(1);
             return (Factura) query.getSingleResult();
         } catch (NoResultException e) {
+        }
+        return null;
+    }
+
+    public List<DespachoFactura> getDespachosFacturaByFactura(Factura factura) {
+        try {
+            Query query = getEntityManager().createQuery("SELECT fp FROM DespachoFactura fp WHERE fp.factura.id = :fac");
+            query.setParameter("fac", factura.getId());
+            return query.getResultList();
+        } catch (Exception e) {
+        }
+        return null;
+    }
+
+    public List<FacturaProducto> getFacturaProductoByFactura(Factura factura) {
+        try {
+            Query query = getEntityManager().createQuery("SELECT fp FROM FacturaProducto fp WHERE fp.factura.id = :fac");
+            query.setParameter("fac", factura.getId());
+            return query.getResultList();
+        } catch (Exception e) {
         }
         return null;
     }
