@@ -5,10 +5,13 @@ import java.util.Map;
 
 public enum TipoPago {
 
-    EFECTIVO(0, "Efectivo"),
-    CHEQUE(1, "Cheque"),
-    CREDITO(2, "Crédito");
-
+    CONTADO(0, "Contado"),
+    CREDITO(1, "Crédito"),
+    CHEQUE(2, "Cheque"),
+    CONSIGNACION(3, "Consignación"),
+    MANO_A_MANO(4, "Mano a mano"),
+    DEVOLUCION(5, "Devolución");
+    
     private Integer valor;
     private String detalle;
 

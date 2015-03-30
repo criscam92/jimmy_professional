@@ -1,0 +1,122 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <ui:composition template="/index.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.MessageTitleCambio}"></h:outputText>
+        </ui:define>
+
+        <ui:define name="body">
+            <h:form id="formDevolucionCambio" style="overflow-y: hidden;">
+                <p:panel header="#{bundle.MessageFacturaTitle}" style="margin: auto;width: 955px;">
+                    <p:panelGrid columns="2">
+                        <p:panelGrid columns="1">
+                            <p:panelGrid columns="6">
+                                <h:outputText value="#{bundle.MessageValorTotalDev}"/>
+                                <h:outputText value="#{cambioDevolucionController.devolucion.valorTotal}"/>
+                                <h:outputText value="#{bundle.CreateFacturaLabel_fecha}"/>
+                                <h:outputText value="#{cambioDevolucionController.devolucion.fecha}">
+                                    <f:convertDateTime pattern="dd-MMM-yyyy"/>
+                                </h:outputText>
+                                <p:outputLabel value="#{bundle.CreateVisitaLabel_empleado}" for="empleado" />
+                                <p:autoComplete size="23" id="empleado" minQueryLength="3" panelStyle="width: 320px;" value="#{cambioDevolucionController.selected.factura.empleado}" itemValue="#{empleado}" 
+                                                completeMethod="#{empleadoController.llenarEmpleado}" effect="fade" converter="empleadoconverter"
+                                                itemLabel="#{empleado.toString()}" var="empleado" required="true" requiredMessage="#{bundle.EditTalonarioRequiredMessage_emp}">
+                                    <p:ajax event="itemSelect" listener="#{facturaController.onItemSelectEmpleado}" update="codigo" />
+                                </p:autoComplete>
+                            </p:panelGrid>
+                            <p:panelGrid columns="2">
+                                <p:outputLabel value="#{bundle.CreateDevolucionLabel_observaciones}" for="observaciones"/>
+                                <p:inputTextarea style="height: 63px; width: 428px;" id="observaciones" value="#{cambioDevolucionController.devolucion.observaciones}" cols="21"/>
+                            </p:panelGrid>
+                        </p:panelGrid>
+
+                        <p:panelGrid columns="2">
+                            <p:outputLabel value="#{bundle.MessageCodigoPedido}" for="codigo"/>
+                            <p:inputText style="width: 162px;" id="codigo" value="#{cambioDevolucionController.selected.factura.ordenPedido}"
+                                         required="true" requiredMessage="El campo Orden Pedido es obligatorio"/>
+                            <p:outputLabel value="#{bundle.CreateVisitaLabel_cliente}" for="cliente"/>
+                            <p:autoComplete size="23" id="cliente" minQueryLength="3" panelStyle="width: 320px;" value="#{cambioDevolucionController.selected.factura.cliente}"
+                                            itemValue="#{cliente}" completeMethod="#{clienteController.llenarCliente}" effect="fade" converter="clienteconverter"
+                                            itemLabel="#{cliente.toString()}" var="cliente" required="true">
+                                <p:ajax event="itemSelect" listener="#{facturaController.onItemSelectCliente}" update="listaProductos" />
+                            </p:autoComplete>
+                            <p:outputLabel value="#{bundle.MessageCreateTipoPago}" for="tipoPago" />
+                            <h:outputText id="tipoPago" value="#{facturaController.getTipoPagofactura(cambioDevolucionController.factura.tipoPago)}"/>
+                        </p:panelGrid>
+                    </p:panelGrid>
+                </p:panel><br/>
+                <p:panel header="#{bundle.ProductosByDevolucion}">
+                    <p:panelGrid columns="7" style="margin: auto;" id="tablaDevolucionProducto">
+                        <p:outputLabel style="margin-right: 10px;" value="#{bundle.EditPromocionProductoLabel_producto}"/>
+                        <p:autoComplete id="producto" minQueryLength="3" value="#{cambioDevolucionController.facturaProducto.producto}" itemValue="#{pro}" 
+                                        completeMethod="#{promocionController.llenarProducto}" effect="fade" converter="productoconverter" itemLabel="#{pro.toString()}" var="pro">
+                            <p:ajax event="itemSelect" listener="#{facturaController.onItemSelectProducto}" update="precio" />
+                        </p:autoComplete>
+
+                        <p:outputLabel value="#{bundle.MessageUnidadesVentaFacPro}" for="venta"/>
+                        <p:inputText value="#{cambioDevolucionController.facturaProducto.unidadesVenta}" id="venta"/>
+
+                        <p:outputLabel value="#{bundle.MessageCreatePrecio}" for="precio"/>
+                        <p:inputText value="#{cambioDevolucionController.facturaProducto.precio}" id="precio"/>
+                        <p:commandButton value="#{bundle.AddItem}" icon="ui-icon-plus" process="tablaDevolucionProducto"
+                                             actionListener="#{devolucionController.addDevolucionProducto()}" update="datalistTMP,valorTotal"/>
+                    </p:panelGrid>
+                    <br/>
+                    <p:dataTable styleClass="tabla" emptyMessage="#{bundle.EmptyTable}" id="listaProductos" var="itemTMP"
+                                 paginator="true" value="#{cambioDevolucionController.itemsTMP}"
+                                 rowKey="#{itemTMP.id}"
+                                 rows="5"
+                                 rowsPerPageTemplate="10,20,30,40,50"
+                                 paginatorPosition="bottom">
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.ListProductoTitle}"/>
+                        </f:facet>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.EditDevolucionProductoTitle_producto}"/>
+                            </f:facet>
+                            <h:outputText value="#{itemTMP.producto}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.MessageUnidadesVentaTitleFacPro}"/>
+                            </f:facet>
+                            <h:outputText value="#{itemTMP.unidadesVenta}"/>
+                        </p:column>
+                        <p:column style="text-align: center;" width="150">
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.MessagePrecioFacProd}"/>
+                            </f:facet>
+                            <h:outputText value="#{itemTMP.precio}"/>
+                        </p:column>
+                        <p:column style="text-align: center;" width="100">
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.RemoveItem}"/>
+                            </f:facet>
+                            <p:commandButton icon="ui-icon-closethick" update="listaProductos"
+                                             actionListener="#{cambioDevolucionController.removeFacturaProducto(itemTMP)}"/>
+                        </p:column>
+                        <p:columnGroup type="footer">
+                            <p:row>
+                                <p:column footerText="#{bundle.MessageTotalFactura}" style="text-align:right; font-weight: bold;"/>
+                                <p:column footerText="#{facturaController.totalUnidadVentas}" />
+                                <p:column style="font-weight: bold; text-align:right;" footerText="#{bundle.MessageValorTotalDev}"/>
+                                <p:column>
+                                    <f:facet name="footer">
+                                        <h:outputText value ="#{cambioDevolucionController.totalPrecioFactura}"/>
+                                    </f:facet>
+                                </p:column>
+                            </p:row>
+                        </p:columnGroup>
+                    </p:dataTable>
+                </p:panel>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>
+

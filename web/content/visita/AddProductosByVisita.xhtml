@@ -8,14 +8,14 @@
     
     <ui:composition template="/index.xhtml">
         <ui:define name="title">
-            <h:outputText value="#{bundle.ListFacturaTitle}"></h:outputText>
+            <h:outputText value="#{bundle.ListVisitaTitle}"></h:outputText>
         </ui:define>
 
         <ui:define name="body">
             <h:form id="formProductos" >
                 <h:panelGroup id="display">
                     <p:panel header="Datos Visita">
-                        <p:panelGrid columns="1">
+                        <p:panelGrid columns="2">
                             <p:panelGrid columns="3">
                                 <p:panelGrid columns="1">
                                     <p:outputLabel value="#{bundle.EditVisitaLabel_calificacionServicio}" for="calificacionServicio" />
@@ -66,7 +66,7 @@
                                 </p:column>
                                 <p:column width="80">
                                     <f:facet name="header">
-                                        <h:outputText value="Cantidad"/>
+                                        <h:outputText value="#{bundle.RemoveItem}"/>
                                     </f:facet>
                                     <h:outputText value="#{itemTMP.cantidad}"/>
                                 </p:column>
@@ -74,7 +74,7 @@
                                     <f:facet name="header">
                                         <h:outputText value="Quitar"/>
                                     </f:facet>
-                                    <p:commandButton icon="ui-icon-closethick" update="datalistTMP" actionListener="#{visitaController.removeDevolucionProducto(itemTMP)}"/>
+                                    <p:commandButton icon="ui-icon-closethick" update="datalistTMP" actionListener="#{visitaController.removeVisitaProducto(itemTMP)}"/>
                                 </p:column>
                             </p:dataTable>
 

@@ -31,7 +31,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import jp.entidades.Parametros;
-import jp.facades.RecargoFacade;
+import jp.facades.ParametrosFacade;
 import org.apache.commons.io.IOUtils;
 
 /**
@@ -43,7 +43,7 @@ public class DolarServlet extends HttpServlet {
 
     
     @EJB
-    private RecargoFacade recargoFacade;
+    private ParametrosFacade recargoFacade;
     
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>

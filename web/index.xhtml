@@ -24,7 +24,7 @@
                 <div id="logo"></div>
                 <h:form id="menuForm">
 
-                    <p:menubar rendered="#{loginController.user != null}">
+                    <p:menubar rendered="#{loginController.user == null}">
                         <p:menuitem class="menuPrincipal" value="#{bundle.Home}" outcome="/index" icon="ui-icon-home"/>
                         <p:submenu class="menuPrincipal" label="#{bundle.Maintenance}">
 
@@ -54,8 +54,7 @@
                                 <p:menuitem value="Cuentas Bancarias" outcome="/content/cuentaBancaria/List.xhtml" />
                                 <p:menuitem value="Órdenes de Pedido" outcome="/content/factura/List.xhtml" />
                                 <p:menuitem value="Códigos de Devolución" outcome="/content/codigoDevolucion/List.xhtml" />
-                                <p:menuitem value="Devoluciones" outcome="/content/devolucion/List.xhtml" />
-                                <p:menuitem value="Devoluciones de Productos" outcome="/content/devolucionProducto/List.xhtml" />                                
+                                <p:menuitem value="Devoluciones" outcome="/content/devolucionProducto/List.xhtml" />
                                 <p:submenu label="Pagos">
                                     <p:menuitem value="Nuevo Pago" outcome="/content/pago/Create.xhtml" />
                                     <p:menuitem value="Consulta de Pagos" outcome="/content/pago/List.xhtml" />
@@ -78,7 +77,7 @@
                 <ui:insert name="body"/>
 
                 <p:outputPanel id="panelCentral">
-                    <h:form id="UserLoginForm" rendered="#{loginController.user==null}">
+                    <h:form id="UserLoginForm" rendered="#{loginController.user!=null}">
                         <p:panel id="login" header="Ingresar a la Aplicación" style="width: 350px; margin: 0px auto;">
                             <h:panelGrid columns="2" cellpadding="10">
                                 <p:outputLabel value="#{bundle.CreateUsuarioLabel_usuario}" for="username" />

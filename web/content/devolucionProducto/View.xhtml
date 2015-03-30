@@ -18,12 +18,16 @@
                         <h:outputText value="#{devolucionProductoController.selected.cantidad}" title="#{bundle.ViewDevolucionProductoTitle_cantidad}"/>
                         <h:outputText value="#{bundle.ViewDevolucionProductoLabel_detalle}"/>
                         <h:outputText value="#{devolucionProductoController.selected.detalle}" title="#{bundle.ViewDevolucionProductoTitle_detalle}"/>
+                        <h:outputText value="#{bundle.CreatePromocionLabel_valor}"/>
+                        <h:outputText value="#{devolucionProductoController.selected.valor}" title="#{bundle.CreatePromocionTitle_valor}"/>
+                        <h:outputText value="#{bundle.MessageCodigoDev}"/>
+                        <h:outputText value="#{devolucionProductoController.selected.codigoDevolucion}" title="#{bundle.MessageCodigoTitleDev}"/>
                         <h:outputText value="#{bundle.ViewDevolucionProductoLabel_devolucion}"/>
                         <h:outputText value="#{devolucionProductoController.selected.devolucion}" title="#{bundle.ViewDevolucionProductoTitle_devolucion}"/>
                         <h:outputText value="#{bundle.ViewDevolucionProductoLabel_producto}"/>
                         <h:outputText value="#{devolucionProductoController.selected.producto}" title="#{bundle.ViewDevolucionProductoTitle_producto}"/>
                     </p:panelGrid>
-                    <p:commandButton value="#{bundle.Close}" onclick="DevolucionProductoViewDialog.hide()"/>
+                    <p:commandButton value="#{bundle.Close}" onclick="PF('DevolucionProductoViewDialog').hide()"/>
                 </h:panelGroup>
             </h:form>
         </p:dialog>

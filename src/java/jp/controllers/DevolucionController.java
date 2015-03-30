@@ -3,32 +3,52 @@ package jp.controllers;
 import jp.entidades.Devolucion;
 import jp.util.JsfUtil;
 import jp.util.JsfUtil.PersistAction;
-
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.faces.bean.ViewScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import jp.entidades.DevolucionProducto;
 import jp.facades.DevolucionFacade;
+import jp.facades.TransactionFacade;
+import jp.util.Moneda;
 
 @ManagedBean(name = "devolucionController")
-@SessionScoped
+@ViewScoped
 public class DevolucionController implements Serializable {
 
     @EJB
     private jp.facades.DevolucionFacade ejbFacade;
+    @EJB
+    private jp.facades.TransactionFacade ejbTransactionFacade;
+    @EJB
+    private DevolucionSessionBean devolucionSessionBean;
     private List<Devolucion> items = null;
     private Devolucion selected;
+    private DevolucionProducto devolucionProducto;
+    private List<DevolucionProducto> itemsTMP;
+    private Float valorAcumulado = 0.0f;
+    
 
     public DevolucionController() {
+        itemsTMP = new ArrayList<>();
+    }
+
+    @PostConstruct
+    public void init() {
+        selected = new Devolucion();
+        selected.setValorTotal(valorAcumulado);
+        devolucionProducto = new DevolucionProducto();
     }
 
     public Devolucion getSelected() {
@@ -37,6 +57,34 @@ public class DevolucionController implements Serializable {
 
     public void setSelected(Devolucion selected) {
         this.selected = selected;
+    }
+
+    public DevolucionProducto getDevolucionProducto() {
+        return devolucionProducto;
+    }
+
+    public void setDevolucionProducto(DevolucionProducto devolucionProducto) {
+        this.devolucionProducto = devolucionProducto;
+    }
+
+    public List<DevolucionProducto> getItemsTMP() {
+        return itemsTMP;
+    }
+
+    public void setItemsTMP(List<DevolucionProducto> itemsTMP) {
+        this.itemsTMP = itemsTMP;
+    }
+
+    public Float getValorAcumulado() {
+        return valorAcumulado;
+    }
+
+    public DevolucionSessionBean getDevolucionSessionBean() {
+        return devolucionSessionBean;
+    }
+
+    public void setDevolucionSessionBean(DevolucionSessionBean devolucionSessionBean) {
+        this.devolucionSessionBean = devolucionSessionBean;
     }
 
     protected void setEmbeddableKeys() {
@@ -49,6 +97,10 @@ public class DevolucionController implements Serializable {
         return ejbFacade;
     }
 
+    public TransactionFacade getEjbTransactionFacade() {
+        return ejbTransactionFacade;
+    }
+
     public Devolucion prepareCreate() {
         selected = new Devolucion();
         initializeEmbeddableKey();
@@ -56,18 +108,18 @@ public class DevolucionController implements Serializable {
     }
 
     public void create() {
-        persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageDevolucion","CreateSuccessF"}));
+        persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageDevolucion", "CreateSuccessF"}));
         if (!JsfUtil.isValidationFailed()) {
             items = null;    // Invalidate list of items to trigger re-query.
         }
     }
 
     public void update() {
-        persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessageDevolucion","UpdateSuccessF"}));
+        persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessageDevolucion", "UpdateSuccessF"}));
     }
 
     public void destroy() {
-        persist(PersistAction.DELETE, JsfUtil.getMessageBundle(new String[]{"MessageDevolucion","DeleteSuccessF"}));
+        persist(PersistAction.DELETE, JsfUtil.getMessageBundle(new String[]{"MessageDevolucion", "DeleteSuccessF"}));
         if (!JsfUtil.isValidationFailed()) {
             selected = null; // Remove selection
             items = null;    // Invalidate list of items to trigger re-query.
@@ -156,6 +208,57 @@ public class DevolucionController implements Serializable {
             }
         }
 
+    }
+
+    public Moneda[] getTipoMoneda() {
+        return Moneda.values();
+    }
+
+    public void addDevolucionProducto() {
+        if (devolucionProducto.getCantidad() > 0 && devolucionProducto.getCodigoDevolucion() != null && !devolucionProducto.getDetalle().trim().equals("")
+                && devolucionProducto.getProducto() != null && devolucionProducto.getValor() > 0) {
+
+            valorAcumulado += devolucionProducto.getValor() * devolucionProducto.getCantidad();
+            selected.setValorTotal(valorAcumulado);
+            DevolucionProducto devolucionProductoTMP = new DevolucionProducto();
+            devolucionProductoTMP.setCantidad(devolucionProducto.getCantidad());
+            devolucionProductoTMP.setCodigoDevolucion(devolucionProducto.getCodigoDevolucion());
+            devolucionProductoTMP.setDetalle(devolucionProducto.getDetalle());
+            devolucionProductoTMP.setDevolucion(selected);
+            devolucionProductoTMP.setProducto(devolucionProducto.getProducto());
+            devolucionProductoTMP.setValor(devolucionProducto.getValor());
+            devolucionProductoTMP.setId(itemsTMP.size() + 1l);
+
+            itemsTMP.add(devolucionProductoTMP);
+        }
+    }
+
+    public void removeDevolucionProducto(DevolucionProducto devolucionProductoArg) {
+        valorAcumulado -= devolucionProductoArg.getValor();
+        selected.setValorTotal(valorAcumulado);
+        itemsTMP.remove(devolucionProductoArg);
+    }
+
+    public void prepareCreateDevolucionProducto(String path) {
+        if (selected.getDolar() != null && selected.getValorTotal() > 0 && selected.getFecha() != null
+                && selected.getCliente() != null && itemsTMP.size() > 0) {
+            for (DevolucionProducto dp : itemsTMP) {
+                dp.setDevolucion(selected);
+            }
+            devolucionSessionBean.setDevolucion(selected);
+            devolucionSessionBean.setDevolucionProductoList(itemsTMP);
+            try {
+                FacesContext.getCurrentInstance().getExternalContext().redirect(redireccionarDevolucionProducto(path));
+            } catch (Exception e) {
+                System.out.println("====NO SE PUDO REDIRRECCIONAR A DEVOLUCIONCAMBIO.XHTML");
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+    public String redireccionarDevolucionProducto(String path) {
+        return path + "?faces-redirect=true";
     }
 
 }

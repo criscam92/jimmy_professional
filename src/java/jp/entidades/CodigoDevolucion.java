@@ -120,7 +120,7 @@ public class CodigoDevolucion implements Serializable, Codificable {
 
     @Override
     public String toString() {
-        return "entidades.CodigoDevolucion[ id=" + id + " ]";
+        return this.getCodigo()+" - "+this.getDescripcion();
     }
 
     @Override

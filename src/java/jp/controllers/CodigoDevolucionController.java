@@ -148,7 +148,7 @@ public class CodigoDevolucionController implements Serializable {
         this.error = error;
     }
 
-    @FacesConverter(forClass = CodigoDevolucion.class)
+    @FacesConverter(forClass = CodigoDevolucion.class, value = "codigodevolucionconverter")
     public static class CodigoDevolucionControllerConverter implements Converter {
 
         @Override

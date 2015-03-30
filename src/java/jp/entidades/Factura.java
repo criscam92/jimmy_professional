@@ -88,6 +88,9 @@ public class Factura implements Serializable {
     @Size(max = 30)
     @Column(length = 30, name = "orden_pedido")
     private String ordenPedido;
+    @Basic(optional = true)
+    @Column(name = "dolar_actual", nullable = true)
+    private float dolarActual;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "factura", fetch = FetchType.LAZY)
     private List<FacturaPromocion> facturaPromocionList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "factura", fetch = FetchType.LAZY)
@@ -200,6 +203,14 @@ public class Factura implements Serializable {
 
     public void setOrdenPedido(String ordenPedido) {
         this.ordenPedido = ordenPedido;
+    }
+
+    public float getDolarActual() {
+        return dolarActual;
+    }
+
+    public void setDolarActual(float dolarActual) {
+        this.dolarActual = dolarActual;
     }
 
     @XmlTransient

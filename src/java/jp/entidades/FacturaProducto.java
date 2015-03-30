@@ -46,7 +46,6 @@ public class FacturaProducto implements Serializable {
     @Column(name = "unidades_venta", nullable = false)
     private int unidadesVenta;
     @Basic(optional = false)
-    @NotNull
     @Column(name = "unidades_bonificacion", nullable = false)
     private int unidadesBonificacion;
     @Basic(optional = false)

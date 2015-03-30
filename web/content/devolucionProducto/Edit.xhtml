@@ -12,10 +12,21 @@
             <h:form id="DevolucionProductoEditForm">
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{devolucionProductoController.selected != null}">
+                        <p:outputLabel value="#{bundle.EditDevolucionProductoLabel_id}" for="id" />
+                        <p:inputText id="id" value="#{devolucionProductoController.selected.id}" title="#{bundle.EditDevolucionProductoTitle_id}" required="true" requiredMessage="#{bundle.EditDevolucionProductoRequiredMessage_id}"/>
                         <p:outputLabel value="#{bundle.EditDevolucionProductoLabel_cantidad}" for="cantidad" />
                         <p:inputText id="cantidad" value="#{devolucionProductoController.selected.cantidad}" title="#{bundle.EditDevolucionProductoTitle_cantidad}" required="true" requiredMessage="#{bundle.EditDevolucionProductoRequiredMessage_cantidad}"/>
                         <p:outputLabel value="#{bundle.EditDevolucionProductoLabel_detalle}" for="detalle" />
                         <p:inputText id="detalle" value="#{devolucionProductoController.selected.detalle}" title="#{bundle.EditDevolucionProductoTitle_detalle}" />
+                        <p:outputLabel value="#{bundle.EditDevolucionProductoLabel_valor}" for="valor" />
+                        <p:inputText id="valor" value="#{devolucionProductoController.selected.valor}" title="#{bundle.EditDevolucionProductoTitle_valor}" required="true" requiredMessage="#{bundle.EditDevolucionProductoRequiredMessage_valor}"/>
+                        <p:outputLabel value="#{bundle.EditDevolucionProductoLabel_codigoDevolucion}" for="codigoDevolucion" />
+                        <p:selectOneMenu id="codigoDevolucion" value="#{devolucionProductoController.selected.codigoDevolucion}" required="true" requiredMessage="#{bundle.EditDevolucionProductoRequiredMessage_codigoDevolucion}">
+                            <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>
+                            <f:selectItems value="#{codigoDevolucionController.itemsAvailableSelectOne}"
+                                           var="codigoDevolucionItem"
+                                           itemValue="#{codigoDevolucionItem}"/>
+                        </p:selectOneMenu>
                         <p:outputLabel value="#{bundle.EditDevolucionProductoLabel_devolucion}" for="devolucion" />
                         <p:selectOneMenu id="devolucion" value="#{devolucionProductoController.selected.devolucion}" required="true" requiredMessage="#{bundle.EditDevolucionProductoRequiredMessage_devolucion}">
                             <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>

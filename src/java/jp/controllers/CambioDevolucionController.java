@@ -4,12 +4,13 @@ import jp.entidades.CambioDevolucion;
 import jp.util.JsfUtil;
 import jp.util.JsfUtil.PersistAction;
 import jp.facades.CambioDevolucionFacade;
-
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.faces.bean.ManagedBean;
@@ -18,6 +19,13 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import jp.entidades.Devolucion;
+import jp.entidades.Factura;
+import jp.entidades.FacturaProducto;
+import jp.facades.DevolucionFacade;
+import jp.facades.ParametrosFacade;
+import jp.util.EstadoPagoFactura;
+import jp.util.TipoPago;
 
 @ManagedBean(name = "cambioDevolucionController")
 @SessionScoped
@@ -25,10 +33,40 @@ public class CambioDevolucionController implements Serializable {
 
     @EJB
     private jp.facades.CambioDevolucionFacade ejbFacade;
+    @EJB
+    private jp.facades.DevolucionFacade ejbDevolucionFacade;
+    @EJB
+    private jp.facades.ParametrosFacade ejbParametrosFacade;
+    @EJB(name = "DevolucionSessionBean")
+    private DevolucionSessionBean devolucionSessionBean;
     private List<CambioDevolucion> items = null;
     private CambioDevolucion selected;
+    private Devolucion devolucion;
+    private Factura factura;
+    private FacturaProducto facturaProducto;
+    private List<FacturaProducto> itemsTMP;
 
     public CambioDevolucionController() {
+        itemsTMP = new ArrayList<>();
+    }
+
+    @PostConstruct
+    public void init() {
+        try {
+            FacesContext.getCurrentInstance().getExternalContext().getSession(true);
+            if (devolucionSessionBean != null) {
+                devolucion = devolucionSessionBean.getDevolucion();
+                System.out.println("Se carga la devolucionGet-> " + devolucion.getObservaciones());
+            }
+        } catch (Exception e) {
+            System.out.println("====================No se recibió parametro por GET en CambioDevContr====================");
+            e.printStackTrace();
+        }
+        selected = new CambioDevolucion();
+        facturaProducto = new FacturaProducto();
+        if (selected != null && selected.getFactura() == null) {
+            cargarFactura();
+        }
     }
 
     public CambioDevolucion getSelected() {
@@ -39,6 +77,46 @@ public class CambioDevolucionController implements Serializable {
         this.selected = selected;
     }
 
+    public Devolucion getDevolucion() {
+        return devolucion;
+    }
+
+    public void setDevolucion(Devolucion devolucion) {
+        this.devolucion = devolucion;
+    }
+
+    public Factura getFactura() {
+        return factura;
+    }
+
+    public void setFactura(Factura factura) {
+        this.factura = factura;
+    }
+
+    public FacturaProducto getFacturaProducto() {
+        return facturaProducto;
+    }
+
+    public void setFacturaProducto(FacturaProducto facturaProducto) {
+        this.facturaProducto = facturaProducto;
+    }
+
+    public List<FacturaProducto> getItemsTMP() {
+        return itemsTMP;
+    }
+
+    public void setItemsTMP(List<FacturaProducto> itemsTMP) {
+        this.itemsTMP = itemsTMP;
+    }
+
+    public DevolucionSessionBean getDevolucionSessionBean() {
+        return devolucionSessionBean;
+    }
+
+    public void setDevolucionSessionBean(DevolucionSessionBean devolucionSessionBean) {
+        this.devolucionSessionBean = devolucionSessionBean;
+    }
+
     protected void setEmbeddableKeys() {
     }
 
@@ -47,6 +125,14 @@ public class CambioDevolucionController implements Serializable {
 
     private CambioDevolucionFacade getFacade() {
         return ejbFacade;
+    }
+
+    public DevolucionFacade getEjbDevolucionFacade() {
+        return ejbDevolucionFacade;
+    }
+
+    public ParametrosFacade getEjbParametrosFacade() {
+        return ejbParametrosFacade;
     }
 
     public CambioDevolucion prepareCreate() {
@@ -156,6 +242,71 @@ public class CambioDevolucionController implements Serializable {
             }
         }
 
+    }
+
+    private void cargarFactura() {
+        factura = new Factura();
+        factura.setFecha(devolucion.getFecha());
+        factura.setCliente(devolucion.getCliente());
+        //empleado
+        factura.setTipoPago(TipoPago.MANO_A_MANO.getValor());
+        factura.setObservaciones(devolucion.getObservaciones());
+//        factura.setTotalBruto(devolucion.getValorTotal());//SE HACE DESDE CARGARFACTURA
+//        factura.setTotalPagar(devolucion.getValorTotal());//SE HACE DESDE CARGARFACTURA
+        factura.setEstado(EstadoPagoFactura.REALIZADA.getValor());
+        factura.setDolar(devolucion.getDolar());
+        //orden_pedido desde el form
+        if (factura.getDolar()) {
+            factura.setDolarActual(ejbParametrosFacade.getParametros().getPrecioDolar());
+        }
+    }
+
+    public void addFacturaProducto() {
+        if (facturaProducto.getUnidadesVenta() > 0 && facturaProducto.getPrecio() > 0 && facturaProducto.getProducto() != null && factura != null) {
+
+            FacturaProducto facturaProductoTMP = new FacturaProducto();
+            facturaProductoTMP.setUnidadesVenta(facturaProducto.getUnidadesVenta());
+            facturaProductoTMP.setPrecio(facturaProducto.getPrecio());
+            facturaProductoTMP.setProducto(facturaProducto.getProducto());
+            facturaProductoTMP.setFactura(factura);
+            facturaProductoTMP.setId(itemsTMP.size() + 1l);
+
+            itemsTMP.add(facturaProductoTMP);
+        }
+    }
+
+    public void removeFacturaProducto(FacturaProducto fp) {
+        itemsTMP.remove(fp);
+    }
+
+    public double getTotalPrecioFactura() {
+        int sum = 0;
+        for (FacturaProducto fp : itemsTMP) {
+            sum += fp.getPrecio();
+        }
+        if (factura != null) {
+            factura.setTotalBruto(sum);
+            factura.setTotalPagar(sum);
+        }
+        return sum;
+    }
+    
+    public void addDevolucionProducto() {
+        if (facturaProducto.getUnidadesVenta()> 0 && facturaProducto.getProducto() != null && facturaProducto.getPrecio() > 0) {
+
+            valorAcumulado += devolucionProducto.getValor() * devolucionProducto.getCantidad();
+            selected.setValorTotal(valorAcumulado);
+            DevolucionProducto devolucionProductoTMP = new DevolucionProducto();
+            devolucionProductoTMP.setCantidad(devolucionProducto.getCantidad());
+            devolucionProductoTMP.setCodigoDevolucion(devolucionProducto.getCodigoDevolucion());
+            devolucionProductoTMP.setDetalle(devolucionProducto.getDetalle());
+            devolucionProductoTMP.setDevolucion(selected);
+            devolucionProductoTMP.setProducto(devolucionProducto.getProducto());
+            devolucionProductoTMP.setValor(devolucionProducto.getValor());
+            devolucionProductoTMP.setId(itemsTMP.size() + 1l);
+
+            itemsTMP.add(devolucionProductoTMP);
+        }
     }
 
 }

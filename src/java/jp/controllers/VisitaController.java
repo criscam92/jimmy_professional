@@ -59,7 +59,7 @@ public class VisitaController implements Serializable {
             
             System.out.println("Calif-> "+visita.getCalificacionServicio());
         } catch (Exception e) {
-            System.out.println("No se recibió parametro por GET");
+            System.out.println("No se recibió parametro por GET en VisiContr");
         }
         visitaProducto = new VisitaProducto();
     }
@@ -263,7 +263,7 @@ public class VisitaController implements Serializable {
         }
     }
 
-    public void removeDevolucionProducto(VisitaProducto visitaProductoArg) {
+    public void removeVisitaProducto(VisitaProducto visitaProductoArg) {
         itemsTMP.remove(visitaProductoArg);
     }
 
@@ -278,7 +278,7 @@ public class VisitaController implements Serializable {
                     redireccionarFormulario();
                 }
             } else {
-                JsfUtil.addErrorMessage(JsfUtil.getMessageBundle("ErrorCreateDevolucionProducto"));
+                JsfUtil.addErrorMessage(JsfUtil.getMessageBundle("ErrorCreateVisitaProducto"));
             }
         }
     }

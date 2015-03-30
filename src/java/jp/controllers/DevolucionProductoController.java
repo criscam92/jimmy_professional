@@ -29,11 +29,11 @@ public class DevolucionProductoController implements Serializable {
     private List<DevolucionProducto> items = null;
     private List<DevolucionProducto> itemsTMP = null;
     private DevolucionProducto selected;
-
+    
     public DevolucionProductoController() {
         itemsTMP = new ArrayList<>();
     }
-
+    
     public DevolucionProducto getSelected() {
         return selected;
     }
@@ -193,5 +193,5 @@ public class DevolucionProductoController implements Serializable {
         itemsTMP.remove(devolucionProducto);
 
     }
-
+    
 }

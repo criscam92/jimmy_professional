@@ -119,7 +119,7 @@ public class PagoController implements Serializable {
     }
     
     public TipoPago[] getTiposPago(){
-        return new TipoPago[]{TipoPago.EFECTIVO,TipoPago.CHEQUE};
+        return new TipoPago[]{TipoPago.CONTADO,TipoPago.CHEQUE};
     }
 
     public List<Pago> getItems() {

@@ -20,7 +20,7 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import javax.faces.event.AjaxBehaviorEvent;
 import jp.facades.ClienteFacade;
-import jp.facades.RecargoFacade;
+import jp.facades.ParametrosFacade;
 
 @ManagedBean(name = "clienteController")
 @SessionScoped
@@ -29,7 +29,7 @@ public class ClienteController implements Serializable {
     @EJB
     private jp.facades.ClienteFacade ejbFacade;
     @EJB
-    private RecargoFacade ejbRecargoFacade;
+    private ParametrosFacade ejbRecargoFacade;
     private List<Cliente> items = null;
     private Cliente selected;
     private Boolean disable = false;
@@ -95,7 +95,7 @@ public class ClienteController implements Serializable {
         return ejbFacade;
     }
 
-    public RecargoFacade getEjbRecargoFacade() {
+    public ParametrosFacade getEjbRecargoFacade() {
         return ejbRecargoFacade;
     }
 

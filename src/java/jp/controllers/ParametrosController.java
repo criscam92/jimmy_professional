@@ -21,7 +21,7 @@ import javax.faces.event.ValueChangeEvent;
 import jp.entidades.Pais;
 import jp.entidades.Parametros;
 import jp.facades.CiudadFacade;
-import jp.facades.RecargoFacade;
+import jp.facades.ParametrosFacade;
 import jp.facades.TransactionFacade;
 
 @ManagedBean(name = "parametrosController")
@@ -29,7 +29,7 @@ import jp.facades.TransactionFacade;
 public class ParametrosController implements Serializable {
 
     @EJB
-    private RecargoFacade ejbFacade;
+    private ParametrosFacade ejbFacade;
     @EJB
     private TransactionFacade ejbTransactionFacade;
     @EJB
@@ -88,7 +88,7 @@ public class ParametrosController implements Serializable {
         this.ciudades = ciudades;
     }
 
-    private RecargoFacade getFacade() {
+    private ParametrosFacade getFacade() {
         return ejbFacade;
     }
 

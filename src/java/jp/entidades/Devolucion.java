@@ -6,6 +6,7 @@
 package jp.entidades;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -15,10 +16,14 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -47,7 +52,7 @@ public class Devolucion implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Column(nullable = false)
-    private boolean dolar;
+    private Boolean dolar;
     @Basic(optional = false)
     @NotNull
     @Column(name = "valor_total", nullable = false)
@@ -55,6 +60,14 @@ public class Devolucion implements Serializable {
     @Size(max = 300)
     @Column(length = 300)
     private String observaciones;
+    @JoinColumn(name = "cliente", referencedColumnName = "id", nullable = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private Cliente cliente;
+    @Basic(optional = false)
+    @NotNull
+    @Column(nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date fecha;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "devolucion", fetch = FetchType.LAZY)
     private List<CambioDevolucion> cambioDevolucionList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "devolucion", fetch = FetchType.LAZY)
@@ -69,7 +82,7 @@ public class Devolucion implements Serializable {
         this.id = id;
     }
 
-    public Devolucion(Long id, boolean dolar, float valorTotal) {
+    public Devolucion(Long id, Boolean dolar, float valorTotal) {
         this.id = id;
         this.dolar = dolar;
         this.valorTotal = valorTotal;
@@ -83,11 +96,11 @@ public class Devolucion implements Serializable {
         this.id = id;
     }
 
-    public boolean getDolar() {
+    public Boolean getDolar() {
         return dolar;
     }
 
-    public void setDolar(boolean dolar) {
+    public void setDolar(Boolean dolar) {
         this.dolar = dolar;
     }
 
@@ -105,6 +118,22 @@ public class Devolucion implements Serializable {
 
     public void setObservaciones(String observaciones) {
         this.observaciones = observaciones;
+    }
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
+    }
+
+    public Date getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(Date fecha) {
+        this.fecha = fecha;
     }
 
     @XmlTransient
