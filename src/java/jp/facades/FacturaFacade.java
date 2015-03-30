@@ -13,10 +13,9 @@ import javax.persistence.criteria.Root;
 import jp.entidades.DespachoFactura;
 import jp.entidades.Factura;
 import jp.entidades.FacturaProducto;
-import jp.entidades.FacturaPromocion;
 import jp.entidades.Pago;
 import jp.entidades.Promocion;
-import jp.util.EstadoPago;
+import jp.util.EstadoPagoFactura;
 
 @Stateless
 public class FacturaFacade extends AbstractFacade<Factura> {
@@ -52,7 +51,7 @@ public class FacturaFacade extends AbstractFacade<Factura> {
             Root<Pago> fac = cq.from(Pago.class);
             cq.select(cb.sum(fac.get("valorTotal").as(Double.class)));
             cq.where(cb.and(cb.equal(fac.get("factura"), factura),
-                    cb.equal(fac.get("estado"), EstadoPago.REALIZADA.getValor())));
+                    cb.equal(fac.get("estado"), EstadoPagoFactura.REALIZADA.getValor())));
             TypedQuery<Double> q = getEntityManager().createQuery(cq);
             Double valorAbono = q.getSingleResult();
 

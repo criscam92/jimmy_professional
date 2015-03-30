@@ -16,7 +16,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import jp.facades.ProductoFacade;
-import jp.facades.RecargoFacade;
+import jp.facades.ParametrosFacade;
 import org.primefaces.context.RequestContext;
 
 @ManagedBean(name = "productoController")
@@ -26,7 +26,7 @@ public class ProductoController implements Serializable {
     @EJB
     private jp.facades.ProductoFacade ejbFacade;
     @EJB
-    private RecargoFacade recargoFacade;
+    private ParametrosFacade parametrosFacade;
     private List<Producto> items = null;
     private Producto selected;
     private final String uiError;
@@ -67,7 +67,7 @@ public class ProductoController implements Serializable {
         if (producto.getVentaPublico()) {
 
             if (recargoPublico == null) {
-                recargoPublico = recargoFacade.getParametros().getPorcentajeVentaPublic();
+                recargoPublico = parametrosFacade.getParametros().getPorcentajeVentaPublic();
                 recargoPublico = (recargoPublico / 100) + 1;
                 if (recargoPublico == null) {
                     recargoPublico = 1.0f;

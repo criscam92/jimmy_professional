@@ -28,7 +28,7 @@ import jp.entidades.Promocion;
 import jp.entidades.Talonario;
 import jp.facades.FacturaFacade;
 import jp.facades.FacturaProductoFacade;
-import jp.facades.RecargoFacade;
+import jp.facades.ParametrosFacade;
 import jp.facades.TalonarioFacade;
 import jp.facades.TransactionFacade;
 import jp.util.Moneda;
@@ -44,7 +44,7 @@ public class FacturaController implements Serializable {
     @EJB
     private FacturaProductoFacade ejbFacturaProductoFacade;
     @EJB
-    private RecargoFacade ejbRecargoFacade;
+    private ParametrosFacade ejbParametrosFacade;
     @EJB
     private TransactionFacade ejbTransactionFacade;
     @EJB
@@ -161,8 +161,8 @@ public class FacturaController implements Serializable {
         return ejbFacturaProductoFacade;
     }
     
-    public RecargoFacade getEjbRecargoFacade() {
-        return ejbRecargoFacade;
+    public ParametrosFacade getEjbRecargoFacade() {
+        return ejbParametrosFacade;
     }
     
     public TransactionFacade getEjbTransactionFacade() {

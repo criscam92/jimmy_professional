@@ -290,19 +290,12 @@ public class CambioDevolucionController implements Serializable {
         }
         return sum;
     }
-    
-    public void addDevolucionProducto() {
-        if (facturaProducto.getUnidadesVenta()> 0 && facturaProducto.getProducto() != null && facturaProducto.getPrecio() > 0) {
 
-            valorAcumulado += devolucionProducto.getValor() * devolucionProducto.getCantidad();
-            selected.setValorTotal(valorAcumulado);
-            DevolucionProducto devolucionProductoTMP = new DevolucionProducto();
-            devolucionProductoTMP.setCantidad(devolucionProducto.getCantidad());
-            devolucionProductoTMP.setCodigoDevolucion(devolucionProducto.getCodigoDevolucion());
-            devolucionProductoTMP.setDetalle(devolucionProducto.getDetalle());
-            devolucionProductoTMP.setDevolucion(selected);
-            devolucionProductoTMP.setProducto(devolucionProducto.getProducto());
-            devolucionProductoTMP.setValor(devolucionProducto.getValor());
+    public void addDevolucionProducto() {
+        if (facturaProducto.getUnidadesVenta() > 0 && facturaProducto.getProducto() != null && facturaProducto.getPrecio() > 0) {
+
+            FacturaProducto devolucionProductoTMP = new FacturaProducto();
+            devolucionProductoTMP.setUnidadesVenta(facturaProducto.getUnidadesVenta());
             devolucionProductoTMP.setId(itemsTMP.size() + 1l);
 
             itemsTMP.add(devolucionProductoTMP);
