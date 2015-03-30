@@ -13,7 +13,7 @@
         </ui:define>
         <ui:define name="body">
             <h:form id="FacturaCreateForm" style="overflow-y: hidden">
-                <p:panel  header="DATOS FACTURA" style="margin: auto;width: 955px;">
+                <p:panel  header="DATOS FACTURA" style="margin: auto;width: 955px;" id="datosFactura">
                     <p:panelGrid columns="2">
                         <p:panelGrid columns="1">
                             <p:panelGrid columns="4">
@@ -28,7 +28,6 @@
                                                 itemLabel="#{empleado.toString()}" var="empleado" required="true">
                                     <p:ajax event="itemSelect" listener="#{facturaController.onItemSelectEmpleado}" update="codigo" />
                                 </p:autoComplete>
-
                             </p:panelGrid>
                             <p:panelGrid columns="2">
                                 <p:outputLabel value="#{bundle.CreateDevolucionLabel_observaciones}" for="observaciones"/>
@@ -38,7 +37,7 @@
                         <p:panelGrid columns="2">
 
                             <p:outputLabel value="#{bundle.MessageCodigoPedido}" for="codigo"/>
-                            <p:inputText style="width: 162px;" id="codigo" value="#{facturaController.selected.ordenPedido}" required="true" requiredMessage="El campo orden pedido es obligatorio"/>
+                            <p:inputText style="width: 162px;" id="codigo" value="#{facturaController.selected.ordenPedido}" required="true" requiredMessage="El campo orden pedido es obligatorio"  onkeypress="return isNumber(event)"/>
 
                             <p:outputLabel value="#{bundle.CreateVisitaLabel_cliente}" for="cliente"/>
                             <p:autoComplete size="23" id="cliente" minQueryLength="3" panelStyle="width: 320px;" value="#{facturaController.selected.cliente}" itemValue="#{cliente}" 
@@ -71,47 +70,38 @@
                         <p:selectOneButton  style="height: 40px;" value="#{facturaController.selectOneButton}">
                             <f:selectItem itemLabel="Agregar Productos" itemValue="1"/>
                             <f:selectItem  itemLabel="Agregar Promociones" itemValue="2" />
-                            <f:ajax render="opciones"/>
+                            <f:ajax render="opciones" listener="#{facturaController.changeView}"/>
                         </p:selectOneButton>                       
                     </f:facet>
 
                     <p:panelGrid columns="9" id="opciones" style="margin: auto;">
                         <c:if test="#{facturaController.selectOneButton == 1}">
-                            <p:outputLabel style="margin-right: 10px;" value="#{bundle.EditPromocionProductoLabel_producto}"/>
-                            <p:autoComplete id="producto" minQueryLength="3" value="#{facturaController.producto}" itemValue="#{pro}" 
+                            <p:outputLabel styleClass="#{facturaController.errorProducto}" style="margin-right: 10px;" value="#{bundle.EditPromocionProductoLabel_producto}"/>
+                            <p:autoComplete styleClass="#{facturaController.errorProducto}" id="producto" minQueryLength="3" value="#{facturaController.producto}" itemValue="#{pro}" onclick="select()" 
                                             completeMethod="#{promocionController.llenarProducto}" effect="fade" converter="productoconverter" itemLabel="#{pro.toString()}" var="pro">
                                 <p:ajax event="itemSelect" listener="#{facturaController.onItemSelectProducto}" update="precio" />
                             </p:autoComplete>
                         </c:if>
 
                         <c:if test="#{facturaController.selectOneButton == 2}">
-                            <p:outputLabel value="#{bundle.CreatePromocionProductoLabel_promocion}" for="promocion"/>
-                            <p:autoComplete id="promocion" minQueryLength="3" value="#{facturaController.promocion}" itemValue="#{pro}" 
+                            <p:outputLabel styleClass="#{facturaController.errorPromocion}" value="#{bundle.CreatePromocionProductoLabel_promocion}" for="promocion"/>
+                            <p:autoComplete styleClass="#{facturaController.errorPromocion}" id="promocion" minQueryLength="3" value="#{facturaController.promocion}" itemValue="#{pro}" onclick="select()"
                                             completeMethod="#{facturaController.llenarPromocion}" effect="fade" converter="promocionconverter" itemLabel="#{pro.toString()}" var="pro">
                                 <p:ajax event="itemSelect" listener="#{facturaController.onItemSelectPromocion}" update="precio" />
                             </p:autoComplete>
                         </c:if>
 
-                        <p:outputLabel value="#{bundle.MessageCreateVenta}" for="venta"/>
-                        <p:inputText value="#{facturaController.unidadesVenta}" id="venta"/>
+                        <p:outputLabel styleClass="#{facturaController.errorVenta}" value="#{bundle.MessageCreateVenta}" for="venta"/>
+                        <p:inputText styleClass="#{facturaController.errorVenta}" value="#{facturaController.unidadesVenta}" id="venta" onkeypress="return isNumber(event)" onclick="select()"/>
 
-                        <p:outputLabel value="#{bundle.MessageCreateBonificacion}" for="bonificacion"/>
-                        <p:inputText value="#{facturaController.unidadesBonificacion}" id="bonificacion"/>
+                        <p:outputLabel styleClass="#{facturaController.errorBonificacion}" value="#{bundle.MessageCreateBonificacion}" for="bonificacion"/>
+                        <p:inputText styleClass="#{facturaController.errorBonificacion}" value="#{facturaController.unidadesBonificacion}" id="bonificacion"  onkeypress="return isNumber(event)" onclick="select()"/>
 
                         <p:outputLabel value="#{bundle.MessageCreatePrecio}" for="precio"/>
                         <p:inputText value="#{facturaController.precio}" id="precio" readonly="true"/>
 
-                        <c:if test="#{facturaController.selectOneButton == 1}">
-                            <p:commandButton value="#{bundle.AddItem}" icon="ui-icon-plus"
-                                             actionListener="#{facturaController.addProductoOrPromocion(true)}" update="listaProductos"/>
-                        </c:if>
-
-                        <c:if test="#{facturaController.selectOneButton == 2}">
-                            <p:commandButton value="#{bundle.AddItem}" icon="ui-icon-plus"
-                                             actionListener="#{facturaController.addProductoOrPromocion(false)}" update="listaProductos" />
-                        </c:if>
-
-
+                        <p:commandButton value="#{bundle.AddItem}" icon="ui-icon-plus" actionListener="#{facturaController.addProductoOrPromocion}"
+                                         update="listaProductos,opciones,:growl" process="opciones"/>
                     </p:panelGrid>
 
                     <br/>
@@ -155,7 +145,7 @@
                                 <h:outputText value="Quitar"/>
                             </f:facet>
                             <p:commandButton icon="ui-icon-closethick" update="listaProductos"
-                                             actionListener="#{facturaController.removeFacturaProductoPromocion(itemTMP)}"/>
+                                             actionListener="#{facturaController.removeFacturaProductoPromocion(itemTMP)}" process="listaProductos"/>
                         </p:column>
                         <p:columnGroup type="footer">
                             <p:row>
@@ -194,9 +184,9 @@
                 </p:panel>
                 <div style="margin-top: 10px;">
                     <p:commandButton actionListener="#{facturaController.create(false)}" value="#{bundle.Save}"
-                                     icon="ui-icon-disk" />
+                                     icon="ui-icon-disk" process="datosFactura"/>
                     <p:commandButton action="#{facturaController.create(true)}" value="#{bundle.MessageGuardarDespacharFactura}"
-                                     icon="ui-icon-transferthick-e-w" update=":growl"/>
+                                     icon="ui-icon-transferthick-e-w" update=":growl" process="datosFactura"/>
                 </div>
             </h:form>
         </ui:define>

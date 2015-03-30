@@ -1,5 +1,6 @@
 package jp.facades;
 
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -87,5 +88,9 @@ public class FacturaProductoFacade extends AbstractFacade<FacturaProducto> {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public List<FacturaProducto> getFacturaProductosByFactura(Factura factura) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

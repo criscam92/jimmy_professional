@@ -32,6 +32,10 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "DespachoFactura.findByFecha", query = "SELECT d FROM DespachoFactura d WHERE d.fecha = :fecha"),
     @NamedQuery(name = "DespachoFactura.findByRealizado", query = "SELECT d FROM DespachoFactura d WHERE d.realizado = :realizado")})
 public class DespachoFactura implements Serializable {
+
+    public static final boolean REALIZADA = true;
+    private static final boolean CANCELADA = false;
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -139,5 +143,5 @@ public class DespachoFactura implements Serializable {
     public String toString() {
         return "entidades.DespachoFactura[ id=" + id + " ]";
     }
-    
+
 }
