@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package jp.servlet;
 
 import com.google.gson.Gson;
@@ -12,7 +7,6 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
@@ -34,16 +28,12 @@ import jp.entidades.Parametros;
 import jp.facades.ParametrosFacade;
 import org.apache.commons.io.IOUtils;
 
-/**
- *
- * @author gurzaf
- */
 @ManagedBean
 public class DolarServlet extends HttpServlet {
 
     
     @EJB
-    private ParametrosFacade recargoFacade;
+    private ParametrosFacade parametrosFacade;
     
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -64,9 +54,9 @@ public class DolarServlet extends HttpServlet {
             JsonObject j = gson.fromJson(result, JsonObject.class);
             Float currency = j.getAsJsonObject("rates").get("COP").getAsFloat();
             
-            Parametros parametros = recargoFacade.getParametros();
+            Parametros parametros = parametrosFacade.getParametros();
             parametros.setPrecioDolar(currency);
-            recargoFacade.edit(parametros);
+            parametrosFacade.edit(parametros);
 
             out.write(currency.toString());
             

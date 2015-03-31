@@ -26,7 +26,7 @@
                                 <p:autoComplete size="23" id="empleado" minQueryLength="3" panelStyle="width: 320px;" value="#{facturaController.selected.empleado}" itemValue="#{empleado}" 
                                                 completeMethod="#{empleadoController.llenarEmpleado}" effect="fade" converter="empleadoconverter"
                                                 itemLabel="#{empleado.toString()}" var="empleado" required="true">
-                                    <p:ajax event="itemSelect" listener="#{facturaController.onItemSelectEmpleado}" update="codigo" />
+                                    <p:ajax event="itemSelect" listener="#{facturaController.onItemSelectEmpleado}" update="codigo, :growl, empleado" />
                                 </p:autoComplete>
                             </p:panelGrid>
                             <p:panelGrid columns="2">
@@ -184,9 +184,9 @@
                 </p:panel>
                 <div style="margin-top: 10px;">
                     <p:commandButton actionListener="#{facturaController.create(false)}" value="#{bundle.Save}"
-                                     icon="ui-icon-disk" process="datosFactura"/>
+                                     icon="ui-icon-disk" />
                     <p:commandButton action="#{facturaController.create(true)}" value="#{bundle.MessageGuardarDespacharFactura}"
-                                     icon="ui-icon-transferthick-e-w" update=":growl" process="datosFactura"/>
+                                     icon="ui-icon-transferthick-e-w" update=":growl" />
                 </div>
             </h:form>
         </ui:define>
