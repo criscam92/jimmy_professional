@@ -79,6 +79,10 @@ public class DevolucionController implements Serializable {
         return valorAcumulado;
     }
 
+    public void setValorAcumulado(Float valorAcumulado) {
+        this.valorAcumulado = valorAcumulado;
+    }
+
     public DevolucionSessionBean getDevolucionSessionBean() {
         return devolucionSessionBean;
     }
@@ -218,8 +222,6 @@ public class DevolucionController implements Serializable {
         if (devolucionProducto.getCantidad() > 0 && devolucionProducto.getCodigoDevolucion() != null && !devolucionProducto.getDetalle().trim().equals("")
                 && devolucionProducto.getProducto() != null && devolucionProducto.getValor() > 0) {
 
-            valorAcumulado += devolucionProducto.getValor() * devolucionProducto.getCantidad();
-            selected.setValorTotal(valorAcumulado);
             DevolucionProducto devolucionProductoTMP = new DevolucionProducto();
             devolucionProductoTMP.setCantidad(devolucionProducto.getCantidad());
             devolucionProductoTMP.setCodigoDevolucion(devolucionProducto.getCodigoDevolucion());
@@ -230,11 +232,11 @@ public class DevolucionController implements Serializable {
             devolucionProductoTMP.setId(itemsTMP.size() + 1l);
 
             itemsTMP.add(devolucionProductoTMP);
+            getTotalDevolucion();
         }
     }
 
     public void removeDevolucionProducto(DevolucionProducto devolucionProductoArg) {
-        valorAcumulado -= devolucionProductoArg.getValor();
         selected.setValorTotal(valorAcumulado);
         itemsTMP.remove(devolucionProductoArg);
     }
@@ -259,6 +261,17 @@ public class DevolucionController implements Serializable {
 
     public String redireccionarDevolucionProducto(String path) {
         return path + "?faces-redirect=true";
+    }
+    
+    public double getTotalDevolucion() {
+        int sum = 0;
+        for (DevolucionProducto dp : itemsTMP) {
+            sum += dp.getValor()* dp.getCantidad();
+        }
+        if (selected != null) {
+            selected.setValorTotal(sum);
+        }
+        return sum;
     }
 
 }

@@ -19,6 +19,8 @@ import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import jp.entidades.DespachoFactura;
 import jp.entidades.DespachoFacturaProducto;
+import jp.entidades.Devolucion;
+import jp.entidades.DevolucionProducto;
 import jp.entidades.Factura;
 import jp.entidades.FacturaProducto;
 import jp.entidades.FacturaPromocion;
@@ -450,5 +452,36 @@ public class TransactionFacade {
             getEntityManager().clear();
         }
     }
+    
+    public Long createDevolucionProducto(List<DevolucionProducto> devolucionesProducto, Devolucion d) {
+    Long idDevolucion = 0l;
+    userTransaction = sessionContext.getUserTransaction();
+    try {
+        userTransaction.begin();
+        Devolucion devolucionTMP = em.merge(d);
+
+        for (DevolucionProducto devolucionProductoTMP : devolucionesProducto) {
+            devolucionProductoTMP.setId(null);
+            devolucionProductoTMP.setDevolucion(devolucionTMP);
+            em.persist(devolucionProductoTMP);
+        }
+
+        userTransaction.commit();
+        idDevolucion = devolucionTMP.getId();
+    } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
+        idDevolucion = null;
+        try {
+            System.out.println("======>");
+            e.printStackTrace();
+            System.out.println("<======");
+            userTransaction.rollback();
+        } catch (IllegalStateException | SecurityException | SystemException es) {
+            System.out.println("======>");
+            es.printStackTrace();
+            System.out.println("<======");
+        }
+    }
+    return idDevolucion;
+}
 
 }

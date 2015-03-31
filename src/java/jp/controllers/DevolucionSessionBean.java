@@ -1,23 +1,19 @@
 package jp.controllers;
 
 import java.util.List;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.faces.bean.RequestScoped;
 import jp.entidades.Devolucion;
 import jp.entidades.DevolucionProducto;
-import jp.facades.DevolucionFacade;
 
 @ManagedBean(name = "DevolucionSessionBean")
-@SessionScoped
+@RequestScoped
 @Stateless
 public class DevolucionSessionBean {
     
     private Devolucion devolucion;
     private List<DevolucionProducto> devolucionProductoList;
-    @EJB
-    private DevolucionFacade EJBdevolucionFacade;
     
     public DevolucionSessionBean() {
         
@@ -28,6 +24,7 @@ public class DevolucionSessionBean {
     }
 
     public void setDevolucion(Devolucion devolucion) {
+        System.out.println("Seteando devolucionsession con==> "+devolucion.getValorTotal());
         this.devolucion = devolucion;
     }
 
@@ -38,9 +35,4 @@ public class DevolucionSessionBean {
     public void setDevolucionProductoList(List<DevolucionProducto> devolucionProductoList) {
         this.devolucionProductoList = devolucionProductoList;
     }
-
-    public DevolucionFacade getEJBdevolucionFacade() {
-        return EJBdevolucionFacade;
-    }
-    
 }

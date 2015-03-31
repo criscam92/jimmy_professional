@@ -1,5 +1,6 @@
 package jp.controllers;
 
+import java.io.IOException;
 import jp.entidades.CambioDevolucion;
 import jp.util.JsfUtil;
 import jp.util.JsfUtil.PersistAction;
@@ -14,21 +15,25 @@ import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.faces.bean.ViewScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import jp.entidades.Devolucion;
+import jp.entidades.Empleado;
 import jp.entidades.Factura;
 import jp.entidades.FacturaProducto;
+import jp.entidades.Talonario;
 import jp.facades.DevolucionFacade;
 import jp.facades.ParametrosFacade;
+import jp.facades.TalonarioFacade;
 import jp.util.EstadoPagoFactura;
 import jp.util.TipoPago;
+import org.primefaces.event.SelectEvent;
 
 @ManagedBean(name = "cambioDevolucionController")
-@SessionScoped
+@ViewScoped
 public class CambioDevolucionController implements Serializable {
 
     @EJB
@@ -37,8 +42,10 @@ public class CambioDevolucionController implements Serializable {
     private jp.facades.DevolucionFacade ejbDevolucionFacade;
     @EJB
     private jp.facades.ParametrosFacade ejbParametrosFacade;
-    @EJB(name = "DevolucionSessionBean")
-    private DevolucionSessionBean devolucionSessionBean;
+    @EJB
+    private jp.facades.TalonarioFacade ejbTalonarioFacade;
+    @EJB
+    private jp.controllers.DevolucionSessionBean devolucionSessionBean;
     private List<CambioDevolucion> items = null;
     private CambioDevolucion selected;
     private Devolucion devolucion;
@@ -48,16 +55,17 @@ public class CambioDevolucionController implements Serializable {
 
     public CambioDevolucionController() {
         itemsTMP = new ArrayList<>();
+        devolucionSessionBean = new DevolucionSessionBean();
     }
 
     @PostConstruct
     public void init() {
         try {
-            FacesContext.getCurrentInstance().getExternalContext().getSession(true);
-            if (devolucionSessionBean != null) {
-                devolucion = devolucionSessionBean.getDevolucion();
-                System.out.println("Se carga la devolucionGet-> " + devolucion.getObservaciones());
-            }
+//            FacesContext.getCurrentInstance().getExternalContext().getSession(true);
+
+            devolucion = devolucionSessionBean.getDevolucion();
+//            System.out.println("Se carga la devolucionGet-> " + devolucion +"\nObservaciones==> "+ devolucion.getObservaciones() + "\nMoneda dolar? " + devolucion.getDolar());
+
         } catch (Exception e) {
             System.out.println("====================No se recibió parametro por GET en CambioDevContr====================");
             e.printStackTrace();
@@ -133,6 +141,10 @@ public class CambioDevolucionController implements Serializable {
 
     public ParametrosFacade getEjbParametrosFacade() {
         return ejbParametrosFacade;
+    }
+
+    public TalonarioFacade getEjbTalonarioFacade() {
+        return ejbTalonarioFacade;
     }
 
     public CambioDevolucion prepareCreate() {
@@ -248,7 +260,7 @@ public class CambioDevolucionController implements Serializable {
         factura = new Factura();
         factura.setFecha(devolucion.getFecha());
         factura.setCliente(devolucion.getCliente());
-        //empleado
+        //empleado seteado desde el form
         factura.setTipoPago(TipoPago.MANO_A_MANO.getValor());
         factura.setObservaciones(devolucion.getObservaciones());
 //        factura.setTotalBruto(devolucion.getValorTotal());//SE HACE DESDE CARGARFACTURA
@@ -266,6 +278,7 @@ public class CambioDevolucionController implements Serializable {
 
             FacturaProducto facturaProductoTMP = new FacturaProducto();
             facturaProductoTMP.setUnidadesVenta(facturaProducto.getUnidadesVenta());
+            facturaProductoTMP.setUnidadesBonificacion(0);
             facturaProductoTMP.setPrecio(facturaProducto.getPrecio());
             facturaProductoTMP.setProducto(facturaProducto.getProducto());
             facturaProductoTMP.setFactura(factura);
@@ -282,7 +295,7 @@ public class CambioDevolucionController implements Serializable {
     public double getTotalPrecioFactura() {
         int sum = 0;
         for (FacturaProducto fp : itemsTMP) {
-            sum += fp.getPrecio();
+            sum += fp.getPrecio() * fp.getUnidadesVenta();
         }
         if (factura != null) {
             factura.setTotalBruto(sum);
@@ -291,15 +304,34 @@ public class CambioDevolucionController implements Serializable {
         return sum;
     }
 
-    public void addDevolucionProducto() {
-        if (facturaProducto.getUnidadesVenta() > 0 && facturaProducto.getProducto() != null && facturaProducto.getPrecio() > 0) {
-
-            FacturaProducto devolucionProductoTMP = new FacturaProducto();
-            devolucionProductoTMP.setUnidadesVenta(facturaProducto.getUnidadesVenta());
-            devolucionProductoTMP.setId(itemsTMP.size() + 1l);
-
-            itemsTMP.add(devolucionProductoTMP);
+    public int getTotalUnidadVentas() {
+        int sum = 0;
+        for (FacturaProducto fp : itemsTMP) {
+            sum += fp.getUnidadesVenta();
         }
+        return sum;
+    }
+
+    public void onItemSelectEmpleado(SelectEvent event) {
+        Empleado e = (Empleado) event.getObject();
+        Talonario t = getEjbTalonarioFacade().getTalonarioByFecha(e);
+        if (factura != null) {
+            factura.setOrdenPedido(t != null ? ("" + t.getActual()) : "0");
+        }
+    }
+
+    public String getSimboloValor() {
+        return devolucion.getDolar()?"USD":"$";
+        /*System.out.println("Moneda es dolar?-> " + devolucion.getDolar());
+        if (devolucion.getDolar()) {
+            return "USD";
+        } else {
+            return "$";
+        }*/
+    }
+    
+    public void cancelar() throws IOException{
+        FacesContext.getCurrentInstance().getExternalContext().redirect("List.xhtml");
     }
 
 }

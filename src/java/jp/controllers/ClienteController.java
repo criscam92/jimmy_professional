@@ -204,15 +204,24 @@ public class ClienteController implements Serializable {
             if (value == null || value.length() == 0) {
                 return null;
             }
-            ClienteController controller = (ClienteController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "clienteController");
-            return controller.getFacade().find(getKey(value));
+            try {
+                ClienteController controller = (ClienteController) facesContext.getApplication().getELResolver().
+                        getValue(facesContext.getELContext(), null, "clienteController");
+                return controller.getFacade().find(getKey(value));
+            } catch (Exception e) {
+                return null;
+            }
         }
 
         java.lang.Long getKey(String value) {
             java.lang.Long key;
-            key = Long.valueOf(value);
-            return key;
+            try {
+                key = Long.valueOf(value);
+                return key;
+            } catch (NumberFormatException e) {
+                return null;
+            }
+
         }
 
         String getStringKey(java.lang.Long value) {

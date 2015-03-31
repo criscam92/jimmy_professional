@@ -17,8 +17,7 @@
                     <p:panelGrid columns="2">
                         <p:panelGrid columns="8">
                             <p:outputLabel value="#{bundle.MessageTipoMoneda}" for="moneda"/>                                
-                            <p:selectOneMenu value="#{devolucionController.selected.dolar}" id="moneda"
-                                             required="true" requiredMessage="#{bundle.MessageRequiredDevDolar}">
+                            <p:selectOneMenu value="#{devolucionController.selected.dolar}" id="moneda">
                                 <f:selectItems value="#{devolucionController.tipoMoneda}" var="itemMon" itemLabel="#{itemMon.detalle}" itemValue="#{itemMon.valor == 1?true:false}"/>
                             </p:selectOneMenu>
                             <p:outputLabel value="#{bundle.MessageValorTotalDev}" for="valorTotal"/>
@@ -30,8 +29,8 @@
                                         required="true" requiredMessage="#{bundle.EditVisitaRequiredMessage_fecha}" showOn="button"/>
                             <p:outputLabel value="#{bundle.CreateVisitaLabel_cliente}" for="cliente"/>
                             <p:autoComplete size="18" id="cliente" minQueryLength="3" panelStyle="width: 210px;" value="#{devolucionController.selected.cliente}"
-                                            itemValue="#{cliente}" completeMethod="#{clienteController.llenarCliente}" effect="fade" converter="clienteconverter"
-                                            itemLabel="#{cliente.toString()}" var="cliente" required="true">
+                                            itemValue="#{cliente}" completeMethod="#{clienteController.llenarCliente}" effect="fade" converter="clienteconverter" emptyMessage="Ingrese un Cliente válido"
+                                            itemLabel="#{cliente.toString()}" var="cliente" required="true" converterMessage="Ingrese un Cliente válido" validatorMessage="Ingrese un Cliente válido">
                             </p:autoComplete>
                         </p:panelGrid>
                         <p:panelGrid columns="2">
@@ -108,7 +107,8 @@
                                 <f:facet name="header">
                                     <h:outputText value="#{bundle.RemoveItem}"/>
                                 </f:facet>
-                                <p:commandButton icon="ui-icon-closethick" update="datalistTMP,:formDevolucionProducto:valorTotal" actionListener="#{devolucionController.removeDevolucionProducto(itemTMP)}"/>
+                                <p:commandButton icon="ui-icon-closethick" update="datalistTMP,:formDevolucionProducto:valorTotal"
+                                                 actionListener="#{devolucionController.removeDevolucionProducto(itemTMP)}" process=":formDevolucionProducto:tablaDevolucionProducto"/>
                             </p:column>
                         </p:dataTable>
                     </p:panelGrid>
