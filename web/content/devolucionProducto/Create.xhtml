@@ -8,7 +8,7 @@
 
     <ui:composition template="/index.xhtml">
         <ui:define name="title">
-            <h:outputText value="#{bundle.ListFacturaTitle}"></h:outputText>
+            <h:outputText value="#{bundle.DevolucionTitle}"></h:outputText>
         </ui:define>
 
         <ui:define name="body">
@@ -17,26 +17,32 @@
                     <p:panelGrid columns="2">
                         <p:panelGrid columns="8">
                             <p:outputLabel value="#{bundle.MessageTipoMoneda}" for="moneda"/>                                
-                            <p:selectOneMenu value="#{devolucionController.selected.dolar}" id="moneda">
+                            <p:selectOneMenu value="#{devolucionController.selected.dolar}" id="moneda" widgetVar="comboMoneda">
+                                <p:ajax event="change" process="@this" listener="#{devolucionController.getSimboloValor()}" update=":formAbonoFactura" />
                                 <f:selectItems value="#{devolucionController.tipoMoneda}" var="itemMon" itemLabel="#{itemMon.detalle}" itemValue="#{itemMon.valor == 1?true:false}"/>
                             </p:selectOneMenu>
                             <p:outputLabel value="#{bundle.MessageValorTotalDev}" for="valorTotal"/>
                             <p:inputText id="valorTotal" value="#{devolucionController.selected.valorTotal}" size="10"
                                          required="true" requiredMessage="#{bundle.MessageRequiredDevValorTot}"/>
                             <p:outputLabel value="#{bundle.CreateFacturaLabel_fecha}" for="fecha"/>
-                            <p:calendar size="15" id="fecha" pattern="MM/dd/yyyy"
+                            <p:calendar size="12" id="fecha" pattern="MM/dd/yyyy"
                                         value="#{devolucionController.selected.fecha}" title="#{bundle.EditVisitaTitle_fecha}"
-                                        required="true" requiredMessage="#{bundle.EditVisitaRequiredMessage_fecha}" showOn="button"/>
+                                        required="true" requiredMessage="#{bundle.EditVisitaRequiredMessage_fecha}" showOn="button">
+                                <p:ajax event="dateSelect" update=":formAbonoFactura" />
+                            </p:calendar>
                             <p:outputLabel value="#{bundle.CreateVisitaLabel_cliente}" for="cliente"/>
                             <p:autoComplete size="18" id="cliente" minQueryLength="3" panelStyle="width: 210px;" value="#{devolucionController.selected.cliente}"
                                             itemValue="#{cliente}" completeMethod="#{clienteController.llenarCliente}" effect="fade" converter="clienteconverter" emptyMessage="Ingrese un Cliente válido"
                                             itemLabel="#{cliente.toString()}" var="cliente" required="true" converterMessage="Ingrese un Cliente válido" validatorMessage="Ingrese un Cliente válido">
+                                <p:ajax event="itemSelect" listener="#{devolucionController.onItemSelecCliente}" update="botonAbono" />
                             </p:autoComplete>
                         </p:panelGrid>
                         <p:panelGrid columns="2">
                             <p:outputLabel value="#{bundle.CreateDevolucionProductoLabel_detalle}" for="observacion" />
                             <p:inputTextarea id="observacion" value="#{devolucionController.selected.observaciones}" style="width: 230px;"
-                                             required="true" requiredMessage="#{bundle.MessageRequiredDevObser}"/>
+                                             required="true" requiredMessage="#{bundle.MessageRequiredDevObser}">
+                                <p:ajax event="blur" update=":formAbonoFactura" />
+                            </p:inputTextarea>
                         </p:panelGrid>
                     </p:panelGrid>
                 </p:panel>
@@ -46,12 +52,14 @@
                         <p:panelGrid columns="8">
                             <p:outputLabel value="#{bundle.CreateDevolucionProductoLabel_producto}" for="producto" />
                             <p:autoComplete id="producto" minQueryLength="3" value="#{devolucionController.devolucionProducto.producto}" itemValue="#{pro}" 
-                                            completeMethod="#{promocionController.llenarProducto}" effect="fade" converter="productoconverter" itemLabel="#{pro.toString()}" var="pro" />
+                                            completeMethod="#{promocionController.llenarProducto}" effect="fade" converter="productoconverter" itemLabel="#{pro.toString()}" var="pro">
+                                <p:ajax event="itemSelect" listener="#{devolucionController.onItemSelectProducto}" update="valor"/>
+                            </p:autoComplete>
                             <p:outputLabel value="#{bundle.CreateDevolucionProductoLabel_cantidad}" for="cantidad" />
                             <p:inputText id="cantidad" value="#{devolucionController.devolucionProducto.cantidad}"
                                          title="#{bundle.CreateDevolucionProductoTitle_cantidad}" required="true" requiredMessage="#{bundle.CreateDevolucionProductoRequiredMessage_cantidad}"/>
                             <p:outputLabel value="#{bundle.CreatePromocionLabel_valor}" for="valor"/>
-                            <p:inputText id="valor" value="#{devolucionController.devolucionProducto.valor}"/>
+                            <p:inputText id="valor" value="#{devolucionController.devolucionProducto.valor}" readonly="true"/>
                             <p:outputLabel value="#{bundle.MessageCodigoDev}" for="codigoDevolucion" />
                             <p:selectOneMenu id="codigoDevolucion" value="#{devolucionController.devolucionProducto.codigoDevolucion}"
                                              required="true" requiredMessage="#{bundle.EditDevolucionCodDevRequiredMessage_producto}" converter="codigodevolucionconverter">
@@ -64,7 +72,7 @@
                             <p:outputLabel value="#{bundle.CreateDevolucionProductoLabel_detalle}" for="detalle" />
                             <p:inputTextarea id="detalle" value="#{devolucionController.devolucionProducto.detalle}" title="#{bundle.CreateDevolucionProductoTitle_detalle}" />
                             <p:commandButton value="#{bundle.AddItem}" icon="ui-icon-plus" process="tablaDevolucionProducto"
-                                             actionListener="#{devolucionController.addDevolucionProducto()}" update="datalistTMP,valorTotal"/>
+                                             actionListener="#{devolucionController.addDevolucionProducto()}" update="datalistTMP,valorTotal,:formAbonoFactura:devolucionActual,tablaDevolucionProducto"/>
                         </p:panelGrid>
 
                         <p:dataTable id="datalistTMP" value="#{devolucionController.itemsTMP}" var="itemTMP"
@@ -107,7 +115,7 @@
                                 <f:facet name="header">
                                     <h:outputText value="#{bundle.RemoveItem}"/>
                                 </f:facet>
-                                <p:commandButton icon="ui-icon-closethick" update="datalistTMP,:formDevolucionProducto:valorTotal"
+                                <p:commandButton icon="ui-icon-closethick" update="datalistTMP,:formDevolucionProducto:valorTotal,:formAbonoFactura:devolucionActual"
                                                  actionListener="#{devolucionController.removeDevolucionProducto(itemTMP)}" process=":formDevolucionProducto:tablaDevolucionProducto"/>
                             </p:column>
                         </p:dataTable>
@@ -116,10 +124,11 @@
                 <div class="botonesDialog">
                     <p:commandButton icon="ui-icon-transfer-e-w" value="#{bundle.MessageButtonCambioManoMano}" update=":growl"
                                      action="#{devolucionController.prepareCreateDevolucionProducto('DevolucionCambio.xhtml')}"/>
-                    <p:commandButton icon="ui-icon-clipboard" value="#{bundle.MessageButtonAbonoFactura}" update=":growl"
-                                     action="#{devolucionController.prepareCreateDevolucionProducto('DevolucionPago.xhtml')}"/>
+                    <p:commandButton icon="ui-icon-clipboard" value="#{devolucionController.messageSaldo}" update=":growl,:formAbonoFactura:datalist" disabled="#{devolucionController.deshabilitarAbono}"
+                                     oncomplete="PF('AbonoFacturaDialog').show()" id="botonAbono"/>
                 </div>
             </h:form>
+            <ui:include src="DevolucionPago.xhtml"/>
         </ui:define>
     </ui:composition>
 </html>

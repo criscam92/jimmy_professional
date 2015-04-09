@@ -16,11 +16,11 @@
         <ui:define name="body">
             <h:form id="DevolucionProductoListForm">
 
-                <p:dataTable id="datalist" value="#{devolucionProductoController.items}" var="item"
-                             selectionMode="single" selection="#{devolucionProductoController.selected}"
+                <p:dataTable id="datalist" value="#{devolucionController.items}" var="item"
+                             selectionMode="single" selection="#{devolucionController.selected}"
                              paginator="true" styleClass="tabla"
                              rowKey="#{item.id}"
-                             rows="10"
+                             rows="10" 
                              rowsPerPageTemplate="10,20,30,40,50"
                              paginatorPosition="bottom"
                              emptyMessage="#{bundle.EmptyTable}"
@@ -43,41 +43,54 @@
 
                     <p:column>
                         <f:facet name="header">
-                            <h:outputText value="#{bundle.ListDevolucionProductoTitle_cantidad}"/>
+                            <h:outputText value="#{bundle.EditVisitaProductoTitle_observacion}"/>
                         </f:facet>
-                        <h:outputText value="#{item.cantidad}"/>
+                        <h:outputText value="#{item.observaciones}"/>
                     </p:column>
                     <p:column>
                         <f:facet name="header">
-                            <h:outputText value="#{bundle.ListDevolucionProductoTitle_detalle}"/>
+                            <h:outputText value="#{bundle.EditVisitaTitle_fecha}"/>
                         </f:facet>
-                        <h:outputText value="#{item.detalle}"/>
+                        <h:outputText value="#{item.fecha}">
+                            <f:convertDateTime pattern="dd-MMM-yyyy"/>                            
+                        </h:outputText>
                     </p:column>
                     <p:column>
                         <f:facet name="header">
-                            <h:outputText value="#{bundle.CreatePromocionTitle_valor}"/>
+                            <h:outputText value="#{bundle.CreateVisitaTitle_cliente}"/>
                         </f:facet>
-                        <h:outputText value="#{item.valor}"/>
+                        <h:outputText value="#{item.cliente.toString()}"/>
                     </p:column>
                     <p:column>
                         <f:facet name="header">
-                            <h:outputText value="#{bundle.MessageCodigoDevolucion}"/>
+                            <h:outputText value="#{bundle.CreateUsuarioTitle_usuario}"/>
                         </f:facet>
-                        <h:outputText value="#{item.codigoDevolucion}"/>
+                        <h:outputText value="#{item.usuario.toString()}"/>
                     </p:column>
                     <p:column>
                         <f:facet name="header">
-                            <h:outputText value="#{bundle.ListDevolucionProductoTitle_devolucion}"/>
+                            <h:outputText value="#{bundle.MessageCantidadProdDev}"/>
                         </f:facet>
-                        <h:outputText value="#{item.devolucion}"/>
+                        <h:outputText value="#{devolucionController.getProductosByDevolucion(item)}"/>
                     </p:column>
                     <p:column>
                         <f:facet name="header">
-                            <h:outputText value="#{bundle.ListDevolucionProductoTitle_producto}"/>
+                            <h:outputText value="#{bundle.MessageTotalDevolucion}"/>
                         </f:facet>
-                        <h:outputText value="#{item.producto}"/>
+                        <h:outputText value="#{item.valorTotal}"/>
                     </p:column>
-
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.MessageTipoMoneda}"/>
+                        </f:facet>
+                        <h:outputText value="#{devolucionController.getTipoMoneda(item)}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.MessageTipoDevolucion}"/>
+                        </f:facet>
+                        <h:outputText value="#{devolucionController.getCambioDevolucionByDevolucion(item)}"/>
+                    </p:column>
                 </p:dataTable>
             </h:form>
 

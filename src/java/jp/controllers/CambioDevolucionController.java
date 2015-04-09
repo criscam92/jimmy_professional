@@ -21,15 +21,20 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import jp.entidades.Devolucion;
+import jp.entidades.DevolucionProducto;
 import jp.entidades.Empleado;
 import jp.entidades.Factura;
 import jp.entidades.FacturaProducto;
+import jp.entidades.Producto;
 import jp.entidades.Talonario;
 import jp.facades.DevolucionFacade;
+import jp.facades.FacturaFacade;
 import jp.facades.ParametrosFacade;
 import jp.facades.TalonarioFacade;
+import jp.facades.TransactionFacade;
 import jp.util.EstadoPagoFactura;
 import jp.util.TipoPago;
+import jp.util.TipoTalonario;
 import org.primefaces.event.SelectEvent;
 
 @ManagedBean(name = "cambioDevolucionController")
@@ -45,10 +50,15 @@ public class CambioDevolucionController implements Serializable {
     @EJB
     private jp.facades.TalonarioFacade ejbTalonarioFacade;
     @EJB
+    private jp.facades.FacturaFacade ejbFacturaFacade;
+    @EJB
+    private jp.facades.TransactionFacade ejbTransaccionFacade;
+    @EJB
     private jp.controllers.DevolucionSessionBean devolucionSessionBean;
     private List<CambioDevolucion> items = null;
     private CambioDevolucion selected;
     private Devolucion devolucion;
+    private List<DevolucionProducto> devolucionesProducto;
     private Factura factura;
     private FacturaProducto facturaProducto;
     private List<FacturaProducto> itemsTMP;
@@ -61,10 +71,12 @@ public class CambioDevolucionController implements Serializable {
     @PostConstruct
     public void init() {
         try {
-//            FacesContext.getCurrentInstance().getExternalContext().getSession(true);
-
             devolucion = devolucionSessionBean.getDevolucion();
-//            System.out.println("Se carga la devolucionGet-> " + devolucion +"\nObservaciones==> "+ devolucion.getObservaciones() + "\nMoneda dolar? " + devolucion.getDolar());
+            devolucion.setUsuario(LoginController.user);
+            if (devolucion.getDolar()) {
+                devolucion.setDolarActual(getEjbParametrosFacade().getParametros().getPrecioDolar());
+            }
+            devolucionesProducto = devolucionSessionBean.getDevolucionProductoList();
 
         } catch (Exception e) {
             System.out.println("====================No se recibió parametro por GET en CambioDevContr====================");
@@ -145,6 +157,14 @@ public class CambioDevolucionController implements Serializable {
 
     public TalonarioFacade getEjbTalonarioFacade() {
         return ejbTalonarioFacade;
+    }
+
+    public TransactionFacade getEjbTransaccionFacade() {
+        return ejbTransaccionFacade;
+    }
+
+    public FacturaFacade getEjbFacturaFacade() {
+        return ejbFacturaFacade;
     }
 
     public CambioDevolucion prepareCreate() {
@@ -260,11 +280,12 @@ public class CambioDevolucionController implements Serializable {
         factura = new Factura();
         factura.setFecha(devolucion.getFecha());
         factura.setCliente(devolucion.getCliente());
+        factura.setUsuario(LoginController.user);
         //empleado seteado desde el form
         factura.setTipoPago(TipoPago.MANO_A_MANO.getValor());
         factura.setObservaciones(devolucion.getObservaciones());
-//        factura.setTotalBruto(devolucion.getValorTotal());//SE HACE DESDE CARGARFACTURA
-//        factura.setTotalPagar(devolucion.getValorTotal());//SE HACE DESDE CARGARFACTURA
+        factura.setTotalBruto(devolucion.getValorTotal());//SE HACE DESDE CARGARFACTURA
+        factura.setTotalPagar(devolucion.getValorTotal());//SE HACE DESDE CARGARFACTURA
         factura.setEstado(EstadoPagoFactura.REALIZADA.getValor());
         factura.setDolar(devolucion.getDolar());
         //orden_pedido desde el form
@@ -285,6 +306,7 @@ public class CambioDevolucionController implements Serializable {
             facturaProductoTMP.setId(itemsTMP.size() + 1l);
 
             itemsTMP.add(facturaProductoTMP);
+            cleanFacturaProducto();
         }
     }
 
@@ -315,23 +337,102 @@ public class CambioDevolucionController implements Serializable {
     public void onItemSelectEmpleado(SelectEvent event) {
         Empleado e = (Empleado) event.getObject();
         Talonario t = getEjbTalonarioFacade().getTalonarioByFecha(e);
-        if (factura != null) {
-            factura.setOrdenPedido(t != null ? ("" + t.getActual()) : "0");
+
+        if (t == null) {
+            factura.setEmpleado(null);
+            JsfUtil.addErrorMessage("No existen talonarios para el empleado " + e.toString());
+        } else {
+            factura.setOrdenPedido("" + t.getActual());
         }
     }
 
     public String getSimboloValor() {
-        return devolucion.getDolar()?"USD":"$";
-        /*System.out.println("Moneda es dolar?-> " + devolucion.getDolar());
-        if (devolucion.getDolar()) {
-            return "USD";
+        return devolucion.getDolar() ? "USD " : "$ ";
+    }
+
+    public void cancelar() throws IOException {
+        FacesContext.getCurrentInstance().getExternalContext().redirect("List.xhtml");
+    }
+
+    public void createPagoDevolucionManoaMano() {
+        boolean result;
+        if (itemsTMP.size() > 0 && devolucion != null && factura != null) {
+
+            String opTMP = factura.getOrdenPedido();
+
+            if (getEjbFacturaFacade().getFacturaByOrdenPedido(opTMP) == null) {
+                if (actualizarTalonario(opTMP)) {
+                    result = getEjbTransaccionFacade().createPagoDevolucionProducto(devolucion, devolucionesProducto, factura, itemsTMP);
+                    if (result) {
+                        if (factura.getDolar()) {
+                            factura.setDolarActual(ejbParametrosFacade.getParametros().getPrecioDolar());
+                        }
+                        redireccionarFormulario();
+                        clean();
+                    } else {
+                        JsfUtil.addErrorMessage("No se ha podido realizar el Pago de la Devolución");
+                    }
+                }
+
+            } else {
+                JsfUtil.addErrorMessage("El pedido " + factura.getOrdenPedido() + " ya existe");
+            }
+
         } else {
-            return "$";
-        }*/
+            JsfUtil.addErrorMessage("Debe agregar productos a la Factura");
+        }
+    }
+
+    public void redireccionarFormulario() {
+        try {
+            FacesContext.getCurrentInstance().getExternalContext().redirect("List.xhtml");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void clean() {
+        items = null;
+        itemsTMP = null;
+        selected = null;
+        devolucionesProducto = null;
+        factura = null;
+        devolucion = null;
+    }
+
+    private boolean actualizarTalonario(String opTMP) {
+        List<Talonario> talonarios = getEjbTalonarioFacade().getTalonariosByTipo(TipoTalonario.REMISION, factura.getEmpleado());
+
+        if (talonarios != null && !talonarios.isEmpty()) {
+            Long ordenPedido = Long.valueOf(opTMP);
+            Talonario talonarioTMP = new Talonario();
+            for (Talonario talonario : talonarios) {
+                if (ordenPedido >= talonario.getInicial() && ordenPedido <= talonario.getFinal1()) {
+                    talonarioTMP = talonario;
+                    break;
+                }
+            }
+
+            if (talonarioTMP.getId() == null) {
+                JsfUtil.addErrorMessage("No existe un talonario valido para el No. de pedido " + opTMP);
+                return false;
+            } else {
+                return getEjbTalonarioFacade().update(talonarioTMP, ordenPedido);
+            }
+        }
+
+        return false;
     }
     
-    public void cancelar() throws IOException{
-        FacesContext.getCurrentInstance().getExternalContext().redirect("List.xhtml");
+    public void onItemSelectProducto(SelectEvent event) {
+        Producto p = (Producto) event.getObject();
+        facturaProducto.setPrecio((float) p.getValorVenta());
+    }
+    
+    private void cleanFacturaProducto(){
+        facturaProducto.setProducto(null);
+        facturaProducto.setUnidadesVenta(0);
+        facturaProducto.setPrecio(0d);
     }
 
 }

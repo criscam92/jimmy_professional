@@ -19,6 +19,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -102,7 +103,11 @@ public class Factura implements Serializable {
     private List<Pago> pagoList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "factura", fetch = FetchType.LAZY)
     private List<DespachoFactura> despachoFacturaList;
-
+    @Transient
+    Double saldo;
+    @Transient
+    Double saldoPagado;
+    
     public Factura() {
     }
 
@@ -230,6 +235,22 @@ public class Factura implements Serializable {
 
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
+    }
+
+    public Double getSaldo() {
+        return saldo;
+    }
+
+    public void setSaldo(Double saldo) {
+        this.saldo = saldo;
+    }
+
+    public Double getSaldoCancelado() {
+        return saldoPagado;
+    }
+
+    public void setSaldoCancelado(Double saldoCancelado) {
+        this.saldoPagado = saldoCancelado;
     }
 
     @XmlTransient

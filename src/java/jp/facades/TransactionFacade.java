@@ -17,6 +17,7 @@ import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
+import jp.entidades.CambioDevolucion;
 import jp.entidades.DespachoFactura;
 import jp.entidades.DespachoFacturaProducto;
 import jp.entidades.Devolucion;
@@ -26,6 +27,9 @@ import jp.entidades.FacturaProducto;
 import jp.entidades.FacturaPromocion;
 import jp.entidades.Ingreso;
 import jp.entidades.IngresoProducto;
+import jp.entidades.Pago;
+import jp.entidades.PagoDetalle;
+import jp.entidades.PagoDevolucion;
 import jp.entidades.Promocion;
 import jp.entidades.PromocionProducto;
 import jp.entidades.Parametros;
@@ -452,36 +456,109 @@ public class TransactionFacade {
             getEntityManager().clear();
         }
     }
-    
-    public Long createDevolucionProducto(List<DevolucionProducto> devolucionesProducto, Devolucion d) {
-    Long idDevolucion = 0l;
-    userTransaction = sessionContext.getUserTransaction();
-    try {
-        userTransaction.begin();
-        Devolucion devolucionTMP = em.merge(d);
 
-        for (DevolucionProducto devolucionProductoTMP : devolucionesProducto) {
-            devolucionProductoTMP.setId(null);
-            devolucionProductoTMP.setDevolucion(devolucionTMP);
-            em.persist(devolucionProductoTMP);
-        }
+    public boolean createPagoDevolucionProducto(Devolucion d, List<DevolucionProducto> dps, Factura f, List<FacturaProducto> fps) {
+        boolean result;
 
-        userTransaction.commit();
-        idDevolucion = devolucionTMP.getId();
-    } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
-        idDevolucion = null;
+        userTransaction = sessionContext.getUserTransaction();
         try {
-            System.out.println("======>");
-            e.printStackTrace();
-            System.out.println("<======");
-            userTransaction.rollback();
-        } catch (IllegalStateException | SecurityException | SystemException es) {
-            System.out.println("======>");
-            es.printStackTrace();
-            System.out.println("<======");
+            userTransaction.begin();
+            Devolucion devolucionTMP = em.merge(d);
+
+            for (DevolucionProducto devolucionProductoTMP : dps) {
+                devolucionProductoTMP.setId(null);
+                devolucionProductoTMP.setDevolucion(devolucionTMP);
+                em.persist(devolucionProductoTMP);
+            }
+
+            Factura facturaTMP = em.merge(f);
+
+            for (FacturaProducto facturaProductoTMP : fps) {
+                facturaProductoTMP.setId(null);
+                facturaProductoTMP.setFactura(facturaTMP);
+                em.persist(facturaProductoTMP);
+            }
+
+            CambioDevolucion cambioDevolucion = new CambioDevolucion();
+            cambioDevolucion.setDevolucion(devolucionTMP);
+            cambioDevolucion.setFactura(facturaTMP);
+            cambioDevolucion.setRealizado(true);
+            em.persist(cambioDevolucion);
+
+            Pago pago = new Pago();
+            pago.setFactura(facturaTMP);
+            pago.setFormaPago(facturaTMP.getTipoPago());
+            pago.setFecha(facturaTMP.getFecha());
+            if (!facturaTMP.getObservaciones().trim().equals("")) {
+                pago.setObservaciones(facturaTMP.getObservaciones());
+            }
+            pago.setValorTotal(facturaTMP.getTotalPagar());
+            pago.setDolar(facturaTMP.getDolar());
+            pago.setEstado(facturaTMP.getEstado());
+            em.persist(pago);
+
+            PagoDetalle pagoDetalle = new PagoDetalle();
+            pagoDetalle.setPago(pago);
+            pagoDetalle.setTipo(facturaTMP.getTipoPago());
+            pagoDetalle.setValor(facturaTMP.getTotalPagar());
+            em.persist(pagoDetalle);
+
+            userTransaction.commit();
+            result = true;
+        } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
+            result = false;
+            try {
+                System.out.println("======>");
+                e.printStackTrace();
+                System.out.println("<======");
+                userTransaction.rollback();
+            } catch (IllegalStateException | SecurityException | SystemException es) {
+                System.out.println("======>");
+                es.printStackTrace();
+                System.out.println("<======");
+            }
         }
+        return result;
     }
-    return idDevolucion;
-}
+
+    public boolean createPagoDevolucion(Pago p, Devolucion d, Factura f) {
+        boolean result;
+        userTransaction = sessionContext.getUserTransaction();
+
+        try {
+            userTransaction.begin();
+            
+            Factura facturaTMP = em.find(Factura.class, f.getId());
+            em.merge(facturaTMP);
+            
+            Pago pagoTMP = em.merge(p);
+            Devolucion devolucionTMP = em.merge(d);
+            
+            PagoDevolucion pagoDevolucion = new PagoDevolucion();
+            pagoDevolucion.setDevolucion(devolucionTMP);
+            pagoDevolucion.setPago(pagoTMP);
+            pagoDevolucion.setRealizado(true);
+            
+            em.persist(pagoDevolucion);
+            
+            
+            userTransaction.commit();
+            result = true;
+            
+        } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
+            result = false;
+            try {
+                System.out.println("======>");
+                e.printStackTrace();
+                System.out.println("<======");
+                userTransaction.rollback();
+            } catch (IllegalStateException | SecurityException | SystemException es) {
+                System.out.println("======>");
+                es.printStackTrace();
+                System.out.println("<======");
+            }
+        }
+        return result;
+    }
 
 }

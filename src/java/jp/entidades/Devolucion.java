@@ -56,7 +56,7 @@ public class Devolucion implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Column(name = "valor_total", nullable = false)
-    private float valorTotal;
+    private Float valorTotal;
     @Size(max = 300)
     @Column(length = 300)
     private String observaciones;
@@ -68,6 +68,12 @@ public class Devolucion implements Serializable {
     @Column(nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date fecha;
+    @Basic(optional = true)
+    @Column(name = "dolar_actual", nullable = true)
+    private float dolarActual;
+    @JoinColumn(name = "usuario", referencedColumnName = "id", nullable = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private Usuario usuario;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "devolucion", fetch = FetchType.LAZY)
     private List<CambioDevolucion> cambioDevolucionList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "devolucion", fetch = FetchType.LAZY)
@@ -82,7 +88,7 @@ public class Devolucion implements Serializable {
         this.id = id;
     }
 
-    public Devolucion(Long id, Boolean dolar, float valorTotal) {
+    public Devolucion(Long id, Boolean dolar, Float valorTotal) {
         this.id = id;
         this.dolar = dolar;
         this.valorTotal = valorTotal;
@@ -104,11 +110,11 @@ public class Devolucion implements Serializable {
         this.dolar = dolar;
     }
 
-    public float getValorTotal() {
+    public Float getValorTotal() {
         return valorTotal;
     }
 
-    public void setValorTotal(float valorTotal) {
+    public void setValorTotal(Float valorTotal) {
         this.valorTotal = valorTotal;
     }
 
@@ -134,6 +140,22 @@ public class Devolucion implements Serializable {
 
     public void setFecha(Date fecha) {
         this.fecha = fecha;
+    }
+
+    public float getDolarActual() {
+        return dolarActual;
+    }
+
+    public void setDolarActual(float dolarActual) {
+        this.dolarActual = dolarActual;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 
     @XmlTransient

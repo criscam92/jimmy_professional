@@ -18,10 +18,20 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import jp.entidades.CambioDevolucion;
+import jp.entidades.Cliente;
 import jp.entidades.DevolucionProducto;
+import jp.entidades.Factura;
+import jp.entidades.Pago;
+import jp.entidades.Producto;
+import jp.facades.CambioDevolucionFacade;
 import jp.facades.DevolucionFacade;
 import jp.facades.TransactionFacade;
+import jp.util.EstadoPagoFactura;
 import jp.util.Moneda;
+import jp.util.TipoPago;
+import jp.util.TipoPagoAbono;
+import org.primefaces.event.SelectEvent;
 
 @ManagedBean(name = "devolucionController")
 @ViewScoped
@@ -32,13 +42,21 @@ public class DevolucionController implements Serializable {
     @EJB
     private jp.facades.TransactionFacade ejbTransactionFacade;
     @EJB
+    private jp.facades.CambioDevolucionFacade ejbCambioDevolucion;
+    @EJB
+    private jp.facades.PagoDevolucionFacade ejbPagoDevolucion;
+    @EJB
     private DevolucionSessionBean devolucionSessionBean;
     private List<Devolucion> items = null;
     private Devolucion selected;
     private DevolucionProducto devolucionProducto;
     private List<DevolucionProducto> itemsTMP;
+    private List<Factura> facturasPendientesClienteTMP;
+    private List<Factura> facturasSeleccionadas;
     private Float valorAcumulado = 0.0f;
-    
+    private boolean deshabilitarAbono;
+    private String messageSaldo;
+    Double totalSaldoPendiente;
 
     public DevolucionController() {
         itemsTMP = new ArrayList<>();
@@ -48,7 +66,11 @@ public class DevolucionController implements Serializable {
     public void init() {
         selected = new Devolucion();
         selected.setValorTotal(valorAcumulado);
+        selected.setDolar(false);
         devolucionProducto = new DevolucionProducto();
+        deshabilitarAbono = true;
+        messageSaldo = "Cliente sin saldo";
+        totalSaldoPendiente = 0.0;
     }
 
     public Devolucion getSelected() {
@@ -75,12 +97,48 @@ public class DevolucionController implements Serializable {
         this.itemsTMP = itemsTMP;
     }
 
+    public List<Factura> getFacturasPendientesClienteTMP() {
+        return facturasPendientesClienteTMP;
+    }
+
+    public List<Factura> getFacturasSeleccionadas() {
+        return facturasSeleccionadas;
+    }
+
+    public void setFacturasSeleccionadas(List<Factura> facturasSeleccionadas) {
+        this.facturasSeleccionadas = facturasSeleccionadas;
+    }
+
     public Float getValorAcumulado() {
         return valorAcumulado;
     }
 
     public void setValorAcumulado(Float valorAcumulado) {
         this.valorAcumulado = valorAcumulado;
+    }
+
+    public boolean isDeshabilitarAbono() {
+        return deshabilitarAbono;
+    }
+
+    public void setDeshabilitarAbono(boolean deshabilitarAbono) {
+        this.deshabilitarAbono = deshabilitarAbono;
+    }
+
+    public String getMessageSaldo() {
+        return messageSaldo;
+    }
+
+    public void setMessageSaldo(String messageSaldo) {
+        this.messageSaldo = messageSaldo;
+    }
+
+    public Double getTotalSaldoPendiente() {
+        return totalSaldoPendiente;
+    }
+
+    public void setTotalSaldoPendiente(Double saldoTotalPendiente) {
+        this.totalSaldoPendiente = saldoTotalPendiente;
     }
 
     public DevolucionSessionBean getDevolucionSessionBean() {
@@ -103,6 +161,10 @@ public class DevolucionController implements Serializable {
 
     public TransactionFacade getEjbTransactionFacade() {
         return ejbTransactionFacade;
+    }
+
+    public CambioDevolucionFacade getEjbCambioDevolucion() {
+        return ejbCambioDevolucion;
     }
 
     public Devolucion prepareCreate() {
@@ -232,6 +294,7 @@ public class DevolucionController implements Serializable {
             devolucionProductoTMP.setId(itemsTMP.size() + 1l);
 
             itemsTMP.add(devolucionProductoTMP);
+            cleanDevolucionProducto();
             getTotalDevolucion();
         }
     }
@@ -252,7 +315,7 @@ public class DevolucionController implements Serializable {
             try {
                 FacesContext.getCurrentInstance().getExternalContext().redirect(redireccionarDevolucionProducto(path));
             } catch (Exception e) {
-                System.out.println("====NO SE PUDO REDIRRECCIONAR A DEVOLUCIONCAMBIO.XHTML");
+                System.out.println("====NO SE PUDO REDIRECCIONAR A DEVOLUCIONCAMBIO.XHTML");
                 e.printStackTrace();
             }
 
@@ -262,16 +325,104 @@ public class DevolucionController implements Serializable {
     public String redireccionarDevolucionProducto(String path) {
         return path + "?faces-redirect=true";
     }
-    
+
     public double getTotalDevolucion() {
         int sum = 0;
         for (DevolucionProducto dp : itemsTMP) {
-            sum += dp.getValor()* dp.getCantidad();
+            sum += dp.getValor() * dp.getCantidad();
         }
         if (selected != null) {
-            selected.setValorTotal(sum);
+            selected.setValorTotal(Float.valueOf(sum));
         }
         return sum;
     }
 
+    public Long getProductosByDevolucion(Devolucion d) {
+        return getFacade().getCantidadProductoByDevolucion(d);
+    }
+
+    public String getTipoMoneda(Devolucion d) {
+        return d.getDolar() ? "Dolares" : "Pesos";
+    }
+
+    public void onItemSelectProducto(SelectEvent event) {
+        Producto p = (Producto) event.getObject();
+        devolucionProducto.setValor((float) p.getValorVenta());
+    }
+
+    private void cleanDevolucionProducto() {
+        devolucionProducto.setProducto(null);
+        devolucionProducto.setCantidad(0);
+        devolucionProducto.setValor(0f);
+        devolucionProducto.setDetalle("");
+    }
+
+    public String getCambioDevolucionByDevolucion(Devolucion d) {
+        CambioDevolucion cd = getEjbCambioDevolucion().getCambioDevolucionByDevolucion(d);
+        return cd != null ? "Cambio mano a mano" : "Abono a Factura";
+    }
+
+    public void onItemSelecCliente(SelectEvent event) {
+        Cliente c = (Cliente) event.getObject();
+        facturasPendientesClienteTMP = getFacade().getFacturasPendientesByCliente(c);
+        if (facturasPendientesClienteTMP != null && !facturasPendientesClienteTMP.isEmpty()) {
+            totalSaldoPendiente = 0.0;
+            for (Factura fp : facturasPendientesClienteTMP) {
+                messageSaldo = "Abonar a Factura";
+                deshabilitarAbono = false;
+                totalSaldoPendiente += fp.getSaldo();
+            }
+
+        } else {
+            messageSaldo = "Cliente sin Saldo";
+            deshabilitarAbono = true;
+        }
+
+    }
+
+    public String getSimboloValor() {
+        return selected.getDolar() ? "USD " : "$ ";
+    }
+
+    public void createPagoDevolucion() {
+        if (selected.getValorTotal() == 0.0 || selected.getValorTotal() == null) {
+            JsfUtil.addWarnMessage("No se han agregado productos a la Devolución para hacer un Abono");
+            return;
+        }
+        for (Factura fac : facturasSeleccionadas) {
+            if (selected.getValorTotal() > 0f) {
+                Pago pago = new Pago();
+                System.out.println("Se puede pagar la factura-> " + fac.getId() + " -->Saldo: " + fac.getSaldo() + "\n");
+
+                pago.setFactura(fac);
+                if (selected.getValorTotal() >= fac.getSaldo()) {
+                    pago.setValorTotal(fac.getSaldo());
+                    selected.setValorTotal(fac.getSaldo().floatValue());
+                } else {
+                    pago.setValorTotal(selected.getValorTotal());
+                    selected.setValorTotal(selected.getValorTotal());
+                }
+                pago.setFecha(selected.getFecha());
+                pago.setEstado(EstadoPagoFactura.REALIZADA.getValor());
+                pago.setFormaPago(TipoPago.DEVOLUCION.getValor());
+                pago.setDolar(selected.getDolar());
+                pago.setObservaciones(selected.getObservaciones());
+                selected.setUsuario(LoginController.user);
+
+                getEjbTransactionFacade().createPagoDevolucion(pago, selected, fac);
+
+            }
+        }
+        redirrecionarDevolucionList();
+    }
+
+    private void redirrecionarDevolucionList() {
+        try {
+            FacesContext.getCurrentInstance().getExternalContext().redirect("List.xhtml");
+        } catch (Exception e) {
+            System.out.println("Error intentando redireccionar a List.xhtml");
+            e.printStackTrace();
+        }
+
+    }
 }

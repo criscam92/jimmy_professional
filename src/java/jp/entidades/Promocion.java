@@ -52,7 +52,7 @@ public class Promocion implements Serializable, Codificable {
     private double valor;
     @Basic(optional = false)
     @NotNull
-    @Column(nullable = false)
+    @Column(nullable = false, name = "valor_venta_usd")
     private double valorVentaUsd;
     @Basic(optional = false)
     @NotNull

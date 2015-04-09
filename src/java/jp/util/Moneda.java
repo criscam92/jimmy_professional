@@ -5,8 +5,8 @@ import java.util.Map;
 
 public enum Moneda {
 
-    PESO(0, "Peso"),
-    DOLAR(1, "Dolar");
+    PESO(0, "Pesos"),
+    DOLAR(1, "Dolares");
 
     private Integer valor;
     private String detalle;
