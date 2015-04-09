@@ -54,15 +54,17 @@
                         <f:facet name="header">
                             Cantidad a Despachar
                         </f:facet>
-                        <p:spinner size="11" styleClass="minmax" value="#{item.cantidadADespachar}" min="0" max="#{despachoFacturaController.cantidadMaxima(item)}"/>
+                        <p:spinner size="11" styleClass="minmax" value="#{item.cantidadADespachar}" min="0" max="#{despachoFacturaController.cantidadMaxima(item)}">
+                            <p:ajax listener="#{despachoFacturaController.comprobarProductos()}" update=":DespacharForm:btnDespachar" process="@this"/>
+                        </p:spinner>
                     </p:column>
 
                 </p:dataTable>
                 <div style="margin-top: 10px;">
-                    <p:commandButton action="#{despachoFacturaController.create}" value="Despachar" icon="ui-icon-disk" update="listProducto,:growl"/>
+                    <p:commandButton id="btnDespachar" actionListener="#{despachoFacturaController.create}" value="Despachar" update="listProducto" icon="ui-icon-disk" disabled="#{!despachoFacturaController.sePuedeDespachar}"/>
                 </div>
             </h:form> 
-            
+
         </ui:define>
     </ui:composition>
 </html>

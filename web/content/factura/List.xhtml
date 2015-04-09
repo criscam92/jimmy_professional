@@ -34,16 +34,12 @@
                             <p:commandButton id="viewButton"   icon="ui-icon-search" value="#{bundle.View}" actionListener="#{visitaProductoController.getProductosByVisita(visitaController.selected)}" 
                                              update=":VisitaViewForm,:VisitaViewForm:tablaProductosByVisita" oncomplete="PF('VisitaViewDialog').show()" 
                                              disabled="#{empty facturaController.selected}"/>
-                            <p:commandButton id="deleteButton" icon="ui-icon-arrowreturnthick-1-s" value="#{bundle.MessageDevolverFactura}" 
-                                             update=":growl,datalist" disabled="#{empty facturaController.selected}">
-                                <p:confirm header="Confirmar Anular" message="¿Seguro de Anular la Visita?" icon="ui-icon-alert"/>
-                            </p:commandButton>
-                            <p:confirmDialog global="true">
-                                <p:commandButton value="Si" icon="ui-icon-check" styleClass="ui-confirmdialog-yes" actionListener="#{visitaController.anullVisitaProducto()}"/>
-                                <p:commandButton value="No" type="button" icon="ui-icon-close" styleClass="ui-confirmdialog-no"/>
-                            </p:confirmDialog>
+                            
+                            <p:commandButton id="deleteButton" value="Despachos" icon="ui-icon-clipboard" oncomplete="PF('DespachosDialog').show()"
+                                             update=":growl,datalist,:Despachos" disabled="#{empty facturaController.selected}" actionListener="#{facturaController.prepararDespachos()}"></p:commandButton>
+                            
                             <p:commandButton id="productos" value="#{bundle.MessageDespacharFactura}" oncomplete="PF('ProductosByVisitaDialog').show()"
-                                             icon="ui-icon-check" disabled="#{empty facturaController.selected}"/> 
+                                             icon="ui-icon-check" disabled="#{empty facturaController.selected}" action="#{facturaController.redirect()}"/> 
                         </div>
                     </f:facet>
 
@@ -90,13 +86,13 @@
                         <f:facet name="header">
                             <h:outputText value="#{bundle.CreateFacturaLabel_totalUnidadVentas}"/>
                         </f:facet>
-                        <h:outputText value="#{facturaController.getCantidadVentasByFactura(item)}"/>
+                        <h:outputText value="#{facturaController.getCantidadVentasOrBonificacionesByFactura(item, 1)}"/>
                     </p:column>
                     <p:column>
                         <f:facet name="header">
                             <h:outputText value="#{bundle.CreateFacturaLabel_totalUnidadBonificaciones}"/>
                         </f:facet>
-                        <h:outputText value="#{facturaController.getCantidadBonificacionesByFactura(item)}"/>
+                        <h:outputText value="#{facturaController.getCantidadVentasOrBonificacionesByFactura(item, 2)}"/>
                     </p:column>
                     <p:column>
                         <f:facet name="header">
@@ -124,6 +120,7 @@
             </h:form>
             
             <ui:include src="View.xhtml"/>
+            <ui:include src="Despachos.xhtml"/>
         </ui:define>
         
     </ui:composition>

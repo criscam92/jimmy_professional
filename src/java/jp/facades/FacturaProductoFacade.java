@@ -1,17 +1,26 @@
 package jp.facades;
 
 import java.util.List;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import jp.entidades.Factura;
 import jp.entidades.FacturaProducto;
+import jp.entidades.FacturaPromocion;
+import jp.entidades.PromocionProducto;
 
 @Stateless
 public class FacturaProductoFacade extends AbstractFacade<FacturaProducto> {
+
     @PersistenceContext(unitName = "jimmy_professionalPU")
     private EntityManager em;
+
+    @EJB
+    private FacturaPromocionFacade facturaPromocionFacade;
+    @EJB
+    private PromocionProductoFacade promocionProductoFacade;
 
     @Override
     protected EntityManager getEntityManager() {
@@ -21,76 +30,62 @@ public class FacturaProductoFacade extends AbstractFacade<FacturaProducto> {
     public FacturaProductoFacade() {
         super(FacturaProducto.class);
     }
-    
-    public Long getCantidadVentasByFactura(Factura f){
-        Long cantidadFP = 0l;
-        Long cantidadFPP = 0l;
+
+    public PromocionProductoFacade getPromocionProductoFacade() {
+        return promocionProductoFacade;
+    }
+
+    public FacturaPromocionFacade getFacturaPromocionFacade() {
+        return facturaPromocionFacade;
+    }
+
+    /**
+     *
+     * @param factura
+     * @param tipo Entero que indica el valor que quiere retornar (1 Unidades
+     * vendidas o 2 Unidades bonificacion)
+     * @return
+     */
+    public Long getCantidadVentaOrBonificacionByFactura(Factura factura, int tipo) {
+        Long cantidadFProd = 0l;
+        Long cantidadFProm = 0l;
         Long cantidad = 0l;
         try {
-            Query queryFP = getEntityManager().createQuery("SELECT SUM(fp.unidadesVenta) FROM FacturaProducto fp WHERE fp.factura.id=:fact");
-            queryFP.setParameter("fact", f.getId());
-            cantidadFP = (Long) queryFP.getSingleResult();
-            if (cantidadFP == null) {
-                cantidadFP = 0l;
+            String sql = "SELECT SUM(" + (tipo == 1 ? "fp.unidadesVenta" : "fp.unidadesBonificacion") + ") FROM FacturaProducto fp WHERE fp.factura.id = :fact";
+            Query queryFP = getEntityManager().createQuery(sql);
+            queryFP.setParameter("fact", factura.getId());
+            cantidadFProd = (Long) queryFP.getSingleResult();
+            if (cantidadFProd == null) {
+                cantidadFProd = 0l;
             }
-            
-            Query queryFPP = getEntityManager().createQuery("SELECT SUM(fpp.unidadesVenta) FROM FacturaPromocion fpp WHERE fpp.factura.id=:fact");
-            queryFPP.setParameter("fact", f.getId());
-            cantidadFPP = (Long) queryFPP.getSingleResult();
-            if (cantidadFPP == null) {
-                cantidadFPP = 0l;
+
+            List<FacturaPromocion> facturaPromociones = getFacturaPromocionFacade().getFacturaPromocionByFactura(factura);
+            for (FacturaPromocion fp : facturaPromociones) {
+                List<PromocionProducto> promocionProductos = getPromocionProductoFacade().getPromocionProductoByProducto(fp.getPromocion());
+                for (PromocionProducto pp : promocionProductos) {
+                    cantidadFProd += (tipo == 1 ? fp.getUnidadesVenta() : fp.getUnidadesBonificacion()) * pp.getCantidad();
+                }
             }
-            
-            cantidad = cantidadFP + cantidadFPP;
+
+            cantidad = cantidadFProd + cantidadFProm;
         } catch (Exception e) {
             cantidad = null;
-           e.printStackTrace();
+            e.printStackTrace();
         }
         return cantidad;
     }
-    
-    public Long getCantidadBonificacionByFactura(Factura f){
-        Long cantidadFP = 0l;
-        Long cantidadFPP = 0l;
-        Long cantidad = 0l;
-        try {
-            Query queryFP = getEntityManager().createQuery("SELECT SUM(fp.unidadesBonificacion) FROM FacturaProducto fp WHERE fp.factura.id=:fact");
-            queryFP.setParameter("fact", f.getId());
-            cantidadFP = (Long) queryFP.getSingleResult();
-            if (cantidadFP == null) {
-                cantidadFP = 0l;
-            }
-            
-            Query queryFPP = getEntityManager().createQuery("SELECT SUM(fpp.unidadesBonificacion) FROM FacturaPromocion fpp WHERE fpp.factura.id=:fact");
-            queryFPP.setParameter("fact", f.getId());
-            cantidadFPP = (Long) queryFPP.getSingleResult();
-            if (cantidadFPP == null) {
-                cantidadFPP = 0l;
-            }
-            
-            cantidad = cantidadFP + cantidadFPP;
-        } catch (Exception e) {
-            cantidad = null;
-           e.printStackTrace();
-        }
-        return cantidad;
-    }
-    
-    public String getNumOrden(){
+
+    public String getNumOrden() {
         try {
             Long numOrden = 0l;
             Query q = em.createNativeQuery("SELECT nextval('factura_num_orden')");
             q.setMaxResults(1);
             numOrden = (Long) q.getSingleResult();
-            return ""+numOrden;
-            
+            return "" + numOrden;
+
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
-    }
-
-    public List<FacturaProducto> getFacturaProductosByFactura(Factura factura) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

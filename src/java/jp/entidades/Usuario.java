@@ -57,6 +57,8 @@ public class Usuario implements Serializable {
     private List<Ingreso> ingresoList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "usuario", fetch = FetchType.LAZY)
     private List<Factura> facturaList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "usuario", fetch = FetchType.LAZY)
+    private List<DespachoFactura> despachoFacturaList;
 
     public Usuario() {
     }
@@ -120,6 +122,15 @@ public class Usuario implements Serializable {
 
     public void setFacturaList(List<Factura> facturaList) {
         this.facturaList = facturaList;
+    }
+
+    @XmlTransient
+    public List<DespachoFactura> getDespachoFacturaList() {
+        return despachoFacturaList;
+    }
+
+    public void setDespachoFacturaList(List<DespachoFactura> despachoFacturaList) {
+        this.despachoFacturaList = despachoFacturaList;
     }
 
     @Override

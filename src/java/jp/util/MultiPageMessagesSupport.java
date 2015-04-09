@@ -1,10 +1,10 @@
 package jp.util;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
- 
+
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.event.PhaseEvent;
@@ -12,9 +12,8 @@ import javax.faces.event.PhaseId;
 import javax.faces.event.PhaseListener;
 
 public class MultiPageMessagesSupport implements PhaseListener {
- 
-    private static final long serialVersionUID = 3328743500652081238L;
 
+    private static final long serialVersionUID = 1250469273857785274L;
     private static final String sessionToken = "MULTI_PAGE_MESSAGES_SUPPORT";
 
     @Override
@@ -23,36 +22,39 @@ public class MultiPageMessagesSupport implements PhaseListener {
     }
 
     @Override
-    public void beforePhase(PhaseEvent event) {
-        if (event.getPhaseId() == PhaseId.RENDER_RESPONSE) {
-            FacesContext facesContext = event.getFacesContext();
-            restoreMessages(facesContext);
+    public void beforePhase(final PhaseEvent event) {
+        FacesContext facesContext = event.getFacesContext();
+        this.saveMessages(facesContext);
+
+        if (PhaseId.RENDER_RESPONSE.equals(event.getPhaseId())) {
+            if (!facesContext.getResponseComplete()) {
+                this.restoreMessages(facesContext);
+            }
         }
     }
-    
+
     @Override
-    public void afterPhase(PhaseEvent event) {
-        if (event.getPhaseId() == PhaseId.APPLY_REQUEST_VALUES
-                || event.getPhaseId() == PhaseId.PROCESS_VALIDATIONS
-                || event.getPhaseId() == PhaseId.INVOKE_APPLICATION) {
+    public void afterPhase(final PhaseEvent event) {
+        if (!PhaseId.RENDER_RESPONSE.equals(event.getPhaseId())) {
             FacesContext facesContext = event.getFacesContext();
-            saveMessages(facesContext);
+            this.saveMessages(facesContext);
         }
     }
-    
+
     @SuppressWarnings("unchecked")
-    private int saveMessages(FacesContext facesContext) {
-        Set<FacesMessage> messages = new HashSet<>();
-        for (Iterator i = facesContext.getMessages(null); i.hasNext();) {
-            FacesMessage msg = (FacesMessage) i.next();
-            messages.add(msg);
-            i.remove();
+    private int saveMessages(final FacesContext facesContext) {
+        List<FacesMessage> messages = new ArrayList<>();
+        for (Iterator<FacesMessage> iter = facesContext.getMessages(null); iter.hasNext();) {
+            messages.add(iter.next());
+            iter.remove();
         }
-        
-        if (messages.isEmpty())
+
+        if (messages.isEmpty()) {
             return 0;
-        Map sessionMap = facesContext.getExternalContext().getSessionMap();        
-        Set<FacesMessage> existingMessages = (Set<FacesMessage>) sessionMap.get(sessionToken);
+        }
+
+        Map<String, Object> sessionMap = facesContext.getExternalContext().getSessionMap();
+        List<FacesMessage> existingMessages = (List<FacesMessage>) sessionMap.get(sessionToken);
         if (existingMessages != null) {
             existingMessages.addAll(messages);
         } else {
@@ -62,23 +64,17 @@ public class MultiPageMessagesSupport implements PhaseListener {
     }
 
     @SuppressWarnings("unchecked")
-    private int restoreMessages(FacesContext facesContext) {
-        Map sessionMap = facesContext.getExternalContext().getSessionMap();
-        Set<FacesMessage> messages = (Set<FacesMessage>) sessionMap.remove(sessionToken);
-        if (messages == null)
+    private int restoreMessages(final FacesContext facesContext) {
+        Map<String, Object> sessionMap = facesContext.getExternalContext().getSessionMap();
+        List<FacesMessage> messages = (List<FacesMessage>) sessionMap.remove(sessionToken);
+
+        if (messages == null) {
             return 0;
-        int restoredCount = messages.size();
- 
-        Set<FacesMessage> facesContextMessages = new HashSet<>();
-        for (Iterator i = facesContext.getMessages(null); i.hasNext();) {
-            FacesMessage msg = (FacesMessage) i.next();
-            facesContextMessages.add(msg);
-            i.remove();
         }
- 
-        for (FacesMessage facesMessage : messages) {
-            if (!facesContextMessages.contains(facesMessage))
-                facesContext.addMessage(null, facesMessage);
+
+        int restoredCount = messages.size();
+        for (Object element : messages) {
+            facesContext.addMessage(null, (FacesMessage) element);
         }
         return restoredCount;
     }

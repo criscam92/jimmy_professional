@@ -1,5 +1,6 @@
 package jp.controllers;
 
+import java.io.IOException;
 import jp.entidades.DespachoFactura;
 import jp.util.JsfUtil;
 import jp.util.JsfUtil.PersistAction;
@@ -35,6 +36,7 @@ import jp.facades.FacturaPromocionFacade;
 import jp.facades.IngresoProductoFacade;
 import jp.facades.PromocionProductoFacade;
 import jp.facades.TransactionFacade;
+import org.primefaces.context.RequestContext;
 
 @ManagedBean(name = "despachoFacturaController")
 @ViewScoped
@@ -64,13 +66,14 @@ public class DespachoFacturaController implements Serializable {
     private List<ProductoHelper> productoHelpers;
     private Factura factura;
     long sizeDespachosForFactura;
-    
+    boolean sePuedeDespachar;
+
     public DespachoFacturaController() {
         productoHelpers = new ArrayList<>();
         factura = new Factura();
         selected = new DespachoFactura();
     }
-    
+
     @PostConstruct
     public void init() {
         Map<String, String> requestMap = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
@@ -80,40 +83,54 @@ public class DespachoFacturaController implements Serializable {
             factura = new Factura();
             factura = getFacturaFacade().getFacturaByOrdenPedido(ordenPedido);
             selected.setFactura(factura);
-            
+
             sizeDespachosForFactura = getDespachoFacturaFacade().countDespachoFacturaByFactura(factura);
-            
+
             List<FacturaProducto> facturaProductos = getFacturaFacade().getFacturaProductoByFactura(factura);
             for (FacturaProducto fp : facturaProductos) {
-                ProductoHelper ph = new ProductoHelper(productoHelpers.size() + 1, fp.getProducto(), (fp.getUnidadesVenta() + fp.getUnidadesBonificacion()), countIngresosByProducto(fp.getProducto()), getDespachosByProducto(fp.getProducto(), factura));
+                ProductoHelper ph = new ProductoHelper(productoHelpers.size() + 1, fp.getProducto(), (fp.getUnidadesVenta() + fp.getUnidadesBonificacion()));
                 productoHelpers.add(ph);
             }
-            
+
             List<FacturaPromocion> facturaPromociones = getFacturaPromocionFacade().getFacturaPromocionByFactura(factura);
+            List<ProductoHelper> productoHelpersTMP = new ArrayList<>();
             for (FacturaPromocion fp : facturaPromociones) {
-                
                 List<PromocionProducto> promocionProductos = getPromocionProductoFacade().getPromocionProductoByProducto(fp.getPromocion());
                 for (PromocionProducto pp : promocionProductos) {
-                    for (ProductoHelper phr : productoHelpers) {
-                        if (phr.getProducto().getId().equals(pp.getProducto().getId())) {
-                            int index = productoHelpers.indexOf(phr);
-                            productoHelpers.get(index).setCantidadFacturada(phr.getCantidadFacturada() + ((fp.getUnidadesVenta() + fp.getUnidadesBonificacion()) * (pp.getCantidad())));
-                        } else {
-                            ProductoHelper ph = new ProductoHelper(productoHelpers.size() + 1, pp.getProducto(), (fp.getUnidadesVenta() + fp.getUnidadesBonificacion()) * (pp.getCantidad()), countIngresosByProducto(pp.getProducto()), getDespachosByProducto(pp.getProducto(), factura));
-                            productoHelpers.add(ph);
-                        }
-                    }
+                    ProductoHelper ph = new ProductoHelper(productoHelpers.size() + 1, pp.getProducto(), (fp.getUnidadesVenta() + fp.getUnidadesBonificacion()) * (pp.getCantidad()));
+                    productoHelpersTMP.add(ph);
                 }
             }
-            
+
+            for (ProductoHelper phTMP : productoHelpersTMP) {
+                boolean existe = false;
+                for (ProductoHelper ph : productoHelpers) {
+                    if (ph.getProducto().getId().equals(phTMP.getProducto().getId())) {
+                        ph.setCantidadFacturada(phTMP.getCantidadFacturada() + ph.getCantidadFacturada());
+                        existe = true;
+                    }
+                }
+
+                if (!existe) {
+                    productoHelpers.add(phTMP);
+                }
+            }
+
+            for (ProductoHelper ph : productoHelpers) {
+                ph.setCantidadDisponible(countIngresosByProducto(ph.getProducto()));
+                ph.setCantidadDespachada(getDespachosByProducto(ph.getProducto(), factura));
+                ph.obtenerCantidadADespachar();
+            }
+
+            comprobarProductos();
         } catch (Exception e) {
             System.out.println("==========ERROR==========");
             e.printStackTrace();
             System.out.println("==========ERROR==========");
         }
-        
+
     }
-    
+
     public int cantidadMaxima(ProductoHelper ph) {
         int cantMax = ph.getCantidadFacturada() - ph.getCantidadDespachada();
         return cantMax > ph.getCantidadDisponible() ? ph.getCantidadDisponible() : cantMax;
@@ -123,35 +140,35 @@ public class DespachoFacturaController implements Serializable {
     private DespachoFacturaFacade getFacade() {
         return ejbFacade;
     }
-    
+
     public FacturaFacade getFacturaFacade() {
         return facturaFacade;
     }
-    
+
     public DespachoFactura getSelected() {
         return selected;
     }
-    
+
     public TransactionFacade getTransactionFacade() {
         return transactionFacade;
     }
-    
+
     public DespachoFacturaFacade getDespachoFacturaFacade() {
         return despachoFacturaFacade;
     }
-    
+
     public FacturaPromocionFacade getFacturaPromocionFacade() {
         return facturaPromocionFacade;
     }
-    
+
     public PromocionProductoFacade getPromocionProductoFacade() {
         return promocionProductoFacade;
     }
-    
+
     public IngresoProductoFacade getIngresoProductoFacade() {
         return ingresoProductoFacade;
     }
-    
+
     public DespachoFacturaProductoFacade getDespachoFacturaProductoFacade() {
         return despachoFacturaProductoFacade;
     }
@@ -160,38 +177,48 @@ public class DespachoFacturaController implements Serializable {
     public List<ProductoHelper> getProductoHelpers() {
         return productoHelpers;
     }
-    
+
     public void setProductoHelpers(List<ProductoHelper> productoHelpers) {
         this.productoHelpers = productoHelpers;
     }
-    
+
     public void setSelected(DespachoFactura selected) {
         this.selected = selected;
     }
-    
+
+    public boolean isSePuedeDespachar() {
+        return sePuedeDespachar;
+    }
+
     protected void setEmbeddableKeys() {
     }
-    
+
     protected void initializeEmbeddableKey() {
     }
-    
+
     public DespachoFactura prepareCreate() {
         initializeEmbeddableKey();
         return selected;
     }
-    
-    public String create() {
-        selected.setDespacho(null);        
+
+    public void create() {
+        selected.setDespacho(null);
         selected.setFecha(Calendar.getInstance().getTime());
         selected.setRealizado(true);
+        selected.setUsuario(LoginController.user);
         switch (comprobarIngresos()) {
             case 0:
-                getTransactionFacade().createDespachoFactura(selected, productoHelpers);
-                if (!JsfUtil.isValidationFailed()) {
-                    items = null;
-                    selected = null;
-                    productoHelpers.clear();
-                    return "List.xhtml?faces-redirect=true";
+                if (comprobarProductos()) {
+                    getTransactionFacade().createDespachoFactura(selected, productoHelpers);
+                    if (!JsfUtil.isValidationFailed()) {
+                        items = null;
+                        selected = null;
+                        productoHelpers.clear();
+                        JsfUtil.addSuccessMessage("La factura " + factura.getOrdenPedido() + " se ha despachado correctamente");
+                        JsfUtil.redirect("List.xhtml");                        
+                    }
+                } else {
+                    RequestContext.getCurrentInstance().update("DespacharForm:btnDespachar");
                 }
                 break;
             default:
@@ -199,13 +226,12 @@ public class DespachoFacturaController implements Serializable {
                         + factura.getOrdenPedido() + ", verifique los datos y vuelva a despacharla");
                 break;
         }
-        return "";
     }
-    
+
     public void update() {
         persist(PersistAction.UPDATE, ResourceBundle.getBundle("/Bundle").getString("DespachoFacturaUpdated"));
     }
-    
+
     public void destroy() {
         persist(PersistAction.DELETE, ResourceBundle.getBundle("/Bundle").getString("DespachoFacturaDeleted"));
         if (!JsfUtil.isValidationFailed()) {
@@ -213,14 +239,14 @@ public class DespachoFacturaController implements Serializable {
             items = null;    // Invalidate list of items to trigger re-query.
         }
     }
-    
+
     public List<DespachoFactura> getItems() {
         if (items == null) {
             items = getFacade().findAll();
         }
         return items;
     }
-    
+
     private void persist(PersistAction persistAction, String successMessage) {
         if (selected != null) {
             setEmbeddableKeys();
@@ -248,11 +274,11 @@ public class DespachoFacturaController implements Serializable {
             }
         }
     }
-    
+
     public List<DespachoFactura> getItemsAvailableSelectMany() {
         return getFacade().findAll();
     }
-    
+
     public List<DespachoFactura> getItemsAvailableSelectOne() {
         return getFacade().findAll();
     }
@@ -263,26 +289,26 @@ public class DespachoFacturaController implements Serializable {
      * usuario hizo un despacho al mismo tiempo y a la misma factura
      */
     private Integer comprobarIngresos() {
-        
+
         boolean ingresosValidos = true;
         boolean productosDespachados = true;
-        
+
         for (ProductoHelper ph : productoHelpers) {
             ph.setCantidadDisponible(countIngresosByProducto(ph.getProducto()));
             ph.setCantidadDespachada(getDespachosByProducto(ph.getProducto(), factura));
         }
-        
+
         for (ProductoHelper ph : productoHelpers) {
             if (ph.getCantidadFacturada() > ph.getCantidadDespachada()) {
                 productosDespachados = false;
                 break;
             }
         }
-        
+
         if (productosDespachados) {
             return null;
         }
-        
+
         for (ProductoHelper ph : productoHelpers) {
             int cantidadPendiente = ph.getCantidadFacturada() - ph.getCantidadDespachada();
             if (ph.getCantidadADespachar() > cantidadPendiente && ph.getCantidadDisponible() < ph.getCantidadADespachar()) {
@@ -290,17 +316,17 @@ public class DespachoFacturaController implements Serializable {
                 break;
             }
         }
-        
+
         if (ingresosValidos) {
             return 0;
         }
-        
+
         return null;
     }
-    
+
     @FacesConverter(forClass = DespachoFactura.class)
     public static class DespachoFacturaControllerConverter implements Converter {
-        
+
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
             if (value == null || value.length() == 0) {
@@ -310,19 +336,19 @@ public class DespachoFacturaController implements Serializable {
                     getValue(facesContext.getELContext(), null, "despachoFacturaController");
             return controller.getFacade().find(getKey(value));
         }
-        
+
         java.lang.Long getKey(String value) {
-            java.lang.Long key;
+            Long key;
             key = Long.valueOf(value);
             return key;
         }
-        
-        String getStringKey(java.lang.Long value) {
+
+        String getStringKey(Long value) {
             StringBuilder sb = new StringBuilder();
             sb.append(value);
             return sb.toString();
         }
-        
+
         @Override
         public String getAsString(FacesContext facesContext, UIComponent component, Object object) {
             if (object == null) {
@@ -336,31 +362,31 @@ public class DespachoFacturaController implements Serializable {
                 return null;
             }
         }
-        
+
     }
-    
+
     private int countIngresosByProducto(Producto producto) {
         int countIngresos = 0;
         List<IngresoProducto> ingresoProductos = getIngresoProductoFacade().getIngresoProductoByProducto(producto);
         for (IngresoProducto ip : ingresoProductos) {
             countIngresos += ip.getCantidad();
         }
-        
+
         int countDespachos = 0;
-        
+
         List<DespachoFacturaProducto> despachoFacturaProductos = getDespachoFacturaProductoFacade().getDespachosFacturaProductosByProducto(producto);
         for (DespachoFacturaProducto dfp : despachoFacturaProductos) {
             countDespachos += dfp.getCantidad();
         }
         return countIngresos - countDespachos;
     }
-    
+
     private int getDespachosByProducto(Producto producto, Factura factura) {
         int cantDespachada = 0;
-        
+
         List<DespachoFactura> despachoFacturas = getDespachoFacturaFacade().getDespachosFacturaByFactura(factura);
         for (DespachoFactura df : despachoFacturas) {
-            
+
             List<DespachoFacturaProducto> despachoFacturaProductos = getDespachoFacturaProductoFacade().getDespachosFacturaProductoByDespachoFactura(df);
             for (DespachoFacturaProducto dfp : despachoFacturaProductos) {
                 if (dfp.getProducto().getId().equals(producto.getId())) {
@@ -370,5 +396,16 @@ public class DespachoFacturaController implements Serializable {
         }
         return cantDespachada;
     }
-    
+
+    public boolean comprobarProductos() {
+        sePuedeDespachar = false;
+        for (ProductoHelper ph : productoHelpers) {
+            if (ph.getCantidadADespachar() > 0) {
+                sePuedeDespachar = true;
+                break;
+            }
+        }
+        return sePuedeDespachar;
+    }
+
 }

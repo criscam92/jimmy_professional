@@ -34,7 +34,7 @@ import javax.xml.bind.annotation.XmlTransient;
 public class DespachoFactura implements Serializable {
 
     public static final boolean REALIZADA = true;
-    private static final boolean CANCELADA = false;
+    public static final boolean CANCELADA = false;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -51,14 +51,17 @@ public class DespachoFactura implements Serializable {
     @NotNull
     @Column(nullable = false)
     private boolean realizado;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "despachoFactura", fetch = FetchType.LAZY)
-    private List<DespachoFacturaProducto> despachoFacturaProductoList;
     @JoinColumn(name = "despacho", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Despacho despacho;
     @JoinColumn(name = "factura", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Factura factura;
+    @JoinColumn(name = "usuario", referencedColumnName = "id", nullable = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private Usuario usuario;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "despachoFactura", fetch = FetchType.LAZY)
+    private List<DespachoFacturaProducto> despachoFacturaProductoList;
 
     public DespachoFactura() {
     }
@@ -97,15 +100,6 @@ public class DespachoFactura implements Serializable {
         this.realizado = realizado;
     }
 
-    @XmlTransient
-    public List<DespachoFacturaProducto> getDespachoFacturaProductoList() {
-        return despachoFacturaProductoList;
-    }
-
-    public void setDespachoFacturaProductoList(List<DespachoFacturaProducto> despachoFacturaProductoList) {
-        this.despachoFacturaProductoList = despachoFacturaProductoList;
-    }
-
     public Despacho getDespacho() {
         return despacho;
     }
@@ -120,6 +114,23 @@ public class DespachoFactura implements Serializable {
 
     public void setFactura(Factura factura) {
         this.factura = factura;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+
+    @XmlTransient
+    public List<DespachoFacturaProducto> getDespachoFacturaProductoList() {
+        return despachoFacturaProductoList;
+    }
+
+    public void setDespachoFacturaProductoList(List<DespachoFacturaProducto> despachoFacturaProductoList) {
+        this.despachoFacturaProductoList = despachoFacturaProductoList;
     }
 
     @Override

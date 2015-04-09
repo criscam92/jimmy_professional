@@ -21,11 +21,14 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import javax.faces.event.AjaxBehaviorEvent;
 import jp.entidades.Cliente;
+import jp.entidades.DespachoFactura;
 import jp.entidades.Empleado;
 import jp.entidades.Producto;
 import jp.entidades.ProductoPromocionHelper;
 import jp.entidades.Promocion;
 import jp.entidades.Talonario;
+import jp.facades.DespachoFacturaFacade;
+import jp.facades.DespachoFacturaProductoFacade;
 import jp.facades.FacturaFacade;
 import jp.facades.FacturaProductoFacade;
 import jp.facades.ParametrosFacade;
@@ -52,6 +55,10 @@ public class FacturaController implements Serializable {
     private TalonarioFacade talonarioFacade;
     @EJB
     private ParametrosFacade parametrosFacade;
+    @EJB
+    private DespachoFacturaFacade despachoFacturaFacade;
+    @EJB
+    private DespachoFacturaProductoFacade despachoFacturaProductoFacade;
 
     private List<Factura> items = null;
     private List<ProductoPromocionHelper> objects;
@@ -62,6 +69,10 @@ public class FacturaController implements Serializable {
     private Promocion promocion;
     private final String uiError = "ui-state-error";
     private String errorProducto, errorPromocion, errorVenta, errorBonificacion;
+    private List<Producto> productosTMP = null;
+
+    private DespachoFactura despachoFactura;
+    private List<DespachoFactura> despachosFactura = null;
 
     public FacturaController() {
         selectOneButton = 1;
@@ -72,6 +83,10 @@ public class FacturaController implements Serializable {
     public void init() {
         selected = new Factura();
         selected.setDescuento(0.0);
+    }
+
+    public List<Producto> getProductosTMP() {
+        return productosTMP;
     }
 
     public String getErrorProducto() {
@@ -92,6 +107,10 @@ public class FacturaController implements Serializable {
 
     public TalonarioFacade getTalonarioFacade() {
         return talonarioFacade;
+    }
+
+    public DespachoFacturaFacade getDespachoFacturaFacade() {
+        return despachoFacturaFacade;
     }
 
     public int getUnidadesVenta() {
@@ -142,6 +161,18 @@ public class FacturaController implements Serializable {
         this.selected = selected;
     }
 
+    public DespachoFactura getDespachoFactura() {
+        return despachoFactura;
+    }
+
+    public void setDespachoFactura(DespachoFactura despachoFactura) {
+        this.despachoFactura = despachoFactura;
+    }
+
+    public List<DespachoFactura> getDespachosFactura() {
+        return despachosFactura;
+    }
+
     public List<ProductoPromocionHelper> getObjects() {
         return objects;
     }
@@ -170,6 +201,10 @@ public class FacturaController implements Serializable {
 
     public TransactionFacade getEjbTransactionFacade() {
         return ejbTransactionFacade;
+    }
+
+    public DespachoFacturaProductoFacade getDespachoFacturaProductoFacade() {
+        return despachoFacturaProductoFacade;
     }
 
     public Producto getProducto() {
@@ -345,7 +380,7 @@ public class FacturaController implements Serializable {
         if (talonarios != null && !talonarios.isEmpty()) {
             Long ordenPedido = Long.valueOf(opTMP);
             Talonario talonarioTMP = new Talonario();
-            for (Talonario talonario : talonarios) {                
+            for (Talonario talonario : talonarios) {
                 if (ordenPedido >= talonario.getInicial() && ordenPedido <= talonario.getFinal1()) {
                     talonarioTMP = talonario;
                     break;
@@ -417,14 +452,25 @@ public class FacturaController implements Serializable {
         return "Create.xhtml?faces-redirect=true";
     }
 
+    public void prepararDespachos() {
+        despachosFactura = getDespachoFacturaFacade().getDespachosFacturaByFactura(selected);
+    }
+
     public void addProductoOrPromocion() {
         if ((producto != null || promocion != null) && unidadesVenta > 0 && precio > 0) {
             boolean isProducto = producto != null;
 
             boolean existe = false;
             for (ProductoPromocionHelper pph : objects) {
-                if ((pph.isProducto() && ((Producto) pph.getProductoPromocion()).getId().equals(producto.getId()))
-                        || (!pph.isProducto() && ((Promocion) pph.getProductoPromocion()).getId().equals(promocion.getId()))) {
+
+                boolean repetido = false;
+                if (isProducto && pph.isProducto()) {
+                    repetido = ((Producto) pph.getProductoPromocion()).getId().equals(producto.getId());
+                } else if (!isProducto && !pph.isProducto()) {
+                    repetido = ((Promocion) pph.getProductoPromocion()).getId().equals(promocion.getId());
+                }
+
+                if (repetido) {
                     existe = true;
                     int io = objects.indexOf(pph);
                     objects.get(io).setPrecio((precio * unidadesVenta) + pph.getPrecio());
@@ -508,12 +554,8 @@ public class FacturaController implements Serializable {
         return TipoPago.getFromValue(tipo).getDetalle();
     }
 
-    public Long getCantidadVentasByFactura(Factura f) {
-        return getEjbFacturaProductoFacade().getCantidadVentasByFactura(f);
-    }
-
-    public Long getCantidadBonificacionesByFactura(Factura f) {
-        return getEjbFacturaProductoFacade().getCantidadBonificacionByFactura(f);
+    public Long getCantidadVentasOrBonificacionesByFactura(Factura f, int tipo) {
+        return getEjbFacturaProductoFacade().getCantidadVentaOrBonificacionByFactura(f, tipo);
     }
 
     public void redireccionarFormulario() {
@@ -568,6 +610,19 @@ public class FacturaController implements Serializable {
 
     public void changeView(AjaxBehaviorEvent event) {
         cleanProductoOrPromocion();
+    }
+
+    public String redirect() {
+        return "Despacho.xhtml?fac=" + selected.getOrdenPedido() + "&faces-redirect=true";
+    }
+
+    public int countProductoByDespacho(Producto producto) {
+        return getDespachoFacturaProductoFacade().countDespachoFacturaProductoByDespachoFacturaAndProducto(despachoFactura, producto);
+    }
+
+    public void prepararProductos() {
+        productosTMP = null;
+        productosTMP = getDespachoFacturaProductoFacade().getListProductosByDespachoFactura(despachoFactura);
     }
 
 }

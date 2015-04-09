@@ -169,7 +169,7 @@ public class Promocion implements Serializable, Codificable {
 
     @Override
     public String toString() {
-        return "entidades.Promocion[ id=" + id + " ]";
+        return getCodigo() + " - " + getNombre();
     }
 
     @Override

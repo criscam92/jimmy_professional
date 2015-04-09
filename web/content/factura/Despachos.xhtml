@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="DespachosDlg" widgetVar="DespachosDialog" showHeader="false" modal="true" resizable="false" appendTo="@(body)">
+            <h:form id="Despachos">
+
+                <p:dataTable styleClass="tabla" id="listDespachos" value="#{facturaController.despachosFactura}" var="despacho"
+                             selectionMode="single" selection="#{facturaController.despachoFactura}" widgetVar="tblDespacos"
+                             paginator="true" style="text-align: center; width: 500px;" rowKey="#{despacho.id}" rows="10"
+                             rowsPerPageTemplate="10,20,30,40,50" emptyMessage="#{bundle.EmptyTable}" paginatorPosition="bottom"
+                             >
+
+                    <p:ajax event="rowSelect"   update="detallesButton anularButton"/>
+                    <p:ajax event="rowUnselect" update="detallesButton anularButton"/>
+
+                    <f:facet name="header">
+                        <div id="titulo">
+                            Despachos
+                        </div>
+                        <div id="acciones">
+                            <p:commandButton id="detallesButton" icon="ui-icon-plus"   value="Detalles" actionListener="#{facturaController.prepararProductos}" update=":DetallesDespacho" oncomplete="PF('DetallesDespachoDialog').show()" disabled="#{empty facturaController.despachoFactura}"/>
+                            <p:commandButton id="anularButton"   icon="ui-icon-search" value="Anular"/>
+                        </div>
+                    </f:facet>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Fecha"/>
+                        </f:facet>
+                        <h:outputText value="#{despacho.fecha}">
+                            <f:convertDateTime pattern="dd-MMM-yyyy h:mm a"/>
+                        </h:outputText>
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Estado"/>
+                        </f:facet>
+                        <h:outputText value="#{despacho.realizado == true ? 'Realizado':'Anulado'}"/>
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Usuario"/>
+                        </f:facet>
+                        <h:outputText value="#{despacho.usuario.usuario}"/>
+                    </p:column>
+
+                </p:dataTable>
+                <div class="botonesDialog">
+                    <p:commandButton type="button" value="#{bundle.Close}" onclick="PF('DespachosDialog').hide()"/>
+                </div>
+            </h:form>
+        </p:dialog>
+        <p:dialog id="DetallesDespachoDlg" widgetVar="DetallesDespachoDialog" showHeader="false" modal="true" resizable="false" appendTo="@(body)">
+            <h:form id="DetallesDespacho">
+
+                <p:dataTable styleClass="tabla" id="listProductos" value="#{facturaController.productosTMP}" var="producto" rowKey="#{producto.id}"
+                             selectionMode="single" widgetVar="tblproductos" paginator="true" style="text-align: center; width: 500px;"
+                             rows="10" rowsPerPageTemplate="10,20,30,40,50" emptyMessage="#{bundle.EmptyTable}" paginatorPosition="bottom"
+                             >
+
+                    <f:facet name="header">
+                        <div id="titulo">
+                            Productos Despachados
+                        </div>
+                    </f:facet>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Producto"/>
+                        </f:facet>
+                        <h:outputText value="#{producto.toString()}"/>
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Cantidad"/>
+                        </f:facet>
+                        <h:outputText value="#{facturaController.countProductoByDespacho(producto)}"/>
+                    </p:column>
+
+                </p:dataTable>
+                <div class="botonesDialog">
+                    <p:commandButton type="button" value="#{bundle.Close}" onclick="PF('DetallesDespachoDialog').hide()"/>
+                </div>
+            </h:form>
+        </p:dialog>
+    </ui:composition>
+</html>

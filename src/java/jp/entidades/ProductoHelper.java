@@ -3,7 +3,7 @@ package jp.entidades;
 import java.io.Serializable;
 import javax.persistence.Id;
 
-public class ProductoHelper implements Serializable{
+public class ProductoHelper implements Serializable {
 
     @Id
     private int id;
@@ -16,14 +16,16 @@ public class ProductoHelper implements Serializable{
     public ProductoHelper() {
     }
 
-    public ProductoHelper(int id, Producto producto, int cantidadFacturada, int cantidadDisponible, int cantidadDespachada) {
+    public ProductoHelper(int id, Producto producto, int cantidadFacturada) {
         this.id = id;
         this.producto = producto;
         this.cantidadFacturada = cantidadFacturada;
-        this.cantidadDisponible = cantidadDisponible;
-        this.cantidadDespachada = cantidadDespachada;
-        int cantMax = this.cantidadFacturada - cantidadDespachada;
-        this.cantidadADespachar = cantMax > cantidadDisponible ? cantidadDisponible : cantMax;
+        obtenerCantidadADespachar();
+    }
+
+    public void obtenerCantidadADespachar() {
+        int cantMax = getCantidadFacturada() - getCantidadDespachada();
+        this.cantidadADespachar = cantMax > getCantidadDisponible() ? getCantidadDisponible() : cantMax;
     }
 
     public int getId() {
@@ -73,5 +75,4 @@ public class ProductoHelper implements Serializable{
     public void setCantidadADespachar(int cantidadADespachar) {
         this.cantidadADespachar = cantidadADespachar;
     }
-
 }
