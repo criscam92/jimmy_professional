@@ -88,6 +88,9 @@ public class Pago implements Serializable {
     @JoinColumn(name = "factura", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Factura factura;
+    @JoinColumn(name = "relacion", referencedColumnName = "id", nullable = true)
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
+    private RelacionFactura relacionFactura;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "pago", fetch = FetchType.LAZY)
     private List<PagoDevolucion> pagoDevolucionList;
 
@@ -194,6 +197,14 @@ public class Pago implements Serializable {
 
     public void setFactura(Factura factura) {
         this.factura = factura;
+    }
+
+    public RelacionFactura getRelacionFactura() {
+        return relacionFactura;
+    }
+
+    public void setRelacionFactura(RelacionFactura relacionFactura) {
+        this.relacionFactura = relacionFactura;
     }
 
     @XmlTransient

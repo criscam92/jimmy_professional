@@ -35,39 +35,39 @@ public class Parametros implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Column(name = "recargo_local", nullable = false)
-    private float recargoLocal;
+    private Float recargoLocal;
     @Basic(optional = false)
     @NotNull
     @Column(name = "recargo_nacional", nullable = false)
-    private float recargoNacional;
+    private Float recargoNacional;
     @Basic(optional = false)
     @NotNull
     @Column(name = "recargo_internacional", nullable = false)
-    private float recargoInternacional;
+    private Float recargoInternacional;
     @Basic(optional = false)
     @NotNull
     @Column(name = "porcentaje_publicidad", nullable = false)
-    private float porcentajePublicidad;
+    private Float porcentajePublicidad;
     @Basic(optional = false)
     @NotNull
     @Column(name = "porcentaje_comision", nullable = false)
-    private float porcentajeComision;
+    private Float porcentajeComision;
     @Basic(optional = false)
     @NotNull
     @Column(name = "porcentaje_venta_public", nullable = false)
-    private float porcentajeVentaPublic;
+    private Float porcentajeVentaPublic;
     @Basic(optional = false)
     @NotNull
     @Column(name = "precio_dolar", nullable = false)
-    private float precioDolar;
+    private Float precioDolar;
     @Basic(optional = false)
     @NotNull
     @Column(name = "valor_pronto_pago", nullable = false)
-    private float valorProntoPago;
+    private Float valorProntoPago;
     @Basic(optional = false)
     @NotNull
     @Column(name = "porcentaje_pronto_pago", nullable = false)
-    private float porcentajeProntoPago;
+    private Float porcentajeProntoPago;
     @Basic(optional = false)
     @NotNull
     @Column(name = "dias_descuento_pronto_pago", nullable = false)
@@ -88,7 +88,7 @@ public class Parametros implements Serializable {
         this.id = id;
     }
 
-    public Parametros(Integer id, float recargoLocal, float recargoNacional, float recargoInternacional, float porcentajePublicidad, float porcentajeComision, float porcentajeVentaPublic, float precioDolar, float valorProntoPago, float porcentajeProntoPago, int diasDescuentoProntoPago, String correo) {
+    public Parametros(Integer id, Float recargoLocal, Float recargoNacional, Float recargoInternacional, Float porcentajePublicidad, Float porcentajeComision, Float porcentajeVentaPublic, Float precioDolar, Float valorProntoPago, Float porcentajeProntoPago, int diasDescuentoProntoPago, String correo) {
         this.id = id;
         this.recargoLocal = recargoLocal;
         this.recargoNacional = recargoNacional;
@@ -111,75 +111,75 @@ public class Parametros implements Serializable {
         this.id = id;
     }
 
-    public float getRecargoLocal() {
+    public Float getRecargoLocal() {
         return recargoLocal;
     }
 
-    public void setRecargoLocal(float recargoLocal) {
+    public void setRecargoLocal(Float recargoLocal) {
         this.recargoLocal = recargoLocal;
     }
 
-    public float getRecargoNacional() {
+    public Float getRecargoNacional() {
         return recargoNacional;
     }
 
-    public void setRecargoNacional(float recargoNacional) {
+    public void setRecargoNacional(Float recargoNacional) {
         this.recargoNacional = recargoNacional;
     }
 
-    public float getRecargoInternacional() {
+    public Float getRecargoInternacional() {
         return recargoInternacional;
     }
 
-    public void setRecargoInternacional(float recargoInternacional) {
+    public void setRecargoInternacional(Float recargoInternacional) {
         this.recargoInternacional = recargoInternacional;
     }
 
-    public float getPorcentajePublicidad() {
+    public Float getPorcentajePublicidad() {
         return porcentajePublicidad;
     }
 
-    public void setPorcentajePublicidad(float porcentajePublicidad) {
+    public void setPorcentajePublicidad(Float porcentajePublicidad) {
         this.porcentajePublicidad = porcentajePublicidad;
     }
 
-    public float getPorcentajeComision() {
+    public Float getPorcentajeComision() {
         return porcentajeComision;
     }
 
-    public void setPorcentajeComision(float porcentajeComision) {
+    public void setPorcentajeComision(Float porcentajeComision) {
         this.porcentajeComision = porcentajeComision;
     }
 
-    public float getPorcentajeVentaPublic() {
+    public Float getPorcentajeVentaPublic() {
         return porcentajeVentaPublic;
     }
 
-    public void setPorcentajeVentaPublic(float porcentajeVentaPublic) {
+    public void setPorcentajeVentaPublic(Float porcentajeVentaPublic) {
         this.porcentajeVentaPublic = porcentajeVentaPublic;
     }
 
-    public float getPrecioDolar() {
+    public Float getPrecioDolar() {
         return precioDolar;
     }
 
-    public void setPrecioDolar(float precioDolar) {
+    public void setPrecioDolar(Float precioDolar) {
         this.precioDolar = precioDolar;
     }
 
-    public float getValorProntoPago() {
+    public Float getValorProntoPago() {
         return valorProntoPago;
     }
 
-    public void setValorProntoPago(float valorProntoPago) {
+    public void setValorProntoPago(Float valorProntoPago) {
         this.valorProntoPago = valorProntoPago;
     }
 
-    public float getPorcentajeProntoPago() {
+    public Float getPorcentajeProntoPago() {
         return porcentajeProntoPago;
     }
 
-    public void setPorcentajeProntoPago(float porcentajeProntoPago) {
+    public void setPorcentajeProntoPago(Float porcentajeProntoPago) {
         this.porcentajeProntoPago = porcentajeProntoPago;
     }
 

@@ -4,7 +4,8 @@
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
     <ui:composition template="/index.xhtml">
         
@@ -15,6 +16,19 @@
         </ui:define>
 
         <ui:define name="body">
+            
+            
+            <h:form id="TipoListForm">
+                <p:outputPanel style="margin-bottom: 20px">
+                    <p:outputLabel for="tipoLista" value="Mostrar listado de precios para: "/>
+                    <p:selectOneButton id="tipoLista" value="#{productoController.tipoLista}">
+                        <p:ajax event="change" update=":ProductoListForm"  listener="#{productoController.cambiarTipoLista()}" />  
+                        <f:selectItems value="#{productoController.tipoListado}"/>
+                    </p:selectOneButton>
+                </p:outputPanel>
+            </h:form>
+            
+            
             <h:form id="ProductoListForm">
                 <p:dataTable styleClass="tabla" id="datalist" value="#{productoController.items}" var="item"
                              selectionMode="single" selection="#{productoController.selected}"
@@ -38,7 +52,7 @@
                             <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":ProductoEditForm" oncomplete="PF('ProductoEditDialog').show()" disabled="#{empty productoController.selected}"/>
                             <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{productoController.destroy}" update=":growl,datalist" disabled="#{empty productoController.selected}"/>
                             <p:commandButton icon="fa fa-table" value="Excel" ajax="false">
-                                <p:dataExporter type="xls" target="datalist" fileName="cars" />
+                                <p:dataExporter type="xls" target="datalist" fileName="Listado_#{productoController.tipoLista.toString()}" postProcessor="#{productoController.postProcessXLS}" />
                             </p:commandButton>
                         </div>
                     </f:facet>
@@ -72,23 +86,23 @@
                             <h:outputText value="#{bundle.ListProductoTitle_valorCosto}"/>
                         </f:facet>
                         <h:outputText value="#{item.valorCosto}">
-                            <f:convertNumber pattern="$ #,##0.00" currencySymbol="$" />
+                            <f:convertNumber type="currency" currencySymbol="$ " maxFractionDigits="0" />
                         </h:outputText>
                     </p:column>
                     <p:column>
                         <f:facet name="header">
                             <h:outputText value="#{bundle.ListProductoTitle_valorVenta}"/>
                         </f:facet>
-                        <h:outputText value="#{item.valorVenta}">
-                            <f:convertNumber pattern="$ #,##0.00" currencySymbol="$" />
+                        <h:outputText value="#{productoController.getValorProducto(item.valorVenta)}">
+                            <f:convertNumber type="currency" currencySymbol="$ " maxFractionDigits="0" />
                         </h:outputText>
                     </p:column>
                     <p:column>
                         <f:facet name="header">
                             <h:outputText value="#{bundle.ListProductoTitle_valorVentaUsd}"/>
                         </f:facet>
-                        <h:outputText value="#{item.valorVentaUsd}">
-                            <f:convertNumber type="currency" currencySymbol="USD " locale="en_US" />
+                        <h:outputText value="#{productoController.getValorProducto(item.valorVentaUsd)}">
+                            <f:convertNumber type="currency" currencySymbol="USD " locale="es_CO" />
                         </h:outputText>
                     </p:column>
                     
@@ -103,17 +117,13 @@
                         <f:facet name="header">
                             <h:outputText value="#{bun.ListProductoTitle_valorVentaPublico}"/>
                         </f:facet>
-                        <h:outputText value="#{productoController.getValorRecargoPublico(item,item.valorVenta)}">
-                            <f:convertNumber pattern="$ #,##0.00" currencySymbol="$" />
-                        </h:outputText>
+                        <h:outputText value="#{productoController.getValorRecargoPublico(item,item.valorVenta,'$ ')}"/>
                     </p:column>
                     <p:column>
                         <f:facet name="header">
                             <h:outputText value="#{bun.ListProductoTitle_valorVentaUsdPublico}"/>
                         </f:facet>
-                        <h:outputText value="#{productoController.getValorRecargoPublico(item,item.valorVentaUsd)}">
-                            <f:convertNumber type="currency" currencySymbol="USD " locale="en_US" />
-                        </h:outputText>
+                        <h:outputText value="#{productoController.getValorRecargoPublico(item,item.valorVentaUsd,'USD ')}"/>
                     </p:column>
                     
                     

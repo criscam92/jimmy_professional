@@ -13,6 +13,12 @@ import jp.entidades.Producto;
 @Stateless
 public class ProductoFacade extends AbstractFacade<Producto> {
 
+    public enum TIPO_PRECIO{
+        LOCALES,
+        NACIONALES,
+        EXTRANJEROS;
+    }
+    
     @PersistenceContext(unitName = "jimmy_professionalPU")
     private EntityManager em;
 
@@ -44,5 +50,5 @@ public class ProductoFacade extends AbstractFacade<Producto> {
         }
         return 0;
     }
-
+    
 }
