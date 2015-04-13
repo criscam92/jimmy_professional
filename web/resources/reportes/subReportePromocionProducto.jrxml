@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.0.3.final using JasperReports Library version 6.0.3  -->
+<!-- 2015-04-10T17:00:45 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="subReportePromocionProducto" pageWidth="555" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="87180776-5ae6-42f7-83e0-07d96fbd11bd">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<pageHeader>
+		<band height="99">
+			<property name="local_mesure_unitheight" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<staticText>
+				<reportElement mode="Opaque" x="170" y="3" width="50" height="16" forecolor="#707070" backcolor="#F2F2F2" uuid="57c3892f-5e01-4948-934c-34684cd3e72d">
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.2" lineStyle="Solid" lineColor="#CCCCCC"/>
+					<leftPen lineWidth="0.2" lineStyle="Solid" lineColor="#CCCCCC"/>
+					<bottomPen lineWidth="0.2" lineStyle="Solid" lineColor="#CCCCCC"/>
+					<rightPen lineWidth="0.2" lineStyle="Solid" lineColor="#CCCCCC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CODIGO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="490" y="3" width="65" height="16" forecolor="#707070" backcolor="#F2F2F2" uuid="6249a35c-0aab-48a7-8be4-488a041017c7">
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.2" lineStyle="Solid" lineColor="#CCCCCC"/>
+					<leftPen lineWidth="0.2" lineStyle="Solid" lineColor="#CCCCCC"/>
+					<bottomPen lineWidth="0.2" lineStyle="Solid" lineColor="#CCCCCC"/>
+					<rightPen lineWidth="0.2" lineStyle="Solid" lineColor="#CCCCCC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CANTIDAD]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="220" y="3" width="270" height="16" forecolor="#707070" backcolor="#F2F2F2" uuid="31bad093-5df2-457f-9f8b-3ed3af3be5e1">
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.2" lineStyle="Solid" lineColor="#CCCCCC"/>
+					<leftPen lineWidth="0.2" lineStyle="Solid" lineColor="#CCCCCC"/>
+					<bottomPen lineWidth="0.2" lineStyle="Solid" lineColor="#CCCCCC"/>
+					<rightPen lineWidth="0.2" lineStyle="Solid" lineColor="#CCCCCC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DESCRIPCIÓN]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="220" y="19" width="270" height="16" forecolor="#707070" uuid="101483e4-f31e-4ea3-b0bd-a9322110dcec">
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<leftPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<bottomPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<rightPen lineWidth="0.2" lineColor="#CCCCCC"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="10" isBold="false"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<text><![CDATA[ACONDICIONADOR POST KERATINA 4000 ml.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="170" y="19" width="50" height="16" forecolor="#707070" uuid="a59f67ad-420a-42e6-811e-b5bb81ad3adb">
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<leftPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<bottomPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<rightPen lineWidth="0.2" lineColor="#CCCCCC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="false"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<text><![CDATA[001]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="490" y="19" width="65" height="16" forecolor="#707070" uuid="74cfd6c7-eb72-410b-aa55-f82dcd6d1e95">
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<leftPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<bottomPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<rightPen lineWidth="0.2" lineColor="#CCCCCC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="false"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<text><![CDATA[999]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="170" y="35" width="50" height="16" forecolor="#707070" uuid="dedb7dcc-a7fd-4c0b-8df6-27847b4ed83f">
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<leftPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<bottomPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<rightPen lineWidth="0.2" lineColor="#CCCCCC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="false"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<text><![CDATA[001]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="220" y="35" width="270" height="16" forecolor="#707070" uuid="a6022467-27f5-4741-8eeb-7b2604ae6f8e">
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<leftPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<bottomPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<rightPen lineWidth="0.2" lineColor="#CCCCCC"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="10" isBold="false"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<text><![CDATA[ACONDICIONADOR POST KERATINA 4000 ml.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="490" y="35" width="65" height="16" forecolor="#707070" uuid="b66a8a34-b367-46b7-be6c-199a8bbb454c">
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<leftPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<bottomPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<rightPen lineWidth="0.2" lineColor="#CCCCCC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="false"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<text><![CDATA[999]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="170" y="51" width="50" height="16" forecolor="#707070" uuid="9cee94d2-4839-45ed-bf81-bb21f67a0e5d">
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<leftPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<bottomPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<rightPen lineWidth="0.2" lineColor="#CCCCCC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="false"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<text><![CDATA[001]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="220" y="51" width="270" height="16" forecolor="#707070" uuid="f18dcc47-3149-4dbe-99a3-e7a2740f45be">
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<leftPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<bottomPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<rightPen lineWidth="0.2" lineColor="#CCCCCC"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="10" isBold="false"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<text><![CDATA[ACONDICIONADOR POST KERATINA 4000 ml.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="490" y="51" width="65" height="16" forecolor="#707070" uuid="a32d9687-39f1-4966-9a46-491776511aa8">
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<leftPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<bottomPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<rightPen lineWidth="0.2" lineColor="#CCCCCC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="false"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<text><![CDATA[999]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="220" y="67" width="270" height="16" forecolor="#707070" uuid="67100453-fbe2-4483-a657-cd71aac27ef4">
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<leftPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<bottomPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<rightPen lineWidth="0.2" lineColor="#CCCCCC"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="10" isBold="false"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<text><![CDATA[ACONDICIONADOR POST KERATINA 4000 ml.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="170" y="67" width="50" height="16" forecolor="#707070" uuid="8f5b6f74-d0a3-4aa9-a103-68017c51c0d2">
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<leftPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<bottomPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<rightPen lineWidth="0.2" lineColor="#CCCCCC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="false"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<text><![CDATA[001]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="490" y="83" width="65" height="16" forecolor="#707070" uuid="90e7878a-4a5d-44de-aa35-1c95cccafd08">
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<leftPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<bottomPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<rightPen lineWidth="0.2" lineColor="#CCCCCC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="false"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<text><![CDATA[999]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="490" y="67" width="65" height="16" forecolor="#707070" uuid="ad1b8a27-6dea-42c2-aae5-0ccbac16f1b6">
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<leftPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<bottomPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<rightPen lineWidth="0.2" lineColor="#CCCCCC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="false"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<text><![CDATA[999]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="170" y="83" width="50" height="16" forecolor="#707070" uuid="552935f6-4295-4688-8cbc-13c6d801ed0f">
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<leftPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<bottomPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<rightPen lineWidth="0.2" lineColor="#CCCCCC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="false"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<text><![CDATA[001]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="220" y="83" width="270" height="16" forecolor="#707070" uuid="6d5e256e-d6cb-4738-a41d-2dd883913f48">
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<leftPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<bottomPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<rightPen lineWidth="0.2" lineColor="#CCCCCC"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="10" isBold="false"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<text><![CDATA[ACONDICIONADOR POST KERATINA 4000 ml.]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+</jasperReport>

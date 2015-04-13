@@ -40,6 +40,8 @@
                             
                             <p:commandButton id="productos" value="#{bundle.MessageDespacharFactura}" oncomplete="PF('ProductosByVisitaDialog').show()"
                                              icon="ui-icon-check" disabled="#{empty facturaController.selected}" action="#{facturaController.redirect()}"/> 
+                            
+                            <p:commandButton ajax="false" id="reporte" value="Reporte" icon="ui-icon-check" actionListener="#{facturaController.generarReporte}" disabled="#{empty facturaController.selected}"/>
                         </div>
                     </f:facet>
 

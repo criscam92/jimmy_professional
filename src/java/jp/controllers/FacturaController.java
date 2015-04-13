@@ -1,10 +1,13 @@
 package jp.controllers;
 
+import java.io.File;
+import java.io.IOException;
 import jp.entidades.Factura;
 import jp.util.JsfUtil;
 import jp.util.JsfUtil.PersistAction;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -19,7 +22,11 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 import jp.entidades.Cliente;
 import jp.entidades.DespachoFactura;
 import jp.entidades.Empleado;
@@ -37,6 +44,11 @@ import jp.facades.TransactionFacade;
 import jp.util.Moneda;
 import jp.util.TipoPago;
 import jp.util.TipoTalonario;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.primefaces.event.SelectEvent;
 
 @ManagedBean(name = "facturaController")
@@ -623,6 +635,55 @@ public class FacturaController implements Serializable {
     public void prepararProductos() {
         productosTMP = null;
         productosTMP = getDespachoFacturaProductoFacade().getListProductosByDespachoFactura(despachoFactura);
+    }
+
+    public void generarReporte(ActionEvent actionEvent) {
+        Factura factura = getFacade().getFacturaById(selected.getId());
+
+        if (factura != null) {
+            File reporte1 = new File(JsfUtil.getRutaReporte("factura.jasper"));
+            File reporte2 = new File(JsfUtil.getRutaReporte("subReporteProductos.jasper"));
+            File reporte3 = new File(JsfUtil.getRutaReporte("subReportePromocion.jasper"));
+            File reporte4 = new File(JsfUtil.getRutaReporte("subReportePromocionProducto.jasper"));
+
+            if (reporte1.exists() && reporte2.exists() && reporte3.exists() && reporte4.exists()) {
+                List<Factura> facturas = new ArrayList<>();
+                facturas.add(factura);
+
+                JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(facturas);
+
+                try {
+                    JasperPrint jasperPrint = JasperFillManager.fillReport(reporte1.getPath(), new HashMap(), dataSource);
+                    HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
+                    response.addHeader("Content-disposition", "attachment; filename=Factura.pdf");
+                    ServletOutputStream sos = response.getOutputStream();
+                    JasperExportManager.exportReportToPdfStream(jasperPrint, sos);
+                    FacesContext.getCurrentInstance().responseComplete();
+                } catch (JRException | IOException e) {
+                    JsfUtil.addErrorMessage("Ha ocurrido un error durante la generacion"
+                            + " del reporte, Por favor intente de nuevo, si el error persiste"
+                            + " comuniquese con el administrador del sistema");
+                }
+
+            } else {
+                if (reporte1.exists()) {
+                    JsfUtil.addErrorMessage("No existe el archivo " + reporte1.getName());
+                }
+                if (reporte2.exists()) {
+                    JsfUtil.addErrorMessage("No existe el archivo " + reporte2.getName());
+                }
+                if (reporte3.exists()) {
+                    JsfUtil.addErrorMessage("No existe el archivo " + reporte3.getName());
+                }
+                if (reporte4.exists()) {
+                    JsfUtil.addErrorMessage("No existe el archivo " + reporte4.getName());
+                }
+            }
+
+        } else {
+            JsfUtil.addErrorMessage("Seleccione la Factura que desea imprimir");
+        }
+
     }
 
 }

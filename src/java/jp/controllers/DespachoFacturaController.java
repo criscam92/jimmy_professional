@@ -205,7 +205,9 @@ public class DespachoFacturaController implements Serializable {
         selected.setDespacho(null);
         selected.setFecha(Calendar.getInstance().getTime());
         selected.setRealizado(true);
+        System.out.println("USUARIO: " + LoginController.user.getUsuario());
         selected.setUsuario(LoginController.user);
+        
         switch (comprobarIngresos()) {
             case 0:
                 if (comprobarProductos()) {
@@ -215,7 +217,7 @@ public class DespachoFacturaController implements Serializable {
                         selected = null;
                         productoHelpers.clear();
                         JsfUtil.addSuccessMessage("La factura " + factura.getOrdenPedido() + " se ha despachado correctamente");
-                        JsfUtil.redirect("List.xhtml");                        
+                        JsfUtil.redirect("List.xhtml");
                     }
                 } else {
                     RequestContext.getCurrentInstance().update("DespacharForm:btnDespachar");
