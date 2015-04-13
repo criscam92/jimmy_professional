@@ -22,10 +22,16 @@
                             <h:outputText value="#{bundle.MessageListaSaldoFac}"/>
                         </div>
                     </f:facet>
-                    
-                    <p:ajax update=":formAbonoFactura:botonPagarAbono" event="rowUnselectCheckbox"/>
-                    <p:ajax update=":formAbonoFactura:botonPagarAbono" event="rowSelectCheckbox"/>
-                    
+
+                    <p:ajax update=":formAbonoFactura:botonPagarAbono,:formAbonoFactura:textoAdvertencia" event="rowUnselectCheckbox" 
+                            listener="#{devolucionController.prepareCreatePagoDevolucion()}"/>
+                    <p:ajax update=":formAbonoFactura:botonPagarAbono,:formAbonoFactura:textoAdvertencia" event="rowSelectCheckbox" 
+                            listener="#{devolucionController.prepareCreatePagoDevolucion()}"/>
+                    <p:ajax update=":formAbonoFactura:botonPagarAbono,:formAbonoFactura:textoAdvertencia" event="rowUnselect" 
+                            listener="#{devolucionController.prepareCreatePagoDevolucion()}"/>
+                    <p:ajax update=":formAbonoFactura:botonPagarAbono,:formAbonoFactura:textoAdvertencia" event="rowSelect" 
+                            listener="#{devolucionController.prepareCreatePagoDevolucion()}"/>
+
                     <p:column selectionMode="multiple" style="width:16px;text-align:center"/>
                     <p:column>
                         <f:facet name="header">
@@ -67,6 +73,12 @@
                     </p:column>
                     <p:column>
                         <f:facet name="header">
+                            <h:outputText value="#{bundle.MessageSaldoPagado}"/>
+                        </f:facet>
+                        <h:outputText value="#{item.saldoCancelado}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
                             <h:outputText value="#{bundle.MessageSaldoFactura}"/>
                         </f:facet>
                         <h:outputText value="#{item.saldo}"/>
@@ -79,11 +91,13 @@
                 <h:outputText value="#{devolucionController.simboloValor}" />
                 <h:outputText id="devolucionActual" value="#{devolucionController.selected.valorTotal}"/>
                 <br/>
-                <p:commandButton icon="ui-icon-check" value="#{bundle.MessageBotonPagar}" actionListener="#{devolucionController.createPagoDevolucion()}"
+
+                <p:commandButton icon="ui-icon-check" value="#{bundle.MessageBotonPagar}" actionListener="#{devolucionController.prepareCreatePagoDevolucion()}"
                                  id="botonPagarAbono" disabled="#{empty devolucionController.facturasSeleccionadas}" update=":growl"/>
+                
+                <p:messages id="textoAdvertencia" showDetail="true" autoUpdate="true" closable="true" />
             </h:form>
         </p:dialog>
     </ui:composition>
 
 </html>
-

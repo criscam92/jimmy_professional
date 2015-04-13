@@ -283,9 +283,11 @@ public class CambioDevolucionController implements Serializable {
         factura.setUsuario(LoginController.user);
         //empleado seteado desde el form
         factura.setTipoPago(TipoPago.MANO_A_MANO.getValor());
-        factura.setObservaciones(devolucion.getObservaciones());
-        factura.setTotalBruto(devolucion.getValorTotal());//SE HACE DESDE CARGARFACTURA
-        factura.setTotalPagar(devolucion.getValorTotal());//SE HACE DESDE CARGARFACTURA
+        if (devolucion.getObservaciones() != null) {
+            factura.setObservaciones(devolucion.getObservaciones());
+        }
+        factura.setTotalBruto(devolucion.getValorTotal());
+        factura.setTotalPagar(devolucion.getValorTotal());
         factura.setEstado(EstadoPagoFactura.REALIZADA.getValor());
         factura.setDolar(devolucion.getDolar());
         //orden_pedido desde el form

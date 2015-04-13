@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package jp.facades;
 
 import java.util.ArrayList;
@@ -18,10 +13,6 @@ import jp.entidades.Factura;
 import jp.entidades.Pago;
 import jp.util.EstadoPagoFactura;
 
-/**
- *
- * @author CRISTIAN
- */
 @Stateless
 public class DevolucionFacade extends AbstractFacade<Devolucion> {
 
@@ -50,13 +41,14 @@ public class DevolucionFacade extends AbstractFacade<Devolucion> {
         }
     }
 
-    public List<Factura> getFacturasPendientesByCliente(Cliente c) {
+    public List<Factura> getFacturasPendientesByCliente(Cliente c, boolean monedaDolar) {
         List<Factura> facturasPendientesTMP;
         try {
-            Query queryFactura = em.createQuery("SELECT f FROM Factura f WHERE f.cliente.id= :clie AND f.estado<> :est1 AND f.estado<> :est2");
+            Query queryFactura = em.createQuery("SELECT f FROM Factura f WHERE f.cliente.id= :clie AND f.estado<> :est1 AND f.estado<> :est2 AND f.dolar = :dol");
             queryFactura.setParameter("clie", c.getId());
             queryFactura.setParameter("est1", EstadoPagoFactura.ANULADO.getValor());
             queryFactura.setParameter("est2", EstadoPagoFactura.CANCELADO.getValor());
+            queryFactura.setParameter("dol", monedaDolar);
             facturasPendientesTMP = queryFactura.getResultList();
 
             return getFacturasPendientesPago(facturasPendientesTMP);
@@ -84,32 +76,19 @@ public class DevolucionFacade extends AbstractFacade<Devolucion> {
 
                 if (totalPago == null) {
                     f.setSaldo(f.getTotalPagar());
+                    f.setSaldoCancelado(0d);
                     facturasFinal.add(f);
                     continue;
                 } else {
                     if (totalPago < totalFactura) {
                         f.setSaldo(totalFactura - totalPago);
+                        f.setSaldoCancelado(totalPago);
                         facturasFinal.add(f);
                     }
                 }
 
             }
 
-            /*Query queryPagos = em.createQuery("SELECT p FROM Pago p WHERE p.factura IN :facts");
-             queryPagos.setParameter("facts", fs);
-             pagosFactura = queryPagos.getResultList();
-
-             Query queryFacturas = em.createQuery("SELECT p.factura FROM Pago p WHERE p.factura IN :facts");
-             queryFacturas.setParameter("facts", fs);
-             facturas = queryFacturas.getResultList();
-
-             for (Pago pago : pagosFactura) {
-             for (Factura factura : facturas) {
-             if (factura == pago.getFactura() && factura.getTotalPagar() > pago.getValorTotal()) {
-             facturasFinal.add(factura);
-             }
-             }
-             }*/
             for (Factura ff : facturasFinal) {
                 System.out.println("factura a devolver-> " + ff.getObservaciones());
             }

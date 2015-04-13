@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.component.UIComponent;
@@ -30,7 +31,6 @@ import jp.facades.TransactionFacade;
 import jp.util.EstadoPagoFactura;
 import jp.util.Moneda;
 import jp.util.TipoPago;
-import jp.util.TipoPagoAbono;
 import org.primefaces.event.SelectEvent;
 
 @ManagedBean(name = "devolucionController")
@@ -56,7 +56,9 @@ public class DevolucionController implements Serializable {
     private Float valorAcumulado = 0.0f;
     private boolean deshabilitarAbono;
     private String messageSaldo;
-    Double totalSaldoPendiente;
+    private Double totalSaldoPendiente;
+    private Double totalSaldoSeleccionado;
+    private String mensajeAdvertencia;
 
     public DevolucionController() {
         itemsTMP = new ArrayList<>();
@@ -139,6 +141,22 @@ public class DevolucionController implements Serializable {
 
     public void setTotalSaldoPendiente(Double saldoTotalPendiente) {
         this.totalSaldoPendiente = saldoTotalPendiente;
+    }
+
+    public Double getTotalSaldoSeleccionado() {
+        return totalSaldoSeleccionado;
+    }
+
+    public void setTotalSaldoSeleccionado(Double totalSaldoSeleccionado) {
+        this.totalSaldoSeleccionado = totalSaldoSeleccionado;
+    }
+
+    public String getMensajeAdvertencia() {
+        return mensajeAdvertencia;
+    }
+
+    public void setMensajeAdvertencia(String mensajeAdvertencia) {
+        this.mensajeAdvertencia = mensajeAdvertencia;
     }
 
     public DevolucionSessionBean getDevolucionSessionBean() {
@@ -281,7 +299,7 @@ public class DevolucionController implements Serializable {
     }
 
     public void addDevolucionProducto() {
-        if (devolucionProducto.getCantidad() > 0 && devolucionProducto.getCodigoDevolucion() != null && !devolucionProducto.getDetalle().trim().equals("")
+        if (devolucionProducto.getCantidad() > 0 && devolucionProducto.getCodigoDevolucion() != null
                 && devolucionProducto.getProducto() != null && devolucionProducto.getValor() > 0) {
 
             DevolucionProducto devolucionProductoTMP = new DevolucionProducto();
@@ -319,6 +337,8 @@ public class DevolucionController implements Serializable {
                 e.printStackTrace();
             }
 
+        } else {
+            JsfUtil.addErrorMessage("Agregue al menos un Producto a la Devolución");
         }
     }
 
@@ -364,7 +384,7 @@ public class DevolucionController implements Serializable {
 
     public void onItemSelecCliente(SelectEvent event) {
         Cliente c = (Cliente) event.getObject();
-        facturasPendientesClienteTMP = getFacade().getFacturasPendientesByCliente(c);
+        facturasPendientesClienteTMP = getFacade().getFacturasPendientesByCliente(c, selected.getDolar());
         if (facturasPendientesClienteTMP != null && !facturasPendientesClienteTMP.isEmpty()) {
             totalSaldoPendiente = 0.0;
             for (Factura fp : facturasPendientesClienteTMP) {
@@ -381,7 +401,23 @@ public class DevolucionController implements Serializable {
     }
 
     public String getSimboloValor() {
+        selected.setCliente(null);
         return selected.getDolar() ? "USD " : "$ ";
+    }
+
+    public void prepareCreatePagoDevolucion() {
+        System.out.println("OK");
+        if (facturasSeleccionadas != null && !facturasSeleccionadas.isEmpty()) {
+            totalSaldoSeleccionado = 0.0;
+            for (Factura f : facturasSeleccionadas) {
+                totalSaldoSeleccionado += f.getSaldo();
+            }
+            mensajeAdvertencia = "";
+            if (totalSaldoSeleccionado < selected.getValorTotal()) {
+//                mensajeAdvertencia = "La Devolucion será mayor al Saldo total";
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Advertencia", "La Devolución será mayor al Saldo total"));
+            }
+        }
     }
 
     public void createPagoDevolucion() {
@@ -390,6 +426,7 @@ public class DevolucionController implements Serializable {
             return;
         }
         for (Factura fac : facturasSeleccionadas) {
+
             if (selected.getValorTotal() > 0f) {
                 Pago pago = new Pago();
                 System.out.println("Se puede pagar la factura-> " + fac.getId() + " -->Saldo: " + fac.getSaldo() + "\n");
@@ -406,23 +443,21 @@ public class DevolucionController implements Serializable {
                 pago.setEstado(EstadoPagoFactura.REALIZADA.getValor());
                 pago.setFormaPago(TipoPago.DEVOLUCION.getValor());
                 pago.setDolar(selected.getDolar());
-                pago.setObservaciones(selected.getObservaciones());
+                if (!selected.getObservaciones().trim().equals("")) {
+                    pago.setObservaciones(selected.getObservaciones());
+                }
                 selected.setUsuario(LoginController.user);
 
                 getEjbTransactionFacade().createPagoDevolucion(pago, selected, fac);
 
             }
         }
-        redirrecionarDevolucionList();
+        JsfUtil.getMessageBundle(new String[]{"MessagePagoDevolucion", "CreateSuccessM"});
+        JsfUtil.redirect("List.xhtml");
     }
 
-    private void redirrecionarDevolucionList() {
-        try {
-            FacesContext.getCurrentInstance().getExternalContext().redirect("List.xhtml");
-        } catch (Exception e) {
-            System.out.println("Error intentando redireccionar a List.xhtml");
-            e.printStackTrace();
-        }
-
+    public void limpiarSeleccion() {
+        facturasSeleccionadas = new ArrayList<>();
+        mensajeAdvertencia = "";
     }
 }
