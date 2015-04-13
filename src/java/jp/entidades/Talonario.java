@@ -68,7 +68,7 @@ public class Talonario implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date fecha;
     @JoinColumn(name = "empleado", referencedColumnName = "id", nullable = false)
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     private Empleado empleado;
 
     public Talonario() {

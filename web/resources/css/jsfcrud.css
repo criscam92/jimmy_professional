@@ -125,3 +125,10 @@ div.contenido div.ui-layout-unit-content.ui-widget-content{
     display: block;
 }
 
+.ui-grid-col-3.col-3-fixed{
+    width: 410px;
+}
+
+.ui-grid-col-9.col-9-auto{
+    width: auto;
+}

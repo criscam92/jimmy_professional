@@ -91,6 +91,10 @@ public class Pago implements Serializable {
     @JoinColumn(name = "relacion", referencedColumnName = "id", nullable = true)
     @ManyToOne(optional = true, fetch = FetchType.LAZY)
     private RelacionFactura relacionFactura;
+    @Basic(optional = true)
+    @Size(max = 30)
+    @Column(length = 30, name = "orden_pago", nullable = true)
+    private String ordenPago;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "pago", fetch = FetchType.LAZY)
     private List<PagoDevolucion> pagoDevolucionList;
 
@@ -101,8 +105,9 @@ public class Pago implements Serializable {
         this.id = id;
     }
 
-    public Pago(Long id, int formaPago, Date fecha, double valorTotal, boolean dolar, int estado) {
+    public Pago(Long id, String ordenPago, int formaPago, Date fecha, double valorTotal, boolean dolar, int estado) {
         this.id = id;
+        this.ordenPago = ordenPago;
         this.formaPago = formaPago;
         this.fecha = fecha;
         this.valorTotal = valorTotal;
@@ -116,6 +121,14 @@ public class Pago implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getOrdenPago() {
+        return ordenPago;
+    }
+
+    public void setOrdenPago(String ordenPago) {
+        this.ordenPago = ordenPago;
     }
 
     public int getFormaPago() {

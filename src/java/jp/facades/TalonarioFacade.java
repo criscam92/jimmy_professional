@@ -33,16 +33,36 @@ public class TalonarioFacade extends AbstractFacade<Talonario> {
         return FacturaFacade;
     }
 
-    public Talonario getTalonarioByFecha(Empleado e) {
+    /**
+     * Obtiene un talonario activo para el empleado y tipo indicados
+     * @param tipo tipo de talonario a buscar
+     * @param e empleado del cual encontrar el talonario
+     * @return Talonario activo para el tipo y empleado indicados, si no encuentra
+     * uno activo, retorna valor nulo
+     * @see TipoTalonario
+     */
+    public Talonario getActiveTalonario(TipoTalonario tipo, Empleado e){
         try {
-            Query query = getEntityManager().createQuery("SELECT t FROM Talonario t WHERE t.empleado.id = :empleado AND t.tipo = :tipo ORDER BY t.fecha DESC");
+            Query query = getEntityManager().createQuery("SELECT t FROM Talonario t WHERE t.empleado.id = :empleado AND t.tipo = :tipo AND t.actual <= t.final1 ORDER BY t.fecha DESC");
             query.setParameter("empleado", e.getId());
-            query.setParameter("tipo", TipoTalonario.REMISION.getValor());
+            query.setParameter("tipo", tipo.getValor());
             query.setMaxResults(1);
             return (Talonario) query.getSingleResult();
         } catch (NoResultException nre) {
+            nre.printStackTrace();
         }
         return null;
+    }
+    
+    /**
+     * Obtiene el talonario de remisiones activo para el empleado indicado
+     * @param e Empleado del cual se desea obtener el talonario
+     * @return talonario activo para remisiones
+     * @deprecated use en su lugar getActiveTalonario()
+     */
+    @Deprecated
+    public Talonario getTalonarioByFecha(Empleado e) {
+        return getActiveTalonario(TipoTalonario.REMISION, e);
     }
 
     public List<Talonario> getTalonariosByTipo(TipoTalonario tipoTalonario, Empleado empleado) {

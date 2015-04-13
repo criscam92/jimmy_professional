@@ -165,7 +165,12 @@ public class TalonarioController implements Serializable {
     }
     
     public String getTipoTalonario(int tipo) {
-        return TipoTalonario.getFromValue(tipo).getDetalle();
+        try {
+            return TipoTalonario.getFromValue(tipo).getDetalle();
+        } catch (Exception e) {
+            return TipoTalonario.UNKNOWN;
+        }
+        
     }
 
 }

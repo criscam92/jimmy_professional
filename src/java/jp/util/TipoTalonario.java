@@ -9,6 +9,11 @@ public enum TipoTalonario {
     RECIBO_CAJA(1, "Recibo de Caja"),
     RECIBO_DINERO_EFECTIVO(2, "Recibo de Dinero en Efectivo");
 
+    /**
+     * Cadena a mostrar cuando el tipo no coincida con ninguno de los registrados
+     */
+    public static final String UNKNOWN = "Desconocido";
+    
     private int valor;
     private String detalle;
 
