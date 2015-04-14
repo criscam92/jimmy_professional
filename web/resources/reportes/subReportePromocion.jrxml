@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.0.3.final using JasperReports Library version 6.0.3  -->
-<!-- 2015-04-13T17:49:17 -->
+<!-- 2015-04-14T11:37:37 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="subReportePromocion" pageWidth="555" pageHeight="842" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="88c16c39-0146-4ac8-9405-58c15feca6d8">
 	<property name="com.jaspersoft.studio.unit." value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
@@ -13,15 +13,13 @@
 	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
 	<parameter name="dolar" class="java.lang.Boolean"/>
-	<queryString>
-		<![CDATA[]]>
-	</queryString>
 	<field name="promocion.codigo" class="java.lang.String"/>
 	<field name="promocion.descripcion" class="java.lang.String"/>
 	<field name="unidadesVenta" class="java.lang.Integer"/>
 	<field name="unidadesBonificacion" class="java.lang.Integer"/>
 	<field name="promocion.valor" class="java.lang.Double"/>
 	<field name="promocion.valorVentaUsd" class="java.lang.Double"/>
+	<field name="promocion.promocionProductoList" class="java.util.List"/>
 	<variable name="precio" class="java.lang.Double" resetType="None">
 		<variableExpression><![CDATA[$P{dolar} ? $F{promocion.valorVentaUsd} * $F{unidadesVenta} : $F{promocion.valor} * $F{unidadesVenta}]]></variableExpression>
 		<initialValueExpression><![CDATA[0.0]]></initialValueExpression>
@@ -133,14 +131,6 @@
 	</pageHeader>
 	<detail>
 		<band height="16">
-			<subreport>
-				<reportElement x="0" y="16" width="555" height="0" uuid="9fb1813d-7bed-4d43-9a5f-35a9f88e183f">
-					<property name="local_mesure_unitheight" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<subreportExpression><![CDATA["subReportePromocionProducto.jasper"]]></subreportExpression>
-			</subreport>
 			<textField>
 				<reportElement mode="Opaque" x="0" y="0" width="61" height="16" backcolor="#E0E0E0" uuid="88a4f13b-b122-4056-ae59-e08f1dc3191b">
 					<property name="local_mesure_unitwidth" value="pixel"/>
@@ -233,6 +223,17 @@
 				</textElement>
 				<textFieldExpression><![CDATA["$ " + new DecimalFormat("#,##0.00###").format($V{precio})]]></textFieldExpression>
 			</textField>
+			<subreport>
+				<reportElement x="0" y="16" width="555" height="0" uuid="9fb1813d-7bed-4d43-9a5f-35a9f88e183f">
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<subreportParameter name="unidadesVenta">
+					<subreportParameterExpression><![CDATA[$F{unidadesVenta}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{promocion.promocionProductoList})]]></dataSourceExpression>
+				<subreportExpression><![CDATA["subReportePromocionProducto.jasper"]]></subreportExpression>
+			</subreport>
 		</band>
 	</detail>
 </jasperReport>

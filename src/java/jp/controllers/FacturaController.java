@@ -548,9 +548,9 @@ public class FacturaController implements Serializable {
 
         descuento = sum * descuento / 100;
         if (selected != null) {
-            selected.setTotalPagar(sum - descuento);
+            selected.setTotalPagar(sum + descuento);
         }
-        return sum - descuento;
+        return sum + descuento;
     }
 
     public void getDescuentobyCliente(Cliente c) {
@@ -652,8 +652,13 @@ public class FacturaController implements Serializable {
 
                 JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(facturas);
 
+                HashMap map = new HashMap();
+                map.put("venta", "" + getCantidadVentasOrBonificacionesByFactura(factura, 1));
+                map.put("bonificacion", "" + getCantidadVentasOrBonificacionesByFactura(factura, 2));
+
                 try {
-                    JasperPrint jasperPrint = JasperFillManager.fillReport(reporte1.getPath(), new HashMap(), dataSource);
+                    JasperPrint jasperPrint = JasperFillManager.fillReport(reporte1.getPath(), map, dataSource);
+
                     HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
                     response.addHeader("Content-disposition", "attachment; filename=Factura.pdf");
                     ServletOutputStream sos = response.getOutputStream();
@@ -663,6 +668,8 @@ public class FacturaController implements Serializable {
                     JsfUtil.addErrorMessage("Ha ocurrido un error durante la generacion"
                             + " del reporte, Por favor intente de nuevo, si el error persiste"
                             + " comuniquese con el administrador del sistema");
+
+                    e.printStackTrace();
                 }
 
             } else {

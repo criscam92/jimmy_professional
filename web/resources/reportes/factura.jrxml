@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.0.3.final using JasperReports Library version 6.0.3  -->
-<!-- 2015-04-13T17:50:30 -->
+<!-- 2015-04-14T14:44:59 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="factura" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="5b1d3eb0-cbba-4b7c-9328-60e9133643b3">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<parameter name="venta" class="java.lang.String"/>
+	<parameter name="bonificacion" class="java.lang.String"/>
 	<field name="dolar" class="java.lang.Boolean"/>
 	<field name="ordenPedido" class="java.lang.String"/>
 	<field name="fecha" class="java.util.Date"/>
@@ -17,6 +19,9 @@
 	<field name="cliente.tipo.tipo" class="java.lang.String"/>
 	<field name="facturaProductoList" class="java.util.List"/>
 	<field name="facturaPromocionList" class="java.util.List"/>
+	<field name="totalBruto" class="java.lang.Double"/>
+	<field name="descuento" class="java.lang.Double"/>
+	<field name="totalPagar" class="java.lang.Double"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -84,10 +89,10 @@
 					<property name="local_mesure_unitheight" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="styled">
 					<font fontName="Impact" size="14" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["No. " + $F{ordenPedido}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["<style fontName='Impact' size='14' isBold='true'>No. " + $F{ordenPedido} + "</style>"]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement mode="Opaque" x="414" y="33" width="141" height="14" backcolor="#E0E0E0" uuid="5d2db0bd-7b61-426d-bff6-24c06515bafe">
@@ -371,7 +376,7 @@
 					<property name="local_mesure_unitheight" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
-				<textElement verticalAlignment="Middle">
+				<textElement verticalAlignment="Middle" markup="styled">
 					<font size="11" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{tipoPago}.equals(0) ? "CONTADO" : $F{tipoPago}.equals(1) ? "CRÉDITO" : $F{tipoPago}.equals(2) ? "CHEQUE" : $F{tipoPago}.equals(3) ? "CONSIGNACIÓN" : $F{tipoPago}.equals(4) ? "MANO A MANO" : $F{tipoPago}.equals(5) ? "DEVOLUCIÓN" : "<style forecolor='#ff4000'>ERROR</style>"]]></textFieldExpression>
@@ -488,6 +493,7 @@
 	</detail>
 	<pageFooter>
 		<band height="100">
+			<printWhenExpression><![CDATA[$V{PAGE_NUMBER}.intValue() == $V{PAGE_COUNT}]]></printWhenExpression>
 			<rectangle radius="5">
 				<reportElement x="0" y="0" width="555" height="100" uuid="dad43ca3-c2c3-46aa-bd3c-d00d7b322a24">
 					<property name="local_mesure_unitwidth" value="pixel"/>
@@ -548,14 +554,20 @@
 					<property name="local_mesure_unitwidth" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
+				<box>
+					<topPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<leftPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<bottomPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<rightPen lineWidth="0.2" lineColor="#CCCCCC"/>
+				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="12" isBold="true"/>
 					<paragraph rightIndent="5"/>
 				</textElement>
-				<textFieldExpression><![CDATA["999"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{venta}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="300" y="20" width="255" height="20" uuid="2f198775-e197-4b3a-8345-f2111ce41d34">
+				<reportElement x="300" y="40" width="255" height="20" uuid="2f198775-e197-4b3a-8345-f2111ce41d34">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<box>
@@ -571,7 +583,7 @@
 				<text><![CDATA[TOTAL BRUTO]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="300" y="40" width="255" height="20" uuid="959c5f0a-bad6-44d5-af63-f0fa2c4bca1d">
+				<reportElement x="300" y="60" width="255" height="20" uuid="959c5f0a-bad6-44d5-af63-f0fa2c4bca1d">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<box>
@@ -585,22 +597,6 @@
 					<paragraph leftIndent="5"/>
 				</textElement>
 				<text><![CDATA[DESCUENTO (%)]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="300" y="60" width="255" height="20" uuid="74d4cc84-6676-493c-959c-12c1a8170d81">
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<box>
-					<topPen lineWidth="0.2" lineColor="#CCCCCC"/>
-					<leftPen lineWidth="0.2" lineColor="#CCCCCC"/>
-					<bottomPen lineWidth="0.2" lineColor="#CCCCCC"/>
-					<rightPen lineWidth="0.2" lineColor="#CCCCCC"/>
-				</box>
-				<textElement verticalAlignment="Middle">
-					<font size="9" isBold="false"/>
-					<paragraph leftIndent="5"/>
-				</textElement>
-				<text><![CDATA[SUBTOTAL]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="300" y="80" width="255" height="20" uuid="927b4745-ab8b-4c3c-9b74-5ecbe836a382">
@@ -623,43 +619,41 @@
 					<property name="local_mesure_unitwidth" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
+				<box>
+					<topPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<leftPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<bottomPen lineWidth="0.2" lineColor="#CCCCCC"/>
+					<rightPen lineWidth="0.2" lineColor="#CCCCCC"/>
+				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="12" isBold="true"/>
 					<paragraph rightIndent="5"/>
 				</textElement>
-				<textFieldExpression><![CDATA["999"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{bonificacion}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="430" y="40" width="125" height="20" uuid="4509a59a-3b5f-4450-85ff-e6f9d1a1973f"/>
+				<reportElement x="390" y="60" width="165" height="20" uuid="4509a59a-3b5f-4450-85ff-e6f9d1a1973f"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="14" isBold="true"/>
 					<paragraph rightIndent="5"/>
 				</textElement>
-				<textFieldExpression><![CDATA["0.2"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00###").format($F{descuento}) + "%"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="430" y="20" width="125" height="20" uuid="6d29c638-6058-4d16-9d87-980c17f0f8a1"/>
+				<reportElement x="390" y="40" width="165" height="20" uuid="6d29c638-6058-4d16-9d87-980c17f0f8a1"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="14" isBold="true"/>
 					<paragraph rightIndent="5"/>
 				</textElement>
-				<textFieldExpression><![CDATA["$ 100.000.000"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["$ " + new DecimalFormat("#,##0.00###").format($F{totalBruto})]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="430" y="60" width="125" height="20" uuid="cbe1aedd-589d-41d3-aed5-7b24de63f849"/>
+				<reportElement x="390" y="80" width="165" height="20" uuid="a758655c-4c74-4b4f-8636-b2a657567891"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="14" isBold="true"/>
 					<paragraph rightIndent="5"/>
 				</textElement>
-				<textFieldExpression><![CDATA["$ 100.000.000"]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="430" y="80" width="125" height="20" uuid="a758655c-4c74-4b4f-8636-b2a657567891"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font size="14" isBold="true"/>
-					<paragraph rightIndent="5"/>
-				</textElement>
-				<textFieldExpression><![CDATA["$ 100.000.000"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["$ " + new DecimalFormat("#,##0.00###").format($F{totalPagar})]]></textFieldExpression>
 			</textField>
 			<rectangle>
 				<reportElement mode="Transparent" x="0" y="40" width="300" height="60" uuid="6c9c0295-dc9f-49fd-85d3-88541aa0a19a">
@@ -679,7 +673,7 @@
 				<text><![CDATA[OBSERVACIONES:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="4" y="46" width="94" height="11" uuid="40fa8355-0a78-464a-90cf-c90aa89d6115">
+				<reportElement x="4" y="48" width="94" height="11" uuid="40fa8355-0a78-464a-90cf-c90aa89d6115">
 					<property name="local_mesure_unitheight" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -689,7 +683,7 @@
 				<text><![CDATA[FIRMA DEL VENDEDOR:]]></text>
 			</staticText>
 			<line>
-				<reportElement x="101" y="52" width="196" height="1" uuid="b6938eef-1060-4df9-a298-486dd83fac11">
+				<reportElement x="101" y="54" width="196" height="1" uuid="b6938eef-1060-4df9-a298-486dd83fac11">
 					<property name="local_mesure_unitwidth" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
@@ -698,7 +692,7 @@
 				</graphicElement>
 			</line>
 			<textField>
-				<reportElement x="101" y="53" width="196" height="11" uuid="1ffa31e9-574f-4334-9859-b4c0aa0f3a38">
+				<reportElement x="101" y="55" width="196" height="11" uuid="1ffa31e9-574f-4334-9859-b4c0aa0f3a38">
 					<property name="local_mesure_unitwidth" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="local_mesure_unitheight" value="pixel"/>

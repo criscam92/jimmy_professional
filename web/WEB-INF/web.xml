@@ -49,4 +49,8 @@
         <filter-name>AuthenticationFilter</filter-name>
         <url-pattern>/faces/content/*</url-pattern>
     </filter-mapping>
+    <servlet>
+        <servlet-name>PdfServlet</servlet-name>
+        <servlet-class>net.sf.jasperreports.j2ee.servlets.PdfServlet</servlet-class>
+    </servlet>
 </web-app>
