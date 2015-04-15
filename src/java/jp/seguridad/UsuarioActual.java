@@ -29,4 +29,11 @@ public class UsuarioActual {
         return usuario;
     }
     
+    public boolean isAdmin() {
+        if (usuario != null) {
+            return usuario.isAdmin();
+        }
+        return false;
+    }
+    
 }
