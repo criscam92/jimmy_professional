@@ -23,7 +23,7 @@ public class LoginController implements Serializable {
     @EJB
     private UsuarioFacade ejbFacade;
     
-    public static Usuario user;
+    private Usuario user;
     
     private String userName;
     private String password;

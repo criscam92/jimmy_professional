@@ -19,6 +19,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import javax.inject.Inject;
 import jp.entidades.CambioDevolucion;
 import jp.entidades.Cliente;
 import jp.entidades.DevolucionProducto;
@@ -28,6 +29,7 @@ import jp.entidades.Producto;
 import jp.facades.CambioDevolucionFacade;
 import jp.facades.DevolucionFacade;
 import jp.facades.TransactionFacade;
+import jp.seguridad.UsuarioActual;
 import jp.util.EstadoPagoFactura;
 import jp.util.Moneda;
 import jp.util.TipoPago;
@@ -47,6 +49,10 @@ public class DevolucionController implements Serializable {
     private jp.facades.PagoDevolucionFacade ejbPagoDevolucion;
     @EJB
     private DevolucionSessionBean devolucionSessionBean;
+    
+    @Inject
+    private UsuarioActual usuarioActual;
+    
     private List<Devolucion> items = null;
     private Devolucion selected;
     private DevolucionProducto devolucionProducto;
@@ -446,7 +452,7 @@ public class DevolucionController implements Serializable {
                 if (!selected.getObservaciones().trim().equals("")) {
                     pago.setObservaciones(selected.getObservaciones());
                 }
-                selected.setUsuario(LoginController.user);
+                selected.setUsuario(usuarioActual.get());
 
                 getEjbTransactionFacade().createPagoDevolucion(pago, selected, fac);
 

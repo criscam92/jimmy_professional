@@ -20,6 +20,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import javax.inject.Inject;
 import jp.entidades.Devolucion;
 import jp.entidades.DevolucionProducto;
 import jp.entidades.Empleado;
@@ -32,6 +33,7 @@ import jp.facades.FacturaFacade;
 import jp.facades.ParametrosFacade;
 import jp.facades.TalonarioFacade;
 import jp.facades.TransactionFacade;
+import jp.seguridad.UsuarioActual;
 import jp.util.EstadoPagoFactura;
 import jp.util.TipoPago;
 import jp.util.TipoTalonario;
@@ -55,6 +57,10 @@ public class CambioDevolucionController implements Serializable {
     private jp.facades.TransactionFacade ejbTransaccionFacade;
     @EJB
     private jp.controllers.DevolucionSessionBean devolucionSessionBean;
+    
+    @Inject
+    private UsuarioActual usuarioActual;
+    
     private List<CambioDevolucion> items = null;
     private CambioDevolucion selected;
     private Devolucion devolucion;
@@ -72,7 +78,7 @@ public class CambioDevolucionController implements Serializable {
     public void init() {
         try {
             devolucion = devolucionSessionBean.getDevolucion();
-            devolucion.setUsuario(LoginController.user);
+            devolucion.setUsuario(usuarioActual.get());
             if (devolucion.getDolar()) {
                 devolucion.setDolarActual(getEjbParametrosFacade().getParametros().getPrecioDolar());
             }
@@ -280,7 +286,7 @@ public class CambioDevolucionController implements Serializable {
         factura = new Factura();
         factura.setFecha(devolucion.getFecha());
         factura.setCliente(devolucion.getCliente());
-        factura.setUsuario(LoginController.user);
+        factura.setUsuario(usuarioActual.get());
         //empleado seteado desde el form
         factura.setTipoPago(TipoPago.MANO_A_MANO.getValor());
         if (devolucion.getObservaciones() != null) {

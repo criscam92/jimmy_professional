@@ -16,9 +16,11 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import javax.inject.Inject;
 import jp.entidades.IngresoProducto;
 import jp.entidades.Producto;
 import jp.facades.TransactionFacade;
+import jp.seguridad.UsuarioActual;
 import org.primefaces.context.RequestContext;
 
 @ManagedBean(name = "ingresoController")
@@ -29,6 +31,10 @@ public class IngresoController implements Serializable {
     private IngresoFacade ejbFacade;
     @EJB
     private TransactionFacade transactionFacade;
+    
+    @Inject
+    private UsuarioActual usuarioActual;
+    
     private List<Ingreso> items = null;
     private Ingreso selected;
     private Producto producto;
@@ -117,7 +123,7 @@ public class IngresoController implements Serializable {
 
     public void create(boolean guardar) {
         if (ingresoProductos.size() >= 1) {
-            selected.setUsuario(LoginController.user);
+            selected.setUsuario(usuarioActual.get());
             if (getTransactionFacade().createIngreso(selected, ingresoProductos)) {
                 if (!JsfUtil.isValidationFailed()) {
                     items = null;    // Invalidate list of items to trigger re-query.
@@ -140,7 +146,7 @@ public class IngresoController implements Serializable {
 
     public void update() {
         if (ingresoProductos.size() >= 1) {
-            selected.setUsuario(LoginController.user);
+            selected.setUsuario(usuarioActual.get());
             if (transactionFacade.updateIngreso(selected, ingresoProductosGuardar, ingresoProductosEliminar)) {
                 if (!JsfUtil.isValidationFailed()) {
                     items = null;    // Invalidate list of items to trigger re-query.

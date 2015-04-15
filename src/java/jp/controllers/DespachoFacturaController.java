@@ -22,6 +22,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import javax.inject.Inject;
 import jp.entidades.DespachoFacturaProducto;
 import jp.entidades.Factura;
 import jp.entidades.FacturaProducto;
@@ -36,6 +37,7 @@ import jp.facades.FacturaPromocionFacade;
 import jp.facades.IngresoProductoFacade;
 import jp.facades.PromocionProductoFacade;
 import jp.facades.TransactionFacade;
+import jp.seguridad.UsuarioActual;
 import org.primefaces.context.RequestContext;
 
 @ManagedBean(name = "despachoFacturaController")
@@ -59,6 +61,9 @@ public class DespachoFacturaController implements Serializable {
     private IngresoProductoFacade ingresoProductoFacade;
     @EJB
     private DespachoFacturaProductoFacade despachoFacturaProductoFacade;
+    @Inject
+    private UsuarioActual usuarioActual;
+    
 //</editor-fold>
 
     private List<DespachoFactura> items = null;
@@ -205,8 +210,8 @@ public class DespachoFacturaController implements Serializable {
         selected.setDespacho(null);
         selected.setFecha(Calendar.getInstance().getTime());
         selected.setRealizado(true);
-        System.out.println("USUARIO: " + LoginController.user.getUsuario());
-        selected.setUsuario(LoginController.user);
+//        System.out.println("USUARIO: " + LoginController.user.getUsuario());
+        selected.setUsuario(usuarioActual.get());
         
         switch (comprobarIngresos()) {
             case 0:

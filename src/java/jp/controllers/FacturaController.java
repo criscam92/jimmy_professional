@@ -24,6 +24,7 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
+import javax.inject.Inject;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -41,6 +42,7 @@ import jp.facades.FacturaProductoFacade;
 import jp.facades.ParametrosFacade;
 import jp.facades.TalonarioFacade;
 import jp.facades.TransactionFacade;
+import jp.seguridad.UsuarioActual;
 import jp.util.Moneda;
 import jp.util.TipoPago;
 import jp.util.TipoTalonario;
@@ -71,6 +73,8 @@ public class FacturaController implements Serializable {
     private DespachoFacturaFacade despachoFacturaFacade;
     @EJB
     private DespachoFacturaProductoFacade despachoFacturaProductoFacade;
+    @Inject
+    private UsuarioActual usuarioActual;
 
     private List<Factura> items = null;
     private List<ProductoPromocionHelper> objects;
@@ -249,7 +253,7 @@ public class FacturaController implements Serializable {
             if (getFacade().getFacturaByOrdenPedido(opTMP) == null) {
 
                 if (actulizarTalonario(opTMP)) {
-                    selected.setUsuario(LoginController.user);
+                    selected.setUsuario(usuarioActual.get());
                     if (moneda == 1) {
                         selected.setDolarActual(parametrosFacade.getParametros().getPrecioDolar());
                     }
