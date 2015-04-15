@@ -309,6 +309,8 @@ public class CambioDevolucionController implements Serializable {
 
             itemsTMP.add(facturaProductoTMP);
             cleanFacturaProducto();
+        } else {
+            JsfUtil.addErrorMessage("Debe agregar productos a la Factura");
         }
     }
 
@@ -425,13 +427,13 @@ public class CambioDevolucionController implements Serializable {
 
         return false;
     }
-    
+
     public void onItemSelectProducto(SelectEvent event) {
         Producto p = (Producto) event.getObject();
         facturaProducto.setPrecio((float) p.getValorVenta());
     }
-    
-    private void cleanFacturaProducto(){
+
+    private void cleanFacturaProducto() {
         facturaProducto.setProducto(null);
         facturaProducto.setUnidadesVenta(0);
         facturaProducto.setPrecio(0d);

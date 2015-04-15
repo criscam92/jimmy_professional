@@ -67,7 +67,11 @@
                                 <p:menuitem value="Programación de Visitas" outcome="/content/visita/List.xhtml" />
                             </p:submenu>
 
-                            <p:menuitem value="Usuarios" outcome="/content/usuario/List.xhtml" />
+                            <p:menuitem value="Usuarios" outcome="/content/usuario/List.xhtml" rendered="#{loginController.admin}"/>
+                        </p:submenu>
+                        
+                        <p:submenu class="menuPrincipal" label="#{loginController.user.usuario}" rendered="#{loginController.user != null}">
+                            <p:menuitem action="#{loginController.logoutLink()}" icon="ui-icon-power" value="#{bundle.LogOut}" />
                         </p:submenu>
                     </p:menubar>
                 </h:form>

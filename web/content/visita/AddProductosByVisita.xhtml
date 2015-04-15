@@ -5,84 +5,85 @@
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://xmlns.jcp.org/jsf/core">
-    
+
     <ui:composition template="/index.xhtml">
         <ui:define name="title">
-            <h:outputText value="#{bundle.ListVisitaTitle}"></h:outputText>
+            <h:outputText value="#{bundle.MessageTitleVisitaProducto}"></h:outputText>
         </ui:define>
 
         <ui:define name="body">
             <h:form id="formProductos" >
                 <h:panelGroup id="display">
-                    <p:panel header="Datos Visita">
+                    <p:panel header="Datos Visita" rendered="#{loginController.admin}">
                         <p:panelGrid columns="2">
                             <p:panelGrid columns="3">
                                 <p:panelGrid columns="1">
                                     <p:outputLabel value="#{bundle.EditVisitaLabel_calificacionServicio}" for="calificacionServicio" />
-                                    <p:rating id="calificacionServicio" value="#{visitaController.selected.calificacionServicio}"/>
+                                    <p:rating id="calificacionServicio" value="#{visitaProductoController.visitaGET.calificacionServicio}"/>
                                 </p:panelGrid>
                                 <p:panelGrid columns="1">
                                     <p:outputLabel value="#{bundle.EditVisitaLabel_puntualidadServicio}" for="puntualidadServicio" />
-                                    <p:rating id="puntualidadServicio" value="#{visitaController.selected.puntualidadServicio}"/>
+                                    <p:rating id="puntualidadServicio" value="#{visitaProductoController.visitaGET.puntualidadServicio}"/>
                                 </p:panelGrid>
                                 <p:panelGrid columns="1">
                                     <p:outputLabel value="#{bundle.EditVisitaLabel_cumplioExpectativas}" for="cumplioExpectativas" />
-                                    <p:selectBooleanCheckbox id="cumplioExpectativas" value="#{visitaController.selected.cumplioExpectativas}" required="true" requiredMessage="#{bundle.EditVisitaRequiredMessage_cumplioExpectativas}"/>
+                                    <p:selectBooleanCheckbox id="cumplioExpectativas" value="#{visitaProductoController.visitaGET.cumplioExpectativas}" required="true" requiredMessage="#{bundle.EditVisitaRequiredMessage_cumplioExpectativas}"/>
                                 </p:panelGrid>
 
                             </p:panelGrid>
                             <p:panelGrid columns="2">
                                 <p:outputLabel value="#{bundle.CreateObservacionLabel_producto}" for="observacion" />
-                                <p:inputTextarea id="observacion" value="#{visitaController.selected.observacionesCliente}" style="width: 415px;"/>
+                                <p:inputTextarea id="observacion" value="#{visitaProductoController.visitaGET.observacionesCliente}" style="width: 415px;"/>
                             </p:panelGrid>
                         </p:panelGrid>
                     </p:panel><br/>
                     <p:panel header="Productos" style="overflow-y: auto;">
-                        <p:panelGrid columns="1">
-                            <p:panelGrid columns="5">
+                        <p:panelGrid columns="2">
+                            <p:panelGrid columns="5" id="tablaProductoVisita">
                                 <p:outputLabel value="#{bundle.CreateProductoLabel_producto}"/>
 
-                                <p:autoComplete id="producto" minQueryLength="3" value="#{visitaController.visitaProducto.producto}" itemValue="#{pro}" 
+                                <p:autoComplete id="producto" minQueryLength="3" value="#{visitaProductoController.visitaProducto.producto}" itemValue="#{pro}" 
                                                 completeMethod="#{promocionController.llenarProducto}" effect="fade" converter="productoconverter" itemLabel="#{pro.toString()}" var="pro" />
 
                                 <p:outputLabel value="#{bundle.CreateCantidadLabel_producto}" for="cantidad" />
-                                <p:inputText id="cantidad" value="#{visitaController.visitaProducto.cantidad}"/>
+                                <p:inputText id="cantidad" value="#{visitaProductoController.visitaProducto.cantidad}" style="width: 60px;"/>
 
-                                <p:commandButton value="#{bundle.AddItem}" icon="ui-icon-plus"
-                                                 actionListener="#{visitaController.addVisitaProducto()}" update="datalistTMP"/>
+                                <p:commandButton value="#{bundle.AddItem}" icon="ui-icon-plus" process="tablaProductoVisita"
+                                                 actionListener="#{visitaProductoController.addVisitaProducto()}" update="datalistTMP,tablaProductoVisita"/>
                             </p:panelGrid>
 
-                            <p:dataTable id="datalistTMP" value="#{visitaController.itemsTMP}" var="itemTMP"
-                                         paginator="true"
-                                         rowKey="#{itemTMP.id}"
-                                         rows="3"
-                                         emptyMessage="#{bundle.EmptyTable}"
-                                         paginatorPosition="bottom" >
-                                <p:column>
-                                    <f:facet name="header">
-                                        <h:outputText value="Producto"/>
-                                    </f:facet>
-                                    <h:outputText value="#{itemTMP.producto.toString()}"/>
-                                </p:column>
-                                <p:column width="80">
-                                    <f:facet name="header">
-                                        <h:outputText value="#{bundle.RemoveItem}"/>
-                                    </f:facet>
-                                    <h:outputText value="#{itemTMP.cantidad}"/>
-                                </p:column>
-                                <p:column style="text-align: center;" width="80">
-                                    <f:facet name="header">
-                                        <h:outputText value="Quitar"/>
-                                    </f:facet>
-                                    <p:commandButton icon="ui-icon-closethick" update="datalistTMP" actionListener="#{visitaController.removeVisitaProducto(itemTMP)}"/>
-                                </p:column>
-                            </p:dataTable>
-
+                            <p:panelGrid columns="1">
+                                <p:dataTable id="datalistTMP" value="#{visitaProductoController.itemsTMP}" var="itemTMP"
+                                             paginator="true"
+                                             rowKey="#{itemTMP.id}"
+                                             rows="3"
+                                             emptyMessage="#{bundle.EmptyTable}"
+                                             paginatorPosition="bottom" >
+                                    <p:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Producto"/>
+                                        </f:facet>
+                                        <h:outputText value="#{itemTMP.producto.toString()}"/>
+                                    </p:column>
+                                    <p:column width="80">
+                                        <f:facet name="header">
+                                            <h:outputText value="#{bundle.CreateDevolucionProductoTitle_cantidad}"/>
+                                        </f:facet>
+                                        <h:outputText value="#{itemTMP.cantidad}"/>
+                                    </p:column>
+                                    <p:column style="text-align: center;" width="80">
+                                        <f:facet name="header">
+                                            <h:outputText value="Quitar"/>
+                                        </f:facet>
+                                        <p:commandButton icon="ui-icon-closethick" update="datalistTMP" actionListener="#{visitaProductoController.removeVisitaProducto(itemTMP)}"/>
+                                    </p:column>
+                                </p:dataTable>
+                            </p:panelGrid>
                         </p:panelGrid>
                     </p:panel>
                 </h:panelGroup>
                 <div class="botonesDialog">
-                    <p:commandButton icon="ui-icon-disk" value="#{bundle.Save}" action="#{visitaController.createVisitaProducto()}"/>
+                    <p:commandButton icon="ui-icon-disk" value="#{bundle.Save}" action="#{visitaProductoController.createVisitaProducto()}"/>
                 </div>
             </h:form>
         </ui:define>

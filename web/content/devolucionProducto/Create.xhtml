@@ -31,7 +31,7 @@
                                 <p:ajax event="dateSelect" update=":formAbonoFactura" />
                             </p:calendar>
                             <p:outputLabel value="#{bundle.CreateVisitaLabel_cliente}" for="cliente"/>
-                            <p:autoComplete size="18" id="cliente" minQueryLength="3" panelStyle="width: 210px;" value="#{devolucionController.selected.cliente}"
+                            <p:autoComplete size="18" id="cliente" minQueryLength="3" panelStyle="width: 210px;" value="#{devolucionController.selected.cliente}" requiredMessage="#{bundle.EditTalonarioRequiredMessage_cli}"
                                             itemValue="#{cliente}" completeMethod="#{clienteController.llenarCliente}" effect="fade" converter="clienteconverter" emptyMessage="Ingrese un Cliente válido"
                                             itemLabel="#{cliente.toString()}" var="cliente" required="true" converterMessage="Ingrese un Cliente válido" validatorMessage="Ingrese un Cliente válido">
                                 <p:ajax event="itemSelect" listener="#{devolucionController.onItemSelecCliente}" update="botonAbono" />

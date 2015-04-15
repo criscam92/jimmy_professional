@@ -31,7 +31,8 @@
                             Usuarios
                         </div>
                         <div id="acciones">
-                            <p:commandButton id="createButton" icon="ui-icon-plus"   value="#{bundle.Create}" actionListener="#{usuarioController.prepareCreate}" oncomplete="PF('UsuarioCreateDialog').show()"/>
+                            <p:commandButton id="createButton" icon="ui-icon-plus"   value="#{bundle.Create}" update=":UsuarioCreateForm"
+                                             actionListener="#{usuarioController.prepareCreate}" oncomplete="PF('UsuarioCreateDialog').show()"/>
                             <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":UsuarioEditForm" oncomplete="PF('UsuarioEditDialog').show()" disabled="#{empty usuarioController.selected}"/>
                             <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{usuarioController.destroy}" update=":growl,datalist" disabled="#{empty usuarioController.selected}"/>
                         </div>
@@ -45,6 +46,12 @@
                             <h:outputText value="#{bundle.ListUsuarioTitle_usuario}"/>
                         </f:facet>
                         <h:outputText value="#{item.usuario}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.EditTalonarioTitle_emp}"/>
+                        </f:facet>
+                        <h:outputText value="#{item.empleado.toString()}"/>
                     </p:column>
                     <p:column>
                         <f:facet name="header">

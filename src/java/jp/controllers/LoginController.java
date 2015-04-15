@@ -89,6 +89,7 @@ public class LoginController implements Serializable {
         String url = ((HttpServletRequest) FacesContext.getCurrentInstance()
                 .getExternalContext().getRequest()).getContextPath()
                 .concat("/faces/content/content/?").concat(LOGOUT_PARAM);
+        user = null;
         try {
             FacesContext.getCurrentInstance().getExternalContext().redirect(url);
         } catch (IOException ex) {

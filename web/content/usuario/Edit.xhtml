@@ -32,6 +32,13 @@
                                     requiredMessage="#{bundle.EditUsuarioRequiredMessage_contrasena2}"
                                     validatorMessage="#{bundle.EditUsuarioValidatorMessage_contrasena2}" />
 
+                        <p:outputLabel value="#{bundle.CreateVisitaLabel_empleado}" for="empleado" />
+                        <p:autoComplete id="empleado" minQueryLength="3" panelStyle="width: 146px;" value="#{usuarioController.selected.empleado}" itemValue="#{empleado}" 
+                                        completeMethod="#{empleadoController.llenarEmpleado}" effect="fade" converter="empleadoconverter"
+                                        itemLabel="#{empleado.toString()}" var="empleado" required="true" requiredMessage="#{bundle.EditTalonarioRequiredMessage_emp}">
+                            <p:ajax event="itemSelect" listener="#{usuarioController.onItemSelectEmpleado}" update=":growl, empleado" />
+                        </p:autoComplete>
+
                         <p:outputLabel value="#{bundle.EditUsuarioLabel_tipo}" for="tipo" />
                         <p:selectOneMenu id="tipo" value="#{usuarioController.selected.tipo}" style="width: 155px" requiredMessage="#{bundle.EditUsuarioRequiredMessage_tipo}">  
                             <f:selectItems value="#{usuarioController.tipoUsuarios}"/>

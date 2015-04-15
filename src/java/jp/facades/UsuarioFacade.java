@@ -5,6 +5,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import jp.entidades.Empleado;
 import jp.entidades.Usuario;
 import jp.seguridad.Encrypt;
 
@@ -59,4 +60,16 @@ public class UsuarioFacade extends AbstractFacade<Usuario> {
         return usuario;
     }
     
+    public Empleado empleadoUsuarioExist(Empleado e){
+        try {
+            Empleado empleado;
+            Query q = getEntityManager().createQuery("SELECT u.empleado FROM Usuario u WHERE u.empleado.id= :emp");
+            q.setParameter("emp", e.getId());
+            q.setMaxResults(1);
+            empleado = (Empleado) q.getSingleResult();
+            return empleado;
+        } catch (NoResultException exc) {
+            return null;
+        }
+    }
 }

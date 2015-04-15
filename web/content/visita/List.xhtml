@@ -25,22 +25,25 @@
                              paginatorPosition="bottom"
                              >
 
-                    <p:ajax event="rowSelect"   update="productos createButton viewButton editButton deleteButton"/>
-                    <p:ajax event="rowUnselect" update="productos createButton viewButton editButton deleteButton"/>
+                    <p:ajax event="rowSelect"   update="productos createButton viewButton editButton deleteButton botonReporte"/>
+                    <p:ajax event="rowUnselect" update="productos createButton viewButton editButton deleteButton botonReporte"/>
 
                     <f:facet name="header">
                         <div id="titulo">
                             Programación de Visitas
                         </div>
                         <div id="acciones">
-                            <p:commandButton id="createButton" icon="ui-icon-plus"   value="#{bundle.Create}" actionListener="#{visitaController.prepareCreate}" update=":VisitaCreateForm" oncomplete="PF('VisitaCreateDialog').show()"/>
-                            <p:commandButton id="viewButton"   icon="ui-icon-search" value="#{bundle.View}" actionListener="#{visitaProductoController.getProductosByVisita(visitaController.selected)}" 
+                            <p:commandButton id="createButton" icon="ui-icon-plus" value="#{bundle.Create}" actionListener="#{visitaController.prepareCreate}"
+                                             update=":VisitaCreateForm" oncomplete="PF('VisitaCreateDialog').show()" rendered="#{loginController.admin}"/>
+                            <p:commandButton id="viewButton"   icon="ui-icon-search" value="#{bundle.View}" actionListener="#{visitaController.getProductosByVisita(visitaController.selected)}" 
                                              update=":VisitaViewForm,:VisitaViewForm:tablaProductosByVisita" oncomplete="PF('VisitaViewDialog').show()" 
                                              disabled="#{empty visitaController.selected}"/>
-                            <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":VisitaEditForm" oncomplete="PF('VisitaEditDialog').show()" disabled="#{empty visitaController.selected || visitaController.disableRealizarVisita()}"/>
-                            <p:commandButton id="deleteButton" icon="ui-icon-alert" value="#{bundle.Anull}" actionListener="#{visitaController.anullVisitaProducto()}"
-                                             update=":growl,datalist" disabled="#{visitaController.disableAnularVisita()}"/>
-                                
+                            <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":VisitaEditForm" oncomplete="PF('VisitaEditDialog').show()"
+                                             disabled="#{empty visitaController.selected || visitaController.disableRealizarVisita()}" rendered="#{loginController.admin}"/>
+                            <p:commandButton id="deleteButton" icon="ui-icon-alert" value="#{bundle.Anull}" actionListener="#{visitaController.anullVisita()}"
+                                             update=":growl,datalist" disabled="#{visitaController.disableReporteYAnular()}" rendered="#{loginController.admin}"/>
+                            <p:commandButton id="botonReporte" ajax="false" value="#{bundle.Reporte}" icon="ui-icon-document" actionListener="#{visitaController.generarReporte}"
+                                             disabled="#{empty visitaController.selected || visitaController.disableReporteYAnular()}" /> 
                             <p:commandButton id="productos" value="#{bundle.MessageRealizarVisita}" icon="ui-icon-check" action="#{visitaController.redireccionarVisita(visitaController.selected)}"
                                              disabled="#{empty visitaController.selected || visitaController.disableRealizarVisita()}" /> 
                         </div>
@@ -90,22 +93,19 @@
                         </f:facet>
                         <h:outputText value="#{visitaController.getEstadoVisita(item.estado)}"/>
                     </p:column>                    
-                    <p:column>
-                        <f:facet name="header">
-                            <h:outputText value="#{bundle.ProcedimientoTitle}"/>
+                    <p:column filterBy="#{item.procedimiento}" headerText="#{bundle.ProcedimientoTitle}" filterMatchMode="exact">
+                        <f:facet name="filter">
+                            <p:selectOneMenu onchange="PF('tblVisita').filter()" >
+                                <f:selectItem itemLabel="#{bundle.All}" itemValue="#{null}" noSelectionOption="true" />
+                                <f:selectItems value="#{procedimientoController.itemsAvailableSelectOne}" />
+                            </p:selectOneMenu>
                         </f:facet>
                         <h:outputText value="#{item.procedimiento.toString()}"/>
-                    </p:column>                    
-                    <p:column>
-                        <f:facet name="header">
-                            <h:outputText value="#{bundle.ListVisitaTitle_cliente}"/>
-                        </f:facet>
+                    </p:column>
+                    <p:column filterBy="#{item.cliente}" filterMatchMode="contains" headerText="#{bundle.ListVisitaTitle_cliente}" filterStyle="width: 70px">
                         <h:outputText value="#{item.cliente.toString()}"/>
-                    </p:column>                    
-                    <p:column>
-                        <f:facet name="header">
-                            <h:outputText value="#{bundle.ListVisitaTitle_empleado}"/>
-                        </f:facet>
+                    </p:column>
+                    <p:column filterBy="#{item.empleado}" filterMatchMode="contains" headerText="#{bundle.ListVisitaTitle_empleado}" filterStyle="width: 70px">
                         <h:outputText value="#{item.empleado.toString()}"/>
                     </p:column>
                 </p:dataTable>

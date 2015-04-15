@@ -6,36 +6,61 @@ import jp.util.JsfUtil.PersistAction;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.faces.bean.ViewScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import jp.entidades.Visita;
 import jp.facades.TransactionFacade;
+import jp.facades.VisitaFacade;
 import jp.facades.VisitaProductoFacade;
 
 @ManagedBean(name = "visitaProductoController")
-@SessionScoped
+@ViewScoped
 public class VisitaProductoController implements Serializable {
 
     @EJB
     private jp.facades.VisitaProductoFacade ejbFacade;
     @EJB
+    private jp.facades.VisitaFacade visitaFacade;
+    @EJB
     private jp.facades.TransactionFacade ejbTransactionFacade;
-    
     private List<VisitaProducto> items = null;
     private List<VisitaProducto> itemsTMP = null;
     private VisitaProducto selected;
+    private Visita visitaGET;
+    private VisitaProducto visitaProducto;
 
     public VisitaProductoController() {
         itemsTMP = new ArrayList<>();
+    }
+
+    @PostConstruct
+    public void init() {
+        Map<String, String> requestMap = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+        try {
+            FacesContext.getCurrentInstance().getExternalContext().getSession(true);
+            Long idVisita = Long.parseLong((String) requestMap.get("visita"));
+            System.out.println("Se recibe la visitaGET===> " + idVisita);
+            visitaGET = getVisitaFacade().find(idVisita);
+
+            System.out.println("Calif-> " + visitaGET.getCalificacionServicio());
+            System.out.println("Observ-> " + visitaGET.getObservacionesCliente());
+        } catch (NumberFormatException nfe) {
+            System.out.println("No se recibió parametro por GET en VisiContr");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        visitaProducto = new VisitaProducto();
     }
 
     public VisitaProducto getSelected() {
@@ -44,6 +69,26 @@ public class VisitaProductoController implements Serializable {
 
     public void setSelected(VisitaProducto selected) {
         this.selected = selected;
+    }
+
+    public Visita getVisitaGET() {
+        return visitaGET;
+    }
+
+    public void setVisitaGET(Visita visitaGET) {
+        this.visitaGET = visitaGET;
+    }
+
+    public VisitaProducto getVisitaProducto() {
+        return visitaProducto;
+    }
+
+    public void setVisitaProducto(VisitaProducto visitaProducto) {
+        this.visitaProducto = visitaProducto;
+    }
+
+    public VisitaFacade getVisitaFacade() {
+        return visitaFacade;
     }
 
     public List<VisitaProducto> getItemsTMP() {
@@ -176,33 +221,46 @@ public class VisitaProductoController implements Serializable {
         }
 
     }
-    
-    public List<VisitaProducto> getProductosByVisita(Visita visita){
-        try {
-            itemsTMP = getFacade().getProductosByVisita(visita);
-            return getFacade().getProductosByVisita(visita);
-        } catch (Exception e) {
-            e.printStackTrace();
+
+    public void createVisitaProducto() {
+        if (visitaGET != null) {
+            if (getEjbTransactionFacade().createVisitaProducto(itemsTMP, visitaGET)) {
+                if (!JsfUtil.isValidationFailed()) {
+                    selected = null; // Remove selection
+                    items = null;    // Invalidate list of items to trigger re-query.
+                    itemsTMP.clear();
+//                    redireccionarFormulario();
+                    JsfUtil.addSuccessMessage(JsfUtil.getMessageBundle("MessageVisitaProducto"));
+                    JsfUtil.redirect("List.xhtml");
+                }
+            } else {
+                JsfUtil.addErrorMessage(JsfUtil.getMessageBundle("ErrorCreateVisitaProducto"));
+            }
         }
-        return null;
     }
-    
-    public void addDevolucionProducto() {
-        VisitaProducto visitaProducto = new VisitaProducto();
-        visitaProducto.setVisita(selected.getVisita());
-        visitaProducto.setProducto(selected.getProducto());
-        visitaProducto.setCantidad(selected.getCantidad());
 
-        System.out.println("====>" + visitaProducto);
-        itemsTMP.add(visitaProducto);
+    public void addVisitaProducto() {
+        if (visitaProducto.getProducto() != null && visitaProducto.getCantidad() != null && visitaProducto.getCantidad() > 0) {
+            VisitaProducto visitaProductoTMP = new VisitaProducto();
+            visitaProductoTMP.setCantidad(visitaProducto.getCantidad());
+            visitaProductoTMP.setProducto(visitaProducto.getProducto());
+            visitaProductoTMP.setVisita(visitaGET);
+            visitaProductoTMP.setId(itemsTMP.size() + 1l);
 
+            itemsTMP.add(visitaProductoTMP);
+            cleanVisitaProducto();
+        } else {
+            JsfUtil.addWarnMessage("Debe agregar Productos a la Visita");
+        }
     }
-    
-    public void removeVisitaProducto(VisitaProducto visitaProducto) {
-        System.out.println("Tamano de lista antes de eliminar-> " + itemsTMP.size());
 
-        itemsTMP.remove(visitaProducto);
+    public void removeVisitaProducto(VisitaProducto visitaProductoArg) {
+        itemsTMP.remove(visitaProductoArg);
+    }
 
+    private void cleanVisitaProducto() {
+        visitaProducto.setProducto(null);
+        visitaProducto.setCantidad(null);
     }
 
 }

@@ -16,10 +16,12 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import jp.entidades.Empleado;
 import jp.facades.UsuarioFacade;
 import jp.seguridad.Encrypt;
 import jp.util.TipoUsuario;
 import org.primefaces.context.RequestContext;
+import org.primefaces.event.SelectEvent;
 
 @ManagedBean(name = "usuarioController")
 @SessionScoped
@@ -227,5 +229,16 @@ public class UsuarioController implements Serializable {
             }
         }
         return true;
+    }
+    
+    public void onItemSelectEmpleado(SelectEvent event) {
+        Empleado e = (Empleado) event.getObject();
+        Empleado empleadoTMP;
+        empleadoTMP = getFacade().empleadoUsuarioExist(e);
+        if (empleadoTMP != null) {
+            JsfUtil.addWarnMessage("El Empleado "+e.toString()+" ya tiene un Usuario asignado");
+            selected.setEmpleado(null);
+            selected.setEmpleado(empleadoTMP);
+        }
     }
 }

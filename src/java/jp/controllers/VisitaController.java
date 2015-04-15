@@ -1,5 +1,7 @@
 package jp.controllers;
 
+import java.io.File;
+import java.io.IOException;
 import jp.entidades.Visita;
 import jp.util.JsfUtil;
 import jp.util.JsfUtil.PersistAction;
@@ -7,28 +9,36 @@ import jp.util.JsfUtil.PersistAction;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.faces.bean.ViewScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import javax.faces.event.ActionEvent;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import jp.entidades.Factura;
 import jp.entidades.VisitaProducto;
 import jp.facades.TransactionFacade;
 import jp.facades.VisitaFacade;
 import jp.facades.VisitaProductoFacade;
 import jp.util.EstadoVisita;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
 @ManagedBean(name = "visitaController")
-@SessionScoped
+@ViewScoped
 public class VisitaController implements Serializable {
 
     @EJB
@@ -39,8 +49,7 @@ public class VisitaController implements Serializable {
     private jp.facades.TransactionFacade ejbTransactionFacade;
     private List<Visita> items = null;
     private List<VisitaProducto> itemsTMP = null;
-    private VisitaProducto visitaProducto;
-    private Visita visita;
+
     private List<EstadoVisita> estadoVisitasFilter = null;
 
     private Visita selected;
@@ -49,35 +58,12 @@ public class VisitaController implements Serializable {
         itemsTMP = new ArrayList<>();
     }
 
-    @PostConstruct
-    public void init() {
-        Map<String, String> requestMap = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-        try {
-            FacesContext.getCurrentInstance().getExternalContext().getSession(true);
-            Long idVisita = Long.parseLong((String) requestMap.get("visita"));
-            visita = getFacade().find(idVisita);
-            
-            System.out.println("Calif-> "+visita.getCalificacionServicio());
-        } catch (Exception e) {
-            System.out.println("No se recibió parametro por GET en VisiContr");
-        }
-        visitaProducto = new VisitaProducto();
-    }
-
     public Visita getSelected() {
         return selected;
     }
 
     public void setSelected(Visita selected) {
         this.selected = selected;
-    }
-
-    public VisitaProducto getVisitaProducto() {
-        return visitaProducto;
-    }
-
-    public void setVisitaProducto(VisitaProducto visitaProducto) {
-        this.visitaProducto = visitaProducto;
     }
 
     public List<VisitaProducto> getItemsTMP() {
@@ -233,6 +219,21 @@ public class VisitaController implements Serializable {
             }
         }
     }
+    
+    /**
+     * 
+     * @param visita 
+     * @return Lista de productos incluidos en la visita
+     */
+    public List<VisitaProducto> getProductosByVisita(Visita visita){
+        try {
+            itemsTMP = getEjbVisitaProductoFacade().getProductosByVisita(visita);
+            return getEjbVisitaProductoFacade().getProductosByVisita(visita);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     public EstadoVisita[] getEstadosVisita() {
         return EstadoVisita.values();
@@ -251,48 +252,11 @@ public class VisitaController implements Serializable {
         return date;
     }
 
-    public void addVisitaProducto() {
-        if (visitaProducto.getProducto() != null && visitaProducto.getCantidad() != null && visitaProducto.getCantidad() > 0) {
-            VisitaProducto visitaProductoTMP = new VisitaProducto();
-            visitaProductoTMP.setCantidad(visitaProducto.getCantidad());
-            visitaProductoTMP.setProducto(visitaProducto.getProducto());
-            visitaProductoTMP.setVisita(selected);
-            visitaProductoTMP.setId(itemsTMP.size() + 1l);
-
-            itemsTMP.add(visitaProductoTMP);
-        }
-    }
-
-    public void removeVisitaProducto(VisitaProducto visitaProductoArg) {
-        itemsTMP.remove(visitaProductoArg);
-    }
-
-    public void createVisitaProducto() {
-        if (selected != null) {
-            if (getEjbTransactionFacade().createVisitaProducto(itemsTMP, selected)) {
-                JsfUtil.addSuccessMessage(JsfUtil.getMessageBundle("MessageVisitaProducto"));
-                if (!JsfUtil.isValidationFailed()) {
-                    selected = null; // Remove selection
-                    items = null;    // Invalidate list of items to trigger re-query.
-                    itemsTMP.clear();
-                    redireccionarFormulario();
-                }
-            } else {
-                JsfUtil.addErrorMessage(JsfUtil.getMessageBundle("ErrorCreateVisitaProducto"));
-            }
-        }
-    }
-
     public boolean disableRealizarVisita() {
-        boolean disable = false;
-        if (selected != null && selected.getEstado() == EstadoVisita.PENDIENTE.getValor()) {
-            disable = false;
-        } else {
-            disable = true;
-        }
-        return disable;
+        return !(selected != null && selected.getEstado() == EstadoVisita.PENDIENTE.getValor());
     }
 
+    @Deprecated
     public boolean disableAnularVisita() {
         boolean disable = false;
         if (selected != null && selected.getEstado() == EstadoVisita.REALIZADA.getValor()) {
@@ -303,7 +267,11 @@ public class VisitaController implements Serializable {
         return disable;
     }
 
-    public void anullVisitaProducto() {
+    public boolean disableReporteYAnular() {
+        return !(selected != null && selected.getEstado() == EstadoVisita.REALIZADA.getValor());
+    }
+
+    public void anullVisita() {
         if (!JsfUtil.isValidationFailed() && getEjbTransactionFacade().anullVisitaProducto(selected)) {
             JsfUtil.addSuccessMessage(JsfUtil.getMessageBundle(new String[]{"MessageVisita", "AnullSuccessF"}));
             selected = null; // Remove selection
@@ -314,17 +282,67 @@ public class VisitaController implements Serializable {
     public EstadoVisita[] getEstadosVisitas() {
         return EstadoVisita.getFromValue(new Integer[]{0, 2});
     }
-    
-    public String redireccionarVisita(Visita visita){
+
+    public String redireccionarVisita(Visita visita) {
         selected = visita;
-        return "AddProductosByVisita.xhtml?visita="+visita.getId()+"faces-redirect=true";
+        return "AddProductosByVisita.xhtml?visita=" + visita.getId() + "faces-redirect=true";
     }
-    
-    public void redireccionarFormulario(){
+
+    @Deprecated
+    public void redireccionarFormulario() {
         try {
             FacesContext.getCurrentInstance().getExternalContext().redirect("List.xhtml");
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+    
+    public void generarReporte(ActionEvent actionEvent) {
+        Visita visita = getFacade().getVisitaById(selected.getId());
+
+        if (visita != null) {
+            File reporte1 = new File(JsfUtil.getRutaReporte("visita.jasper"));
+            File reporte2 = new File(JsfUtil.getRutaReporte("subReporteProductos.jasper"));
+
+            if (reporte1.exists() && reporte2.exists()) {
+                List<Visita> visitas = new ArrayList<>();
+                visitas.add(visita);
+
+                JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(visitas);
+
+                HashMap map = new HashMap();
+                //map.put("venta", "" + getCantidadVentasOrBonificacionesByFactura(visita, 1));
+                //map.put("bonificacion", "" + getCantidadVentasOrBonificacionesByFactura(visita, 2));
+
+                try {
+                    JasperPrint jasperPrint = JasperFillManager.fillReport(reporte1.getPath(), map, dataSource);
+
+                    HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
+                    response.addHeader("Content-disposition", "attachment; filename=Visita.pdf");
+                    ServletOutputStream sos = response.getOutputStream();
+                    JasperExportManager.exportReportToPdfStream(jasperPrint, sos);
+                    FacesContext.getCurrentInstance().responseComplete();
+                } catch (JRException | IOException e) {
+                    JsfUtil.addErrorMessage("Ha ocurrido un error durante la generacion"
+                            + " del reporte, Por favor intente de nuevo, si el error persiste"
+                            + " comuniquese con el administrador del sistema");
+
+                    e.printStackTrace();
+                }
+
+            } else {
+                if (reporte1.exists()) {
+                    JsfUtil.addErrorMessage("No existe el archivo " + reporte1.getName());
+                }
+                if (reporte2.exists()) {
+                    JsfUtil.addErrorMessage("No existe el archivo " + reporte2.getName());
+                }
+            }
+
+        } else {
+            JsfUtil.addErrorMessage("Seleccione la Visita que desea imprimir");
+        }
+
+    }
+
 }

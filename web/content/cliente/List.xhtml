@@ -113,7 +113,7 @@
                     </p:column>
                     <p:column filterBy="#{item.categoria}" headerText="#{bundle.CreateClienteTitle_cat}" filterMatchMode="exact">
                         <f:facet name="filter">
-                            <p:selectOneMenu onchange="PF('tablaClientes').filter()" >
+                            <p:selectOneMenu onchange="PF('tablaClientes').filter()" style="width: 90px;">
                                 <f:selectItem itemLabel="#{bundle.All}" itemValue="#{null}" noSelectionOption="true" />
                                 <f:selectItems value="#{categoriaController.itemsAvailableSelectOne}" />
                             </p:selectOneMenu>

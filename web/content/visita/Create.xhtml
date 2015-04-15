@@ -13,21 +13,20 @@
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{visitaController.selected != null}">
                         <p:outputLabel value="#{bundle.CreateVisitaLabel_fecha}" for="fecha" />
-                        <p:calendar mindate="#{visitaController.fechaActual}" id="fecha" pattern="MM/dd/yyyy HH:mm:ss" value="#{visitaController.selected.fecha}" title="#{bundle.EditVisitaTitle_fecha}" required="true" requiredMessage="#{bundle.EditVisitaRequiredMessage_fecha}" showOn="button"/>
+                        <p:calendar size="25" mindate="#{visitaController.fechaActual}" id="fecha" pattern="MM/dd/yyyy HH:mm:ss" value="#{visitaController.selected.fecha}" title="#{bundle.EditVisitaTitle_fecha}" required="true" requiredMessage="#{bundle.EditVisitaRequiredMessage_fecha}" showOn="button"/>
                         <p:outputLabel value="#{bundle.CreateVisitaLabel_cliente}" for="cliente" />
-                        <p:selectOneMenu id="cliente" value="#{visitaController.selected.cliente}" required="true" requiredMessage="#{bundle.EditVisitaRequiredMessage_cliente}">
-                            <f:selectItems value="#{clienteController.itemsAvailableSelectOne}"
-                                           var="clienteItem"
-                                           itemValue="#{clienteItem}"/>
-                        </p:selectOneMenu>
+                        <p:autoComplete size="25" id="cliente" minQueryLength="3" value="#{visitaController.selected.cliente}" requiredMessage="#{bundle.EditTalonarioRequiredMessage_cli}"
+                                        itemValue="#{cliente}" completeMethod="#{clienteController.llenarCliente}" effect="fade" converter="clienteconverter" 
+                                        emptyMessage="Ingrese un Cliente válido" itemLabel="#{cliente.toString()}" var="cliente" required="true"
+                                        converterMessage="Ingrese un Cliente válido" validatorMessage="Ingrese un Cliente válido"/>
+
                         <p:outputLabel value="#{bundle.CreateVisitaLabel_empleado}" for="empleado" />
-                        <p:selectOneMenu id="empleado" value="#{visitaController.selected.empleado}" required="true" requiredMessage="#{bundle.EditVisitaRequiredMessage_empleado}">
-                            <f:selectItems value="#{empleadoController.itemsAvailableSelectOne}"
-                                           var="empleadoItem"
-                                           itemValue="#{empleadoItem}"/>
-                        </p:selectOneMenu>
+                        <p:autoComplete size="25" id="empleado" minQueryLength="3" value="#{visitaController.selected.empleado}" 
+                                        itemValue="#{empleado}" completeMethod="#{empleadoController.llenarEmpleado}" effect="fade" converter="empleadoconverter"
+                                        itemLabel="#{empleado.toString()}" var="empleado" required="true" requiredMessage="#{bundle.EditTalonarioRequiredMessage_emp}"/>
                         <p:outputLabel value="#{bundle.CreateProcedimientoTitle}" for="procedimiento" />
-                        <p:selectOneMenu id="procedimiento" value="#{visitaController.selected.procedimiento}" required="true" requiredMessage="#{bundle.MessageProcedimientoRequired}">
+                        <p:selectOneMenu id="procedimiento" value="#{visitaController.selected.procedimiento}" required="true" 
+                                         requiredMessage="#{bundle.MessageProcedimientoRequired}" style="width: 184px;">
                             <f:selectItems value="#{procedimientoController.itemsAvailableSelectOne}"
                                            var="procedimientoItem"
                                            itemValue="#{procedimientoItem}"/>
