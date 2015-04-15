@@ -5,7 +5,6 @@ import java.io.IOException;
 import jp.entidades.Visita;
 import jp.util.JsfUtil;
 import jp.util.JsfUtil.PersistAction;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -23,9 +22,9 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import javax.faces.event.ActionEvent;
+import javax.inject.Inject;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
-import jp.entidades.Factura;
 import jp.entidades.VisitaProducto;
 import jp.facades.TransactionFacade;
 import jp.facades.VisitaFacade;
@@ -45,6 +44,8 @@ public class VisitaController implements Serializable {
     private jp.facades.VisitaFacade ejbFacade;
     @EJB
     private jp.facades.VisitaProductoFacade ejbVisitaProductoFacade;
+    @Inject
+    private jp.seguridad.UsuarioActual usuarioActual;
     @EJB
     private jp.facades.TransactionFacade ejbTransactionFacade;
     private List<Visita> items = null;
@@ -139,7 +140,7 @@ public class VisitaController implements Serializable {
 
     public List<Visita> getItems() {
         if (items == null) {
-            items = getFacade().findAll();
+            items = getFacade().findVisitasByEmpleado(usuarioActual.get().getEmpleado(), usuarioActual.isAdmin());
         }
         return items;
     }

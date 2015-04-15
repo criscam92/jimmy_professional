@@ -35,11 +35,11 @@
                         <div id="acciones">
                             <p:commandButton id="createButton" icon="ui-icon-plus" value="#{bundle.Create}" actionListener="#{visitaController.prepareCreate}"
                                              update=":VisitaCreateForm" oncomplete="PF('VisitaCreateDialog').show()" rendered="#{loginController.admin}"/>
-                            <p:commandButton id="viewButton"   icon="ui-icon-search" value="#{bundle.View}" actionListener="#{visitaController.getProductosByVisita(visitaController.selected)}" 
+                            <p:commandButton id="viewButton" icon="ui-icon-search" value="#{bundle.View}" actionListener="#{visitaController.getProductosByVisita(visitaController.selected)}" 
                                              update=":VisitaViewForm,:VisitaViewForm:tablaProductosByVisita" oncomplete="PF('VisitaViewDialog').show()" 
                                              disabled="#{empty visitaController.selected}"/>
-                            <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":VisitaEditForm" oncomplete="PF('VisitaEditDialog').show()"
-                                             disabled="#{empty visitaController.selected || visitaController.disableRealizarVisita()}" rendered="#{loginController.admin}"/>
+                            <p:commandButton id="editButton" icon="ui-icon-pencil" value="#{bundle.Edit}" update=":VisitaEditForm" oncomplete="PF('VisitaEditDialog').show()"
+                                             disabled="#{empty visitaController.selected}" rendered="#{loginController.admin}"/>
                             <p:commandButton id="deleteButton" icon="ui-icon-alert" value="#{bundle.Anull}" actionListener="#{visitaController.anullVisita()}"
                                              update=":growl,datalist" disabled="#{visitaController.disableReporteYAnular()}" rendered="#{loginController.admin}"/>
                             <p:commandButton id="botonReporte" ajax="false" value="#{bundle.Reporte}" icon="ui-icon-document" actionListener="#{visitaController.generarReporte}"

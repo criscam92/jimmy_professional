@@ -232,13 +232,17 @@ public class UsuarioController implements Serializable {
     }
     
     public void onItemSelectEmpleado(SelectEvent event) {
+        
         Empleado e = (Empleado) event.getObject();
+        
         Empleado empleadoTMP;
-        empleadoTMP = getFacade().empleadoUsuarioExist(e);
+        
+        empleadoTMP = getFacade().empleadoUsuarioExist(e, selected);
+        
         if (empleadoTMP != null) {
             JsfUtil.addWarnMessage("El Empleado "+e.toString()+" ya tiene un Usuario asignado");
             selected.setEmpleado(null);
-            selected.setEmpleado(empleadoTMP);
+//            selected.setEmpleado(empleadoTMP);
         }
     }
 }

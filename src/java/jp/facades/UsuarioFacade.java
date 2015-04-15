@@ -60,7 +60,7 @@ public class UsuarioFacade extends AbstractFacade<Usuario> {
         return usuario;
     }
     
-    public Empleado empleadoUsuarioExist(Empleado e){
+    public Empleado empleadoUsuarioExist(Empleado e, Usuario u){
         try {
             Empleado empleado;
             Query q = getEntityManager().createQuery("SELECT u.empleado FROM Usuario u WHERE u.empleado.id= :emp");

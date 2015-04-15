@@ -5,6 +5,7 @@
  */
 package jp.seguridad;
 
+import javax.ejb.Stateless;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
@@ -17,12 +18,18 @@ import jp.entidades.Usuario;
  */
 @ManagedBean(name = "currentUser")
 @SessionScoped
+@Stateless
 public class UsuarioActual {
     
     private Usuario usuario;
+
+    public void set(Usuario usuario) {
+        this.usuario = usuario;
+    }
     
     public Usuario get(){
-        if(usuario==null){
+        if (usuario == null && FacesContext.getCurrentInstance().getExternalContext()
+                .getSessionMap().get(LoginController.AUTH_KEY) != null) {
             usuario = (Usuario) FacesContext.getCurrentInstance().getExternalContext()
                     .getSessionMap().get(LoginController.AUTH_KEY);
         }

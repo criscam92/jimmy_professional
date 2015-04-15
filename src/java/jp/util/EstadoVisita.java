@@ -34,7 +34,6 @@ public enum EstadoVisita {
             estadoVisitasTMP[count] = getFromValue(b);
             count++;
         }
-        System.out.println("Size-> "+estadoVisitasTMP.length);
         return estadoVisitasTMP;
     }
 

@@ -8,9 +8,11 @@ import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import jp.entidades.Usuario;
 import jp.facades.UsuarioFacade;
+import jp.seguridad.UsuarioActual;
 import jp.util.JsfUtil;
 
 @ManagedBean(name = "loginController")
@@ -23,7 +25,8 @@ public class LoginController implements Serializable {
     @EJB
     private UsuarioFacade ejbFacade;
     
-    private Usuario user;
+    @Inject
+    private UsuarioActual usuarioActual;
     
     private String userName;
     private String password;
@@ -32,12 +35,7 @@ public class LoginController implements Serializable {
     }
     
     public Usuario getUser() {
-        if (user == null && FacesContext.getCurrentInstance().getExternalContext()
-                .getSessionMap().get(AUTH_KEY) != null) {
-            user = (Usuario) FacesContext.getCurrentInstance().getExternalContext()
-                    .getSessionMap().get(AUTH_KEY);
-        }
-        return user;
+        return usuarioActual.get();
     }
     
     public String getUserName() {
@@ -62,7 +60,7 @@ public class LoginController implements Serializable {
     
     public void login() {
         try {
-            user = getFacade().login(userName, password);
+            Usuario user = getFacade().login(userName, password);
             if (user != null) {
                 FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(AUTH_KEY, user);
                 JsfUtil.addSuccessMessage("Se ingreso correctamente a la aplicación");
@@ -70,6 +68,7 @@ public class LoginController implements Serializable {
                 FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove(AUTH_KEY);
                 JsfUtil.addWarnMessage("No se encontró el usuario y contraseña");
             }
+            usuarioActual.set(user);
         } catch (Exception e) {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
             JsfUtil.addErrorMessage(e, JsfUtil.getMessageBundle("PersistenceErrorOccured"));
@@ -78,10 +77,7 @@ public class LoginController implements Serializable {
     }
     
     public boolean isAdmin() {
-        if (user != null) {
-            return user.isAdmin();
-        }
-        return false;
+        return usuarioActual.isAdmin();
     }
     
     public void logoutLink() {
@@ -89,7 +85,7 @@ public class LoginController implements Serializable {
         String url = ((HttpServletRequest) FacesContext.getCurrentInstance()
                 .getExternalContext().getRequest()).getContextPath()
                 .concat("/faces/content/content/?").concat(LOGOUT_PARAM);
-        user = null;
+        usuarioActual.set(null);
         try {
             FacesContext.getCurrentInstance().getExternalContext().redirect(url);
         } catch (IOException ex) {
