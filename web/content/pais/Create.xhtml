@@ -14,8 +14,10 @@
                         <p:outputLabel styleClass="#{paisController.error}" value="#{bundle.CreatePaisLabel_nombre}" for="nombre" />
                         <p:inputText styleClass="#{paisController.error}" id="nombre" value="#{paisController.selected.nombre}" title="#{bundle.CreatePaisTitle_nombre}" required="true" requiredMessage="#{bundle.CreatePaisRequiredMessage_nombre}"/>
                     </p:panelGrid>
-                    <p:commandButton actionListener="#{paisController.create}" value="#{bundle.Save}" update="display,:PaisListForm:datalist,:growl"/>
-                    <p:commandButton value="#{bundle.Cancel}" type="button" onclick="PF('PaisCreateDialog').hide()"/>
+                    <div class="botonesDialog">
+                        <p:commandButton actionListener="#{paisController.create}" value="#{bundle.Save}" update="display,:PaisListForm:datalist,:growl"/>
+                        <p:commandButton value="#{bundle.Cancel}" type="button" onclick="PF('PaisCreateDialog').hide()"/>
+                    </div>
                 </h:panelGroup>
             </h:form>
         </p:dialog>

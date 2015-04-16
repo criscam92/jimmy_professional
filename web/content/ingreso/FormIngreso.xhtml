@@ -10,57 +10,66 @@
 
         <p:dialog id="IngresoFormDlg" widgetVar="IngresoFormDialog" modal="true" resizable="false" appendTo="@(body)" header="#{ingresoController.header}">
             <h:form id="IngresoForm">
-                <p:panelGrid columns="2" rendered="#{ingresoController.selected != null}">
+                <p:panelGrid columns="1" rendered="#{ingresoController.selected != null}">
+
+                    <p:panelGrid columns="2">
+
+                        <p:panel header="Datos Ingreso" id="datosIngreso">
+                            <p:panelGrid columns="2">
+                                <p:outputLabel value="#{bundle.CreateIngresoLabel_fechaIngreso}" for="fecha"/>
+                                <p:calendar size="15" id="fecha" pattern="MM/dd/yyyy HH:mm:ss" value="#{ingresoController.selected.fechaIngreso}" title="#{bundle.CreateIngresoTitle_fechaIngreso}"
+                                            required="true" requiredMessage="#{bundle.CreateIngresoRequiredMessage_fechaIngreso}" showOn="button"/>
+
+                                <p:outputLabel value="#{bundle.CreateIngresoLabel_observaciones}" for="observaciones" />
+                                <p:inputTextarea style="width: 200px; height: 54px" rows="3" id="observaciones" value="#{ingresoController.selected.observaciones}" title="#{bundle.CreateIngresoTitle_observaciones}" />
+                            </p:panelGrid>
+                        </p:panel>
+
+                        <p:panel header="Datos Producto" id="datosProductos">
+                            <p:panelGrid columns="2">
+                                <p:outputLabel style="margin-right: 33px;" value="#{bundle.CreatePromocionProductoLabel_producto}" for="producto" />
+                                <p:autoComplete id="producto" minQueryLength="3" value="#{ingresoController.producto}"
+                                                itemValue="#{pro}" completeMethod="#{promocionController.llenarProducto}" effect="fade"
+                                                converter="productoconverter" itemLabel="#{pro.toString()}" var="pro" />
+
+                                <p:outputLabel value="Cantidad:" rendered="true" for="cantidad" />
+                                <p:inputText style="width: 48px; " id="cantidad" value="#{ingresoController.cantidad}" title="Cantidad" />
+                            </p:panelGrid>
+                            <f:facet name="footer">
+                                <p:commandButton icon="ui-icon-plus" value="Agregar" update="listPromocionProductos,producto,cantidad,:growl"  
+                                                 actionListener="#{ingresoController.addIngresoProducto}" process="datosProductos"/>
+                            </f:facet>
+                        </p:panel>
+
+                    </p:panelGrid>
                     <p:panelGrid columns="1">
-                        <p:panelGrid columns="2"> 
-                            
-                            <p:outputLabel value="#{bundle.CreateIngresoLabel_fechaIngreso}" for="fecha"/>
-                            <p:calendar id="fecha" pattern="MM/dd/yyyy HH:mm:ss" value="#{ingresoController.selected.fechaIngreso}" title="#{bundle.CreateIngresoTitle_fechaIngreso}"
-                                        required="true" requiredMessage="#{bundle.CreateIngresoRequiredMessage_fechaIngreso}" showOn="button"/>
-                            
-                            <p:outputLabel value="#{bundle.CreateIngresoLabel_observaciones}" for="observaciones" />
-                            <p:inputTextarea style="width: 400px; height: 40px" rows="3" id="observaciones" value="#{ingresoController.selected.observaciones}" title="#{bundle.CreateIngresoTitle_observaciones}" />
-                        </p:panelGrid>
-                        <p:panelGrid columns="5">
-                            <p:outputLabel style="margin-right: 33px;" value="#{bundle.CreatePromocionProductoLabel_producto}" for="producto" />
-                            <p:autoComplete id="producto" minQueryLength="3" value="#{ingresoController.producto}"
-                                            itemValue="#{pro}" completeMethod="#{promocionController.llenarProducto}" effect="fade"
-                                            converter="productoconverter" itemLabel="#{pro.toString()}" var="pro" />
+                        <p:dataTable id="listPromocionProductos" style="width:703px;"  value="#{ingresoController.ingresoProductos}" var="item"
+                                     selectionMode="single" paginator="true" rowKey="#{item.id}" rows="3" emptyMessage="#{bundle.EmptyTable}" 
+                                     paginatorPosition="bottom" paginatorAlwaysVisible="false"
+                                     >
 
-                            <p:outputLabel value="Cantidad:" rendered="true" for="cantidad" />
-                            <p:inputText style="width: 48px; " id="cantidad" value="#{ingresoController.cantidad}" title="Cantidad" />
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Producto"/>
+                                </f:facet>
+                                <h:outputText value="#{item.producto}"/>                        
+                            </p:column>
 
-                            <p:commandButton icon="ui-icon-plus" value="Agregar" update="listPromocionProductos,producto,cantidad,:growl"  actionListener="#{ingresoController.addIngresoProducto}"/>
-                        </p:panelGrid>
-                        <p:panelGrid columns="1">
-                            <p:dataTable id="listPromocionProductos" style="width:515px;"  value="#{ingresoController.ingresoProductos}" var="item"
-                                         selectionMode="single"
-                                         paginator="true"
-                                         rowKey="#{item.id}"
-                                         rows="3"
-                                         emptyMessage=""
-                                         paginatorPosition="bottom"
-                                         >
-                                <p:column>
-                                    <f:facet name="header">
-                                        <h:outputText value="Producto"/>
-                                    </f:facet>
-                                    <h:outputText value="#{item.producto}"/>                        
-                                </p:column>
-                                <p:column width="50">
-                                    <f:facet name="header">
-                                        <h:outputText value="Cantidad"/>
-                                    </f:facet>
-                                    <h:outputText value="#{item.cantidad}"/>
-                                </p:column>
-                                <p:column width="30">
-                                    <f:facet name="header">
-                                        <h:outputText value="Quitar"/>
-                                    </f:facet>
-                                    <p:commandButton icon="ui-icon-close" update="listPromocionProductos"  action ="#{ingresoController.removeIngresoProducto(item)}"/>
-                                </p:column>
-                            </p:dataTable>
-                        </p:panelGrid>
+                            <p:column width="50">
+                                <f:facet name="header">
+                                    <h:outputText value="Cantidad"/>
+                                </f:facet>
+                                <h:outputText value="#{item.cantidad}"/>
+                            </p:column>
+
+                            <p:column width="30">
+                                <f:facet name="header">
+                                    <h:outputText value="Quitar"/>
+                                </f:facet>
+                                <p:commandButton icon="ui-icon-close" update="listPromocionProductos"  action ="#{ingresoController.removeIngresoProducto(item)}" process="listPromocionProductos"/>
+                            </p:column>
+
+                        </p:dataTable>
                     </p:panelGrid>
                 </p:panelGrid>
                 <div class="botonesDialog">

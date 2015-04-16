@@ -30,8 +30,7 @@ public class IngresoController implements Serializable {
     @EJB
     private IngresoFacade ejbFacade;
     @EJB
-    private TransactionFacade transactionFacade;
-    
+    private TransactionFacade transactionFacade;    
     @Inject
     private UsuarioActual usuarioActual;
     

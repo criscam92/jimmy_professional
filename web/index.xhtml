@@ -15,9 +15,9 @@
     <h:body>
 
         <p:growl id="growl" life="3000" />
-        <f:view locale="#{facesContext.externalContext.requestLocale}">
+<!--        <f:view locale="#{facesContext.externalContext.requestLocale}">
             <f:loadBundle basename="languages/Bundle" var="bundle"/>
-        </f:view>
+        </f:view>-->
 
         <p:layout fullPage="true">
             <p:layoutUnit position="north" size="135">
@@ -96,14 +96,7 @@
 
             </p:layoutUnit>
 
-            <!--            <p:layoutUnit position="south" size="60" styleClass="footer-index ui-menu ui-menubar">
-                            <ui:insert name="footer"/>
-                        </p:layoutUnit>-->
-
         </p:layout>
-
-        <br />
-        <h:link outcome="welcomePrimefaces" value="Primefaces welcome page" />
     </h:body>
 
 </html>

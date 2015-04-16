@@ -33,9 +33,9 @@
                             Promociones
                         </div>
                         <div id="acciones">
-                            <p:commandButton id="createButton" icon="ui-icon-plus"   value="#{bundle.Create}" actionListener="#{promocionController.prepareCreate}" update=":PromocionCreateForm" oncomplete="PF('PromocionCreateDialog').show()"/>
+                            <p:commandButton id="createButton" icon="ui-icon-plus"   value="#{bundle.Create}" actionListener="#{promocionController.prepareCreate}" update=":PromocionCreateDlg, :PromocionCreateForm, :PromocionCreateForm:btnNuevaPromocion" oncomplete="PF('PromocionCreateDialog').show()"/>
                             <p:commandButton id="viewButton"   icon="ui-icon-search" value="#{bundle.View}" update=":PromocionViewForm" oncomplete="PF('PromocionViewDialog').show()" disabled="#{empty promocionController.selected}"/>
-                            <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" actionListener="#{promocionController.preparaEditar}" update=":PromocionEditForm" oncomplete="PF('PromocionEditDialog').show()" disabled="#{empty promocionController.selected}"/>
+                            <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" actionListener="#{promocionController.preparaEditar}" update=":PromocionCreateDlg, :PromocionCreateForm, :PromocionCreateForm:btnNuevaPromocion" oncomplete="PF('PromocionCreateDialog').show()" disabled="#{empty promocionController.selected}"/>
                             <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{promocionController.destroy}" update=":growl,datalist" disabled="#{empty promocionController.selected}"/>
                         </div>
                     </f:facet>
@@ -80,7 +80,6 @@
             </h:form>
 
             <ui:include src="Create.xhtml"/>
-            <ui:include src="Edit.xhtml"/>
             <ui:include src="View.xhtml"/>
         </ui:define>
     </ui:composition>
