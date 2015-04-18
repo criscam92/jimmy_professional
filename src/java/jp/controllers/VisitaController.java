@@ -50,6 +50,7 @@ public class VisitaController implements Serializable {
     private jp.facades.TransactionFacade ejbTransactionFacade;
     private List<Visita> items = null;
     private List<VisitaProducto> itemsTMP = null;
+    private String header;
 
     private List<EstadoVisita> estadoVisitasFilter = null;
 
@@ -73,6 +74,14 @@ public class VisitaController implements Serializable {
 
     public void setItemsTMP(List<VisitaProducto> itemsTMP) {
         this.itemsTMP = itemsTMP;
+    }
+
+    public String getHeader() {
+        return header;
+    }
+
+    public void setHeader(String header) {
+        this.header = header;
     }
 
     protected void setEmbeddableKeys() {
@@ -99,12 +108,6 @@ public class VisitaController implements Serializable {
 
     public void setEstadoVisitasFilter(List<EstadoVisita> estadoVisitasFilter) {
         this.estadoVisitasFilter = estadoVisitasFilter;
-    }
-
-    public Visita prepareCreate() {
-        selected = new Visita();
-        initializeEmbeddableKey();
-        return selected;
     }
 
     public void create() {
@@ -220,13 +223,13 @@ public class VisitaController implements Serializable {
             }
         }
     }
-    
+
     /**
-     * 
-     * @param visita 
+     *
+     * @param visita
      * @return Lista de productos incluidos en la visita
      */
-    public List<VisitaProducto> getProductosByVisita(Visita visita){
+    public List<VisitaProducto> getProductosByVisita(Visita visita) {
         try {
             itemsTMP = getEjbVisitaProductoFacade().getProductosByVisita(visita);
             return getEjbVisitaProductoFacade().getProductosByVisita(visita);
@@ -257,6 +260,10 @@ public class VisitaController implements Serializable {
         return !(selected != null && selected.getEstado() == EstadoVisita.PENDIENTE.getValor());
     }
 
+    public boolean disableEditarVisita() {
+        return !(selected != null && usuarioActual.isAdmin() && selected.getEstado() != EstadoVisita.ANULADA.getValor());
+    }
+
     @Deprecated
     public boolean disableAnularVisita() {
         boolean disable = false;
@@ -273,10 +280,12 @@ public class VisitaController implements Serializable {
     }
 
     public void anullVisita() {
-        if (!JsfUtil.isValidationFailed() && getEjbTransactionFacade().anullVisitaProducto(selected)) {
-            JsfUtil.addSuccessMessage(JsfUtil.getMessageBundle(new String[]{"MessageVisita", "AnullSuccessF"}));
-            selected = null; // Remove selection
-            items = null;    // Invalidate list of items to trigger re-query.
+        if (selected != null) {
+            if (!JsfUtil.isValidationFailed() && getEjbTransactionFacade().anullVisitaProducto(selected)) {
+                JsfUtil.addSuccessMessage(JsfUtil.getMessageBundle(new String[]{"MessageVisita", "AnullSuccessF"}));
+                selected = null; // Remove selection
+                items = null;    // Invalidate list of items to trigger re-query.
+            }
         }
     }
 
@@ -297,7 +306,7 @@ public class VisitaController implements Serializable {
             e.printStackTrace();
         }
     }
-    
+
     public void generarReporte(ActionEvent actionEvent) {
         Visita visita = getFacade().getVisitaById(selected.getId());
 
@@ -343,7 +352,22 @@ public class VisitaController implements Serializable {
         } else {
             JsfUtil.addErrorMessage("Seleccione la Visita que desea imprimir");
         }
+    }
 
+    public String cutObservaciones(String texto) {
+        return JsfUtil.cutText(texto);
+    }
+    
+    public Visita prepareCreate() {
+        selected = new Visita();
+        itemsTMP = new ArrayList<>();
+        initializeEmbeddableKey();
+        return selected;
+    }
+    
+    public void preparaEditar() {
+        itemsTMP = getFacade().getProductosByVisita(selected);
+        setHeader(JsfUtil.getMessageBundle("EditVisitaTitle"));
     }
 
 }
