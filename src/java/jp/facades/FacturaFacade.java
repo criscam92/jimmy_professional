@@ -226,4 +226,34 @@ public class FacturaFacade extends AbstractFacade<Factura> {
         }
         return null;
     }
+    
+    public List<Promocion> getPromocionByQuery(String query, Cliente cliente) {
+        try {
+            List<Promocion> promociones;
+
+            String sql = "SELECT p FROM Promocion p WHERE UPPER(CONCAT(p.codigo,' - ',p.descripcion)) LIKE UPPER(:param)";
+            if (cliente.getCategoria() == null) {
+                sql += " AND p.categoria IS NULL";
+            } else {
+                sql += " AND p.categoria.id = :cat";
+            }
+
+            Query queryPromocion = getEntityManager().createQuery(sql);
+
+            if (cliente.getCategoria() != null) {
+                queryPromocion.setParameter("cat", cliente.getCategoria().getId());
+            }
+            queryPromocion.setParameter("param", "%" + query + "%");
+
+            promociones = queryPromocion.getResultList();
+
+            queryPromocion.setFirstResult(0);
+            queryPromocion.setMaxResults(10);
+
+            return promociones;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
