@@ -432,18 +432,30 @@ public class FacturaController implements Serializable {
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
-            if (value == null || value.length() == 0) {
-                return null;
+            try {
+                if (value == null || value.length() == 0) {
+                    return null;
+                }
+                FacturaController controller = (FacturaController) facesContext.getApplication().getELResolver().
+                        getValue(facesContext.getELContext(), null, "facturaController");
+                Long key = getKey(value);
+                if(key==null){
+                    return null;
+                }
+                return controller.getFacade().find(key);
+            } catch (Exception e) {
             }
-            FacturaController controller = (FacturaController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "facturaController");
-            return controller.getFacade().find(getKey(value));
+            return null;
         }
 
         java.lang.Long getKey(String value) {
-            java.lang.Long key;
-            key = Long.valueOf(value);
-            return key;
+            try {
+                java.lang.Long key;
+                key = Long.valueOf(value);
+                return key;
+            } catch (Exception e) {
+            }
+            return null;
         }
 
         String getStringKey(java.lang.Long value) {
@@ -466,7 +478,7 @@ public class FacturaController implements Serializable {
             }
         }
     }
-
+        
     public TipoPago[] getTiposPagos() {
         return TipoPago.getFromValue(new Integer[]{0, 1});
     }
