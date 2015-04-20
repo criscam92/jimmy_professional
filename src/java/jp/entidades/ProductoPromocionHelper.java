@@ -9,14 +9,16 @@ public class ProductoPromocionHelper {
     private int unidadesVenta;
     private int unidadesBonificacion;
     private double precio;
+    private double precioUs;
     private Object productoPromocion;
     private boolean isProducto;
 
-    public ProductoPromocionHelper(Long id, int unidadesVenta, int unidadesBonificacion, double precio, Object productoPromocion, boolean isProducto) {
+    public ProductoPromocionHelper(Long id, int unidadesVenta, int unidadesBonificacion, double precio, double precioUs, Object productoPromocion, boolean isProducto) {
         this.id = id;
         this.unidadesVenta = unidadesVenta;
         this.unidadesBonificacion = unidadesBonificacion;
         this.precio = precio;
+        this.precioUs = precioUs;
         this.productoPromocion = productoPromocion;
         this.isProducto = isProducto;
     }
@@ -51,6 +53,14 @@ public class ProductoPromocionHelper {
 
     public void setPrecio(double precio) {
         this.precio = precio;
+    }
+
+    public double getPrecioUs() {
+        return precioUs;
+    }
+
+    public void setPrecioUs(double precioUs) {
+        this.precioUs = precioUs;
     }
 
     public Object getProductoPromocion() {

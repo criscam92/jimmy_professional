@@ -210,7 +210,6 @@ public class DespachoFacturaController implements Serializable {
         selected.setDespacho(null);
         selected.setFecha(Calendar.getInstance().getTime());
         selected.setRealizado(true);
-//        System.out.println("USUARIO: " + LoginController.user.getUsuario());
         selected.setUsuario(usuarioActual.get());
         
         switch (comprobarIngresos()) {

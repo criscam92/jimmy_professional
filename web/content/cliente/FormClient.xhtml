@@ -46,7 +46,7 @@
                                 <p:ajax update="tarifa tarifaEspecial" listener="#{clienteController.showTarifaEspecial}"/>
                             </p:selectBooleanCheckbox>                         
                         </p:panelGrid>
-                        
+
                         <p:panelGrid columns="2"> 
                             <p:outputLabel value="#{bundle.CreateClienteLabel_tipo}" for="tipo" />
                             <p:selectOneMenu style="width: 155px" id="tipo" value="#{clienteController.selected.tipo}"
@@ -72,13 +72,12 @@
                             <p:outputLabel value="#{bundle.CreateClienteLabel_cumple}" for="cumpleanos" />
                             <p:calendar id="cumpleanos" pattern="MM/dd/yyyy" value="#{clienteController.selected.fechaCumpleanos}" 
                                         title="#{bundle.CreateClienteTitle_cumple}" showOn="button" navigator="true"/>
-                            <p:outputLabel style="margin-right: 13px;" value="#{bundle.CreateClienteLabel_empleado}" for="empleado" />
-                            <p:selectOneMenu  style="width: 155px" id="empleado" value="#{clienteController.selected.empleado}" required="true" requiredMessage="#{bundle.EditClienteRequiredMessage_empleado}">
-                                <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>
-                                <f:selectItems value="#{empleadoController.itemsAvailableSelectOne}"
-                                               var="empleadoItem"
-                                               itemValue="#{empleadoItem}"/>
-                            </p:selectOneMenu>
+
+                            <p:outputLabel value="#{bundle.CreateClienteLabel_empleado}" for="empleado" />
+                            <p:autoComplete size="23" id="empleado" minQueryLength="3" panelStyle="width: 320px;" value="#{clienteController.selected.empleado}" itemValue="#{empleado}" 
+                                            completeMethod="#{empleadoController.llenarEmpleado}" effect="fade" converter="empleadoconverter"
+                                            itemLabel="#{empleado.toString()}" var="empleado" required="true">
+                            </p:autoComplete>
 
                             <p:outputLabel id="tarifa" style="visibility: #{clienteController.visibility};" value="#{bundle.CreateClienteLabel_tarifaEspecial}" for="tarifaEspecial"/>
                             <p:inputText style="visibility: #{clienteController.visibility}" id="tarifaEspecial" value="#{clienteController.selected.tarifaEspecial}"

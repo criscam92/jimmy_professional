@@ -169,7 +169,7 @@ public class Promocion implements Serializable, Codificable {
 
     @Override
     public String toString() {
-        return getCodigo() + " - " + getNombre();
+        return getCodigo() + " - " + getDescripcion();
     }
 
     @Override

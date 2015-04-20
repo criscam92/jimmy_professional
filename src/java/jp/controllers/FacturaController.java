@@ -25,7 +25,6 @@ import javax.faces.convert.FacesConverter;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.inject.Inject;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import jp.entidades.Cliente;
@@ -84,8 +83,9 @@ public class FacturaController implements Serializable {
     private Producto producto;
     private Promocion promocion;
     private final String uiError = "ui-state-error";
-    private String errorProducto, errorPromocion, errorVenta, errorBonificacion;
+    private String errorProducto, errorPromocion, errorVenta, errorBonificacion, errorCliente;
     private List<Producto> productosTMP = null;
+    private Cliente cliente;
 
     private DespachoFactura despachoFactura;
     private List<DespachoFactura> despachosFactura = null;
@@ -98,6 +98,7 @@ public class FacturaController implements Serializable {
     @PostConstruct
     public void init() {
         selected = new Factura();
+        cliente = new Cliente();
         selected.setDescuento(0.0);
     }
 
@@ -119,6 +120,10 @@ public class FacturaController implements Serializable {
 
     public String getErrorBonificacion() {
         return errorBonificacion;
+    }
+
+    public String getErrorCliente() {
+        return errorCliente;
     }
 
     public TalonarioFacade getTalonarioFacade() {
@@ -349,44 +354,52 @@ public class FacturaController implements Serializable {
     }
 
     private void getMensajesError() {
-        if (getSelectOneButton() == 1) {
-            if (producto == null) {
-                errorProducto = uiError;
-                JsfUtil.addErrorMessage("Debe seleccionar un producto valido");
-            } else {
-                if (precio <= 0.0) {
+
+        if (selected.getCliente() != null) {
+            errorCliente = "";
+            if (getSelectOneButton() == 1) {
+                if (producto == null) {
                     errorProducto = uiError;
-                    JsfUtil.addErrorMessage("Debe seleccionar un producto con un precio valido");
+                    JsfUtil.addErrorMessage("Debe seleccionar un producto valido");
                 } else {
-                    errorProducto = "";
+                    if (precio <= 0.0) {
+                        errorProducto = uiError;
+                        JsfUtil.addErrorMessage("Debe seleccionar un producto con un precio valido");
+                    } else {
+                        errorProducto = "";
+                    }
                 }
-            }
-        } else {
-            if (promocion == null) {
-                errorPromocion = uiError;
-                JsfUtil.addErrorMessage("Debe seleccionar una promocion valida");
             } else {
-                if (precio <= 0.0) {
+                if (promocion == null) {
                     errorPromocion = uiError;
-                    JsfUtil.addErrorMessage("Debe seleccionar una promocion con un precio valido");
+                    JsfUtil.addErrorMessage("Debe seleccionar una promocion valida");
                 } else {
-                    errorProducto = "";
+                    if (precio <= 0.0) {
+                        errorPromocion = uiError;
+                        JsfUtil.addErrorMessage("Debe seleccionar una promocion con un precio valido");
+                    } else {
+                        errorProducto = "";
+                    }
                 }
             }
-        }
 
-        if (unidadesVenta < 1) {
-            errorVenta = uiError;
-            JsfUtil.addErrorMessage("El campo venta debe ser mayor a 0");
-        } else {
-            errorVenta = "";
-        }
+            if (unidadesVenta < 1) {
+                errorVenta = uiError;
+                JsfUtil.addErrorMessage("El campo venta debe ser mayor a 0");
+            } else {
+                errorVenta = "";
+            }
 
-        if (unidadesBonificacion < 0) {
-            errorBonificacion = uiError;
-            JsfUtil.addErrorMessage("El campo bonificación debe ser mayor a 0");
+            if (unidadesBonificacion < 0) {
+                errorBonificacion = uiError;
+                JsfUtil.addErrorMessage("El campo bonificación debe ser mayor a 0");
+            } else {
+                errorBonificacion = "";
+            }
+
         } else {
-            errorBonificacion = "";
+            errorCliente = uiError;
+            JsfUtil.addErrorMessage("Debe seleccionar un cliente valido para poder agregar productos o promociones");
         }
     }
 
@@ -454,8 +467,8 @@ public class FacturaController implements Serializable {
         }
     }
 
-    public Map<String, Integer> getTiposPagos() {
-        return TipoPago.getMapaEstados();
+    public TipoPago[] getTiposPagos() {
+        return TipoPago.getFromValue(new Integer[]{0, 1});
     }
 
     public Map<String, Integer> getMonedas() {
@@ -473,7 +486,7 @@ public class FacturaController implements Serializable {
     }
 
     public void addProductoOrPromocion() {
-        if ((producto != null || promocion != null) && unidadesVenta > 0 && precio > 0) {
+        if ((producto != null || promocion != null) && unidadesVenta > 0 && precio > 0 && selected.getCliente() != null) {
             boolean isProducto = producto != null;
 
             boolean existe = false;
@@ -489,7 +502,8 @@ public class FacturaController implements Serializable {
                 if (repetido) {
                     existe = true;
                     int io = objects.indexOf(pph);
-                    objects.get(io).setPrecio((precio * unidadesVenta) + pph.getPrecio());
+                    objects.get(io).setPrecio(((isProducto ? producto.getValorVenta() : promocion.getValor()) * unidadesVenta) + pph.getPrecio());
+                    objects.get(io).setPrecioUs(((isProducto ? producto.getValorVentaUsd() : promocion.getValorVentaUsd()) * unidadesVenta) + pph.getPrecioUs());
                     objects.get(io).setUnidadesBonificacion(unidadesBonificacion + pph.getUnidadesBonificacion());
                     objects.get(io).setUnidadesVenta(unidadesVenta + pph.getUnidadesVenta());
                     break;
@@ -498,7 +512,9 @@ public class FacturaController implements Serializable {
 
             if (!existe) {
                 ProductoPromocionHelper pph = new ProductoPromocionHelper(objects.size() + 1L, unidadesVenta, unidadesBonificacion,
-                        (precio * unidadesVenta), isProducto ? producto : promocion, isProducto);
+                        ((isProducto ? producto.getValorVenta() : promocion.getValor()) * unidadesVenta),
+                        ((isProducto ? producto.getValorVentaUsd() : promocion.getValorVentaUsd()) * unidadesVenta),
+                        isProducto ? producto : promocion, isProducto);
                 objects.add(pph);
             }
 
@@ -531,7 +547,11 @@ public class FacturaController implements Serializable {
     public double getTotalPrecioBruto() {
         int sum = 0;
         for (ProductoPromocionHelper fp : objects) {
-            sum += fp.getPrecio();
+            if (moneda == 0) {
+                sum += fp.getPrecio();
+            } else {
+                sum += fp.getPrecioUs();
+            }
         }
         if (selected != null) {
             selected.setTotalBruto(sum);
@@ -547,7 +567,11 @@ public class FacturaController implements Serializable {
         }
 
         for (ProductoPromocionHelper fp : objects) {
-            sum += fp.getPrecio();
+            if (moneda == 0) {
+                sum += fp.getPrecio();
+            } else {
+                sum += fp.getPrecioUs();
+            }
         }
 
         descuento = sum * descuento / 100;
@@ -583,7 +607,7 @@ public class FacturaController implements Serializable {
     }
 
     public List<Promocion> llenarPromocion(String query) {
-        return getFacade().getPromocionByQuery(query);
+        return getFacade().getPromocionByQuery(query, cliente);
     }
 
     public void onItemSelectProducto(SelectEvent event) {
@@ -602,12 +626,15 @@ public class FacturaController implements Serializable {
 
     public void onItemSelectCliente(SelectEvent event) {
         Cliente c = (Cliente) event.getObject();
+        cliente = c;
+        items = null;
+        objects.clear();
         getDescuentobyCliente(c);
     }
 
     public void onItemSelectEmpleado(SelectEvent event) {
         Empleado e = (Empleado) event.getObject();
-        Talonario t = getTalonarioFacade().getTalonarioByFecha(e);
+        Talonario t = getTalonarioFacade().getActiveTalonario(TipoTalonario.REMISION, e);
 
         if (t == null) {
             selected.setEmpleado(null);
@@ -694,6 +721,11 @@ public class FacturaController implements Serializable {
         } else {
             JsfUtil.addErrorMessage("Seleccione la Factura que desea imprimir");
         }
+
+    }
+
+    public void eventMoneda() {
+        cleanProductoOrPromocion();
 
     }
 
