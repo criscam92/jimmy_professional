@@ -158,50 +158,72 @@ public class FacturaFacade extends AbstractFacade<Factura> {
             
             facturasPendientesTMP = queryFactura.getResultList();
 
-            return getFacturasPendientesPago(facturasPendientesTMP);
-
-//            return facturasPendientesTMP;
+            facturasPendientesTMP = getFacturasPendientesPago(facturasPendientesTMP);
+            
+            return facturasPendientesTMP;
+            
         } catch (NoResultException e) {
             return null;
         }
     }
 
+    /**
+     * Retorna una lista de facturas con pagos pendientes a partir de una lista inicial
+     * @param fs listado inicial de facturas a evaluar
+     * @return listado final con la lista de facturas que tienen pagos pendientes
+     */
     public List<Factura> getFacturasPendientesPago(List<Factura> fs) {
         List<Factura> facturasFinal = new ArrayList<>();
 
         try {
-            for (Factura f : fs) {
-                Query q = em.createQuery("SELECT SUM(p.valorTotal) FROM Pago p WHERE p.factura.id = :f");
-                q.setParameter("f", f.getId());
-                Double totalPago = (Double) q.getSingleResult();
-                System.out.println("totalPago de factura: " + f + "->" + totalPago);
-
-                Query q2 = em.createQuery("SELECT SUM(f.totalPagar) FROM Factura f WHERE f.id = :f");
-                q2.setParameter("f", f.getId());
-                Double totalFactura = (Double) q2.getSingleResult();
-                System.out.println("totalFactura de factura: " + f + "->" + totalFactura);
-
-                if (totalPago == null) {
-                    f.setSaldo(f.getTotalPagar());
-                    f.setSaldoCancelado(0d);
-                    facturasFinal.add(f);
-                } else {
-                    if (totalPago < totalFactura) {
-                        f.setSaldo(totalFactura - totalPago);
-                        f.setSaldoCancelado(totalPago);
-                        facturasFinal.add(f);
-                    }
+            for (Factura factura : fs) {
+                factura = updatePagoPendiente(factura);
+                if(factura!=null){
+                    facturasFinal.add(factura);
                 }
-
             }
-
-//            for (Factura ff : facturasFinal) {
-//                System.out.println("factura a devolver-> " + ff.getObservaciones());
-//            }
             return facturasFinal;
 
         } catch (NoResultException nre) {
             return null;
         }
+    }
+    
+    /**
+     * Obtener una referencia de la factura con los valores de los pagos realizados y los que tenga pendientes
+     * @param factura referencia inicial de la factura a evaluar
+     * @return la nueva referencia de la factura, en caso de que no tenga pago pendiente retorna nula
+     */
+    public Factura updatePagoPendiente(Factura factura){
+        try {
+            Query q = em.createQuery("SELECT SUM(p.valorTotal) FROM Pago p WHERE p.estado = :estado AND p.factura.id = :f");
+            q.setParameter("f", factura.getId());
+            q.setParameter("estado", EstadoPagoFactura.REALIZADA.getValor());
+
+            Double totalPago = (Double) q.getSingleResult();
+            System.out.println("Pagos a la factura: " + factura + "->" + totalPago);
+
+            Query q2 = em.createQuery("SELECT SUM(f.totalPagar) FROM Factura f WHERE f.id = :f");
+            q2.setParameter("f", factura.getId());
+            Double totalFactura = (Double) q2.getSingleResult();
+            System.out.println("Total Factura: " + factura + "->" + totalFactura);
+
+            if (totalPago == null) {
+                System.out.println("Total Pago es nulo");
+                factura.setSaldo(factura.getTotalPagar());
+                factura.setSaldoCancelado(0d);
+                return factura;
+            } else {
+                System.out.println("Total Pago NO ES NULO");
+                if (totalPago < totalFactura) {
+                    factura.setSaldo(totalFactura - totalPago);
+                    factura.setSaldoCancelado(totalPago);
+                    return factura;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

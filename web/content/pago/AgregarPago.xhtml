@@ -19,15 +19,22 @@
                         <p:autoComplete size="18" id="cliente" minQueryLength="3" panelStyle="width: 210px;" value="#{nuevaRelacionFacturaController.clienteTemporal}" requiredMessage="Debes indicar un cliente para el Recibo"
                                         itemValue="#{cliente}" completeMethod="#{clienteController.llenarCliente}" effect="fade" converter="clienteconverter" emptyMessage="Ingrese un Cliente válido"
                                         itemLabel="#{cliente.toString()}" var="cliente" required="true" converterMessage="Ingrese un Cliente válido" validatorMessage="Ingrese un Cliente válido">
-                            <p:ajax event="itemSelect" listener="#{nuevaRelacionFacturaController.onItemSelecCliente}" update=":growl,factura" />
+                            <p:ajax event="itemSelect" listener="#{nuevaRelacionFacturaController.onItemSelecCliente}" update=":growl,display" />
                         </p:autoComplete>
                         
                         <p:outputLabel value="Factura:" for="factura" />
                         <p:selectOneMenu id="factura" value="#{nuevaRelacionFacturaController.selected.factura}" required="true" requiredMessage="Débe indicar la factura para el recibo"
                                          converter="facturaConverter">
-                            <f:selectItem value="#{null}" itemLabel="Seleccione una factura" />
-                            <f:selectItems value="#{nuevaRelacionFacturaController.facturasTemporales}" var="fac" itemLabel="#{fac.ordenPedido} - #{fac.totalPagar}" itemValue="#{fac}" />
+                            <p:ajax event="change" update="total,pendiente" listener="#{nuevaRelacionFacturaController.changedFactura}"/>
+                            <f:selectItem value="#{null}" itemLabel="Seleccione una factura" itemValue="#{null}" />
+                            <f:selectItems value="#{nuevaRelacionFacturaController.facturasTemporales}" var="fac" itemLabel="#{fac.ordenPedido}" itemValue="#{fac}" />
                         </p:selectOneMenu>
+                        
+                        <p:outputLabel value="Valor Total Factura:" for="total" />
+                        <p:inputText disabled="true" id="total" value="#{nuevaRelacionFacturaController.selected.factura.totalPagar}" />
+                        
+                        <p:outputLabel value="Valor Pendiente Factura:" for="pendiente" />
+                        <p:inputText disabled="true" id="pendiente" value="#{nuevaRelacionFacturaController.selected.factura.saldo}" />
                         
                     </p:panelGrid>
                     <p:commandButton actionListener="#{nuevaRelacionFacturaController.create}" value="#{bundle.Save}" update="display,:growl" oncomplete="handleSubmit(args,'PagoCreateDialog');"/>

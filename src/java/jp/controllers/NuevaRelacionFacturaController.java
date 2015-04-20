@@ -20,6 +20,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import javax.faces.event.AjaxBehaviorEvent;
 import jp.entidades.Cliente;
 import jp.entidades.Empleado;
 import jp.entidades.Factura;
@@ -102,6 +103,13 @@ public class NuevaRelacionFacturaController implements Serializable {
             Cliente c = (Cliente) event.getObject();
             facturasTemporales = getFacturaFacade().getFacturasPendientesByCliente(c);
             System.out.println("Se obtuvieron "+facturasTemporales.size()+" facturas pendientes");
+            for (Factura factura : facturasTemporales) {
+                System.out.println("===================");
+                System.out.println("Factura: "+factura.toString());
+                System.out.println("Saldo Pendiente: "+factura.getSaldo());
+                System.out.println("Saldo Pagado: "+factura.getSaldoCancelado());
+                System.out.println("===================");
+            }
         }
         
 //        facturasPendientesClienteTMP = getFacade().getFacturasPendientesByCliente(c, selected.getDolar());
@@ -323,6 +331,16 @@ public class NuevaRelacionFacturaController implements Serializable {
         }
         talonario = null;
         relacionFactura.setVendedor(null);
+    }
+    
+    public void changedFactura(final AjaxBehaviorEvent event){
+        if(selected.getFactura()!=null){
+            Factura factura = facturaFacade.updatePagoPendiente(selected.getFactura());
+            System.out.println("Saldo Pendiente "+selected.getFactura().getSaldo());
+            System.out.println("Saldo Cancelado "+selected.getFactura().getSaldoCancelado());
+            selected.setFactura(factura);
+        }
+        
     }
 
 }
