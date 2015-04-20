@@ -20,7 +20,7 @@
                                 <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
                             </h:outputText>
                             <h:outputText value="#{bundle.ViewVisitaLabel_observacionesCliente}"/>
-                            <h:outputText value="#{visitaController.selected.observacionesCliente}" title="#{bundle.ViewVisitaTitle_observacionesCliente}"/>
+                            <h:outputText value="#{visitaController.cutObservaciones(visitaController.selected.observacionesCliente)}" title="#{bundle.ViewVisitaTitle_observacionesCliente}"/>
                             <h:outputText value="#{bundle.ViewVisitaLabel_calificacionServicio}"/>
                             <p:rating value="#{visitaController.selected.calificacionServicio}" readonly="true"/>
                             <h:outputText value="#{bundle.ViewVisitaLabel_puntualidadServicio}"/>

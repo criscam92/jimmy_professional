@@ -9,6 +9,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import jp.entidades.Empleado;
 import jp.entidades.Visita;
+import jp.entidades.VisitaProducto;
 
 @Stateless
 public class VisitaFacade extends AbstractFacade<Visita> {
@@ -40,7 +41,7 @@ public class VisitaFacade extends AbstractFacade<Visita> {
             if (!isAdmin) {
                 query += " WHERE v.empleado.id= :emp";
             }
-            System.out.println("Query--> "+query+"\nAdmin? "+isAdmin);
+            query += " ORDER BY v.id ASC";
             Query q = getEntityManager().createQuery(query);
             if (!isAdmin) {
                 q.setParameter("emp", e.getId());
@@ -53,6 +54,16 @@ public class VisitaFacade extends AbstractFacade<Visita> {
             exc.printStackTrace();
         }
         return visitasTMP;
+    }
+    
+    public List<VisitaProducto> getProductosByVisita(Visita visita) {
+        try {
+            Query query = getEntityManager().createQuery("SELECT vp FROM VisitaProducto vp WHERE vp.visita.id = :visi");
+            query.setParameter("visi", visita.getId());
+            return query.getResultList();
+        } catch (NoResultException e) {
+        }
+        return null;
     }
 
 }

@@ -8,42 +8,79 @@
 
     <ui:composition>
 
-        <p:dialog id="VisitaEditDlg" widgetVar="VisitaEditDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.EditVisitaTitle}">
+        <p:dialog id="VisitaEditDlg" widgetVar="VisitaEditDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.MessageTitleVisitaProducto}">
+            <h:form id="VisitaEditForm" >
+                <p:panel header="Datos Visita" rendered="#{loginController.admin}">
+                    <p:panelGrid columns="2">
 
-            <h:panelGroup id="display">
-                <p:panelGrid columns="2" rendered="#{visitaController.selected != null}">
-                    <h:form id="VisitaEditForm">
+                        <p:inputTextarea placeholder="#{bundle.CreateObservacionLabel_producto}" id="observacion" 
+                                         value="#{visitaProductoController.visitaGET.observacionesCliente}" style="width: 400px;height:60px;"/>
+
                         <p:panelGrid columns="2">
-                            <p:outputLabel value="#{bundle.EditVisitaLabel_fecha}" for="fecha" />
-                            <p:calendar mindate="#{visitaController.fechaActual}" id="fecha" pattern="MM/dd/yyyy HH:mm:ss" value="#{visitaController.selected.fecha}" title="#{bundle.EditVisitaTitle_fecha}" required="true" requiredMessage="#{bundle.EditVisitaRequiredMessage_fecha}" showOn="button"/>
-                            <p:outputLabel value="#{bundle.EditVisitaLabel_observacionesCliente}" for="observacionesCliente" />
-                            <p:inputTextarea id="observacionesCliente" value="#{visitaController.selected.observacionesCliente}" title="#{bundle.EditVisitaTitle_observacionesCliente}" required="true" requiredMessage="#{bundle.EditVisitaRequiredMessage_observacionesCliente}"/>
-                            <p:outputLabel value="#{bundle.EditVisitaLabel_estado}" for="estado" />
-                            <p:selectOneMenu id="estado" value="#{visitaController.selected.estado}" required="true" requiredMessage="#{bundle.CreateVisitaRequiredMessage_estado}">
-                                <f:selectItems value="#{visitaController.estadosVisitas}" var="item" itemLabel="#{item.detalle}" itemValue="#{item.valor}" />
-                            </p:selectOneMenu>                        
-                            <p:outputLabel value="#{bundle.EditVisitaLabel_cliente}" for="cliente" />
-                            <p:selectOneMenu id="cliente" value="#{visitaController.selected.cliente}" required="true" requiredMessage="#{bundle.EditVisitaRequiredMessage_cliente}">
-                                <f:selectItem  itemLabel="#{bundle.SelectOneMessage}"/>
-                                <f:selectItems value="#{clienteController.itemsAvailableSelectOne}"
-                                               var="clienteItem"
-                                               itemValue="#{clienteItem}"/>
-                            </p:selectOneMenu>
-                            <p:outputLabel value="#{bundle.EditVisitaLabel_empleado}" for="empleado" />
-                            <p:selectOneMenu id="empleado" value="#{visitaController.selected.empleado}" required="true" requiredMessage="#{bundle.EditVisitaRequiredMessage_empleado}">
-                                <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>
-                                <f:selectItems value="#{empleadoController.itemsAvailableSelectOne}"
-                                               var="empleadoItem"
-                                               itemValue="#{empleadoItem}"/>
-                            </p:selectOneMenu>
+                            <p:outputLabel value="#{bundle.EditVisitaLabel_calificacionServicio}" for="calificacionServicio" />
+                            <p:rating id="calificacionServicio" value="#{visitaProductoController.visitaGET.calificacionServicio}"/>
+
+                            <p:outputLabel value="#{bundle.EditVisitaLabel_puntualidadServicio}" for="puntualidadServicio" />
+                            <p:rating id="puntualidadServicio" value="#{visitaProductoController.visitaGET.puntualidadServicio}"/>
+
+                            <p:outputLabel value="#{bundle.EditVisitaLabel_cumplioExpectativas}" for="cumplioExpectativas" />
+                            <p:selectBooleanCheckbox id="cumplioExpectativas" value="#{visitaProductoController.visitaGET.cumplioExpectativas}" required="true" requiredMessage="#{bundle.EditVisitaRequiredMessage_cumplioExpectativas}"/>
 
                         </p:panelGrid>
-                        <p:commandButton actionListener="#{visitaController.update}" value="#{bundle.Save}" update=":display,:VisitaListForm:datalist,:growl" oncomplete="handleSubmit(args, 'VisitaEditDialog');"/>
-                        <p:commandButton value="#{bundle.Cancel}" type="button" onclick="PF('VisitaEditDialog').hide()"/>
-                        
-                    </h:form>
-                </p:panelGrid>
-            </h:panelGroup>
+
+                    </p:panelGrid>
+
+                </p:panel>
+                <br/>
+                <p:panel header="Productos" style="overflow-y: auto;">
+                    <p:panelGrid columns="1">
+                        <p:panelGrid columns="5" id="tablaProductoVisita">
+                            <p:outputLabel value="#{bundle.CreateProductoLabel_producto}"/>
+
+                            <p:autoComplete id="producto" minQueryLength="3" value="#{visitaProductoController.visitaProducto.producto}" itemValue="#{pro}" 
+                                            completeMethod="#{promocionController.llenarProducto}" effect="fade" converter="productoconverter" itemLabel="#{pro.toString()}" var="pro" />
+
+                            <p:outputLabel value="#{bundle.CreateCantidadLabel_producto}" for="cantidad" />
+                            <p:inputText id="cantidad" value="#{visitaProductoController.visitaProducto.cantidad}" style="width: 60px;"/>
+
+                            <p:commandButton value="#{bundle.AddItem}" icon="ui-icon-plus" process="tablaProductoVisita"
+                                             actionListener="#{visitaProductoController.addVisitaProducto()}" update="datalistTMP,tablaProductoVisita"/>
+                        </p:panelGrid>
+
+                        <p:panelGrid columns="1">
+                            <p:dataTable id="datalistTMP" style="width: 712px;" value="#{visitaProductoController.itemsTMP}" var="itemTMP"
+                                         paginator="true"
+                                         rowKey="#{itemTMP.id}"
+                                         rows="3"
+                                         emptyMessage="#{bundle.EmptyTable}"
+                                         paginatorPosition="bottom" 
+                                         paginatorAlwaysVisible="false">
+                                <p:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="Producto"/>
+                                    </f:facet>
+                                    <h:outputText value="#{itemTMP.producto.toString()}"/>
+                                </p:column>
+                                <p:column width="80">
+                                    <f:facet name="header">
+                                        <h:outputText value="#{bundle.CreateDevolucionProductoTitle_cantidad}"/>
+                                    </f:facet>
+                                    <h:outputText value="#{itemTMP.cantidad}"/>
+                                </p:column>
+                                <p:column style="text-align: center;" width="80">
+                                    <f:facet name="header">
+                                        <h:outputText value="Quitar"/>
+                                    </f:facet>
+                                    <p:commandButton icon="ui-icon-closethick" update="datalistTMP" actionListener="#{visitaProductoController.removeVisitaProducto(itemTMP)}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </p:panelGrid>
+                    </p:panelGrid>
+                </p:panel>
+                <div class="botonesDialog">
+                    <p:commandButton icon="ui-icon-disk" value="#{bundle.Save}" action="#{visitaProductoController.createVisitaProducto()}"/>
+                </div>
+            </h:form>
         </p:dialog>
 
     </ui:composition>

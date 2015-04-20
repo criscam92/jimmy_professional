@@ -109,5 +109,13 @@ public class JsfUtil {
         ServletContext context = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
         return context.getRealPath("/resources/reportes/" + nombreJasper);
     }
-
+    
+    
+    public static String cutText(String text){
+        if (text.length() > 38) {
+            return text.substring(0, 38).concat("...");
+        }else{
+            return text;
+        }
+    }
 }

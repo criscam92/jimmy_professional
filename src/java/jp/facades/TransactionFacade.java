@@ -206,19 +206,27 @@ public class TransactionFacade {
         return false;
     }
 
-    public boolean updatePromocion(Promocion promocion, List<PromocionProducto> promocionProductosGuardar, List<PromocionProducto> promocionProductosEliminar) {
+    public boolean updatePromocion(Promocion promocion, List<PromocionProducto> promocionProductosGuardar, List<PromocionProducto> promocionProductosEliminar, List<PromocionProducto> promocionProductosEditar) {
         userTransaction = sessionContext.getUserTransaction();
         try {
             userTransaction.begin();
             getEntityManager().merge(promocion);
 
             for (PromocionProducto pp : promocionProductosEliminar) {
-                System.out.println("Eliminar");
                 PromocionProducto ppTMP = getEntityManager().find(PromocionProducto.class, pp.getId());
                 getEntityManager().remove(ppTMP);
             }
 
-            System.out.println("Sali Eliminar");
+            System.out.println("===== LIST UPDATE PROMOCION =====");
+            for (PromocionProducto pp : promocionProductosEditar) {
+                System.out.println("ID: " + pp.getId());
+                PromocionProducto ppTMP = getEntityManager().find(PromocionProducto.class, pp.getId());
+                ppTMP.setCantidad(pp.getCantidad());
+                getEntityManager().merge(ppTMP);
+
+            }
+            System.out.println("===== LIST UPDATE PROMOCION =====");
+
             for (PromocionProducto pp : promocionProductosGuardar) {
                 pp.setId(null);
                 pp.setPromocion(promocion);
@@ -528,24 +536,23 @@ public class TransactionFacade {
 
         try {
             userTransaction.begin();
-            
+
             Factura facturaTMP = em.find(Factura.class, f.getId());
             em.merge(facturaTMP);
-            
+
             Pago pagoTMP = em.merge(p);
             Devolucion devolucionTMP = em.merge(d);
-            
+
             PagoDevolucion pagoDevolucion = new PagoDevolucion();
             pagoDevolucion.setDevolucion(devolucionTMP);
             pagoDevolucion.setPago(pagoTMP);
             pagoDevolucion.setRealizado(true);
-            
+
             em.persist(pagoDevolucion);
-            
-            
+
             userTransaction.commit();
             result = true;
-            
+
         } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
             result = false;
             try {

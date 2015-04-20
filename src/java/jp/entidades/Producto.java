@@ -239,7 +239,7 @@ public class Producto implements Serializable, Codificable {
 
     @Override
     public String toString() {
-        return codigo + " - " + nombre;
+        return codigo + " - " + nombre + " " + (gramaje == null ? "" : gramaje);
     }
 
     @Override

@@ -39,16 +39,19 @@
                                              update=":VisitaViewForm,:VisitaViewForm:tablaProductosByVisita" oncomplete="PF('VisitaViewDialog').show()" 
                                              disabled="#{empty visitaController.selected}"/>
                             <p:commandButton id="editButton" icon="ui-icon-pencil" value="#{bundle.Edit}" update=":VisitaEditForm" oncomplete="PF('VisitaEditDialog').show()"
-                                             disabled="#{empty visitaController.selected}" rendered="#{loginController.admin}"/>
+                                             disabled="#{empty visitaController.selected || visitaController.disableEditarVisita()}"/>
                             <p:commandButton id="deleteButton" icon="ui-icon-alert" value="#{bundle.Anull}" actionListener="#{visitaController.anullVisita()}"
                                              update=":growl,datalist" disabled="#{visitaController.disableReporteYAnular()}" rendered="#{loginController.admin}"/>
                             <p:commandButton id="botonReporte" ajax="false" value="#{bundle.Reporte}" icon="ui-icon-document" actionListener="#{visitaController.generarReporte}"
                                              disabled="#{empty visitaController.selected || visitaController.disableReporteYAnular()}" /> 
-                            <p:commandButton id="productos" value="#{bundle.MessageRealizarVisita}" icon="ui-icon-check" action="#{visitaController.redireccionarVisita(visitaController.selected)}"
+                            <p:commandButton id="productos" value="#{bundle.MessageRealizarVisita}" icon="ui-icon-check" oncomplete="PF('VisitaEditDialog').show()"
                                              disabled="#{empty visitaController.selected || visitaController.disableRealizarVisita()}" /> 
                         </div>
                     </f:facet>
 
+                    <p:column style="width: 60px" filterBy="#{item.id}" filterMatchMode="contains" headerText="#{bundle.MessageNumeroVisita}" filterStyle="width: 50px">
+                        <h:outputText value="#{item.id}"/>
+                    </p:column>
                     <p:column>
                         <f:facet name="header">
                             <h:outputText value="#{bundle.ListVisitaTitle_fecha}"/>
@@ -61,7 +64,7 @@
                         <f:facet name="header">
                             <h:outputText value="#{bundle.ListVisitaTitle_observacionesCliente}"/>
                         </f:facet>
-                        <h:outputText value="#{item.observacionesCliente}"/>
+                        <h:outputText value="#{visitaController.cutObservaciones(item.observacionesCliente)}"/>
                     </p:column>
                     <p:column>
                         <f:facet name="header">

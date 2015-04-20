@@ -2,16 +2,12 @@ package jp.controllers;
 
 import jp.entidades.Promocion;
 import jp.util.JsfUtil;
-import jp.util.JsfUtil.PersistAction;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
-import javax.ejb.EJBException;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.component.UIComponent;
@@ -39,14 +35,25 @@ public class PromocionController implements Serializable {
     private List<PromocionProducto> promocionProductos = null;
     private final List<PromocionProducto> promocionProductosEliminar;
     private final List<PromocionProducto> promocionProductosGuardar;
-    private String uiError, error;
+    private final List<PromocionProducto> promocionProductosEditar;
+    private final String uiError;
+    private String header, error;
 
     public PromocionController() {
         uiError = "ui-state-error";
         promocionProductos = new ArrayList<>();
         promocionProductosEliminar = new ArrayList<>();
         promocionProductosGuardar = new ArrayList<>();
+        promocionProductosEditar = new ArrayList<>();
         cantidad = 1;
+    }
+
+    public String getHeader() {
+        return header;
+    }
+
+    public void setHeader(String header) {
+        this.header = header;
     }
 
     public Promocion getSelected() {
@@ -93,10 +100,6 @@ public class PromocionController implements Serializable {
         return transactionFacade;
     }
 
-    public void setTransactionFacade(TransactionFacade transactionFacade) {
-        this.transactionFacade = transactionFacade;
-    }
-
     protected void setEmbeddableKeys() {
     }
 
@@ -111,18 +114,20 @@ public class PromocionController implements Serializable {
         selected = new Promocion();
         setError("");
         promocionProductos = new ArrayList<>();
+        setHeader(JsfUtil.getMessageBundle("CreatePromocionTitle"));
         initializeEmbeddableKey();
         return selected;
     }
 
     public void preparaEditar() {
         promocionProductos = getFacade().getProductosByPromocion(selected);
+        setHeader(JsfUtil.getMessageBundle("EditPromocionTitle"));
     }
 
     public void create(boolean guardar) {
         if (!getFacade().getEntityByCodigoOrTipo(selected)) {
             if (promocionProductos.size() >= 1) {
-                if (transactionFacade.createPromocion(selected, promocionProductos)) {
+                if (getTransactionFacade().createPromocion(selected, promocionProductos)) {
                     if (!JsfUtil.isValidationFailed()) {
                         items = null;    // Invalidate list of items to trigger re-query.
                         selected = new Promocion();
@@ -133,7 +138,7 @@ public class PromocionController implements Serializable {
                             RequestContext.getCurrentInstance().execute("PF('PromocionCreateDialog').hide()");
                         }
                         setError("");
-                        JsfUtil.addSuccessMessage(JsfUtil.getMessageBundle(new String[] {"MessagePromocion","CreateSuccessF"}));
+                        JsfUtil.addSuccessMessage(JsfUtil.getMessageBundle(new String[]{"MessagePromocion", "CreateSuccessF"}));
                     }
                 } else {
                     JsfUtil.addErrorMessage("No se ha podido guardar la Promoción");
@@ -151,7 +156,7 @@ public class PromocionController implements Serializable {
     public void update() {
         if (!getFacade().getEntityByCodigoOrTipo(selected)) {
             if (promocionProductos.size() >= 1) {
-                if (transactionFacade.updatePromocion(selected, promocionProductosGuardar, promocionProductosEliminar)) {
+                if (getTransactionFacade().updatePromocion(selected, promocionProductosGuardar, promocionProductosEliminar, promocionProductosEditar)) {
                     if (!JsfUtil.isValidationFailed()) {
                         items = null;    // Invalidate list of items to trigger re-query.
                         selected = new Promocion();
@@ -160,9 +165,10 @@ public class PromocionController implements Serializable {
                         promocionProductos.clear();
                         promocionProductosGuardar.clear();
                         promocionProductosEliminar.clear();
+                        promocionProductosEditar.clear();
                         setError("");
-                        RequestContext.getCurrentInstance().execute("PF('PromocionEditDialog').hide()");
-                        JsfUtil.addSuccessMessage(JsfUtil.getMessageBundle(new String[] {"MessagePromocion","UpdateSuccessF"}));
+                        RequestContext.getCurrentInstance().execute("PF('PromocionCreateDialog').hide()");
+                        JsfUtil.addSuccessMessage(JsfUtil.getMessageBundle(new String[]{"MessagePromocion", "UpdateSuccessF"}));
                     }
                 } else {
                     JsfUtil.addErrorMessage("No se ha podido actualizar la Promoción");
@@ -179,7 +185,7 @@ public class PromocionController implements Serializable {
     }
 
     public void destroy() {
-        if (transactionFacade.deletePromocion(selected)) {
+        if (getTransactionFacade().deletePromocion(selected)) {
             if (!JsfUtil.isValidationFailed()) {
                 selected = null; // Remove selection
                 items = null;    // Invalidate list of items to trigger re-query.
@@ -194,34 +200,6 @@ public class PromocionController implements Serializable {
             items = getFacade().findAll();
         }
         return items;
-    }
-
-    private void persist(PersistAction persistAction, String successMessage) {
-        if (selected != null) {
-            setEmbeddableKeys();
-            try {
-                if (persistAction != PersistAction.DELETE) {
-                    getFacade().edit(selected);
-                } else {
-                    getFacade().remove(selected);
-                }
-                JsfUtil.addSuccessMessage(successMessage);
-            } catch (EJBException ex) {
-                String msg = "";
-                Throwable cause = ex.getCause();
-                if (cause != null) {
-                    msg = cause.getLocalizedMessage();
-                }
-                if (msg.length() > 0) {
-                    JsfUtil.addErrorMessage(msg);
-                } else {
-                    JsfUtil.addErrorMessage(ex, ResourceBundle.getBundle("languages/Bundle").getString("PersistenceErrorOccured"));
-                }
-            } catch (Exception ex) {
-                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
-                JsfUtil.addErrorMessage(ex, ResourceBundle.getBundle("languages/Bundle").getString("PersistenceErrorOccured"));
-            }
-        }
     }
 
     public List<Promocion> getItemsAvailableSelectMany() {
@@ -300,19 +278,60 @@ public class PromocionController implements Serializable {
         return getFacade().getProductosByQuery(query);
     }
 
+    public int cantidadTotal() {
+        int sum = 0;
+        for (PromocionProducto pp : promocionProductos) {
+            sum += pp.getCantidad();
+        }
+        return sum;
+    }
+
+    public double precioTotal() {
+        double sum = 0.0;
+        for (PromocionProducto pp : promocionProductos) {
+            sum += (pp.getCantidad() * pp.getProducto().getValorVenta());
+        }
+        return sum;
+    }
+
+    public double precioUsTotal() {
+        double sum = 0.0;
+        for (PromocionProducto pp : promocionProductos) {
+            sum += (pp.getCantidad() * pp.getProducto().getValorVentaUsd());
+        }
+        return sum;
+    }
+
     public void addPromocionProducto() {
         if (promocionProductoValido()) {
-            PromocionProducto pp = new PromocionProducto();
 
-            pp.setId(promocionProductos.size() + 1L);
-            pp.setProducto(producto);
-            pp.setCantidad(cantidad);
+            boolean productoExiste = false;
+            for (PromocionProducto ppTMP : promocionProductos) {
+                if (ppTMP.getProducto().getId().equals(producto.getId())) {
+                    productoExiste = true;
+                    ppTMP.setCantidad(ppTMP.getCantidad() + cantidad);
 
-            if (selected.getId() != null) {
-                promocionProductosGuardar.add(pp);
+                    if (selected.getId() != null) {
+                        promocionProductosEditar.add(ppTMP);
+                    }
+                    break;
+                }
             }
 
-            promocionProductos.add(pp);
+            if (!productoExiste) {
+                PromocionProducto pp = new PromocionProducto();
+
+                pp.setId(promocionProductos.size() + 1L);
+                pp.setProducto(producto);
+                pp.setCantidad(cantidad);
+
+                if (selected.getId() != null) {
+                    promocionProductosGuardar.add(pp);
+                }
+
+                promocionProductos.add(pp);
+            }
+
             producto = null;
             cantidad = 1;
         }
@@ -324,7 +343,17 @@ public class PromocionController implements Serializable {
             promocionProductosEliminar.add(promocionProducto);
         }
         promocionProductos.remove(promocionProducto);
+    }
 
+    /**
+     * @param promocionProducto Entity de la que desea obtener el valor
+     * @param tipo indica el valor que desea obtener. 1 - Valor (Pesos) y 2
+     * Valor (US)
+     * @return Retorna el valor seleccionado
+     */
+    public double getValor(PromocionProducto promocionProducto, int tipo) {
+        return tipo == 1 ? (promocionProducto.getCantidad() * promocionProducto.getProducto().getValorVenta())
+                : (promocionProducto.getCantidad() * promocionProducto.getProducto().getValorVentaUsd());
     }
 
 }
