@@ -414,7 +414,7 @@ public class FacturaController implements Serializable {
         return false;
     }
 
-    @FacesConverter(forClass = Factura.class)
+    @FacesConverter(forClass = Factura.class, value = "facturaConverter")
     public static class FacturaControllerConverter implements Converter {
 
         @Override

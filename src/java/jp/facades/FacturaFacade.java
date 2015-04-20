@@ -1,5 +1,6 @@
 package jp.facades;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -10,16 +11,18 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import jp.entidades.Cliente;
 import jp.entidades.DespachoFactura;
 import jp.entidades.Factura;
 import jp.entidades.FacturaProducto;
 import jp.entidades.Pago;
 import jp.entidades.Promocion;
 import jp.util.EstadoPagoFactura;
+import jp.util.Moneda;
 
 @Stateless
 public class FacturaFacade extends AbstractFacade<Factura> {
-
+    
     @PersistenceContext(unitName = "jimmy_professionalPU")
     private EntityManager em;
 
@@ -123,5 +126,82 @@ public class FacturaFacade extends AbstractFacade<Factura> {
         } catch (Exception e) {
         }
         return null;
+    }
+   
+    public List<Factura> getFacturasPendientesByCliente(Cliente c){
+        return getFacturasPendientesByCliente(c, null);
+    }
+    
+    /**
+     * Retorna las facturas con pago pendiente del cliente indicado y con la moneda indicada
+     * @param c Instancia del cliente de las facturas
+     * @param moneda Indica la moneda a buscar, si desea obtener todas las facturas, envíe el valor nulo
+     * @return listado de facturas, si no encuentra, retorna nulo
+     * 
+     * @see Moneda
+     * 
+     */
+    public List<Factura> getFacturasPendientesByCliente(Cliente c, Moneda moneda) {
+        List<Factura> facturasPendientesTMP;
+        try {
+            String queryMoneda = "";
+            if(moneda != null){
+                queryMoneda = " AND f.dolar = :dol";
+            }
+            Query queryFactura = em.createQuery("SELECT f FROM Factura f WHERE f.cliente.id= :clie AND f.estado<> :est1 AND f.estado<> :est2".concat(queryMoneda));
+            queryFactura.setParameter("clie", c.getId());
+            queryFactura.setParameter("est1", EstadoPagoFactura.ANULADO.getValor());
+            queryFactura.setParameter("est2", EstadoPagoFactura.CANCELADO.getValor());
+            if(moneda != null){
+                queryFactura.setParameter("dol", moneda.equals(Moneda.DOLAR));
+            }
+            
+            facturasPendientesTMP = queryFactura.getResultList();
+
+            return getFacturasPendientesPago(facturasPendientesTMP);
+
+//            return facturasPendientesTMP;
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+
+    public List<Factura> getFacturasPendientesPago(List<Factura> fs) {
+        List<Factura> facturasFinal = new ArrayList<>();
+
+        try {
+            for (Factura f : fs) {
+                Query q = em.createQuery("SELECT SUM(p.valorTotal) FROM Pago p WHERE p.factura.id = :f");
+                q.setParameter("f", f.getId());
+                Double totalPago = (Double) q.getSingleResult();
+                System.out.println("totalPago de factura: " + f + "->" + totalPago);
+
+                Query q2 = em.createQuery("SELECT SUM(f.totalPagar) FROM Factura f WHERE f.id = :f");
+                q2.setParameter("f", f.getId());
+                Double totalFactura = (Double) q2.getSingleResult();
+                System.out.println("totalFactura de factura: " + f + "->" + totalFactura);
+
+                if (totalPago == null) {
+                    f.setSaldo(f.getTotalPagar());
+                    f.setSaldoCancelado(0d);
+                    facturasFinal.add(f);
+                } else {
+                    if (totalPago < totalFactura) {
+                        f.setSaldo(totalFactura - totalPago);
+                        f.setSaldoCancelado(totalPago);
+                        facturasFinal.add(f);
+                    }
+                }
+
+            }
+
+//            for (Factura ff : facturasFinal) {
+//                System.out.println("factura a devolver-> " + ff.getObservaciones());
+//            }
+            return facturasFinal;
+
+        } catch (NoResultException nre) {
+            return null;
+        }
     }
 }

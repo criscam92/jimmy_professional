@@ -126,9 +126,12 @@ div.contenido div.ui-layout-unit-content.ui-widget-content{
 }
 
 .ui-grid-col-3.col-3-fixed{
-    width: 410px;
+    width: 320px;
+    min-width: 310px;
+    padding-right: 20px;
+    display: block;
 }
 
 .ui-grid-col-9.col-9-auto{
-    width: auto;
+    /*width: auto;*/
 }

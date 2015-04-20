@@ -28,6 +28,7 @@ import jp.entidades.Pago;
 import jp.entidades.Producto;
 import jp.facades.CambioDevolucionFacade;
 import jp.facades.DevolucionFacade;
+import jp.facades.FacturaFacade;
 import jp.facades.TransactionFacade;
 import jp.seguridad.UsuarioActual;
 import jp.util.EstadoPagoFactura;
@@ -46,7 +47,7 @@ public class DevolucionController implements Serializable {
     @EJB
     private jp.facades.CambioDevolucionFacade ejbCambioDevolucion;
     @EJB
-    private jp.facades.PagoDevolucionFacade ejbPagoDevolucion;
+    private jp.facades.FacturaFacade ejbFacturaFacade;
     @EJB
     private DevolucionSessionBean devolucionSessionBean;
     
@@ -189,6 +190,10 @@ public class DevolucionController implements Serializable {
 
     public CambioDevolucionFacade getEjbCambioDevolucion() {
         return ejbCambioDevolucion;
+    }
+
+    public FacturaFacade getEjbFacturaFacade() {
+        return ejbFacturaFacade;
     }
 
     public Devolucion prepareCreate() {
@@ -390,7 +395,7 @@ public class DevolucionController implements Serializable {
 
     public void onItemSelecCliente(SelectEvent event) {
         Cliente c = (Cliente) event.getObject();
-        facturasPendientesClienteTMP = getFacade().getFacturasPendientesByCliente(c, selected.getDolar());
+        facturasPendientesClienteTMP = getEjbFacturaFacade().getFacturasPendientesByCliente(c, selected.getDolar()?Moneda.DOLAR:Moneda.PESO);
         if (facturasPendientesClienteTMP != null && !facturasPendientesClienteTMP.isEmpty()) {
             totalSaldoPendiente = 0.0;
             for (Factura fp : facturasPendientesClienteTMP) {

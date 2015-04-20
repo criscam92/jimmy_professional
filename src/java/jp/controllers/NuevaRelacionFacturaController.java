@@ -20,9 +20,12 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import jp.entidades.Cliente;
 import jp.entidades.Empleado;
+import jp.entidades.Factura;
 import jp.entidades.RelacionFactura;
 import jp.entidades.Talonario;
+import jp.facades.FacturaFacade;
 import jp.facades.RelacionFacturaFacade;
 import jp.facades.TalonarioFacade;
 import jp.util.TipoTalonario;
@@ -36,12 +39,17 @@ public class NuevaRelacionFacturaController implements Serializable {
     private jp.facades.RelacionFacturaFacade ejbFacade;
     @EJB
     private jp.facades.TalonarioFacade talonarioFacade;
+    @EJB
+    private jp.facades.FacturaFacade facturaFacade;
     
     private RelacionFactura relacionFactura;
     
     private List<Pago> items = null;
     private Pago selected;
     
+    private Cliente clienteTemporal;
+    private List<Factura> facturasTemporales;
+            
     private Talonario talonario;
     
 
@@ -69,6 +77,49 @@ public class NuevaRelacionFacturaController implements Serializable {
         this.relacionFactura = relacionFactura;
     }
 
+    public Cliente getClienteTemporal() {
+        return clienteTemporal;
+    }
+
+    public void setClienteTemporal(Cliente clienteTemporal) {
+        this.clienteTemporal = clienteTemporal;
+    }
+
+    public List<Factura> getFacturasTemporales() {
+        if(facturasTemporales==null){
+            facturasTemporales = new ArrayList<>();
+        }
+        return facturasTemporales;
+    }
+
+    public void setFacturasTemporales(List<Factura> facturasTemporales) {
+        this.facturasTemporales = facturasTemporales;
+    }
+    
+    public void onItemSelecCliente(SelectEvent event) {
+        
+        if(event.getObject()!=null){
+            Cliente c = (Cliente) event.getObject();
+            facturasTemporales = getFacturaFacade().getFacturasPendientesByCliente(c);
+            System.out.println("Se obtuvieron "+facturasTemporales.size()+" facturas pendientes");
+        }
+        
+//        facturasPendientesClienteTMP = getFacade().getFacturasPendientesByCliente(c, selected.getDolar());
+//        if (facturasPendientesClienteTMP != null && !facturasPendientesClienteTMP.isEmpty()) {
+//            totalSaldoPendiente = 0.0;
+//            for (Factura fp : facturasPendientesClienteTMP) {
+//                messageSaldo = "Abonar a Factura";
+//                deshabilitarAbono = false;
+//                totalSaldoPendiente += fp.getSaldo();
+//            }
+//
+//        } else {
+//            messageSaldo = "Cliente sin Saldo";
+//            deshabilitarAbono = true;
+//        }
+
+    }
+
     protected void setEmbeddableKeys() {
     }
 
@@ -81,6 +132,10 @@ public class NuevaRelacionFacturaController implements Serializable {
     
     public TalonarioFacade getTalonarioFacade() {
         return talonarioFacade;
+    }
+
+    public FacturaFacade getFacturaFacade() {
+        return facturaFacade;
     }
 
     public RelacionFactura prepareCreate() {
