@@ -20,6 +20,7 @@
                             <p:outputLabel value="#{bundle.CreateClienteLabel_direccion}" for="direccion" />
                             <p:inputText id="direccion" value="#{clienteController.selected.direccion}" title="#{bundle.CreateClienteTitle_direccion}" required="true" requiredMessage="#{bundle.CreateClienteRequiredMessage_direccion}"/>
                             <p:outputLabel value="#{bundle.CreateClienteLabel_ciudad}" for="ciudad" />
+                            
                             <p:selectOneMenu converter="ciudadconverter" style="width: 155px" id="ciudad" value="#{clienteController.selected.ciudad}"
                                              required="true" requiredMessage="#{bundle.EditClienteRequiredMessage_ciudad}">
                                 <p:ajax update="checkRecargo tarifa tarifaEspecial" listener="#{clienteController.onchange}" immediate="true"/>
@@ -27,6 +28,7 @@
                                 <f:selectItems  value="#{ciudadController.itemsAvailableSelectOne}"
                                                 var="ciudadItem"
                                                 itemValue="#{ciudadItem}"/>
+                            
                             </p:selectOneMenu>
                             <p:outputLabel value="#{bundle.CreateClienteLabel_cat}" for="categoria" />
                             <p:selectOneMenu converter="categoriaconverter" style="width: 155px" id="categoria" value="#{clienteController.selected.categoria}">

@@ -266,13 +266,7 @@ public class VisitaController implements Serializable {
 
     @Deprecated
     public boolean disableAnularVisita() {
-        boolean disable = false;
-        if (selected != null && selected.getEstado() == EstadoVisita.REALIZADA.getValor()) {
-            disable = false;
-        } else {
-            disable = true;
-        }
-        return disable;
+        return !(selected != null && selected.getEstado() == EstadoVisita.REALIZADA.getValor());
     }
 
     public boolean disableReporteYAnular() {
@@ -320,12 +314,8 @@ public class VisitaController implements Serializable {
 
                 JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(visitas);
 
-                HashMap map = new HashMap();
-                //map.put("venta", "" + getCantidadVentasOrBonificacionesByFactura(visita, 1));
-                //map.put("bonificacion", "" + getCantidadVentasOrBonificacionesByFactura(visita, 2));
-
                 try {
-                    JasperPrint jasperPrint = JasperFillManager.fillReport(reporte1.getPath(), map, dataSource);
+                    JasperPrint jasperPrint = JasperFillManager.fillReport(reporte1.getPath(), new HashMap(), dataSource);
 
                     HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
                     response.addHeader("Content-disposition", "attachment; filename=Visita.pdf");
@@ -357,14 +347,14 @@ public class VisitaController implements Serializable {
     public String cutObservaciones(String texto) {
         return JsfUtil.cutText(texto);
     }
-    
+
     public Visita prepareCreate() {
         selected = new Visita();
         itemsTMP = new ArrayList<>();
         initializeEmbeddableKey();
         return selected;
     }
-    
+
     public void preparaEditar() {
         itemsTMP = getFacade().getProductosByVisita(selected);
         setHeader(JsfUtil.getMessageBundle("EditVisitaTitle"));

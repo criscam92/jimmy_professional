@@ -38,6 +38,7 @@ import jp.entidades.ProductoHelper;
 import jp.entidades.ProductoPromocionHelper;
 import jp.entidades.Visita;
 import jp.entidades.VisitaProducto;
+import jp.util.EstadoPagoFactura;
 import jp.util.EstadoVisita;
 
 @Stateful
@@ -447,7 +448,11 @@ public class TransactionFacade {
             despachoFacturaTMP.setRealizado(despachoFactura.getRealizado());
             getEntityManager().merge(despachoFacturaTMP);
 
+            boolean facturaRealizada = true;
             for (ProductoHelper ph : productoHelpers) {
+                if (facturaRealizada && (ph.getCantidadFacturada() == ph.getCantidadADespachar())) {
+                    facturaRealizada = false;
+                }
                 if (ph.getCantidadADespachar() > 0) {
                     DespachoFacturaProducto dfp = new DespachoFacturaProducto();
                     dfp.setCantidad(ph.getCantidadADespachar());
@@ -457,6 +462,10 @@ public class TransactionFacade {
                     getEntityManager().merge(dfp);
                 }
             }
+
+            Factura facturaTMP = getEntityManager().find(Factura.class, despachoFacturaTMP.getFactura().getId());
+            facturaTMP.setEstado(facturaRealizada ? EstadoPagoFactura.REALIZADA.getValor() : EstadoPagoFactura.PENDIENTE.getValor());
+            getEntityManager().merge(facturaTMP);
 
             userTransaction.commit();
         } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
