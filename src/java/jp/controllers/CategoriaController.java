@@ -155,7 +155,7 @@ public class CategoriaController implements Serializable {
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
-            if (value == null || value.length() == 0) {
+            if (value == null || value.length() == 0  || value.equals(JsfUtil.getMessageBundle("SelectOneMessage"))) {
                 return null;
             }
             CategoriaController controller = (CategoriaController) facesContext.getApplication().getELResolver().

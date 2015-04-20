@@ -30,10 +30,10 @@ public class IngresoController implements Serializable {
     @EJB
     private IngresoFacade ejbFacade;
     @EJB
-    private TransactionFacade transactionFacade;    
+    private TransactionFacade transactionFacade;
     @Inject
     private UsuarioActual usuarioActual;
-    
+
     private List<Ingreso> items = null;
     private Ingreso selected;
     private Producto producto;
@@ -41,12 +41,14 @@ public class IngresoController implements Serializable {
     private List<IngresoProducto> ingresoProductos = null;
     private final List<IngresoProducto> ingresoProductosEliminar;
     private final List<IngresoProducto> ingresoProductosGuardar;
+    private final List<IngresoProducto> ingresoProductosEditar;
     private String header;
 
     public IngresoController() {
         ingresoProductos = new ArrayList<>();
         ingresoProductosEliminar = new ArrayList<>();
         ingresoProductosGuardar = new ArrayList<>();
+        ingresoProductosEditar = new ArrayList<>();
         cantidad = 1;
     }
 
@@ -146,7 +148,7 @@ public class IngresoController implements Serializable {
     public void update() {
         if (ingresoProductos.size() >= 1) {
             selected.setUsuario(usuarioActual.get());
-            if (transactionFacade.updateIngreso(selected, ingresoProductosGuardar, ingresoProductosEliminar)) {
+            if (getTransactionFacade().updateIngreso(selected, ingresoProductosGuardar, ingresoProductosEliminar, ingresoProductosEditar)) {
                 if (!JsfUtil.isValidationFailed()) {
                     items = null;    // Invalidate list of items to trigger re-query.
                     selected = new Ingreso();
@@ -155,6 +157,7 @@ public class IngresoController implements Serializable {
                     ingresoProductos.clear();
                     ingresoProductosGuardar.clear();
                     ingresoProductosEliminar.clear();
+                    ingresoProductosEditar.clear();
                 }
             } else {
                 JsfUtil.addErrorMessage("NO SE A PODIDO actualizar EL INGRESO");
@@ -261,17 +264,34 @@ public class IngresoController implements Serializable {
 
     public void addIngresoProducto() {
         if (ingresoProductoValido()) {
-            IngresoProducto ip = new IngresoProducto();
 
-            ip.setId(ingresoProductos.size() + 1L);
-            ip.setProducto(producto);
-            ip.setCantidad(cantidad);
+            boolean productoExiste = false;
+            for (IngresoProducto ip : ingresoProductos) {
+                if (ip.getProducto().getId().equals(producto.getId())) {
+                    productoExiste = true;
+                    ip.setCantidad(ip.getCantidad() + cantidad);
 
-            if (selected.getId() != null) {
-                ingresoProductosGuardar.add(ip);
+                    if (selected.getId() != null) {
+                        ingresoProductosEditar.add(ip);
+                    }
+                    break;
+                }
             }
 
-            ingresoProductos.add(ip);
+            if (!productoExiste) {
+                IngresoProducto ip = new IngresoProducto();
+
+                ip.setId(ingresoProductos.size() + 1L);
+                ip.setProducto(producto);
+                ip.setCantidad(cantidad);
+
+                if (selected.getId() != null) {
+                    ingresoProductosGuardar.add(ip);
+                }
+
+                ingresoProductos.add(ip);
+            }
+
             producto = null;
             cantidad = 1;
         }

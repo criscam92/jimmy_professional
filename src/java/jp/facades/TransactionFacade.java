@@ -217,15 +217,12 @@ public class TransactionFacade {
                 getEntityManager().remove(ppTMP);
             }
 
-            System.out.println("===== LIST UPDATE PROMOCION =====");
             for (PromocionProducto pp : promocionProductosEditar) {
-                System.out.println("ID: " + pp.getId());
                 PromocionProducto ppTMP = getEntityManager().find(PromocionProducto.class, pp.getId());
                 ppTMP.setCantidad(pp.getCantidad());
                 getEntityManager().merge(ppTMP);
 
             }
-            System.out.println("===== LIST UPDATE PROMOCION =====");
 
             for (PromocionProducto pp : promocionProductosGuardar) {
                 pp.setId(null);
@@ -322,14 +319,14 @@ public class TransactionFacade {
             userTransaction.commit();
         } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
             try {
-//                System.out.println("======>");
-//                e.printStackTrace();
-//                System.out.println("<======");
+                System.out.println("======>");
+                e.printStackTrace();
+                System.out.println("<======");
                 userTransaction.rollback();
             } catch (IllegalStateException | SecurityException | SystemException es) {
-//                System.out.println("======>");
-//                es.printStackTrace();
-//                System.out.println("<======");
+                System.out.println("======>");
+                es.printStackTrace();
+                System.out.println("<======");
             }
         }
     }
@@ -368,15 +365,21 @@ public class TransactionFacade {
         return false;
     }
 
-    public boolean updateIngreso(Ingreso ingreso, List<IngresoProducto> ingresoProductosGuardar, List<IngresoProducto> ingresoProductosEliminar) {
+    public boolean updateIngreso(Ingreso ingreso, List<IngresoProducto> ingresoProductosGuardar, List<IngresoProducto> ingresoProductosEliminar, List<IngresoProducto> ingresoProductosEditar) {
         userTransaction = sessionContext.getUserTransaction();
         try {
             userTransaction.begin();
             getEntityManager().merge(ingreso);
 
             for (IngresoProducto ip : ingresoProductosEliminar) {
-                PromocionProducto ppTMP = getEntityManager().find(PromocionProducto.class, ip.getId());
-                getEntityManager().remove(ppTMP);
+                IngresoProducto ipTMP = getEntityManager().find(IngresoProducto.class, ip.getId());
+                getEntityManager().remove(ipTMP);
+            }
+
+            for (IngresoProducto ip : ingresoProductosEditar) {
+                IngresoProducto ipTMP = getEntityManager().find(IngresoProducto.class, ip.getId());
+                ipTMP.setCantidad(ip.getCantidad());
+                getEntityManager().merge(ipTMP);
             }
 
             for (IngresoProducto ip : ingresoProductosGuardar) {
