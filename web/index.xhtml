@@ -26,51 +26,70 @@
 
                     <p:menubar rendered="#{loginController.user != null}">
                         <p:menuitem class="menuPrincipal" value="#{bundle.Home}" outcome="/index" icon="ui-icon-home"/>
-                        <p:submenu class="menuPrincipal" label="#{bundle.Maintenance}">
+                        
+                        <p:submenu class="menuPrincipal" label="Clientes">
+                            <p:menuitem value="Clientes" outcome="/content/cliente/List.xhtml" />
+                        </p:submenu>
+                        
+                        <p:submenu class="menuPrincipal" label="Productos">
+                            <p:menuitem value="Ingreso a Inventario" outcome="/content/ingreso/List.xhtml" />
+                            <p:menuitem value="Productos" outcome="/content/producto/List.xhtml" />
+                            <p:menuitem value="Promociones" outcome="/content/promocion/List.xhtml" />
+                        </p:submenu>
+                        
+                        <p:submenu class="menuPrincipal" label="Pedidos">
+                            <p:menuitem value="Órdenes de Pedido" outcome="/content/factura/List.xhtml" />
+                            <p:menuitem value="Devoluciones" outcome="/content/devolucionProducto/List.xhtml" />
+                        </p:submenu>
+                        
+                        <p:submenu class="menuPrincipal" label="Pagos">
+                                    <p:menuitem value="Nuevo Pago" outcome="/content/pago/Create.xhtml" />
+                                    <p:menuitem value="Consulta de Pagos" outcome="/content/pago/List.xhtml" />
+                        </p:submenu>
+                        
+                        <p:submenu class="menuPrincipal" label="Visitas">
+                                
+                                <p:menuitem value="Programación de Visitas" outcome="/content/visita/List.xhtml" />
+                        </p:submenu>
+                        
+                        <p:submenu class="menuPrincipal" label="Configuración">
 
-                            <p:submenu label="Ciudades">
+                            <p:submenu label="Lugares">
                                 <p:menuitem value="Paises" outcome="/content/pais/List.xhtml" />
                                 <p:menuitem value="Ciudades" outcome="/content/ciudad/List.xhtml" />
                             </p:submenu>
 
-                            <p:submenu label="Productos">
-                                <p:menuitem value="Categorias" outcome="/content/categoria/List.xhtml" />
-                                <p:menuitem value="Ingreso" outcome="/content/ingreso/List.xhtml" />
-                                <p:menuitem value="Productos" outcome="/content/producto/List.xhtml" />
-                                <p:menuitem value="Promociones" outcome="/content/promocion/List.xhtml" />
-                            </p:submenu>
-
-                            <p:submenu label="Personal">
-                                <p:menuitem value="Recargos" outcome="/content/recargo/index.xhtml" />
-                                <p:menuitem value="Clientes" outcome="/content/cliente/List.xhtml" />
+                            <p:submenu label="Empleados">
                                 <p:menuitem value="Empleados" outcome="/content/empleado/List.xhtml" />
-                                <p:menuitem value="Tipos de Clientes" outcome="/content/tipoCliente/List.xhtml" />
                                 <p:menuitem value="Tipos de Empleados" outcome="/content/tipoEmpleado/List.xhtml" />
-                                <p:menuitem value="Zonas" outcome="/content/zona/List.xhtml" />                                
+                            </p:submenu>
+                            
+                            <p:submenu label="Clientes">
+                                <p:menuitem value="Tipos de Clientes" outcome="/content/tipoCliente/List.xhtml" />
+                                <p:menuitem value="Zonas" outcome="/content/zona/List.xhtml" />              
+                                <p:menuitem value="Categorias" outcome="/content/categoria/List.xhtml" />
                             </p:submenu>
 
-                            <p:submenu label="Pedidos y pagos">
-                                <p:menuitem value="Talonarios" outcome="/content/talonario/List.xhtml" />
-                                <p:menuitem value="Cuentas Bancarias" outcome="/content/cuentaBancaria/List.xhtml" />
-                                <p:menuitem value="Órdenes de Pedido" outcome="/content/factura/List.xhtml" />
-                                <p:menuitem value="Códigos de Devolución" outcome="/content/codigoDevolucion/List.xhtml" />
-                                <p:menuitem value="Devoluciones" outcome="/content/devolucionProducto/List.xhtml" />
-                                <p:submenu label="Pagos">
-                                    <p:menuitem value="Nuevo Pago" outcome="/content/pago/Create.xhtml" />
-                                    <p:menuitem value="Consulta de Pagos" outcome="/content/pago/List.xhtml" />
+                            <p:submenu label="Pagos">
                                     <p:menuitem value="Tipos de Publicidad" outcome="/content/tipoPublicidad/List.xhtml" />                            
-                                </p:submenu>
+                                    <p:menuitem value="Cuentas Bancarias" outcome="/content/cuentaBancaria/List.xhtml" />
                             </p:submenu>
-
+                            
                             <p:submenu label="Visitas">
                                 <p:menuitem value="Procedimientos" outcome="/content/procedimiento/List.xhtml" />
-                                <p:menuitem value="Programación de Visitas" outcome="/content/visita/List.xhtml" />
                             </p:submenu>
+                            
+                            <p:menuitem value="Códigos de Devolución" outcome="/content/codigoDevolucion/List.xhtml" />
+                            <p:menuitem value="Talonarios" outcome="/content/talonario/List.xhtml" />
+                            
+                            
+                            <p:menuitem value="Parametros Adicionales" outcome="/content/recargo/index.xhtml" />
 
-                            <p:menuitem value="Usuarios" outcome="/content/usuario/List.xhtml" rendered="#{loginController.admin}"/>
+                            
                         </p:submenu>
                         
-                        <p:submenu class="menuPrincipal" label="#{loginController.user.usuario}" rendered="#{loginController.user != null}">
+                        <p:submenu style="float:right;" class="menuPrincipal" label="Usuario Actual: #{loginController.user.usuario}" rendered="#{loginController.user != null}">
+                            <p:menuitem value="Usuarios" outcome="/content/usuario/List.xhtml" rendered="#{loginController.admin}"/>
                             <p:menuitem action="#{loginController.logoutLink()}" icon="ui-icon-power" value="#{bundle.LogOut}" />
                         </p:submenu>
                     </p:menubar>
