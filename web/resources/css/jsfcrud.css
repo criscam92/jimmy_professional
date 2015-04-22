@@ -132,6 +132,18 @@ div.contenido div.ui-layout-unit-content.ui-widget-content{
     display: block;
 }
 
-.ui-grid-col-9.col-9-auto{
-    /*width: auto;*/
+.containerVisita{
+    height: 109px;
+    position: relative
+}
+
+.containerVisita p{
+    margin: 0;
+    color: red;
+    font-size: 16px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%) 
 }

@@ -10,13 +10,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.bean.SessionScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
@@ -25,10 +24,12 @@ import javax.faces.event.ActionEvent;
 import javax.inject.Inject;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
+import jp.entidades.Producto;
 import jp.entidades.VisitaProducto;
 import jp.facades.TransactionFacade;
 import jp.facades.VisitaFacade;
 import jp.facades.VisitaProductoFacade;
+import jp.seguridad.UsuarioActual;
 import jp.util.EstadoVisita;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
@@ -37,27 +38,40 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
 @ManagedBean(name = "visitaController")
-@ViewScoped
+@SessionScoped
 public class VisitaController implements Serializable {
 
     @EJB
-    private jp.facades.VisitaFacade ejbFacade;
+    private VisitaFacade ejbFacade;
     @EJB
-    private jp.facades.VisitaProductoFacade ejbVisitaProductoFacade;
+    private VisitaProductoFacade ejbVisitaProductoFacade;
     @Inject
-    private jp.seguridad.UsuarioActual usuarioActual;
+    private UsuarioActual usuarioActual;
     @EJB
-    private jp.facades.TransactionFacade ejbTransactionFacade;
-    private List<Visita> items = null;
-    private List<VisitaProducto> itemsTMP = null;
-    private String header;
+    private TransactionFacade transactionFacade;
 
     private List<EstadoVisita> estadoVisitasFilter = null;
-
     private Visita selected;
+    private Producto producto;
+    private int cantidad;
+    private List<Visita> items = null;
+    private List<VisitaProducto> visitaProductos = null;
+    private final List<VisitaProducto> visitaProductosEliminar;
+    private final List<VisitaProducto> visitaProductosGuardar;
+    private final List<VisitaProducto> visitaProductosEditar;
+    private boolean create;
+    private String header;
 
     public VisitaController() {
-        itemsTMP = new ArrayList<>();
+        visitaProductos = new ArrayList<>();
+        visitaProductosEliminar = new ArrayList<>();
+        visitaProductosGuardar = new ArrayList<>();
+        visitaProductosEditar = new ArrayList<>();
+        cantidad = 1;
+    }
+
+    public List<VisitaProducto> getVisitaProductos() {
+        return visitaProductos;
     }
 
     public Visita getSelected() {
@@ -68,26 +82,20 @@ public class VisitaController implements Serializable {
         this.selected = selected;
     }
 
-    public List<VisitaProducto> getItemsTMP() {
-        return itemsTMP;
+    public Producto getProducto() {
+        return producto;
     }
 
-    public void setItemsTMP(List<VisitaProducto> itemsTMP) {
-        this.itemsTMP = itemsTMP;
+    public void setProducto(Producto producto) {
+        this.producto = producto;
     }
 
-    public String getHeader() {
-        return header;
+    public int getCantidad() {
+        return cantidad;
     }
 
-    public void setHeader(String header) {
-        this.header = header;
-    }
-
-    protected void setEmbeddableKeys() {
-    }
-
-    protected void initializeEmbeddableKey() {
+    public void setCantidad(int cantidad) {
+        this.cantidad = cantidad;
     }
 
     private VisitaFacade getFacade() {
@@ -98,8 +106,8 @@ public class VisitaController implements Serializable {
         return ejbVisitaProductoFacade;
     }
 
-    public TransactionFacade getEjbTransactionFacade() {
-        return ejbTransactionFacade;
+    public TransactionFacade getTransactionFacade() {
+        return transactionFacade;
     }
 
     public List<EstadoVisita> getEstadoVisitasFilter() {
@@ -111,21 +119,15 @@ public class VisitaController implements Serializable {
     }
 
     public void create() {
-        selected.setObservacionesCliente("Visita Asignada a " + selected.getEmpleado());
-        selected.setEstado(EstadoVisita.PENDIENTE.getValor());
-        System.out.println("Fecha-> " + selected.getFecha());
-        System.out.println("Observaciones-> " + selected.getObservacionesCliente());
-        System.out.println("calificacion servicio-> " + selected.getCalificacionServicio());
-        System.out.println("Puntualidad-> " + selected.getPuntualidadServicio());
-        System.out.println("Cumplio expectativas?-> " + selected.getCumplioExpectativas());
-        System.out.println("Estado-> " + selected.getEstado());
-        System.out.println("cliente-> " + selected.getCliente());
-        System.out.println("empleado-> " + selected.getEmpleado());
-        System.out.println("Procedimiento-> " + selected.getProcedimiento().getDescripcion());
-        persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageVisita", "CreateSuccessF"}));
-        if (!JsfUtil.isValidationFailed()) {
-            items = null;    // Invalidate list of items to trigger re-query.
-            itemsTMP.clear();
+        if (create) {
+            selected.setObservacionesCliente("Visita Asignada a " + selected.getEmpleado());
+            selected.setEstado(EstadoVisita.PENDIENTE.getValor());
+            persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageVisita", "CreateSuccessF"}));
+            if (!JsfUtil.isValidationFailed()) {
+                items = null;
+            }
+        } else {
+            update();
         }
     }
 
@@ -150,7 +152,6 @@ public class VisitaController implements Serializable {
 
     private void persist(PersistAction persistAction, String successMessage) {
         if (selected != null) {
-            setEmbeddableKeys();
             try {
                 if (persistAction != PersistAction.DELETE) {
                     getFacade().edit(selected);
@@ -167,11 +168,11 @@ public class VisitaController implements Serializable {
                 if (msg.length() > 0) {
                     JsfUtil.addErrorMessage(msg);
                 } else {
-                    JsfUtil.addErrorMessage(ex, ResourceBundle.getBundle("languages/Bundle").getString("PersistenceErrorOccured"));
+                    JsfUtil.addErrorMessage(ex, JsfUtil.getMessageBundle("PersistenceErrorOccured"));
                 }
             } catch (Exception ex) {
                 Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
-                JsfUtil.addErrorMessage(ex, ResourceBundle.getBundle("languages/Bundle").getString("PersistenceErrorOccured"));
+                JsfUtil.addErrorMessage(ex, JsfUtil.getMessageBundle("PersistenceErrorOccured"));
             }
         }
     }
@@ -197,13 +198,13 @@ public class VisitaController implements Serializable {
             return controller.getFacade().find(getKey(value));
         }
 
-        java.lang.Long getKey(String value) {
-            java.lang.Long key;
+        Long getKey(String value) {
+            Long key;
             key = Long.valueOf(value);
             return key;
         }
 
-        String getStringKey(java.lang.Long value) {
+        String getStringKey(Long value) {
             StringBuilder sb = new StringBuilder();
             sb.append(value);
             return sb.toString();
@@ -224,21 +225,6 @@ public class VisitaController implements Serializable {
         }
     }
 
-    /**
-     *
-     * @param visita
-     * @return Lista de productos incluidos en la visita
-     */
-    public List<VisitaProducto> getProductosByVisita(Visita visita) {
-        try {
-            itemsTMP = getEjbVisitaProductoFacade().getProductosByVisita(visita);
-            return getEjbVisitaProductoFacade().getProductosByVisita(visita);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     public EstadoVisita[] getEstadosVisita() {
         return EstadoVisita.values();
     }
@@ -257,48 +243,34 @@ public class VisitaController implements Serializable {
     }
 
     public boolean disableRealizarVisita() {
-        return !(selected != null && selected.getEstado() == EstadoVisita.PENDIENTE.getValor());
+        if (selected != null && usuarioActual.isAdmin() && selected.getEstado() != EstadoVisita.ANULADA.getValor() && selected.getEstado() != EstadoVisita.CANCELADA.getValor()) {
+            return false;
+        } else {
+            return !(selected != null && !usuarioActual.isAdmin() && selected.getEstado() == EstadoVisita.PENDIENTE.getValor());
+        }
     }
 
     public boolean disableEditarVisita() {
-        return !(selected != null && usuarioActual.isAdmin() && selected.getEstado() != EstadoVisita.ANULADA.getValor());
-    }
-
-    @Deprecated
-    public boolean disableAnularVisita() {
-        return !(selected != null && selected.getEstado() == EstadoVisita.REALIZADA.getValor());
+        return !(selected != null && usuarioActual.isAdmin() && selected.getEstado() == EstadoVisita.PENDIENTE.getValor());
     }
 
     public boolean disableReporteYAnular() {
-        return !(selected != null && selected.getEstado() == EstadoVisita.REALIZADA.getValor());
+        return !(selected != null && usuarioActual.isAdmin() && selected.getEstado() == EstadoVisita.REALIZADA.getValor());
     }
 
-    public void anullVisita() {
-        if (selected != null) {
-            if (!JsfUtil.isValidationFailed() && getEjbTransactionFacade().anullVisitaProducto(selected)) {
+    public void anularCancelarVisita(boolean anular) {
+        if (getTransactionFacade().anularOCancelarVisitaProducto(selected, anular)) {
+            if (!JsfUtil.isValidationFailed()) {
                 JsfUtil.addSuccessMessage(JsfUtil.getMessageBundle(new String[]{"MessageVisita", "AnullSuccessF"}));
                 selected = null; // Remove selection
-                items = null;    // Invalidate list of items to trigger re-query.
             }
+        } else {
+            JsfUtil.addErrorMessage("Ocurrio un error anulando la visita");
         }
     }
 
     public EstadoVisita[] getEstadosVisitas() {
         return EstadoVisita.getFromValue(new Integer[]{0, 2});
-    }
-
-    public String redireccionarVisita(Visita visita) {
-        selected = visita;
-        return "AddProductosByVisita.xhtml?visita=" + visita.getId() + "faces-redirect=true";
-    }
-
-    @Deprecated
-    public void redireccionarFormulario() {
-        try {
-            FacesContext.getCurrentInstance().getExternalContext().redirect("List.xhtml");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     public void generarReporte(ActionEvent actionEvent) {
@@ -326,10 +298,8 @@ public class VisitaController implements Serializable {
                     JsfUtil.addErrorMessage("Ha ocurrido un error durante la generacion"
                             + " del reporte, Por favor intente de nuevo, si el error persiste"
                             + " comuniquese con el administrador del sistema");
-
                     e.printStackTrace();
                 }
-
             } else {
                 if (reporte1.exists()) {
                     JsfUtil.addErrorMessage("No existe el archivo " + reporte1.getName());
@@ -350,14 +320,95 @@ public class VisitaController implements Serializable {
 
     public Visita prepareCreate() {
         selected = new Visita();
-        itemsTMP = new ArrayList<>();
-        initializeEmbeddableKey();
+        create = true;
+        header = JsfUtil.getMessageBundle("CreateVisitaTitle");
         return selected;
     }
 
-    public void preparaEditar() {
-        itemsTMP = getFacade().getProductosByVisita(selected);
-        setHeader(JsfUtil.getMessageBundle("EditVisitaTitle"));
+    public void preparaEdit() {
+        create = false;
+        header = JsfUtil.getMessageBundle("EditVisitaTitle");
+    }
+
+    public void preparaRealizar() {
+        visitaProductos = getFacade().getProductosByVisita(selected);
+    }
+
+    public void updateVisita() {
+        if (getTransactionFacade().updateVisitaProducto(selected, visitaProductos, visitaProductosGuardar, visitaProductosEliminar, visitaProductosEditar)) {
+            if (!JsfUtil.isValidationFailed()) {
+                clean();
+            }
+        } else {
+            JsfUtil.addErrorMessage("NO SE A PODIDO EDITAR LA VISITA");
+        }
+    }
+
+    public void addVisitaProducto() {
+
+        if (visitaProductoValido()) {
+
+            boolean productoExiste = false;
+            for (VisitaProducto vp : visitaProductos) {
+                if (vp.getProducto().getId().equals(producto.getId())) {
+                    productoExiste = true;
+                    vp.setCantidad(vp.getCantidad() + cantidad);
+
+                    if (selected.getId() != null) {
+                        visitaProductosEditar.add(vp);
+                    }
+                    break;
+                }
+            }
+
+            if (!productoExiste) {
+                VisitaProducto vp = new VisitaProducto();
+
+                vp.setId(visitaProductos.size() + 9000000000L);
+                vp.setProducto(producto);
+                vp.setCantidad(cantidad);
+
+                if (selected.getId() != null) {
+                    visitaProductosGuardar.add(vp);
+                }
+
+                visitaProductos.add(vp);
+            }
+
+            producto = null;
+            cantidad = 1;
+        }
+    }
+
+    public void removeVisitaProducto(VisitaProducto visitaProducto) {
+        if (selected.getId() != null && !visitaProductosGuardar.contains(visitaProducto)) {
+            visitaProductosEliminar.add(visitaProducto);
+        }
+        visitaProductos.remove(visitaProducto);
+    }
+
+    private boolean visitaProductoValido() {
+        boolean productoNulo = false, cantidadMayorCero = true;
+        if (producto == null) {
+            productoNulo = true;
+            JsfUtil.addErrorMessage("El campo producto es obligatorio");
+        }
+
+        if (cantidad <= 0) {
+            cantidadMayorCero = false;
+            JsfUtil.addErrorMessage("el campo cantidad debe se mayor a cero");
+        }
+        return !productoNulo && cantidadMayorCero;
+    }
+
+    public void clean() {
+        items = null;
+        producto = null;
+        cantidad = 1;
+        visitaProductos.clear();
+        visitaProductosGuardar.clear();
+        visitaProductosEliminar.clear();
+        visitaProductosEditar.clear();
     }
 
 }

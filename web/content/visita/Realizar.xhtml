@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <ui:composition>
+        <p:dialog id="RealizarVisitaDlg" widgetVar="RealizarVisitaDialog" modal="true" closable="false" resizable="false" appendTo="@(body)" header="#{bundle.MessageTitleVisitaProducto}">
+            <h:form id="RealizarVisitaForm">
+                <p:panelGrid columns="2">
+                    <p:panel header="Datos Visita" style="width: 540px;">
+
+                        <c:if test="#{loginController.admin}">
+                            <p:panelGrid columns="1">
+
+                                <p:inputTextarea placeholder="#{bundle.CreateObservacionLabel_producto}" id="observacion" 
+                                                 value="#{visitaController.selected.observacionesCliente}" style="width: 475px;height:26px;"/>
+
+                                <p:panelGrid columns="3">
+                                    <p:outputLabel value="#{bundle.EditVisitaLabel_calificacionServicio}" for="calificacionServicio" />
+                                    <p:outputLabel value="#{bundle.EditVisitaLabel_puntualidadServicio}" for="puntualidadServicio" />
+                                    <p:outputLabel value="#{bundle.EditVisitaLabel_cumplioExpectativas}" for="cumplioExpectativas" />
+
+                                    <p:rating id="calificacionServicio" value="#{visitaController.selected.calificacionServicio}"/>                                
+                                    <p:rating id="puntualidadServicio" value="#{visitaController.selected.puntualidadServicio}"/>
+                                    <p:selectBooleanCheckbox id="cumplioExpectativas" value="#{visitaController.selected.cumplioExpectativas}"/>
+                                </p:panelGrid>  
+
+                            </p:panelGrid>
+                        </c:if>
+                        <c:if test="#{!loginController.admin}">
+                            <div class="containerVisita">
+                                <p>Solo el usuario administrador puede editar los datos de la visita</p>
+                            </div>
+                        </c:if>
+                    </p:panel>
+
+                    <p:panel header="Datos Producto" style="height: 146px;" id="productos">
+                        <p:panelGrid columns="2">
+                            <p:outputLabel value="#{bundle.CreateProductoLabel_producto}"/>
+
+                            <p:autoComplete id="producto" minQueryLength="3" value="#{visitaController.producto}" itemValue="#{pro}" 
+                                            completeMethod="#{promocionController.llenarProducto}" effect="fade" converter="productoconverter" itemLabel="#{pro.toString()}" var="pro" />
+
+                            <p:outputLabel value="#{bundle.CreateCantidadLabel_producto}" for="cantidad" />
+                            <p:inputText id="cantidad" value="#{visitaController.cantidad}" style="width: 60px;"/>
+
+                        </p:panelGrid>
+
+                        <f:facet name="footer">
+                            <p:commandButton value="#{bundle.AddItem}" icon="ui-icon-plus" process="productos"
+                                             actionListener="#{visitaController.addVisitaProducto()}" update="datalistTMP,RealizarVisitaForm"/>
+                        </f:facet>
+                    </p:panel>
+                </p:panelGrid>
+
+                <p:panelGrid columns="1">
+                    <p:dataTable id="datalistTMP" style="width: 847px;" value="#{visitaController.visitaProductos}" var="itemTMP"
+                                 paginator="true"
+                                 rowKey="#{itemTMP.id}"
+                                 rows="3"
+                                 emptyMessage="#{bundle.EmptyTable}"
+                                 paginatorPosition="bottom" 
+                                 paginatorAlwaysVisible="false">
+                        
+                        <f:facet name="header">
+                            PRODUCTOS
+                        </f:facet>
+                        
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Producto"/>
+                            </f:facet>
+                            <h:outputText value="#{itemTMP.producto.toString()}"/>
+                        </p:column>
+                        <p:column width="80">
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.CreateDevolucionProductoTitle_cantidad}"/>
+                            </f:facet>
+                            <h:outputText value="#{itemTMP.cantidad}"/>
+                        </p:column>
+                        <p:column style="text-align: center;" width="80">
+                            <f:facet name="header">
+                                <h:outputText value="Quitar"/>
+                            </f:facet>
+                            <p:commandButton icon="ui-icon-closethick" process="datalistTMP" update="datalistTMP" actionListener="#{visitaController.removeVisitaProducto(itemTMP)}"/>
+                        </p:column>
+                    </p:dataTable>
+                </p:panelGrid>
+                <div class="botonesDialog">
+                    <p:commandButton icon="ui-icon-disk" value="#{bundle.Save}" update=":VisitaListForm:datalist" action="#{visitaController.updateVisita}" oncomplete="PF('RealizarVisitaDialog').hide()"/>
+                    <p:commandButton icon="ui-icon-close" value="#{bundle.Close}" update="@form" actionListener="#{visitaController.clean()}" oncomplete="PF('RealizarVisitaDialog').hide()"/>
+                </div>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

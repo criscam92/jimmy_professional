@@ -13,19 +13,19 @@ import jp.entidades.VisitaProducto;
 
 @Stateless
 public class VisitaFacade extends AbstractFacade<Visita> {
-
+    
     @PersistenceContext(unitName = "jimmy_professionalPU")
     private EntityManager em;
-
+    
     @Override
     protected EntityManager getEntityManager() {
         return em;
     }
-
+    
     public VisitaFacade() {
         super(Visita.class);
     }
-
+    
     public Visita getVisitaById(Long idVisita) {
         try {
             return getEntityManager().find(Visita.class, idVisita);
@@ -33,7 +33,7 @@ public class VisitaFacade extends AbstractFacade<Visita> {
         }
         return null;
     }
-
+    
     public List<Visita> findVisitasByEmpleado(Empleado e, boolean isAdmin) {
         List<Visita> visitasTMP = new ArrayList<>();
         try {
@@ -65,5 +65,5 @@ public class VisitaFacade extends AbstractFacade<Visita> {
         }
         return null;
     }
-
+    
 }

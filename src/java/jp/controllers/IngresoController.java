@@ -5,7 +5,6 @@ import jp.util.JsfUtil;
 import jp.facades.IngresoFacade;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -128,7 +127,7 @@ public class IngresoController implements Serializable {
             if (getTransactionFacade().createIngreso(selected, ingresoProductos)) {
                 if (!JsfUtil.isValidationFailed()) {
                     items = null;    // Invalidate list of items to trigger re-query.
-                    selected = new Ingreso();
+                    selected = null;
                     producto = null;
                     cantidad = 1;
                     ingresoProductos.clear();
@@ -151,7 +150,7 @@ public class IngresoController implements Serializable {
             if (getTransactionFacade().updateIngreso(selected, ingresoProductosGuardar, ingresoProductosEliminar, ingresoProductosEditar)) {
                 if (!JsfUtil.isValidationFailed()) {
                     items = null;    // Invalidate list of items to trigger re-query.
-                    selected = new Ingreso();
+                    selected = null;
                     producto = null;
                     cantidad = 1;
                     ingresoProductos.clear();
@@ -213,6 +212,7 @@ public class IngresoController implements Serializable {
 //            }
 //        }
 //    }
+    
     public List<Ingreso> getItemsAvailableSelectMany() {
         return getFacade().findAll();
     }
@@ -281,7 +281,7 @@ public class IngresoController implements Serializable {
             if (!productoExiste) {
                 IngresoProducto ip = new IngresoProducto();
 
-                ip.setId(ingresoProductos.size() + 1L);
+                ip.setId(ingresoProductos.size() + 9000000000L);
                 ip.setProducto(producto);
                 ip.setCantidad(cantidad);
 
@@ -303,7 +303,6 @@ public class IngresoController implements Serializable {
             ingresoProductosEliminar.add(ingresoProducto);
         }
         ingresoProductos.remove(ingresoProducto);
-
     }
 
     private boolean ingresoProductoValido() {

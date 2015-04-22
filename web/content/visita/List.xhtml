@@ -25,8 +25,8 @@
                              paginatorPosition="bottom"
                              >
 
-                    <p:ajax event="rowSelect"   update="productos createButton viewButton editButton deleteButton botonReporte"/>
-                    <p:ajax event="rowUnselect" update="productos createButton viewButton editButton deleteButton botonReporte"/>
+                    <p:ajax event="rowSelect"   update="botonRealizar createButton botonAnular editButton botonReporte"/>
+                    <p:ajax event="rowUnselect" update="botonRealizar createButton botonAnular editButton botonReporte"/>
 
                     <f:facet name="header">
                         <div id="titulo">
@@ -35,17 +35,16 @@
                         <div id="acciones">
                             <p:commandButton id="createButton" icon="ui-icon-plus" value="#{bundle.Create}" actionListener="#{visitaController.prepareCreate}"
                                              update=":VisitaCreateForm" oncomplete="PF('VisitaCreateDialog').show()" rendered="#{loginController.admin}"/>
-                            <p:commandButton id="viewButton" icon="ui-icon-search" value="#{bundle.View}" actionListener="#{visitaController.getProductosByVisita(visitaController.selected)}" 
-                                             update=":VisitaViewForm,:VisitaViewForm:tablaProductosByVisita" oncomplete="PF('VisitaViewDialog').show()" 
-                                             disabled="#{empty visitaController.selected}"/>
-                            <p:commandButton id="editButton" icon="ui-icon-pencil" value="#{bundle.Edit}" update=":VisitaEditForm" oncomplete="PF('VisitaEditDialog').show()"
-                                             disabled="#{empty visitaController.selected || visitaController.disableEditarVisita()}"/>
-                            <p:commandButton id="deleteButton" icon="ui-icon-alert" value="#{bundle.Anull}" actionListener="#{visitaController.anullVisita()}"
+                            <p:commandButton id="editButton" icon="ui-icon-pencil" value="#{bundle.Edit}" update=":VisitaCreateForm" actionListener="#{visitaController.preparaEdit}" 
+                                             oncomplete="PF('VisitaCreateDialog').show()" disabled="#{empty visitaController.selected || visitaController.disableEditarVisita()}" rendered="#{loginController.admin}"/>
+                            <p:commandButton id="botonAnular" icon="ui-icon-alert" value="#{bundle.Anull}" actionListener="#{visitaController.anularCancelarVisita(true)}"
                                              update=":growl,datalist" disabled="#{visitaController.disableReporteYAnular()}" rendered="#{loginController.admin}"/>
+                            <p:commandButton id="botonCancelar" icon="ui-icon-close" value="#{bundle.Cancel}" actionListener="#{visitaController.anularCancelarVisita(false)}"
+                                             update=":growl,datalist" disabled="#{visitaController.disableEditarVisita()}" rendered="#{loginController.admin}"/>
                             <p:commandButton id="botonReporte" ajax="false" value="#{bundle.Reporte}" icon="ui-icon-document" actionListener="#{visitaController.generarReporte}"
-                                             disabled="#{empty visitaController.selected || visitaController.disableReporteYAnular()}" /> 
-                            <p:commandButton id="productos" value="#{bundle.MessageRealizarVisita}" icon="ui-icon-check" oncomplete="PF('VisitaEditDialog').show()"
-                                             disabled="#{empty visitaController.selected || visitaController.disableRealizarVisita()}" /> 
+                                             disabled="#{empty visitaController.selected || visitaController.disableReporteYAnular()}" rendered="#{loginController.admin}"/> 
+                            <p:commandButton id="botonRealizar" value="#{bundle.MessageRealizarVisita}" icon="ui-icon-check" oncomplete="PF('RealizarVisitaDialog').show()"
+                                             disabled="#{visitaController.disableRealizarVisita()}" update=":RealizarVisitaForm" actionListener="#{visitaController.preparaRealizar}"/> 
                         </div>
                     </f:facet>
 
@@ -115,8 +114,7 @@
             </h:form>
 
             <ui:include src="Create.xhtml"/>
-            <ui:include src="Edit.xhtml"/>
-            <ui:include src="View.xhtml"/>
+            <ui:include src="Realizar.xhtml"/>
         </ui:define>
     </ui:composition>
 

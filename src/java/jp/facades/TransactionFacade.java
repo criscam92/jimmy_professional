@@ -95,17 +95,14 @@ public class TransactionFacade {
         return complete;
     }
 
-    public boolean anullVisitaProducto(Visita v) {
-        boolean result = false;
-        Visita visitaTMP;
-
+    public boolean anularOCancelarVisitaProducto(Visita v, boolean anular) {
+        boolean result;
         userTransaction = sessionContext.getUserTransaction();
-
         try {
             userTransaction.begin();
-            visitaTMP = em.find(Visita.class, v.getId());
-            visitaTMP.setEstado(EstadoVisita.ANULADA.getValor());
-            em.merge(visitaTMP);
+            Visita visitaTMP = getEntityManager().find(Visita.class, v.getId());
+            visitaTMP.setEstado(anular ? EstadoVisita.ANULADA.getValor() : EstadoVisita.CANCELADA.getValor());
+            getEntityManager().merge(visitaTMP);
             userTransaction.commit();
             result = true;
         } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException e) {
@@ -121,7 +118,6 @@ public class TransactionFacade {
                 System.out.println("<======");
             }
         }
-
         return result;
     }
 
@@ -579,6 +575,66 @@ public class TransactionFacade {
             }
         }
         return result;
+    }
+
+    public boolean updateVisitaProducto(Visita visita, List<VisitaProducto> visitaProductos, List<VisitaProducto> visitaProductosGuardar, List<VisitaProducto> visitaProductosEliminar, List<VisitaProducto> visitaProductosEditar) {
+        userTransaction = sessionContext.getUserTransaction();
+        try {
+            userTransaction.begin();
+
+            Visita visitaTMP = getEntityManager().find(Visita.class, visita.getId());
+            System.out.println("Visita = " + visitaTMP.getId());
+            visitaTMP.setCalificacionServicio(visita.getCalificacionServicio());
+            visitaTMP.setPuntualidadServicio(visita.getPuntualidadServicio());
+            visitaTMP.setCumplioExpectativas(visita.getCumplioExpectativas());
+            visitaTMP.setEstado(EstadoVisita.REALIZADA.getValor());
+            getEntityManager().merge(visitaTMP);
+
+            if ((visitaProductosGuardar != null && !visitaProductosGuardar.isEmpty())
+                    || (visitaProductosEditar != null && !visitaProductosEditar.isEmpty())
+                    || (visitaProductosEliminar != null && !visitaProductosEliminar.isEmpty())) {
+                for (VisitaProducto vp : visitaProductosEliminar) {
+                    VisitaProducto vpTMP = getEntityManager().find(VisitaProducto.class, vp.getId());
+                    getEntityManager().remove(vpTMP);
+                }
+
+                for (VisitaProducto vp : visitaProductosEditar) {
+                    VisitaProducto vpTMP = getEntityManager().find(VisitaProducto.class, vp.getId());
+                    vpTMP.setCantidad(vp.getCantidad());
+                    getEntityManager().merge(vpTMP);
+                }
+
+                for (VisitaProducto vp : visitaProductosGuardar) {
+                    vp.setId(null);
+                    vp.setVisita(visitaTMP);
+                    getEntityManager().merge(vp);
+                }
+            } else {
+                for (VisitaProducto vp : visitaProductos) {
+                    VisitaProducto vpTMP = getEntityManager().find(VisitaProducto.class, vp.getId());
+                    if (vpTMP == null) {
+                        vp.setId(null);
+                        vp.setVisita(visitaTMP);
+                        getEntityManager().merge(vp);
+                    }
+                }
+            }
+
+            userTransaction.commit();
+            return true;
+        } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
+            try {
+                System.out.println("======>");
+                e.printStackTrace();
+                System.out.println("<======");
+                userTransaction.rollback();
+            } catch (IllegalStateException | SecurityException | SystemException es) {
+                System.out.println("======>");
+                es.printStackTrace();
+                System.out.println("<======");
+            }
+        }
+        return false;
     }
 
 }
