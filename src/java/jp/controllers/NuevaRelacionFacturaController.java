@@ -334,11 +334,15 @@ public class NuevaRelacionFacturaController implements Serializable {
     }
     
     public void changedFactura(final AjaxBehaviorEvent event){
+        System.out.println("No?");
         if(selected.getFactura()!=null){
             Factura factura = facturaFacade.updatePagoPendiente(selected.getFactura());
             System.out.println("Saldo Pendiente "+selected.getFactura().getSaldo());
             System.out.println("Saldo Cancelado "+selected.getFactura().getSaldoCancelado());
             selected.setFactura(factura);
+        }else{
+            System.out.println("Factura Nula");
+            selected.setFactura(new Factura());
         }
         
     }

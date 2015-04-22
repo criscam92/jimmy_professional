@@ -25,8 +25,8 @@
                         <p:outputLabel value="Factura:" for="factura" />
                         <p:selectOneMenu id="factura" value="#{nuevaRelacionFacturaController.selected.factura}" required="true" requiredMessage="Débe indicar la factura para el recibo"
                                          converter="facturaConverter">
-                            <p:ajax event="change" update="total,pendiente" listener="#{nuevaRelacionFacturaController.changedFactura}"/>
-                            <f:selectItem value="#{null}" itemLabel="Seleccione una factura" itemValue="#{null}" />
+                            <p:ajax update="total,pendiente" listener="#{nuevaRelacionFacturaController.changedFactura}" immediate="true" />
+                            <f:selectItem itemLabel="Seleccione una factura" />
                             <f:selectItems value="#{nuevaRelacionFacturaController.facturasTemporales}" var="fac" itemLabel="#{fac.ordenPedido}" itemValue="#{fac}" />
                         </p:selectOneMenu>
                         

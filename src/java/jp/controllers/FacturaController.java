@@ -444,6 +444,7 @@ public class FacturaController implements Serializable {
                 }
                 return controller.getFacade().find(key);
             } catch (Exception e) {
+                e.printStackTrace();
             }
             return null;
         }
