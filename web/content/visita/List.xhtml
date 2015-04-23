@@ -25,26 +25,43 @@
                              paginatorPosition="bottom"
                              >
 
-                    <p:ajax event="rowSelect"   update="botonRealizar createButton botonAnular editButton botonReporte"/>
-                    <p:ajax event="rowUnselect" update="botonRealizar createButton botonAnular editButton botonReporte"/>
+                    <p:ajax event="rowSelect"   update="botonRealizar createButton botonAnular editButton botonReporte botonCancelar"/>
+                    <p:ajax event="rowUnselect" update="botonRealizar createButton botonAnular editButton botonReporte botonCancelar"/>
 
                     <f:facet name="header">
                         <div id="titulo">
                             Programación de Visitas
                         </div>
                         <div id="acciones">
-                            <p:commandButton id="createButton" icon="ui-icon-plus" value="#{bundle.Create}" actionListener="#{visitaController.prepareCreate}"
-                                             update=":VisitaCreateForm" oncomplete="PF('VisitaCreateDialog').show()" rendered="#{loginController.admin}"/>
-                            <p:commandButton id="editButton" icon="ui-icon-pencil" value="#{bundle.Edit}" update=":VisitaCreateForm" actionListener="#{visitaController.preparaEdit}" 
-                                             oncomplete="PF('VisitaCreateDialog').show()" disabled="#{empty visitaController.selected || visitaController.disableEditarVisita()}" rendered="#{loginController.admin}"/>
-                            <p:commandButton id="botonAnular" icon="ui-icon-alert" value="#{bundle.Anull}" actionListener="#{visitaController.anularCancelarVisita(true)}"
-                                             update=":growl,datalist" disabled="#{visitaController.disableReporteYAnular()}" rendered="#{loginController.admin}"/>
-                            <p:commandButton id="botonCancelar" icon="ui-icon-close" value="#{bundle.Cancel}" actionListener="#{visitaController.anularCancelarVisita(false)}"
-                                             update=":growl,datalist" disabled="#{visitaController.disableEditarVisita()}" rendered="#{loginController.admin}"/>
-                            <p:commandButton id="botonReporte" ajax="false" value="#{bundle.Reporte}" icon="ui-icon-document" actionListener="#{visitaController.generarReporte}"
-                                             disabled="#{empty visitaController.selected || visitaController.disableReporteYAnular()}" rendered="#{loginController.admin}"/> 
-                            <p:commandButton id="botonRealizar" value="#{bundle.MessageRealizarVisita}" icon="ui-icon-check" oncomplete="PF('RealizarVisitaDialog').show()"
-                                             disabled="#{visitaController.disableRealizarVisita()}" update=":RealizarVisitaForm" actionListener="#{visitaController.preparaRealizar}"/> 
+                            <p:commandButton id="createButton" icon="ui-icon-plus" value="#{bundle.Create}" 
+                                             actionListener="#{visitaController.prepareCreate}" update=":VisitaCreateForm" 
+                                             oncomplete="PF('VisitaCreateDialog').show()" rendered="#{loginController.admin}"/>
+
+                            <p:commandButton id="editButton" icon="ui-icon-pencil" value="#{bundle.Edit}"
+                                             update=":VisitaCreateForm" actionListener="#{visitaController.preparaEdit}" 
+                                             oncomplete="PF('VisitaCreateDialog').show()" disabled="#{visitaController.disableEditarVisita()}"
+                                             rendered="#{loginController.admin}"/>
+
+                            <p:commandButton id="botonAnular" value="#{bundle.Anull}" actionListener="#{visitaController.anularCancelarVisita(true)}" 
+                                             update=":growl,datalist,botonRealizar,createButton,botonAnular,editButton,botonReporte,botonCancelar" 
+                                             disabled="#{visitaController.disableReporteYAnular()}" rendered="#{loginController.admin}" icon="ui-icon-alert">
+                                <p:confirm header="Confirmar" message="Esta seguro de anular esta visita?" icon="ui-icon-alert" />
+                            </p:commandButton>
+
+                            <p:commandButton id="botonCancelar" value="#{bundle.Cancel}" actionListener="#{visitaController.anularCancelarVisita(false)}" 
+                                             update=":growl,datalist,botonRealizar,createButton,botonAnular,editButton,botonReporte,botonCancelar" 
+                                             disabled="#{visitaController.disableEditarVisita()}" rendered="#{loginController.admin}" icon="ui-icon-close">
+                                <p:confirm header="Confirmar" message="Esta seguro de cancelar esta visita?" icon="ui-icon-alert" />
+                            </p:commandButton>
+                            
+                            <p:commandButton id="botonReporte" ajax="false" value="#{bundle.Reporte}" icon="ui-icon-document" 
+                                             actionListener="#{visitaController.generarReporte}" disabled="#{visitaController.disableReporteYAnular()}"
+                                             rendered="#{loginController.admin}"/> 
+
+                            <p:commandButton id="botonRealizar" value="#{bundle.MessageRealizarVisita}" icon="ui-icon-check"
+                                             oncomplete="PF('RealizarVisitaDialog').show()" disabled="#{visitaController.disableRealizarVisita()}"
+                                             update=":RealizarVisitaForm,botonRealizar,createButton,botonAnular,editButton,botonReporte,botonCancelar"
+                                             actionListener="#{visitaController.preparaRealizar}"/> 
                         </div>
                     </f:facet>
 
@@ -111,6 +128,12 @@
                         <h:outputText value="#{item.empleado.toString()}"/>
                     </p:column>
                 </p:dataTable>
+
+                <p:confirmDialog global="true">
+                    <p:commandButton value="Yes" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                    <p:commandButton value="No" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                </p:confirmDialog>
+
             </h:form>
 
             <ui:include src="Create.xhtml"/>

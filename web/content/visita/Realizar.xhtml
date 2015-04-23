@@ -38,21 +38,39 @@
                         </c:if>
                     </p:panel>
 
-                    <p:panel header="Datos Producto" style="height: 146px;" id="productos">
-                        <p:panelGrid columns="2">
-                            <p:outputLabel value="#{bundle.CreateProductoLabel_producto}"/>
+                    <p:panel header="Datos Producto" style="height: 146px;" id="datosProductos">
+                        <p:panelGrid>
+                            <p:row>
+                                <p:column>
+                                    <p:outputLabel value="#{bundle.CreateProductoLabel_producto}" for="producto"/>                                
+                                </p:column>
 
-                            <p:autoComplete id="producto" minQueryLength="3" value="#{visitaController.producto}" itemValue="#{pro}" 
-                                            completeMethod="#{promocionController.llenarProducto}" effect="fade" converter="productoconverter" itemLabel="#{pro.toString()}" var="pro" />
+                                <p:column colspan="2">
+                                    <p:autoComplete id="producto" minQueryLength="3" value="#{visitaController.producto}" itemValue="#{pro}" 
+                                                    completeMethod="#{promocionController.llenarProducto}" effect="fade" size="21"
+                                                    converter="productoconverter" itemLabel="#{pro.toString()}" var="pro" >
+                                        <p:ajax event="itemSelect" listener="#{visitaController.onItemSelectProducto}" update="datosProductos,:growl" />
+                                    </p:autoComplete>
+                                </p:column>
+                            </p:row>
 
-                            <p:outputLabel value="#{bundle.CreateCantidadLabel_producto}" for="cantidad" />
-                            <p:inputText id="cantidad" value="#{visitaController.cantidad}" style="width: 60px;"/>
-
+                            <p:row>                                
+                                <p:column>
+                                    <p:outputLabel value="#{bundle.CreateCantidadLabel_producto}" for="cantidad" />
+                                </p:column>
+                                <p:column>
+                                    <p:inputText id="cantidad" value="#{visitaController.cantidad}" style="width: 60px;"/>
+                                </p:column>
+                                <p:column style="text-align: left;">
+                                    <p:inputText id="disponible" readonly="true" placeholder="Disponible" value="#{visitaController.diponible}" style="text-align: center;width: 60px;"/>
+                                </p:column>                                
+                            </p:row>
+                            
                         </p:panelGrid>
 
                         <f:facet name="footer">
-                            <p:commandButton value="#{bundle.AddItem}" icon="ui-icon-plus" process="productos"
-                                             actionListener="#{visitaController.addVisitaProducto()}" update="datalistTMP,RealizarVisitaForm"/>
+                            <p:commandButton value="#{bundle.AddItem}" icon="ui-icon-plus" process="datosProductos"
+                                             actionListener="#{visitaController.addVisitaProducto}" update="datalistTMP,datosProductos,:growl"/>
                         </f:facet>
                     </p:panel>
                 </p:panelGrid>
@@ -65,11 +83,11 @@
                                  emptyMessage="#{bundle.EmptyTable}"
                                  paginatorPosition="bottom" 
                                  paginatorAlwaysVisible="false">
-                        
+
                         <f:facet name="header">
                             PRODUCTOS
                         </f:facet>
-                        
+
                         <p:column>
                             <f:facet name="header">
                                 <h:outputText value="Producto"/>
@@ -91,8 +109,9 @@
                     </p:dataTable>
                 </p:panelGrid>
                 <div class="botonesDialog">
-                    <p:commandButton icon="ui-icon-disk" value="#{bundle.Save}" update=":VisitaListForm:datalist" action="#{visitaController.updateVisita}" oncomplete="PF('RealizarVisitaDialog').hide()"/>
-                    <p:commandButton icon="ui-icon-close" value="#{bundle.Close}" update="@form" actionListener="#{visitaController.clean()}" oncomplete="PF('RealizarVisitaDialog').hide()"/>
+                    <p:commandButton icon="ui-icon-disk" value="#{bundle.Save}" oncomplete="PF('RealizarVisitaDialog').hide()"
+                                     update=":VisitaListForm:datalist,:growl" action="#{visitaController.updateVisita}"/> 
+                    <p:commandButton icon="ui-icon-close" value="#{bundle.Close}" type="button" onclick="PF('RealizarVisitaDialog').hide()"/>
                 </div>
             </h:form>
         </p:dialog>

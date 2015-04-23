@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package jp.entidades;
 
 import java.io.Serializable;
@@ -29,10 +24,6 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-/**
- *
- * @author arturo
- */
 @Entity
 @Table(catalog = "jimmy_professional", schema = "public")
 @XmlRootElement
@@ -43,6 +34,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Devolucion.findByValorTotal", query = "SELECT d FROM Devolucion d WHERE d.valorTotal = :valorTotal"),
     @NamedQuery(name = "Devolucion.findByObservaciones", query = "SELECT d FROM Devolucion d WHERE d.observaciones = :observaciones")})
 public class Devolucion implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -60,6 +52,10 @@ public class Devolucion implements Serializable {
     @Size(max = 300)
     @Column(length = 300)
     private String observaciones;
+    @Basic(optional = false)
+    @NotNull
+    @Column(nullable = false)
+    private boolean realizado;
     @JoinColumn(name = "cliente", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Cliente cliente;
@@ -88,10 +84,11 @@ public class Devolucion implements Serializable {
         this.id = id;
     }
 
-    public Devolucion(Long id, Boolean dolar, Float valorTotal) {
+    public Devolucion(Long id, Boolean dolar, Float valorTotal, boolean realizado) {
         this.id = id;
         this.dolar = dolar;
         this.valorTotal = valorTotal;
+        this.realizado = realizado;
     }
 
     public Long getId() {
@@ -124,6 +121,14 @@ public class Devolucion implements Serializable {
 
     public void setObservaciones(String observaciones) {
         this.observaciones = observaciones;
+    }
+
+    public boolean isRealizado() {
+        return realizado;
+    }
+
+    public void setRealizado(boolean realizado) {
+        this.realizado = realizado;
     }
 
     public Cliente getCliente() {
@@ -199,15 +204,12 @@ public class Devolucion implements Serializable {
             return false;
         }
         Devolucion other = (Devolucion) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return !((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)));
     }
 
     @Override
     public String toString() {
         return "entidades.Devolucion[ id=" + id + " ]";
     }
-    
+
 }

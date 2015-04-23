@@ -6,19 +6,25 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import jp.entidades.DespachoFacturaProducto;
+import jp.entidades.DevolucionProducto;
 import jp.entidades.Factura;
 import jp.entidades.FacturaProducto;
+import jp.entidades.IngresoProducto;
 import jp.entidades.Producto;
+import jp.entidades.VisitaProducto;
+import jp.util.EstadoVisita;
 
 @Stateless
 public class ProductoFacade extends AbstractFacade<Producto> {
 
-    public enum TIPO_PRECIO{
+    public enum TIPO_PRECIO {
+
         LOCALES,
         NACIONALES,
         EXTRANJEROS;
     }
-    
+
     @PersistenceContext(unitName = "jimmy_professionalPU")
     private EntityManager em;
 
@@ -50,5 +56,49 @@ public class ProductoFacade extends AbstractFacade<Producto> {
         }
         return 0;
     }
-    
+
+    public int getCantidadDisponibleByProducto(Producto producto) {
+        int result;
+        try {
+            int productosIngresos = 0, productosVisitas = 0, productosDevolucion = 0, productosDespachoFactura = 0;
+            Query query1 = getEntityManager().createQuery("SELECT ip FROM IngresoProducto ip WHERE ip.producto.id = :prod");
+            query1.setParameter("prod", producto.getId());
+
+            for (Object o : query1.getResultList()) {
+                productosIngresos += ((IngresoProducto) o).getCantidad();
+            }
+
+            Query query2 = getEntityManager().createQuery("SELECT vp FROM VisitaProducto vp WHERE vp.producto.id = :prod AND vp.visita.estado <> :est1 AND vp.visita.estado <> :est2");
+            query2.setParameter("prod", producto.getId());
+            query2.setParameter("est1", EstadoVisita.ANULADA.getValor());
+            query2.setParameter("est2", EstadoVisita.CANCELADA.getValor());
+
+            for (Object o : query2.getResultList()) {
+                productosVisitas += ((VisitaProducto) o).getCantidad();
+            }
+
+            Query query3 = getEntityManager().createQuery("SELECT dp FROM DevolucionProducto dp WHERE dp.producto.id = :prod AND dp.devolucion.realizado = :rea");
+            query3.setParameter("prod", producto.getId());
+            query3.setParameter("rea", true);
+
+            for (Object o : query3.getResultList()) {
+                productosDevolucion += ((DevolucionProducto) o).getCantidad();
+            }
+
+            Query query4 = getEntityManager().createQuery("SELECT dfp FROM DespachoFacturaProducto dfp WHERE dfp.producto.id = :prod AND dfp.despachoFactura.realizado = :rea");
+            query4.setParameter("prod", producto.getId());
+            query4.setParameter("rea", true);
+
+            for (Object o : query4.getResultList()) {
+                productosDespachoFactura += ((DespachoFacturaProducto) o).getCantidad();
+            }
+
+            result = (productosIngresos - productosVisitas - productosDespachoFactura) + productosDevolucion;
+
+        } catch (Exception e) {
+            result = 0;
+        }
+        return result;
+    }
+
 }

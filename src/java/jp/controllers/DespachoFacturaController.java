@@ -1,6 +1,5 @@
 package jp.controllers;
 
-import java.io.IOException;
 import jp.entidades.DespachoFactura;
 import jp.util.JsfUtil;
 import jp.util.JsfUtil.PersistAction;
@@ -27,14 +26,13 @@ import jp.entidades.DespachoFacturaProducto;
 import jp.entidades.Factura;
 import jp.entidades.FacturaProducto;
 import jp.entidades.FacturaPromocion;
-import jp.entidades.IngresoProducto;
 import jp.entidades.Producto;
 import jp.entidades.ProductoHelper;
 import jp.entidades.PromocionProducto;
 import jp.facades.DespachoFacturaProductoFacade;
 import jp.facades.FacturaFacade;
 import jp.facades.FacturaPromocionFacade;
-import jp.facades.IngresoProductoFacade;
+import jp.facades.ProductoFacade;
 import jp.facades.PromocionProductoFacade;
 import jp.facades.TransactionFacade;
 import jp.seguridad.UsuarioActual;
@@ -48,6 +46,8 @@ public class DespachoFacturaController implements Serializable {
     @EJB
     private DespachoFacturaFacade ejbFacade;
     @EJB
+    private ProductoFacade productoFacade;
+    @EJB
     private FacturaFacade facturaFacade;
     @EJB
     private TransactionFacade transactionFacade;
@@ -58,14 +58,11 @@ public class DespachoFacturaController implements Serializable {
     @EJB
     private PromocionProductoFacade promocionProductoFacade;
     @EJB
-    private IngresoProductoFacade ingresoProductoFacade;
-    @EJB
     private DespachoFacturaProductoFacade despachoFacturaProductoFacade;
     @Inject
     private UsuarioActual usuarioActual;
-    
-//</editor-fold>
 
+//</editor-fold>
     private List<DespachoFactura> items = null;
     private DespachoFactura selected;
     private List<ProductoHelper> productoHelpers;
@@ -122,7 +119,7 @@ public class DespachoFacturaController implements Serializable {
             }
 
             for (ProductoHelper ph : productoHelpers) {
-                ph.setCantidadDisponible(countIngresosByProducto(ph.getProducto()));
+                ph.setCantidadDisponible(getProductoFacade().getCantidadDisponibleByProducto(ph.getProducto()));
                 ph.setCantidadDespachada(getDespachosByProducto(ph.getProducto(), factura));
                 ph.obtenerCantidadADespachar();
             }
@@ -170,12 +167,16 @@ public class DespachoFacturaController implements Serializable {
         return promocionProductoFacade;
     }
 
-    public IngresoProductoFacade getIngresoProductoFacade() {
-        return ingresoProductoFacade;
-    }
-
     public DespachoFacturaProductoFacade getDespachoFacturaProductoFacade() {
         return despachoFacturaProductoFacade;
+    }
+
+    public ProductoFacade getProductoFacade() {
+        return productoFacade;
+    }
+
+    public void setProductoFacade(ProductoFacade productoFacade) {
+        this.productoFacade = productoFacade;
     }
 //</editor-fold>
 
@@ -211,7 +212,7 @@ public class DespachoFacturaController implements Serializable {
         selected.setFecha(Calendar.getInstance().getTime());
         selected.setRealizado(true);
         selected.setUsuario(usuarioActual.get());
-        
+
         switch (comprobarIngresos()) {
             case 0:
                 if (comprobarProductos()) {
@@ -300,7 +301,7 @@ public class DespachoFacturaController implements Serializable {
         boolean productosDespachados = true;
 
         for (ProductoHelper ph : productoHelpers) {
-            ph.setCantidadDisponible(countIngresosByProducto(ph.getProducto()));
+            ph.setCantidadDisponible(getProductoFacade().getCantidadDisponibleByProducto(ph.getProducto()));
             ph.setCantidadDespachada(getDespachosByProducto(ph.getProducto(), factura));
         }
 
@@ -332,7 +333,7 @@ public class DespachoFacturaController implements Serializable {
 
     private void getComprobarEstadoFactura() {
         try {
-            
+
         } catch (Exception e) {
         }
     }
@@ -376,22 +377,6 @@ public class DespachoFacturaController implements Serializable {
             }
         }
 
-    }
-
-    private int countIngresosByProducto(Producto producto) {
-        int countIngresos = 0;
-        List<IngresoProducto> ingresoProductos = getIngresoProductoFacade().getIngresoProductoByProducto(producto);
-        for (IngresoProducto ip : ingresoProductos) {
-            countIngresos += ip.getCantidad();
-        }
-
-        int countDespachos = 0;
-
-        List<DespachoFacturaProducto> despachoFacturaProductos = getDespachoFacturaProductoFacade().getDespachosFacturaProductosByProducto(producto);
-        for (DespachoFacturaProducto dfp : despachoFacturaProductos) {
-            countDespachos += dfp.getCantidad();
-        }
-        return countIngresos - countDespachos;
     }
 
     private int getDespachosByProducto(Producto producto, Factura factura) {

@@ -16,9 +16,11 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import jp.entidades.Producto;
 import jp.entidades.PromocionProducto;
+import jp.facades.ProductoFacade;
 import jp.facades.PromocionFacade;
 import jp.facades.TransactionFacade;
 import org.primefaces.context.RequestContext;
+import org.primefaces.event.SelectEvent;
 
 @ManagedBean(name = "promocionController")
 @SessionScoped
@@ -28,6 +30,8 @@ public class PromocionController implements Serializable {
     private PromocionFacade ejbFacade;
     @EJB
     private TransactionFacade transactionFacade;
+    @EJB
+    private ProductoFacade productoFacade;
     private List<Promocion> items = null;
     private Promocion selected;
     private Producto producto;
@@ -98,6 +102,10 @@ public class PromocionController implements Serializable {
 
     public TransactionFacade getTransactionFacade() {
         return transactionFacade;
+    }
+
+    public ProductoFacade getProductoFacade() {
+        return productoFacade;
     }
 
     protected void setEmbeddableKeys() {
