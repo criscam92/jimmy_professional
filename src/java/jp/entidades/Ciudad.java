@@ -3,7 +3,6 @@ package jp.entidades;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -40,9 +39,9 @@ public class Ciudad implements Serializable {
     @Size(min = 1, max = 100)
     @Column(nullable = false, length = 100)
     private String nombre;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "ciudad", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "ciudad", fetch = FetchType.LAZY)
     private List<Parametros> parametrosList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "ciudad", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "ciudad", fetch = FetchType.LAZY)
     private List<Cliente> clienteList;
     @JoinColumn(name = "pais", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)

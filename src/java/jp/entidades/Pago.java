@@ -1,15 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package jp.entidades;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -29,10 +23,6 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-/**
- *
- * @author arturo
- */
 @Entity
 @Table(catalog = "jimmy_professional", schema = "public")
 @XmlRootElement
@@ -47,6 +37,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Pago.findByDolar", query = "SELECT p FROM Pago p WHERE p.dolar = :dolar"),
     @NamedQuery(name = "Pago.findByEstado", query = "SELECT p FROM Pago p WHERE p.estado = :estado")})
 public class Pago implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -80,8 +71,6 @@ public class Pago implements Serializable {
     @NotNull
     @Column(nullable = false)
     private int estado;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "pago", fetch = FetchType.LAZY)
-    private List<PagoDetalle> pagoDetalleList;
     @JoinColumn(name = "cuenta", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.LAZY)
     private CuentaBancaria cuenta;
@@ -95,7 +84,9 @@ public class Pago implements Serializable {
     @Size(max = 30)
     @Column(length = 30, name = "orden_pago", nullable = true)
     private String ordenPago;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "pago", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "pago", fetch = FetchType.LAZY)
+    private List<PagoDetalle> pagoDetalleList;
+    @OneToMany(mappedBy = "pago", fetch = FetchType.LAZY)
     private List<PagoDevolucion> pagoDevolucionList;
 
     public Pago() {
@@ -250,5 +241,5 @@ public class Pago implements Serializable {
     public String toString() {
         return "entidades.Pago[ id=" + id + " ]";
     }
-    
+
 }

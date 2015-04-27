@@ -3,7 +3,6 @@ package jp.entidades;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -38,7 +37,7 @@ public class Procedimiento implements Serializable {
     @Size(min = 1, max = 100)
     @Column(nullable = false, length = 100)
     private String descripcion;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "procedimiento", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "procedimiento", fetch = FetchType.LAZY)
     private List<Visita> visitaList;
 
     public Procedimiento() {

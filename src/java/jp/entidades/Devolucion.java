@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -70,11 +69,11 @@ public class Devolucion implements Serializable {
     @JoinColumn(name = "usuario", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Usuario usuario;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "devolucion", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "devolucion", fetch = FetchType.LAZY)
     private List<CambioDevolucion> cambioDevolucionList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "devolucion", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "devolucion", fetch = FetchType.LAZY)
     private List<DevolucionProducto> devolucionProductoList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "devolucion", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "devolucion", fetch = FetchType.LAZY)
     private List<PagoDevolucion> pagoDevolucionList;
 
     public Devolucion() {

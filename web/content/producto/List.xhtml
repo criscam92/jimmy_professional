@@ -8,7 +8,7 @@
       xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
     <ui:composition template="/index.xhtml">
-        
+
         <f:loadBundle basename="languages.BundleProducto" var="bun" />
 
         <ui:define name="title">
@@ -16,8 +16,8 @@
         </ui:define>
 
         <ui:define name="body">
-            
-            
+
+
             <h:form id="TipoListForm">
                 <p:outputPanel style="margin-bottom: 20px">
                     <p:outputLabel for="tipoLista" value="Mostrar listado de precios para: "/>
@@ -27,8 +27,8 @@
                     </p:selectOneButton>
                 </p:outputPanel>
             </h:form>
-            
-            
+
+
             <h:form id="ProductoListForm">
                 <p:dataTable styleClass="tabla" id="datalist" value="#{productoController.items}" var="item"
                              selectionMode="single" selection="#{productoController.selected}"
@@ -42,7 +42,7 @@
 
                     <p:ajax event="rowSelect"   update="createButton editButton deleteButton"/>
                     <p:ajax event="rowUnselect" update="createButton editButton deleteButton"/>
-                    
+
                     <f:facet name="header">
                         <div id="titulo">
                             Productos
@@ -50,9 +50,11 @@
                         <div id="acciones">
                             <p:commandButton id="createButton" icon="ui-icon-plus"   value="#{bundle.Create}" actionListener="#{productoController.prepareCreate}" update=":ProductoCreateForm" oncomplete="PF('ProductoCreateDialog').show()"/>
                             <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":ProductoEditForm" oncomplete="PF('ProductoEditDialog').show()" disabled="#{empty productoController.selected}"/>
-                            <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{productoController.destroy}" update=":growl,datalist" disabled="#{empty productoController.selected}"/>
+                            <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{productoController.destroy}" update=":growl,datalist" disabled="#{empty productoController.selected}">
+                                <p:confirm icon="ui-icon-alert" header="Confirmación" message="Esta seguro de eliminar este producto?"/>
+                            </p:commandButton>
                             <p:commandButton icon="fa fa-table" value="Excel" ajax="false">
-                                <p:dataExporter type="xls" target="datalist" fileName="Listado_#{productoController.tipoLista.toString()}" postProcessor="#{productoController.postProcessXLS}" />
+                                <p:dataExporter type="xls" target="datalist" fileName="Listado_#{productoController.tipoLista}" postProcessor="#{productoController.postProcessXLS}" />
                             </p:commandButton>
                         </div>
                     </f:facet>
@@ -105,14 +107,14 @@
                             <f:convertNumber type="currency" currencySymbol="USD " locale="es_CO" />
                         </h:outputText>
                     </p:column>
-                    
+
                     <p:column>
                         <f:facet name="header">
                             <h:outputText value="#{bun.ListProductoTitle_ventaPublico}" />
                         </f:facet>
                         <h:outputText value="#{item.ventaPublico? 'Si' : 'No'}" />
                     </p:column>
-                    
+
                     <p:column>
                         <f:facet name="header">
                             <h:outputText value="#{bun.ListProductoTitle_valorVentaPublico}"/>
@@ -125,10 +127,14 @@
                         </f:facet>
                         <h:outputText value="#{productoController.getValorRecargoPublico(item,item.valorVentaUsd,'USD ')}"/>
                     </p:column>
-                    
-                    
 
                 </p:dataTable>
+
+                <p:confirmDialog global="true">
+                    <p:commandButton value="Yes" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                    <p:commandButton value="No" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                </p:confirmDialog>
+
             </h:form>
 
             <ui:include src="Create.xhtml"/>

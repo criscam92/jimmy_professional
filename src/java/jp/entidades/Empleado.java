@@ -3,7 +3,6 @@ package jp.entidades;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -54,18 +53,18 @@ public class Empleado implements Serializable, Codificable {
     @Size(max = 100)
     @Column(length = 100)
     private String telefonos;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "empleado", fetch = FetchType.LAZY)
-    private List<Talonario> talonarioList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "empleado", fetch = FetchType.LAZY)
-    private List<Factura> facturaList;
     @JoinColumn(name = "tipo", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private TipoEmpleado tipoEmpleado;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "empleado", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "empleado", fetch = FetchType.LAZY)
+    private List<Talonario> talonarioList;
+    @OneToMany(mappedBy = "empleado", fetch = FetchType.LAZY)
+    private List<Factura> facturaList;
+    @OneToMany(mappedBy = "empleado", fetch = FetchType.LAZY)
     private List<Despacho> despachoList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "empleado", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "empleado", fetch = FetchType.LAZY)
     private List<Visita> visitaList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "empleado", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "empleado", fetch = FetchType.LAZY)
     private List<Cliente> clienteList;
 
     public Empleado() {
@@ -187,7 +186,7 @@ public class Empleado implements Serializable, Codificable {
 
     @Override
     public String toString() {
-        return this.getCodigo()+" - "+this.getNombre();
+        return this.getCodigo() + " - " + this.getNombre();
     }
 
     @Override

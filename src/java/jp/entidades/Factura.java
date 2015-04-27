@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -93,21 +92,21 @@ public class Factura implements Serializable {
     @JoinColumn(name = "usuario", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Usuario usuario;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "factura", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "factura", fetch = FetchType.LAZY)
     private List<FacturaPromocion> facturaPromocionList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "factura", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "factura", fetch = FetchType.LAZY)
     private List<CambioDevolucion> cambioDevolucionList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "factura", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "factura", fetch = FetchType.LAZY)
     private List<FacturaProducto> facturaProductoList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "factura", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "factura", fetch = FetchType.LAZY)
     private List<Pago> pagoList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "factura", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "factura", fetch = FetchType.LAZY)
     private List<DespachoFactura> despachoFacturaList;
     @Transient
     Double saldo;
     @Transient
     Double saldoPagado;
-    
+
     public Factura() {
     }
 

@@ -9,7 +9,7 @@
         <ui:define name="title">
             <h:outputText value="#{bundle.ListFacturaTitle}"></h:outputText>
         </ui:define>
-        
+
         <ui:define name="body">
             <h:form id="VisitaListForm">
                 <p:dataTable styleClass="tabla" id="datalist" value="#{facturaController.items}" var="item"
@@ -22,30 +22,27 @@
                              paginatorPosition="bottom"
                              >
 
-                    <p:ajax event="rowSelect"   update="productos createButton viewButton deleteButton"/>
-                    <p:ajax event="rowUnselect" update="productos createButton viewButton deleteButton"/>
+                    <p:ajax event="rowSelect"   update="productos createButton deleteButton"/>
+                    <p:ajax event="rowUnselect" update="productos createButton deleteButton"/>
 
                     <f:facet name="header">
                         <div id="titulo">
                             Pedido de Productos
                         </div>
                         <div id="acciones">
-                            <p:commandButton id="createButton" icon="ui-icon-plus" value="#{bundle.Create}" action="#{facturaController.redirectCreateFactura()}"/>
-                            <p:commandButton id="viewButton"   icon="ui-icon-search" value="#{bundle.View}" actionListener="#{visitaProductoController.getProductosByVisita(visitaController.selected)}" 
-                                             update=":VisitaViewForm,:VisitaViewForm:tablaProductosByVisita" oncomplete="PF('VisitaViewDialog').show()" 
-                                             disabled="#{empty facturaController.selected}"/>
-                            
+                            <p:commandButton id="createButton" icon="ui-icon-plus" value="#{bundle.Create}" action="#{facturaController.redirectCreateFactura()}"/>    
+
                             <p:commandButton id="deleteButton" value="Despachos" icon="ui-icon-clipboard" oncomplete="PF('DespachosDialog').show()"
-                                             update=":growl,datalist,:Despachos" disabled="#{empty facturaController.selected}" actionListener="#{facturaController.prepararDespachos()}"></p:commandButton>
-                            
+                                             update=":growl,datalist,:Despachos" disabled="#{empty facturaController.selected}" actionListener="#{facturaController.prepararDespachos()}"/>
+
                             <p:commandButton id="productos" value="#{bundle.MessageDespacharFactura}" oncomplete="PF('ProductosByVisitaDialog').show()"
                                              icon="ui-icon-check" disabled="#{empty facturaController.selected}" action="#{facturaController.redirect()}"/> 
-                            
-                            <p:commandButton ajax="false" id="reporte" value="Reporte" icon="ui-icon-check" actionListener="#{facturaController.generarReporte}" disabled="#{empty facturaController.selected}"/>
+
+                            <p:commandButton ajax="false" id="reporte" value="Reporte" icon="ui-icon-document" actionListener="#{facturaController.generarReporte}" disabled="#{empty facturaController.selected}"/>
                         </div>
                     </f:facet>
 
-                    
+
                     <p:column>
                         <f:facet name="header">
                             <h:outputText value="#{bundle.MessageFacturaOrdenPedido}"/>
@@ -108,7 +105,9 @@
                         <f:facet name="header">
                             <h:outputText value="Recargo"/>
                         </f:facet>
-                        <h:outputText value="#{item.cliente.tarifaEspecial} %"/>
+                        <h:outputText value="#{item.cliente.tarifaEspecial}">
+                            <f:convertNumber type="percent"/>
+                        </h:outputText>
                     </p:column>
                     <p:column>
                         <f:facet name="header">
@@ -118,13 +117,17 @@
                             <f:convertNumber type="currency"  currencySymbol="$"/>
                         </h:outputText>
                     </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Estado"/>
+                        </f:facet>
+                        <h:outputText value="#{facturaController.getEstado(item.estado)}"/>
+                    </p:column>
                 </p:dataTable>
             </h:form>
-            
-            <ui:include src="View.xhtml"/>
             <ui:include src="Despachos.xhtml"/>
         </ui:define>
-        
+
     </ui:composition>
 </html>
 

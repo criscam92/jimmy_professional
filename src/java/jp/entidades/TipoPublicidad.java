@@ -1,14 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package jp.entidades;
 
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -23,10 +17,6 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-/**
- *
- * @author arturo
- */
 @Entity
 @Table(name = "tipo_publicidad", catalog = "jimmy_professional", schema = "public")
 @XmlRootElement
@@ -44,7 +34,7 @@ public class TipoPublicidad implements Serializable {
     @Size(max = 40)
     @Column(length = 40)
     private String detalle;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "tipo", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "tipo", fetch = FetchType.LAZY)
     private List<PagoPublicidad> pagoPublicidadList;
 
     public TipoPublicidad() {

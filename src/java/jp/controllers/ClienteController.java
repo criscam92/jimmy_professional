@@ -213,8 +213,8 @@ public class ClienteController implements Serializable {
             }
         }
 
-        java.lang.Long getKey(String value) {
-            java.lang.Long key;
+        Long getKey(String value) {
+            Long key;
             try {
                 key = Long.valueOf(value);
                 return key;
@@ -272,4 +272,11 @@ public class ClienteController implements Serializable {
         return getFacade().getClienteByQuery(query);
     }
 
+    public String setValorObject(Object ob) {
+        return ob == null ? "-----" : ob.toString();
+    }
+
+    public String setValorString(String st) {
+        return (st == null || st.trim().isEmpty()) == true ? "-----" : st;
+    }
 }

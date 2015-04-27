@@ -34,7 +34,9 @@
                             <p:commandButton id="createButton" icon="ui-icon-plus"   value="#{bundle.Create}" actionListener="#{clienteController.prepareCreate}" update=":ClienteFormDlg,:ClienteForm" oncomplete="PF('ClienteFormDialog').show()"/>
                             <p:commandButton id="viewButton"   icon="ui-icon-search" value="#{bundle.View}" update=":ClienteViewForm" oncomplete="PF('ClienteViewDialog').show()" disabled="#{empty clienteController.selected}"/>
                             <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}"   actionListener="#{clienteController.prepareEdit}" update=":ClienteFormDlg,:ClienteForm" oncomplete="PF('ClienteFormDialog').show()" disabled="#{empty clienteController.selected}"/>
-                            <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{clienteController.destroy}" update=":growl,datalist" disabled="#{empty clienteController.selected}"/>
+                            <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{clienteController.destroy}" update=":growl,datalist" disabled="#{empty clienteController.selected}">
+                                <p:confirm header="Confirmar" message="Esta seguro de eliminar este cliente?" icon="ui-icon-alert" />
+                            </p:commandButton>
                             <p:commandButton icon="fa fa-table" value="Excel" ajax="false" disabled="#{clienteController.items == null}">
                                 <p:dataExporter type="xls" target="datalist" fileName="Clientes" />
                             </p:commandButton>
@@ -97,7 +99,7 @@
                         <f:facet name="header">
                             <h:outputText value="#{bundle.ListClienteTitle_tarifaEspecial}"/>
                         </f:facet>
-                        <h:outputText value="#{item.tarifaEspecial} %"/>
+                        <h:outputText value="#{item.tarifaEspecial}"/>
                     </p:column>                    
                     <p:column filterBy="#{item.empleado}" filterMatchMode="contains" headerText="#{bundle.ListClienteTitle_empleado}" filterStyle="width: 70px">
                         <h:outputText value="#{item.empleado.toString()}"/>
@@ -121,6 +123,11 @@
                         <h:outputText value="#{item.categoria}"/>
                     </p:column>
                 </p:dataTable>
+
+                <p:confirmDialog global="true">
+                    <p:commandButton value="Yes" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                    <p:commandButton value="No" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                </p:confirmDialog>
             </h:form>
 
             <ui:include src="FormClient.xhtml"/>

@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -60,7 +59,7 @@ public class DespachoFactura implements Serializable {
     @JoinColumn(name = "usuario", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Usuario usuario;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "despachoFactura", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "despachoFactura", fetch = FetchType.LAZY)
     private List<DespachoFacturaProducto> despachoFacturaProductoList;
 
     public DespachoFactura() {

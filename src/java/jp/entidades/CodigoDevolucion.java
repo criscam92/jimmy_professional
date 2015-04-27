@@ -3,7 +3,6 @@ package jp.entidades;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -47,7 +46,7 @@ public class CodigoDevolucion implements Serializable, Codificable {
     @Size(min = 1, max = 100)
     @Column(nullable = false, length = 100)
     private String descripcion;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "codigoDevolucion", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "codigoDevolucion", fetch = FetchType.LAZY)
     private List<DevolucionProducto> devolucionProductoList;
 
     public CodigoDevolucion() {

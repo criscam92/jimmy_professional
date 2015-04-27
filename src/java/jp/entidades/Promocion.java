@@ -3,7 +3,6 @@ package jp.entidades;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -62,9 +61,9 @@ public class Promocion implements Serializable, Codificable {
     @JoinColumn(name = "categoria", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Categoria categoria;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "promocion", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "promocion", fetch = FetchType.LAZY)
     private List<FacturaPromocion> facturaPromocionList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "promocion", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "promocion", fetch = FetchType.LAZY)
     private List<PromocionProducto> promocionProductoList;
 
     public Promocion() {
