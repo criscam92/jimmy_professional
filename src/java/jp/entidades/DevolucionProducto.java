@@ -24,9 +24,9 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "DevolucionProducto.findAll", query = "SELECT d FROM DevolucionProducto d"),
     @NamedQuery(name = "DevolucionProducto.findById", query = "SELECT d FROM DevolucionProducto d WHERE d.id = :id"),
     @NamedQuery(name = "DevolucionProducto.findByCantidad", query = "SELECT d FROM DevolucionProducto d WHERE d.cantidad = :cantidad"),
-    @NamedQuery(name = "DevolucionProducto.findByDetalle", query = "SELECT d FROM DevolucionProducto d WHERE d.detalle = :detalle"),
-    @NamedQuery(name = "DevolucionProducto.findByValor", query = "SELECT d FROM DevolucionProducto d WHERE d.valor = :valor")})
+    @NamedQuery(name = "DevolucionProducto.findByDetalle", query = "SELECT d FROM DevolucionProducto d WHERE d.detalle = :detalle")})
 public class DevolucionProducto implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,10 +40,6 @@ public class DevolucionProducto implements Serializable {
     @Size(max = 300)
     @Column(length = 300)
     private String detalle;
-    @Basic(optional = false)
-    @NotNull
-    @Column(nullable = false)
-    private float valor;
     @JoinColumn(name = "codigo_devolucion", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private CodigoDevolucion codigoDevolucion;
@@ -61,10 +57,9 @@ public class DevolucionProducto implements Serializable {
         this.id = id;
     }
 
-    public DevolucionProducto(Long id, int cantidad, float valor) {
+    public DevolucionProducto(Long id, int cantidad) {
         this.id = id;
         this.cantidad = cantidad;
-        this.valor = valor;
     }
 
     public Long getId() {
@@ -89,14 +84,6 @@ public class DevolucionProducto implements Serializable {
 
     public void setDetalle(String detalle) {
         this.detalle = detalle;
-    }
-
-    public float getValor() {
-        return valor;
-    }
-
-    public void setValor(float valor) {
-        this.valor = valor;
     }
 
     public CodigoDevolucion getCodigoDevolucion() {
@@ -137,15 +124,12 @@ public class DevolucionProducto implements Serializable {
             return false;
         }
         DevolucionProducto other = (DevolucionProducto) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return !((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)));
     }
 
     @Override
     public String toString() {
         return "entidades.DevolucionProducto[ id=" + id + " ]";
     }
-    
+
 }

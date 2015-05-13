@@ -9,6 +9,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
+import org.primefaces.context.RequestContext;
 
 public class JsfUtil {
 
@@ -100,6 +101,10 @@ public class JsfUtil {
         return msgTMP.trim();
     }
 
+    public static void updateComponent(String component) {
+        RequestContext.getCurrentInstance().update(component);
+    }
+
     /**
      *
      * @param nombreJasper nombre del .jasper
@@ -109,12 +114,11 @@ public class JsfUtil {
         ServletContext context = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
         return context.getRealPath("/resources/reportes/" + nombreJasper);
     }
-    
-    
-    public static String cutText(String text){
+
+    public static String cutText(String text) {
         if (text.length() > 38) {
             return text.substring(0, 38).concat("...");
-        }else{
+        } else {
             return text;
         }
     }

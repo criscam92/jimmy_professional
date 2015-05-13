@@ -8,7 +8,6 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.faces.bean.ManagedBean;
@@ -39,10 +38,6 @@ public class ClienteController implements Serializable {
     private String header;
 
     public ClienteController() {
-    }
-
-    @PostConstruct
-    public void init() {
     }
 
     public Cliente getSelected() {
@@ -85,12 +80,6 @@ public class ClienteController implements Serializable {
         this.valorSelect = valorSelect;
     }
 
-    protected void setEmbeddableKeys() {
-    }
-
-    protected void initializeEmbeddableKey() {
-    }
-
     private ClienteFacade getFacade() {
         return ejbFacade;
     }
@@ -109,7 +98,6 @@ public class ClienteController implements Serializable {
 
     public Cliente prepareCreate() {
         selected = new Cliente();
-        initializeEmbeddableKey();
         disable = true;
         recargo = false;
         visibility = "hidden";
@@ -162,7 +150,6 @@ public class ClienteController implements Serializable {
 
     private void persist(PersistAction persistAction, String successMessage) {
         if (selected != null) {
-            setEmbeddableKeys();
             try {
                 if (persistAction != PersistAction.DELETE) {
                     getFacade().edit(selected);
@@ -177,6 +164,9 @@ public class ClienteController implements Serializable {
                     msg = cause.getLocalizedMessage();
                 }
                 if (msg.length() > 0) {
+                    if (persistAction == PersistAction.DELETE) {
+                        msg = "Error eliminando el cliente " + selected.toString() + " verifique que no este siendo utilizado";
+                    }
                     JsfUtil.addErrorMessage(msg);
                 } else {
                     JsfUtil.addErrorMessage(ex, JsfUtil.getMessageBundle("PersistenceErrorOccured"));

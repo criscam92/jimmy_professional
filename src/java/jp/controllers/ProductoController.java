@@ -227,6 +227,9 @@ public class ProductoController implements Serializable {
                     msg = cause.getLocalizedMessage();
                 }
                 if (msg.length() > 0) {
+                    if (persistAction == PersistAction.DELETE) {
+                        msg = "Ocurrio un error eliminando el producto " + selected.toString() + " verifique que no este siendo utilizado";
+                    }
                     JsfUtil.addErrorMessage(msg);
                 } else {
                     JsfUtil.addErrorMessage(ex, JsfUtil.getMessageBundle("PersistenceErrorOccured"));

@@ -331,13 +331,6 @@ public class DespachoFacturaController implements Serializable {
         return null;
     }
 
-    private void getComprobarEstadoFactura() {
-        try {
-
-        } catch (Exception e) {
-        }
-    }
-
     @FacesConverter(forClass = DespachoFactura.class)
     public static class DespachoFacturaControllerConverter implements Converter {
 

@@ -8,7 +8,7 @@
 
     <ui:composition>
 
-        <p:dialog id="ClienteFormDlg" widgetVar="ClienteFormDialog" modal="true" resizable="false" appendTo="@(body)" header="#{clienteController.header}">
+        <p:dialog id="ClienteFormDlg" widgetVar="ClienteFormDialog" modal="true" closable="false" resizable="false" appendTo="@(body)" header="#{clienteController.header}">
             <h:form id="ClienteForm">
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{clienteController.selected != null}">
@@ -92,7 +92,9 @@
                 </h:panelGroup>
                 <div class="botonesDialog">
                     <p:commandButton actionListener="#{clienteController.createOrEdit}" value="#{bundle.Save}" update="display,:ClienteListForm:datalist,:growl" oncomplete="handleSubmit(args,'ClienteFormDialog');"/>
-                    <p:commandButton value="#{bundle.Cancel}"  actionListener="#{clienteController.closed}" update="display" oncomplete="PF('ClienteFormDialog').hide()"/>
+                    <p:commandButton  value="#{bundle.Cancel}" update="display" process="@this" onclick="PF('ClienteFormDialog').hide()">
+                        <p:resetInput target="display" />
+                    </p:commandButton>
                 </div>
             </h:form>
         </p:dialog>

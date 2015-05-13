@@ -19,7 +19,9 @@
                                 <p:inputText style="width: 100px" styleClass="#{promocionController.error}" id="codigo" value="#{promocionController.selected.codigo}" title="Codigo" required="true" requiredMessage="El campo codigo es requerido"/>
 
                                 <p:outputLabel value="#{bundle.CreatePromocionLabel_descripcion}" for="descripcion" />
-                                <p:inputText id="descripcion" value="#{promocionController.selected.descripcion}" title="#{bundle.CreatePromocionTitle_descripcion}" required="true" requiredMessage="#{bundle.CreatePromocionRequiredMessage_descripcion}"/>
+                                <p:inputText id="descripcion" value="#{promocionController.selected.descripcion}" title="#{bundle.CreatePromocionTitle_descripcion}" required="true" requiredMessage="#{bundle.CreatePromocionRequiredMessage_descripcion}">
+                                    <f:ajax event="change" execute="butonCrearDD"/>
+                                </p:inputText>
 
                                 <p:outputLabel value="#{bundle.CreatePromocionLabel_valor}" for="valor" />
                                 <p:inputText style="width: 100px" id="valor" value="#{promocionController.selected.valor}" title="#{bundle.CreatePromocionTitle_valor}" required="true" requiredMessage="#{bundle.CreatePromocionRequiredMessage_valor}"/>
@@ -151,10 +153,12 @@
                     </p:panelGrid>
                 </p:panelGrid>
                 <div class="botonesDialog">
-                    <p:commandButton actionListener="#{promocionController.update()}" value="#{bundle.Save}" update=":PromocionListForm:datalist,:growl,codigo,labelCodigo" rendered="#{promocionController.selected.id != null}"/>
-                    <p:commandButton actionListener="#{promocionController.create(true)}" value="#{bundle.Save}" update=":PromocionListForm:datalist,:growl,codigo,labelCodigo" rendered="#{promocionController.selected.id == null}"/>
+                    <p:commandButton actionListener="#{promocionController.update()}" value="#{bundle.Save}" update=":PromocionListForm:datalist,:growl,codigo,labelCodigo,PromocionCreateForm" rendered="#{promocionController.selected.id != null}"/>
+                    <p:commandButton id="butonCrearDD" actionListener="#{promocionController.create(true)}" value="#{bundle.Save}" update=":PromocionListForm:datalist,:growl,codigo,labelCodigo" rendered="#{promocionController.selected.id == null}"/>
                     <p:commandButton id="btnNuevaPromocion" actionListener="#{promocionController.create(false)}" value="Nueva Promoción" update=":PromocionListForm:datalist,:growl,@form,codigo,labelCodigo" rendered="#{promocionController.selected.id == null}"/>
-                    <p:commandButton value="#{bundle.Cancel}" type="button" onclick="PF('PromocionCreateDialog').hide()"/>
+                    <p:commandButton value="#{bundle.Cancel}" update="PromocionCreateForm">
+                        <p:resetInput target="PromocionCreateForm"/>
+                    </p:commandButton>
                 </div>
             </h:form>
         </p:dialog>

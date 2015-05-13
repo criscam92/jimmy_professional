@@ -101,6 +101,7 @@ public class Producto implements Serializable, Codificable {
         this.id = id;
     }
 
+    @Override
     public String getNombre() {
         return nombre;
     }

@@ -20,7 +20,6 @@ import jp.facades.ProductoFacade;
 import jp.facades.PromocionFacade;
 import jp.facades.TransactionFacade;
 import org.primefaces.context.RequestContext;
-import org.primefaces.event.SelectEvent;
 
 @ManagedBean(name = "promocionController")
 @SessionScoped
@@ -108,12 +107,6 @@ public class PromocionController implements Serializable {
         return productoFacade;
     }
 
-    protected void setEmbeddableKeys() {
-    }
-
-    protected void initializeEmbeddableKey() {
-    }
-
     private PromocionFacade getFacade() {
         return ejbFacade;
     }
@@ -123,7 +116,6 @@ public class PromocionController implements Serializable {
         setError("");
         promocionProductos = new ArrayList<>();
         setHeader(JsfUtil.getMessageBundle("CreatePromocionTitle"));
-        initializeEmbeddableKey();
         return selected;
     }
 
