@@ -12,7 +12,7 @@
 }
 .ui-layout-north {
     z-index: 20 !important;
-    overflow: visible !important;;
+    overflow: visible !important;
 }
 
 .ui-layout-north .ui-layout-unit-content {
@@ -151,4 +151,8 @@ div.contenido div.ui-layout-unit-content.ui-widget-content{
 .titleVista{
     font-weight: bold;
     font-size: 16px;
+}
+
+form#formDevolucionProducto div.ui-tabs.ui-tabs-top{
+    border-bottom: none;
 }

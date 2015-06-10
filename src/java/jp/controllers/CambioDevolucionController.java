@@ -44,23 +44,23 @@ import org.primefaces.event.SelectEvent;
 public class CambioDevolucionController implements Serializable {
 
     @EJB
-    private jp.facades.CambioDevolucionFacade ejbFacade;
+    private CambioDevolucionFacade ejbFacade;
     @EJB
-    private jp.facades.DevolucionFacade ejbDevolucionFacade;
+    private DevolucionFacade ejbDevolucionFacade;
     @EJB
-    private jp.facades.ParametrosFacade ejbParametrosFacade;
+    private ParametrosFacade ejbParametrosFacade;
     @EJB
-    private jp.facades.TalonarioFacade ejbTalonarioFacade;
+    private TalonarioFacade ejbTalonarioFacade;
     @EJB
-    private jp.facades.FacturaFacade ejbFacturaFacade;
+    private FacturaFacade ejbFacturaFacade;
     @EJB
-    private jp.facades.TransactionFacade ejbTransaccionFacade;
+    private TransactionFacade ejbTransaccionFacade;
     @EJB
-    private jp.controllers.DevolucionSessionBean devolucionSessionBean;
-    
+    private DevolucionSessionBean devolucionSessionBean;
+
     @Inject
     private UsuarioActual usuarioActual;
-    
+
     private List<CambioDevolucion> items = null;
     private CambioDevolucion selected;
     private Devolucion devolucion;
@@ -73,27 +73,27 @@ public class CambioDevolucionController implements Serializable {
         itemsTMP = new ArrayList<>();
         devolucionSessionBean = new DevolucionSessionBean();
     }
-
-    @PostConstruct
-    public void init() {
-        try {
-            devolucion = devolucionSessionBean.getDevolucion();
-            devolucion.setUsuario(usuarioActual.get());
-            if (devolucion.getDolar()) {
-                devolucion.setDolarActual(getEjbParametrosFacade().getParametros().getPrecioDolar());
-            }
-            devolucionesProducto = devolucionSessionBean.getDevolucionProductoList();
-
-        } catch (Exception e) {
-            System.out.println("====================No se recibió parametro por GET en CambioDevContr====================");
-            e.printStackTrace();
-        }
-        selected = new CambioDevolucion();
-        facturaProducto = new FacturaProducto();
-        if (selected != null && selected.getFactura() == null) {
-            cargarFactura();
-        }
-    }
+//
+//    @PostConstruct
+//    public void init() {
+//        try {
+//            devolucion = devolucionSessionBean.getDevolucion();
+//            devolucion.setUsuario(usuarioActual.get());
+//            if (devolucion.getDolar()) {
+//                devolucion.setDolarActual(getEjbParametrosFacade().getParametros().getPrecioDolar());
+//            }
+//            devolucionesProducto = devolucionSessionBean.getDevolucionProductoList();
+//
+//        } catch (Exception e) {
+//            System.out.println("====================No se recibió parametro por GET en CambioDevContr====================");
+//            e.printStackTrace();
+//        }
+//        selected = new CambioDevolucion();
+//        facturaProducto = new FacturaProducto();
+//        if (selected != null && selected.getFactura() == null) {
+//            cargarFactura();
+//        }
+//    }
 
     public CambioDevolucion getSelected() {
         return selected;
@@ -254,13 +254,13 @@ public class CambioDevolucionController implements Serializable {
             return controller.getFacade().find(getKey(value));
         }
 
-        java.lang.Long getKey(String value) {
-            java.lang.Long key;
+        Long getKey(String value) {
+            Long key;
             key = Long.valueOf(value);
             return key;
         }
 
-        String getStringKey(java.lang.Long value) {
+        String getStringKey(Long value) {
             StringBuilder sb = new StringBuilder();
             sb.append(value);
             return sb.toString();
@@ -302,23 +302,6 @@ public class CambioDevolucionController implements Serializable {
         }
     }
 
-    public void addFacturaProducto() {
-        if (facturaProducto.getUnidadesVenta() > 0 && facturaProducto.getPrecio() > 0 && facturaProducto.getProducto() != null && factura != null) {
-
-            FacturaProducto facturaProductoTMP = new FacturaProducto();
-            facturaProductoTMP.setUnidadesVenta(facturaProducto.getUnidadesVenta());
-            facturaProductoTMP.setUnidadesBonificacion(0);
-            facturaProductoTMP.setPrecio(facturaProducto.getPrecio());
-            facturaProductoTMP.setProducto(facturaProducto.getProducto());
-            facturaProductoTMP.setFactura(factura);
-            facturaProductoTMP.setId(itemsTMP.size() + 1l);
-
-            itemsTMP.add(facturaProductoTMP);
-            cleanFacturaProducto();
-        } else {
-            JsfUtil.addErrorMessage("Debe agregar productos a la Factura");
-        }
-    }
 
     public void removeFacturaProducto(FacturaProducto fp) {
         itemsTMP.remove(fp);
@@ -342,18 +325,6 @@ public class CambioDevolucionController implements Serializable {
             sum += fp.getUnidadesVenta();
         }
         return sum;
-    }
-
-    public void onItemSelectEmpleado(SelectEvent event) {
-        Empleado e = (Empleado) event.getObject();
-        Talonario t = getEjbTalonarioFacade().getTalonarioByFecha(e);
-
-        if (t == null) {
-            factura.setEmpleado(null);
-            JsfUtil.addErrorMessage("No existen talonarios para el empleado " + e.toString());
-        } else {
-            factura.setOrdenPedido("" + t.getActual());
-        }
     }
 
     public String getSimboloValor() {
@@ -434,15 +405,14 @@ public class CambioDevolucionController implements Serializable {
         return false;
     }
 
-    public void onItemSelectProducto(SelectEvent event) {
-        Producto p = (Producto) event.getObject();
-        facturaProducto.setPrecio((float) p.getValorVenta());
+
+
+    public String getMoneda(boolean dolar) {
+        return dolar ? "Dolar" : "Peso";
     }
 
-    private void cleanFacturaProducto() {
-        facturaProducto.setProducto(null);
-        facturaProducto.setUnidadesVenta(0);
-        facturaProducto.setPrecio(0d);
+    public String getTipoFactura(int tipo) {
+        return TipoPago.getFromValue(tipo).getDetalle();
     }
 
 }

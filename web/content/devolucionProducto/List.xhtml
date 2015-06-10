@@ -31,7 +31,7 @@
                             <h:outputText value="#{bundle.DevolucionTitle}"/>
                         </div>
                         <div id="acciones">
-                            <p:commandButton id="createButton" icon="ui-icon-plus"   value="#{bundle.Create}" action="#{devolucionController.redireccionarDevolucionProducto('Create.xhtml')}" />
+                            <p:commandButton id="createButton" icon="ui-icon-plus"   value="#{bundle.Create}" action="#{devolucionController.redireccionarDevolucionProducto()}" />
                             <p:commandButton id="viewButton"   icon="ui-icon-search" value="#{bundle.View}" update=":DevolucionProductoViewForm" oncomplete="PF('DevolucionProductoViewDialog').show()" disabled="#{empty devolucionProductoController.selected}"/>
                             <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":DevolucionProductoEditForm" oncomplete="PF('DevolucionProductoEditDialog').show()" disabled="#{empty devolucionProductoController.selected}"/>
                             <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{devolucionProductoController.destroy}" update=":growl,datalist" disabled="#{empty devolucionProductoController.selected}"/>

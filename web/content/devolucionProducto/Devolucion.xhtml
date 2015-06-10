@@ -1,0 +1,157 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <ui:composition>
+        <table style="margin: auto;">
+            <tr>   
+                <td>
+                    <p:panel header="#{bundle.DevolucionDetail}" style="width: 590px;">
+                        <p:panelGrid columns="2">
+
+                            <p:panelGrid columns="1">
+
+                                <p:panelGrid columns="4">
+
+                                    <p:outputLabel value="#{bundle.CreateFacturaLabel_fecha}" for="fecha"/>
+                                    <p:calendar size="12" id="fecha" pattern="MM/dd/yyyy"
+                                                value="#{devolucionController.selected.fecha}" title="#{bundle.EditVisitaTitle_fecha}"
+                                                required="true" requiredMessage="#{bundle.EditVisitaRequiredMessage_fecha}" showOn="button">
+                                        <p:ajax event="dateSelect" update=":formAbonoFactura" />
+                                    </p:calendar>
+
+                                    <p:outputLabel value="#{bundle.CreateVisitaLabel_cliente}" for="cliente"/>
+                                    <p:autoComplete id="cliente" minQueryLength="3" panelStyle="width: 210px;" value="#{devolucionController.selected.cliente}" requiredMessage="#{bundle.EditTalonarioRequiredMessage_cli}"
+                                                    itemValue="#{cliente}" completeMethod="#{clienteController.llenarCliente}" effect="fade" converter="clienteconverter" emptyMessage="Ingrese un Cliente válido"
+                                                    itemLabel="#{cliente.toString()}" var="cliente" required="true" converterMessage="Ingrese un Cliente válido" validatorMessage="Ingrese un Cliente válido">
+                                        <p:ajax event="itemSelect" listener="#{devolucionController.onItemSelecCliente}"/>
+                                    </p:autoComplete>
+
+                                    <p:outputLabel value="Moneda" for="moneda"/>                                
+                                    <p:selectOneMenu value="#{devolucionController.selected.dolar}" id="moneda" widgetVar="comboMoneda" style="width: 135px;">
+                                        <p:ajax event="change" listener="#{devolucionController.getSimboloValor()}" update=":formAbonoFactura" />
+                                        <f:selectItems value="#{devolucionController.tipoMoneda}" var="itemMon" itemLabel="#{itemMon.detalle}" itemValue="#{itemMon.valor == 1?true:false}"/>
+                                    </p:selectOneMenu>
+
+                                    <p:outputLabel value="#{bundle.MessageValorTotalDev}" for="valorTotal"/>
+                                    <p:inputText id="valorTotal" value="#{devolucionController.selected.valorTotal}" style="width: 146px;"
+                                                 required="true" requiredMessage="#{bundle.MessageRequiredDevValorTot}"/>
+
+                                </p:panelGrid>
+                                <p:panelGrid columns="2">
+
+                                    <p:outputLabel value="#{bundle.CreateDevolucionProductoLabel_detalle}" for="observacion" style="margin-right: 7px;"/>
+                                    <p:inputTextarea id="observacion" value="#{devolucionController.selected.observaciones}" style="width: 433px; height: 39px;">
+                                        <p:ajax event="blur" update=":formAbonoFactura" />
+                                    </p:inputTextarea>
+
+                                </p:panelGrid>
+
+
+                            </p:panelGrid>
+
+                        </p:panelGrid>
+                    </p:panel>
+                </td>
+                <td>
+                    <p:panel header="Datos Producto" style="width: 665px;" id="datosProductos">                        
+                        <p:panelGrid columns="2">
+
+                            <p:panelGrid columns="2">
+
+                                <p:outputLabel value="#{bundle.CreateDevolucionProductoLabel_producto}" for="producto" style="margin-right: 15px;">
+                                    <span class="ui-outputlabel-rfi">*</span>
+                                </p:outputLabel>
+                                <p:autoComplete id="producto" minQueryLength="3" value="#{devolucionController.devolucionProducto.producto}" itemValue="#{pro}" 
+                                                completeMethod="#{promocionController.llenarProducto}" effect="fade" converter="productoconverter" itemLabel="#{pro.toString()}" var="pro">
+                                </p:autoComplete>
+
+                                <p:outputLabel value="#{bundle.CreateDevolucionProductoLabel_detalle}" for="detalle" />
+                                <p:inputTextarea id="detalle" value="#{devolucionController.devolucionProducto.detalle}" title="#{bundle.CreateDevolucionProductoTitle_detalle}" style="width: 146px; height: 46px;"/>
+
+                            </p:panelGrid>
+
+                            <p:panelGrid columns="2">
+                                <p:outputLabel value="#{bundle.CreateDevolucionProductoLabel_cantidad}" for="cantidad" />
+                                <p:inputText id="cantidad" value="#{devolucionController.devolucionProducto.cantidad}"
+                                             title="#{bundle.CreateDevolucionProductoTitle_cantidad}" required="true" requiredMessage="#{bundle.CreateDevolucionProductoRequiredMessage_cantidad}"/>
+
+                                <p:outputLabel value="#{bundle.MessageCodigoDev}" for="codigoDevolucion" />
+                                <p:selectOneMenu style="width: 155px;" id="codigoDevolucion" value="#{devolucionController.devolucionProducto.codigoDevolucion}"
+                                                 required="true" requiredMessage="#{bundle.EditDevolucionCodDevRequiredMessage_producto}" converter="codigodevolucionconverter">
+                                    <f:selectItems value="#{codigoDevolucionController.itemsAvailableSelectOne}"
+                                                   var="codigoDevItem"
+                                                   itemValue="#{codigoDevItem}"/>
+                                </p:selectOneMenu>
+
+                                <h:outputText value="Inventariar: " />
+                                <p:selectBooleanCheckbox value="#{devolucionController.ingresar}" />
+                            </p:panelGrid>                                   
+
+                        </p:panelGrid>
+
+                        <f:facet name="footer">
+                            <p:commandButton value="#{bundle.AddItem}" icon="ui-icon-plus" process="datosProductos"
+                                             actionListener="#{devolucionController.addDevolucionProducto()}" 
+                                             update="datalistTMP,:formAbonoFactura:devolucionActual,datosProductos,:growl"/>
+                        </f:facet>
+
+                    </p:panel>
+                </td>            
+            </tr>
+        </table>
+
+        <p:dataTable id="datalistTMP" value="#{devolucionController.devolucionProductosHelper}" var="itemTMP"
+                     paginator="true" rowKey="#{itemTMP.id}" rows="3" emptyMessage="#{bundle.EmptyTable}"
+                     paginatorPosition="bottom" paginatorAlwaysVisible="false" style="margin-top: 2px;"> 
+
+            <f:facet name="header">
+                Productos
+            </f:facet>
+
+            <p:column>
+                <f:facet name="header">
+                    <h:outputText value="Producto"/>
+                </f:facet>
+                <h:outputText value="#{itemTMP.devolucionProducto.producto.toString()}"/>
+            </p:column>
+            <p:column width="80">
+                <f:facet name="header">
+                    <h:outputText value="Cantidad"/>
+                </f:facet>
+                <h:outputText value="#{itemTMP.devolucionProducto.cantidad}"/>
+            </p:column>
+            <p:column>
+                <f:facet name="header">
+                    <h:outputText value="Código Devolución"/>
+                </f:facet>
+                <h:outputText value="#{itemTMP.devolucionProducto.codigoDevolucion.toString()}"/>
+            </p:column>
+            <p:column>
+                <f:facet name="header">
+                    <h:outputText value="Detalle"/>
+                </f:facet>
+                <h:outputText value="#{itemTMP.devolucionProducto.detalle}"/>
+            </p:column>
+
+            <p:column style="text-align: center;" width="80">
+                <f:facet name="header">
+                    <h:outputText value="Inventariar"/>
+                </f:facet>
+                <p:selectBooleanCheckbox value="#{itemTMP.ingresar}" />
+            </p:column>
+
+            <p:column style="text-align: center;" width="80">
+                <f:facet name="header">
+                    <h:outputText value="#{bundle.RemoveItem}"/>
+                </f:facet>
+                <p:commandButton icon="ui-icon-closethick" update="datalistTMP,:formAbonoFactura:devolucionActual"
+                                 actionListener="#{devolucionController.removeDevolucionProducto(itemTMP)}" process="datalistTMP"/>
+            </p:column>
+        </p:dataTable>
+
+    </ui:composition>
+</html>

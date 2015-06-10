@@ -8,7 +8,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import jp.entidades.auxiliar.Codificable;
 
-
 public abstract class AbstractFacade<T> {
 
     private final Class<T> entityClass;
