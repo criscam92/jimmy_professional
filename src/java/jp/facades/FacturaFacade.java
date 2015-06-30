@@ -256,4 +256,12 @@ public class FacturaFacade extends AbstractFacade<Factura> {
         }
         return null;
     }
+    
+    public Factura getFirstFactura(){
+        Factura f;
+        Query q = em.createQuery("SELECT f FROM Factura f");
+        q.setMaxResults(1);
+        f = (Factura) q.getSingleResult();
+        return f;
+    }
 }

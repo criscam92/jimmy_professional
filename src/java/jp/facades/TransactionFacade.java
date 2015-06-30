@@ -584,6 +584,7 @@ public class TransactionFacade {
 
             Visita visitaTMP = getEntityManager().find(Visita.class, visita.getId());
             System.out.println("Visita = " + visitaTMP.getId());
+            visitaTMP.setObservacionesCliente(visita.getObservacionesCliente());
             visitaTMP.setCalificacionServicio(visita.getCalificacionServicio());
             visitaTMP.setPuntualidadServicio(visita.getPuntualidadServicio());
             visitaTMP.setCumplioExpectativas(visita.getCumplioExpectativas());

@@ -378,7 +378,7 @@ public class VisitaController implements Serializable {
         if (getTransactionFacade().updateVisitaProducto(selected, visitaProductos, visitaProductosGuardar, visitaProductosEliminar, visitaProductosEditar)) {
             if (!JsfUtil.isValidationFailed()) {
                 clean();
-                JsfUtil.addSuccessMessage("La visita se a realizado exitosamente");
+                JsfUtil.addSuccessMessage("La visita se ha realizado exitosamente");
             }
         } else {
             JsfUtil.addErrorMessage("NO SE A PODIDO EDITAR LA VISITA");
