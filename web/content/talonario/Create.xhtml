@@ -19,7 +19,7 @@
                             <f:selectItems value="#{talonarioController.tiposTalonarios}" var="item" itemLabel="#{item.detalle}" itemValue="#{item.valor}" />
                         </p:selectOneMenu>
                         <p:outputLabel value="#{bundle.CreateVisitaLabel_empleado}" for="empleado" />
-                        <p:selectOneMenu id="empleado" value="#{talonarioController.selected.empleado}" required="true" requiredMessage="#{bundle.EditTalonarioRequiredMessage_emp}">
+                        <p:selectOneMenu id="empleado" value="#{talonarioController.selected.empleado}" required="true" requiredMessage="#{bundle.EditTalonarioRequiredMessage_emp}" converter="empleadoconverter">
                             <f:selectItem  itemLabel="#{bundle.SelectOneMessage}"/>
                             <f:selectItems value="#{empleadoController.itemsAvailableSelectOne}"
                                            var="empleadoItem"
