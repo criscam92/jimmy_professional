@@ -26,21 +26,17 @@ import jp.facades.ProductoFacade;
 import jp.facades.ParametrosFacade;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
-import org.apache.poi.hssf.usermodel.HSSFFont;
-import org.apache.poi.hssf.usermodel.HSSFFontFormatting;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
-import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.ss.util.RegionUtil;
 import org.primefaces.context.RequestContext;
 
 @ManagedBean(name = "productoController")
 @ViewScoped
 public class ProductoController implements Serializable {
-    
+
     @EJB
     private jp.facades.ProductoFacade ejbFacade;
     @EJB
@@ -50,21 +46,22 @@ public class ProductoController implements Serializable {
     private final String uiError;
     private String error;
     private ProductoFacade.TIPO_PRECIO tipoLista;
-    
-    private Map<ProductoFacade.TIPO_PRECIO,Float> recargosTipoPrecio;
+    private List<Producto> itemsTMP = null;
+
+    private Map<ProductoFacade.TIPO_PRECIO, Float> recargosTipoPrecio;
 
     private Float recargoPublico;
 
     public ProductoController() {
         uiError = "ui-state-error";
     }
-    
+
     @PostConstruct
-    private void init(){
+    private void init() {
         tipoLista = ProductoFacade.TIPO_PRECIO.LOCALES;
     }
 
-    public ProductoFacade.TIPO_PRECIO[] getTipoListado(){
+    public ProductoFacade.TIPO_PRECIO[] getTipoListado() {
         return ProductoFacade.TIPO_PRECIO.values();
     }
 
@@ -75,7 +72,7 @@ public class ProductoController implements Serializable {
     public void setTipoLista(ProductoFacade.TIPO_PRECIO tipoLista) {
         this.tipoLista = tipoLista;
     }
-    
+
     public Producto getSelected() {
         return selected;
     }
@@ -99,12 +96,12 @@ public class ProductoController implements Serializable {
         initializeEmbeddableKey();
         return selected;
     }
-    
-    public void cambiarTipoLista(){
+
+    public void cambiarTipoLista() {
         System.out.println("Tipo de lista: ".concat(tipoLista.toString()));
     }
-    
-    private float getRecargoDecimal(float recargo){
+
+    private float getRecargoDecimal(float recargo) {
         return (recargo / 100) + 1;
     }
 
@@ -113,7 +110,7 @@ public class ProductoController implements Serializable {
         if (producto.getVentaPublico()) {
 
             valor = getValorProducto(valor);
-            
+
             if (recargoPublico == null) {
                 recargoPublico = parametrosFacade.getParametros().getPorcentajeVentaPublic();
                 recargoPublico = getRecargoDecimal(recargoPublico);
@@ -121,47 +118,45 @@ public class ProductoController implements Serializable {
                     recargoPublico = 1.0f;
                 }
             }
-            currency = currency==null?"":currency;
-            String resultado = currency.concat(new DecimalFormat("#.##",DecimalFormatSymbols.getInstance(Locale.forLanguageTag("es-co"))).format(valor * recargoPublico));
+            currency = currency == null ? "" : currency;
+            String resultado = currency.concat(new DecimalFormat("#.##", DecimalFormatSymbols.getInstance(Locale.forLanguageTag("es-co"))).format(valor * recargoPublico));
             return resultado;
         } else {
             return "No aplica";
         }
     }
-    
-    public Float getValorProducto(Float valor){
-        if(tipoLista==null){
+
+    public Float getValorProducto(Float valor) {
+        if (tipoLista == null) {
             return valor;
-        }else{
-            
-            if(recargosTipoPrecio==null){
+        } else {
+
+            if (recargosTipoPrecio == null) {
                 recargosTipoPrecio = new HashMap<>();
                 Parametros parametros = null;
                 try {
                     parametros = parametrosFacade.getParametros();
                 } catch (Exception e) {
                 }
-                
-                if(parametros!=null){
-                    if(parametros.getRecargoLocal()==null){
+
+                if (parametros != null) {
+                    if (parametros.getRecargoLocal() == null) {
                         parametros.setRecargoLocal(0.0f);
                     }
                     recargosTipoPrecio.put(ProductoFacade.TIPO_PRECIO.LOCALES, getRecargoDecimal(parametros.getRecargoLocal()));
-                    
-                    if(parametros.getRecargoNacional()==null){
+
+                    if (parametros.getRecargoNacional() == null) {
                         parametros.setRecargoNacional(0.0f);
                     }
                     recargosTipoPrecio.put(ProductoFacade.TIPO_PRECIO.NACIONALES, getRecargoDecimal(parametros.getRecargoNacional()));
-                    
-                    if(parametros.getRecargoInternacional()==null){
+
+                    if (parametros.getRecargoInternacional() == null) {
                         parametros.setRecargoInternacional(0.0f);
                     }
                     recargosTipoPrecio.put(ProductoFacade.TIPO_PRECIO.EXTRANJEROS, getRecargoDecimal(parametros.getRecargoInternacional()));
                 }
             }
-            
-            return recargosTipoPrecio.get(tipoLista)*valor;
-            
+            return recargosTipoPrecio.get(tipoLista) * valor;
         }
     }
 
@@ -269,7 +264,7 @@ public class ProductoController implements Serializable {
             ProductoController controller = (ProductoController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "productoController");
 
-            Long key = 0L;
+            Long key;
             try {
                 key = getKey(value);
                 return controller.getFacade().find(key);
@@ -303,41 +298,44 @@ public class ProductoController implements Serializable {
                 return null;
             }
         }
-
     }
-    
+
     public void postProcessXLS(Object document) {
-        HSSFWorkbook wb = (HSSFWorkbook) document;     
-        
+        HSSFWorkbook wb = (HSSFWorkbook) document;
+
         HSSFSheet sheet = wb.getSheetAt(0);
-        
+
         int rows = sheet.getLastRowNum();
-        
+
         int numberOfCells = sheet.getRow(0).getPhysicalNumberOfCells();
-        
+
         sheet.shiftRows(0, rows, 1);
-        
-        HSSFCellStyle cellStyle = wb.createCellStyle();  
+
+        HSSFCellStyle cellStyle = wb.createCellStyle();
         cellStyle.setFillForegroundColor(HSSFColor.GREY_25_PERCENT.index);
         cellStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
         cellStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
         cellStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
-        
+
         HSSFCell header = sheet.createRow(0).createCell(0);
         header.setCellStyle(cellStyle);
         header.setCellValue("Listado de precios ".concat(tipoLista.toString()));
-        
+
         for (int i = 0; i < sheet.getPhysicalNumberOfRows(); i++) {
             HSSFRow row = sheet.getRow(i);
             row.setHeightInPoints(25);
         }
-        
+
         for (short i = 0; i < numberOfCells; i++) {
             sheet.autoSizeColumn(i);
         }
-        
-        CellRangeAddress range = new CellRangeAddress(0, 0, 0, numberOfCells-1);
+
+        CellRangeAddress range = new CellRangeAddress(0, 0, 0, numberOfCells - 1);
         sheet.addMergedRegion(range);
-        
+
+    }
+
+    public int getCantidadDisponible(Producto producto) {
+        return getFacade().getCantidadDisponibleByProducto(producto);
     }
 }

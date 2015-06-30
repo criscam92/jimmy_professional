@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/index.xhtml">
+
+        <ui:define name="title">
+            <h:outputText value="Productos Disponibles"></h:outputText>
+        </ui:define>
+
+        <ui:define name="body">
+            <h:form id=ProductosDisponiblesListForm">
+
+                <p:dataTable
+                    value="#{productoController.items}"
+                    styleClass="tabla" var="item"
+                    paginator="true" rows="10"
+                    rowsPerPageTemplate="10,20,30,40,50"
+                    paginatorPosition="bottom"
+                    emptyMessage="#{bundle.EmptyTable}"
+                    widgetVar="tablaIngresosProductos"
+                    >
+
+                    <f:facet name="header">
+                        <div id="titulo">
+                            Productos Disponibles
+                        </div>
+                    </f:facet>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Codigo"/>
+                        </f:facet>
+                        <h:outputText value="#{item.codigo}"/>
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Producto"/>
+                        </f:facet>
+                        <h:outputText value="#{item.descripcion}"/>
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Gramaje"/>
+                        </f:facet>
+                        <h:outputText value="#{item.gramaje}"/>
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Disponibilidad"/>
+                        </f:facet>
+                        <h:outputText value="#{productoController.getCantidadDisponible(item)}"/>
+                    </p:column>
+
+                </p:dataTable>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>
