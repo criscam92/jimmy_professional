@@ -58,16 +58,10 @@
                         </div>
                     </f:facet>
 
-                    <p:column>
-                        <f:facet name="header">
-                            <h:outputText value="#{bundle.ListProductoTitle_codigo}"/>
-                        </f:facet>
+                    <p:column filterStyle="width: 45px" filterBy="#{item.codigo}" headerText="#{bundle.ListProductoTitle_codigo}" filterMatchMode="contains" style="text-align: center;">
                         <h:outputText value="#{item.codigo}"/>
                     </p:column>
-                    <p:column>
-                        <f:facet name="header">
-                            <h:outputText value="#{bundle.ListProductoTitle_nombre}"/>
-                        </f:facet>
+                    <p:column filterBy="#{item.nombre}" filterMatchMode="contains" headerText="#{bundle.ListProductoTitle_nombre}" filterStyle="width: 70px">
                         <h:outputText value="#{item.nombre}"/>
                     </p:column>
                     <p:column>
