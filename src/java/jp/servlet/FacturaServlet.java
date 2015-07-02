@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.Normalizer;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
@@ -20,137 +21,150 @@ import jp.util.TipoPago;
 @WebServlet(name = "FacturaServlet", urlPatterns = {"/FacturaServlet"})
 public class FacturaServlet extends HttpServlet {
 
-    private final static int filasDocumento = 30;
-    private final static int filasEncabezado = 4;
-    private final static int filasDatosCliente = 5;
-    private final static int filasFooterTotales = 5;
-    private final static int filasFooterObservaciones = 3;
+    private final static int FILAS_DOCUMENTO = 30;
+    private final static int FILAS_ENCABEZADO = 4;
+    private final static int FILAS_DATOS_CLIENTE = 5;
+    private final static int FILAS_FOOTER_TOTALES = 5;
+    private final static int FILAS_FOOTER_OBSERVACIONES = 3;
+    private final static int PRODUCTOS_POR_PAGINA = 7;
     @Inject
     FacturaFacade facturaFacade;
     @Inject
     ProductoFacade productoFacade;
-    int paginaActual, totalPaginas;
+    int paginaActual, totalPaginas, tamanoListaProductos;
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/plain;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
-            /*String idFactura = rellenar("" + 111l, " ", 13, false);
-             Date fechaActual = Calendar.getInstance().getTime();*/
 
             Factura f = facturaFacade.getFirstFactura();
-
-            String headerFactura = getHeaderFactura(f);
-            out.println(headerFactura);
-
-            String headerDatosCliente = getHeaderDatosCliente(f);
-            out.println(headerDatosCliente);
-
             List<FacturaProducto> facturaProductos = productoFacade.getFacturaProductosByFactura(f);
-            String listaProductos = getListaProductos(facturaProductos, f);
-            out.println(listaProductos);
 
-            String footerTotales = getFooterTotales(f, facturaProductos);
-             out.println(footerTotales);
-             
-            String footerObservaciones = getFooterObservaciones(f);
-            out.println(footerObservaciones);
+            List<String> listaProductos = getListaProductos(facturaProductos, f);
+            tamanoListaProductos = listaProductos.size() / 5;
+            System.out.println("Lineas de productos--> " + tamanoListaProductos);
+            setTotalPaginas();
+
+            List<String> headerFactura = getHeaderFactura(f);
+            System.out.println("Lineas de headerFactura--> " + headerFactura.size());
+
+            List<String> headerDatosCliente = getHeaderDatosCliente(f);
+            System.out.println("Lineas de datosCliente--> " + headerDatosCliente.size());
+
+            List<String> footerTotales = getFooterTotales(f, facturaProductos);
+            System.out.println("Lineas de datosFooterTotales--> " + footerTotales.size());
+
+            List<String> footerObservaciones = getFooterObservaciones(f);
+            System.out.println("Lineas de datosFooterObservaciones--> " + footerObservaciones.size());
+
+            StringBuilder sb = new StringBuilder();
+            if (tamanoListaProductos <= PRODUCTOS_POR_PAGINA) {
+                sb.append(headerFactura).append(headerDatosCliente).append(listaProductos).append(footerTotales).append(footerObservaciones);
+            } else {
+                sb.append(headerFactura).append(headerDatosCliente).append(listaProductos).append(footerTotales).append(footerObservaciones);
+            }
+
+            out.println(removeAccents(sb.toString()));
         }
     }
 
-    public String getHeaderFactura(Factura f) {
+    public List<String> getHeaderFactura(Factura f) {
         paginaActual++;
-        
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy");
-        String idFactura = rellenar("" + f.getId(), "#", 13, false);
-        String fechaFactura = rellenar(dateFormat.format(f.getFecha()).toUpperCase(), "#", 13, false);
-        String paginado = rellenar(getNumberPages(paginaActual, 2), "#", 42, false);
+        List<String> lista = new ArrayList<>();
 
-        StringBuilder cadena = new StringBuilder();
-        cadena.append("LINDA INES AREVALO PAMO                      **** J I M M Y   P R O F E S S I O N A L ****").append(paginado).append("\n")
-                .append("NIT 51.898.276-5                                         CALLE 17 # 83 A - 10                         FACTURA DE VENTA:").append(idFactura).append("\n")
-                .append("REGIMEN SIMPLIFICADO                                       (+57 2) 372 23 26                                     FECHA:").append(fechaFactura).append("\n")
-                .append("======================================================================================================================================\n");
-        return cadena.toString();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy");
+        String idFactura = rellenar("" + f.getId(), " ", 13, false);
+        String fechaFactura = rellenar(dateFormat.format(f.getFecha()).toUpperCase(), " ", 13, false);
+        String paginado = rellenar(getNumberPages(paginaActual, totalPaginas), " ", 42, false);
+
+//        StringBuilder cadena = new StringBuilder();
+        lista.add("LINDA INES AREVALO PAMO                      **** J I M M Y   P R O F E S S I O N A L ****" + paginado + "\n");
+        lista.add("NIT 51.898.276-5                                         CALLE 17 # 83 A - 10                         FACTURA DE VENTA:" + idFactura + "\n");
+        lista.add("REGIMEN SIMPLIFICADO                                       (+57 2) 372 23 26                                     FECHA:" + fechaFactura + "\n");
+        lista.add("======================================================================================================================================\n");
+        return lista;
     }
 
     public String getNumberPages(int paginaActual, int paginasTotales) {
         return "Pagina " + paginaActual + " de " + paginasTotales + "";
     }
 
-    public String getHeaderDatosCliente(Factura f) {
+    public List<String> getHeaderDatosCliente(Factura f) {
+        List<String> lista = new ArrayList<>();
 
-        StringBuilder cadena = new StringBuilder();
-        String nombre = rellenar(f.getCliente().getNombre(), "#", 62, true).toUpperCase();
-        String tipoCliente = rellenar(f.getCliente().getTipo().toString(), "#", 15, false).toUpperCase();
-        String direccion = rellenar(f.getCliente().getDireccion(), "#", 23, true).toUpperCase();
-        String barrio = rellenar(f.getCliente().getBarrio(), "#", 25, true).toUpperCase();
-        String ciudad = rellenar(f.getCliente().getCiudad().toString(), "#", 32, true).toUpperCase();
+        String nombre = rellenar(f.getCliente().getNombre(), " ", 62, true).toUpperCase();
+        String tipoCliente = rellenar(f.getCliente().getTipo().toString(), " ", 15, false).toUpperCase();
+        String direccion = rellenar(f.getCliente().getDireccion(), " ", 23, true).toUpperCase();
+        String barrio = rellenar(f.getCliente().getBarrio(), " ", 25, true).toUpperCase();
+        String ciudad = rellenar(f.getCliente().getCiudad().toString(), " ", 32, true).toUpperCase();
         String telefono = f.getCliente().getTelefonos().trim();
-        telefono = rellenar(telefono, "#", 15, false).toUpperCase();
-        String codigoCliente = rellenar(f.getCliente().getDocumento(), "#", 26, true).toUpperCase();
-        String formaPago = rellenar(TipoPago.getFromValue(f.getTipoPago()).getDetalle(), "#", 18, true).toUpperCase();
-        String tipoMoneda = rellenar(f.getDolar() ? "DOLARES" : "PESOS", "#", 23, true).toUpperCase();
+        telefono = rellenar(telefono, " ", 15, false).toUpperCase();
+        String codigoCliente = rellenar(f.getCliente().getDocumento(), " ", 26, true).toUpperCase();
+        String formaPago = rellenar(TipoPago.getFromValue(f.getTipoPago()).getDetalle(), " ", 18, true).toUpperCase();
+        String tipoMoneda = rellenar(f.getDolar() ? "DOLARES" : "PESOS", " ", 23, true).toUpperCase();
 
-        cadena.append("                                                *** D A T O S  D E L  C L I E N T E ***                                               \n")
-                .append("Nombre del cliente o establecimiento: ").append(nombre).append("Tipo de cliente: ").append(tipoCliente).append("    \n")
-                .append("Direccion: ").append(direccion).append("Barrio: ").append(barrio).append("Ciudad: ").append(ciudad).append("Telefono: ").append(telefono).append("    \n")
-                .append("                  Codigo Cliente: ").append(codigoCliente).append("Forma de Pago: ").append(formaPago).append("Tipo de moneda: ").append(tipoMoneda).append("\n")
-                .append("======================================================================================================================================\n");
+        lista.add("                                                *** D A T O S  D E L  C L I E N T E ***                                               \n");
+        lista.add("Nombre del cliente o establecimiento: " + nombre + "Tipo de cliente: " + tipoCliente + "    \n");
+        lista.add("Direccion: " + direccion + "Barrio: " + barrio + "Ciudad: " + ciudad + "Telefono: " + telefono + "    \n");
+        lista.add("                  Codigo Cliente: " + codigoCliente + "Forma de Pago: " + formaPago + "Tipo de moneda: " + tipoMoneda + "\n");
+        lista.add("======================================================================================================================================\n");
 
-        return cadena.toString();
+        return lista;
     }
 
-    public String getListaProductos(List<FacturaProducto> facturaProductos, Factura f) {
-        StringBuilder cadena = new StringBuilder();
-        cadena.append("                                             *** P R O D U C T O S  D E L  P E D I D O ***                                            \n")
-                .append("CODIGO                          DESCRIPCION                                         VENTA      BONIF.                      PRECIO     \n");
+    public List<String> getListaProductos(List<FacturaProducto> facturaProductos, Factura f) {
+        List<String> lista = new ArrayList<>();
+
+        lista.add("                                             *** P R O D U C T O S  D E L  P E D I D O ***                                            \n");
+        lista.add("CODIGO                          DESCRIPCION                                         VENTA      BONIF.                      PRECIO     \n");
         for (FacturaProducto facturaProducto : facturaProductos) {
-            cadena.append(rellenar(facturaProducto.getProducto().getCodigo(), "#", 32, true))
-                  .append(rellenar(facturaProducto.getProducto().getDescripcion(), "#", 54, true))
-                  .append(rellenar(""+facturaProducto.getUnidadesVenta(), "&", 11, true))
-                  .append(rellenar(""+facturaProducto.getUnidadesBonificacion(), "%", 12, true))
-                  .append(rellenar(""+facturaProducto.getPrecio(), "$", 21, false)).append("\n");
+            lista.add(rellenar(facturaProducto.getProducto().getCodigo(), " ", 32, true));
+            lista.add(rellenar(facturaProducto.getProducto().getDescripcion(), " ", 54, true));
+            lista.add(rellenar("" + facturaProducto.getUnidadesVenta(), " ", 11, true));
+            lista.add(rellenar("" + facturaProducto.getUnidadesBonificacion(), " ", 12, true));
+            lista.add(rellenar("" + facturaProducto.getPrecio(), " ", 21, false) + "\n");
         }
 
-        if (facturaProductos.size() <= 20) {
-            return cadena.toString();
-        } else {
-            return getHeaderFactura(f).toUpperCase()+cadena;
-        }
+//        if (facturaProductos.size() <= PRODUCTOS_POR_PAGINA) {
+        return lista;
+//        } else {
+//            return getHeaderFactura(f).toUpperCase()+cadena;
+//        }
     }
 
-    public String getFooterTotales(Factura factura, List<FacturaProducto> facturaProductos) {
-        StringBuilder cadena = new StringBuilder();
+    public List<String> getFooterTotales(Factura factura, List<FacturaProducto> facturaProductos) {
+        List<String> lista = new ArrayList<>();
         int unidadVentas = 0, unidadBonificaciones = 0;
-        
+
         for (FacturaProducto facturaProducto : facturaProductos) {
             unidadVentas += facturaProducto.getUnidadesVenta();
             unidadBonificaciones += facturaProducto.getUnidadesBonificacion();
         }
-        
-        String ventas = rellenar(""+unidadVentas, "#", 11, true);
-        String bonificaciones = rellenar(""+unidadBonificaciones, "%", 11, true);
-        String totalBruto = rellenar(""+factura.getTotalBruto(), "&", 22, false);
-        String totalPagar = rellenar(""+factura.getTotalPagar(), "#", 6, false);
-        String recargo = rellenar(""+factura.getDescuento(), "#", 6, false);        
 
-        cadena.append("--------------------------------------------------------------------------------------------------------------------------------------\n")
-                .append("                                                                      TOTAL BRUTO     ").append(ventas).append(bonificaciones).append(totalBruto).append("\n")
-                .append("                                                                          RECARGO     0%                                       0$     \n")
-                .append("                                                                    TOTAL A PAGAR                                         13.000$     \n")
-                .append("======================================================================================================================================\n");
-        return cadena.toString();
+        String ventas = rellenar("" + unidadVentas, " ", 11, true);
+        String bonificaciones = rellenar("" + unidadBonificaciones, " ", 11, true);
+        String totalBruto = rellenar("" + factura.getTotalBruto(), " ", 22, false);
+        String recargo = rellenar("%" + factura.getDescuento(), " ", 44, false);
+        String totalPagar = rellenar("" + factura.getTotalPagar(), " ", 44, false);
+
+        lista.add("--------------------------------------------------------------------------------------------------------------------------------------\n");
+        lista.add("                                                                      TOTAL BRUTO     " + ventas + bonificaciones + totalBruto + "\n");
+        lista.add("                                                                          RECARGO     " + recargo + "\n");
+        lista.add("                                                                    TOTAL A PAGAR     " + totalPagar + "\n");
+        lista.add("======================================================================================================================================\n");
+        return lista;
     }
 
-    private String getFooterObservaciones(Factura factura) {
-        StringBuilder cadena = new StringBuilder();
+    private List<String> getFooterObservaciones(Factura factura) {
+//        StringBuilder cadena = new StringBuilder();
+        List<String> lista = new ArrayList<>();
 
-        String observaciones = rellenar(factura.getObservaciones(), "#", 119, true);
-        cadena.append("Observaciones: ").append(observaciones).append("\n\n")
-                .append("Firma del Vendedor : ________________________ C.C: ______________  Firma del Cliente : __________________________ C.C: ______________ ");
-        return cadena.toString();
+        String observaciones = rellenar(factura.getObservaciones(), " ", 119, true);
+        lista.add("Observaciones: " + observaciones + "\n\n");
+        lista.add("Firma del Vendedor : ________________________ C.C: ______________  Firma del Cliente : __________________________ C.C: ______________ ");
+        return lista;
     }
 
     private static String rellenar(String cadenaInicial, String cadenaRelleno, int tamanoFinal, boolean rellenarAlaDerecha) {
@@ -179,11 +193,23 @@ public class FacturaServlet extends HttpServlet {
         }
         return cadenaInicial;
     }
-    
-    public static String removeAccents(String string){
+
+    private static String removeAccents(String string) {
         string = Normalizer.normalize(string, Normalizer.Form.NFD);
         string = string.replaceAll("[^\\p{ASCII}]", "");
         return string;
+    }
+
+    private void setTotalPaginas() {
+//        int tamanoListaProductos = listaProductos.size() / 5;
+        if (tamanoListaProductos > PRODUCTOS_POR_PAGINA) {
+            totalPaginas = tamanoListaProductos / PRODUCTOS_POR_PAGINA;
+            if (PRODUCTOS_POR_PAGINA % tamanoListaProductos != 0) {
+                totalPaginas += 1;
+            }
+        } else {
+            totalPaginas = 1;
+        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
