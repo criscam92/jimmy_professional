@@ -23,7 +23,8 @@ public class ImpresionFactura {
     private final Factura factura;
     private final List<FacturaProducto> productos;
     
-    private static final int LINEAS_POR_PAGINA = 30;
+    private static final int LINEAS_POR_PAGINA = 25;
+    private static final int LINEAS_AJUSTE_PRIMERA_PAGINA = 1;
     
     private static final int LINEAS_HEADER_FACTURA = 4;
     private static final int LINEAS_HEADER_DATOS_CLIENTE = 5;
@@ -82,7 +83,7 @@ public class ImpresionFactura {
             int indiceProductos = 0;
             boolean imprimirHeaderProductos = true;
             
-            while (lineas.get(0).size()<LINEAS_POR_PAGINA) {                
+            while (lineas.get(0).size()<(LINEAS_POR_PAGINA - LINEAS_AJUSTE_PRIMERA_PAGINA)) {                
                 if(indiceProductos<productosList.size()){
                     lineas.get(0).add(productosList.get(indiceProductos));
                     indiceProductos++;
@@ -98,13 +99,16 @@ public class ImpresionFactura {
                 if(imprimirHeaderProductos){
                     lineas.get(i).addAll(getHeaderListaProductos());
                 }
-                while (lineas.get(i).size()<LINEAS_POR_PAGINA && indiceProductos<productosList.size()) {
+                while (lineas.get(i).size()<(LINEAS_POR_PAGINA - LINEAS_AJUSTE_PRIMERA_PAGINA) && indiceProductos<productosList.size()) {
                     lineas.get(i).add(productosList.get(indiceProductos));
                     indiceProductos++;
                 }
                 if(i==totalPaginas-1){
                     lineas.get(i).addAll(getFooterTotales(factura, productos));
                     lineas.get(i).addAll(getFooterObservaciones(factura));
+                }
+                while (lineas.get(i).size()<LINEAS_POR_PAGINA) {                    
+                    lineas.get(i).add(" ");
                 }
             }
             
@@ -121,12 +125,12 @@ public class ImpresionFactura {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy");
         String idFactura = rellenar("" + f.getId(), " ", 13, false);
         String fechaFactura = rellenar(dateFormat.format(f.getFecha()).toUpperCase(), " ", 13, false);
-        String paginado = rellenar(getPaginado(paginaActual, totalPaginas), " ", 42, false);
+        String paginado = rellenar(getPaginado(paginaActual, totalPaginas), " ", 39, false);
 
-        lista.add("LINDA INES AREVALO PAMO                      **** J I M M Y   P R O F E S S I O N A L ****" + paginado );
-        lista.add("NIT 51.898.276-5                                         CALLE 17 # 83 A - 10                         FACTURA DE VENTA:" + idFactura);
-        lista.add("REGIMEN SIMPLIFICADO                                       (+57 2) 372 23 26                                     FECHA:" + fechaFactura);
-        lista.add("======================================================================================================================================");
+        lista.add("LINDA INES AREVALO PAMO                   **** J I M M Y   P R O F E S S I O N A L ****      " + paginado );
+        lista.add("NIT 51.898.276-5                                  ****   S Y S T E M   ****                           FACTURA DE VENTA:" + idFactura);
+        lista.add("REGIMEN SIMPLIFICADO                        (+57 2) 372 23 26 - CALLE 17 # 83 A - 10                             FECHA:" + fechaFactura);
+        lista.add(getSeparador(true));
         return lista;
     }
     
@@ -148,7 +152,7 @@ public class ImpresionFactura {
         lista.add("Nombre del cliente o establecimiento: " + nombre + "Tipo de cliente: " + tipoCliente + "    ");
         lista.add("Direccion: " + direccion + "Barrio: " + barrio + "Ciudad: " + ciudad + "Telefono: " + telefono + "    ");
         lista.add("                  Codigo Cliente: " + codigoCliente + "Forma de Pago: " + formaPago + "Tipo de moneda: " + tipoMoneda );
-        lista.add("======================================================================================================================================");
+        lista.add(getSeparador(true));
 
         return lista;
     }
@@ -179,11 +183,11 @@ public class ImpresionFactura {
         String recargo = rellenar("%" + df.format(factura.getDescuento()), " ", 44, false);
         String totalPagar = rellenar("" + df.format(factura.getTotalPagar()), " ", 44, false);
 
-        lista.add("--------------------------------------------------------------------------------------------------------------------------------------");
+        lista.add(getSeparador(false));
         lista.add("                                                                      TOTAL BRUTO     " + ventas + bonificaciones + totalBruto);
         lista.add("                                                                          RECARGO     " + recargo );
         lista.add("                                                                    TOTAL A PAGAR     " + totalPagar );
-        lista.add("======================================================================================================================================");
+        lista.add(getSeparador(true));
         return lista;
     }
     
@@ -263,9 +267,15 @@ public class ImpresionFactura {
                     }else{
                         cantidadProductosAdicionales -= CANTIDAD_MAXIMA_PRODUCTOS_OTRA_PAGINA;
                         cantidadPaginas++;
+                        if(cantidadProductosAdicionales < CANTIDAD_MAXIMA_PRODUCTOS_OTRA_PAGINA){
+                            if(cantidadProductosAdicionales > CANTIDAD_BASE_PRODUCTOS_OTRA_PAGINA){
+                                cantidadPaginas++;
+                            }
+                            cantidadPaginas++;
+                        }
                     }
                     
-                }while (cantidadProductosAdicionales > CANTIDAD_MAXIMA_PRODUCTOS_OTRA_PAGINA);
+                }while (cantidadProductosAdicionales >= CANTIDAD_MAXIMA_PRODUCTOS_OTRA_PAGINA);
                 
                 return cantidadPaginas;
                 
@@ -276,9 +286,17 @@ public class ImpresionFactura {
         }
     }
     
+    private String getSeparador(boolean doble){
+        if(doble){
+            return "=====================================================================================================================================";
+        }else{
+            return "-------------------------------------------------------------------------------------------------------------------------------------";
+        }
+    }
+    
     private void calcularCantidadesProductos(){
-        CANTIDAD_BASE_PRODUCTOS_PRIMERA_PAGINA = LINEAS_POR_PAGINA - (LINEAS_HEADER_FACTURA + LINEAS_HEADER_DATOS_CLIENTE + LINEAS_HEADER_DATOS_PRODUCTO + LINEAS_FOOTER_TOTALES + LINEAS_FOOTER_OBSERVACIONES);
-        CANTIDAD_MAXIMA_PRODUCTOS_PRIMERA_PAGINA = LINEAS_POR_PAGINA - (LINEAS_HEADER_FACTURA + LINEAS_HEADER_DATOS_CLIENTE + LINEAS_HEADER_DATOS_PRODUCTO);
+        CANTIDAD_BASE_PRODUCTOS_PRIMERA_PAGINA = (LINEAS_POR_PAGINA - LINEAS_AJUSTE_PRIMERA_PAGINA) - (LINEAS_HEADER_FACTURA + LINEAS_HEADER_DATOS_CLIENTE + LINEAS_HEADER_DATOS_PRODUCTO + LINEAS_FOOTER_TOTALES + LINEAS_FOOTER_OBSERVACIONES);
+        CANTIDAD_MAXIMA_PRODUCTOS_PRIMERA_PAGINA = (LINEAS_POR_PAGINA - LINEAS_AJUSTE_PRIMERA_PAGINA) - (LINEAS_HEADER_FACTURA + LINEAS_HEADER_DATOS_CLIENTE + LINEAS_HEADER_DATOS_PRODUCTO);
         CANTIDAD_BASE_PRODUCTOS_OTRA_PAGINA = LINEAS_POR_PAGINA - (LINEAS_HEADER_FACTURA + LINEAS_HEADER_DATOS_PRODUCTO + LINEAS_FOOTER_TOTALES + LINEAS_FOOTER_OBSERVACIONES);
         CANTIDAD_MAXIMA_PRODUCTOS_OTRA_PAGINA = LINEAS_POR_PAGINA - (LINEAS_HEADER_FACTURA + LINEAS_HEADER_DATOS_PRODUCTO);
         System.out.println("Cantidad Lineas Por Página: "+LINEAS_POR_PAGINA);

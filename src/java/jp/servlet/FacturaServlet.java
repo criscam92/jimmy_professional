@@ -3,12 +3,9 @@ package jp.servlet;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.Normalizer;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -35,6 +32,9 @@ public class FacturaServlet extends HttpServlet {
 
             Factura f = facturaFacade.getFirstFactura();
             List<FacturaProducto> facturaProductos = productoFacade.getFacturaProductosByFactura(f);
+            facturaProductos.addAll(facturaProductos);
+            facturaProductos.addAll(facturaProductos);
+            facturaProductos.addAll(facturaProductos);
 
             ImpresionFactura impresionFactura = new ImpresionFactura(f, facturaProductos);
 
