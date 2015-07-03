@@ -442,6 +442,7 @@ public class TransactionFacade {
             despachoFacturaTMP.setFactura(despachoFactura.getFactura());
             despachoFacturaTMP.setFecha(despachoFactura.getFecha());
             despachoFacturaTMP.setRealizado(despachoFactura.getRealizado());
+            despachoFacturaTMP.setUsuario(despachoFactura.getUsuario());
             getEntityManager().merge(despachoFacturaTMP);
 
             boolean facturaRealizada = true;
