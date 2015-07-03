@@ -15,7 +15,7 @@
         <ui:define name="body">
             <h:form id="ProductosDisponiblesListForm">
 
-                <p:dataTable
+                <p:dataTable id="datalist"
                     value="#{productoController.items}"
                     styleClass="tabla" var="item"
                     paginator="true" rows="10"
@@ -28,6 +28,11 @@
                     <f:facet name="header">
                         <div id="titulo">
                             Productos Disponibles
+                        </div>
+                        <div id="acciones">
+                            <p:commandButton icon="fa fa-table" value="Excel" ajax="false">
+                                <p:dataExporter type="xls" target="datalist" fileName="Inventario" postProcessor="#{productoController.postProcessXLS}" />
+                            </p:commandButton>
                         </div>
                     </f:facet>
 
