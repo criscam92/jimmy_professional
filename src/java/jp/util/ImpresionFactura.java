@@ -25,6 +25,7 @@ public class ImpresionFactura {
     
     private static final int LINEAS_POR_PAGINA = 25;
     private static final int LINEAS_AJUSTE_PRIMERA_PAGINA = 1;
+    private static final int LINEAS_AJUSTE_ULTIMA_PAGINA = 2;
     
     private static final int LINEAS_HEADER_FACTURA = 4;
     private static final int LINEAS_HEADER_DATOS_CLIENTE = 5;
@@ -106,10 +107,20 @@ public class ImpresionFactura {
                 if(i==totalPaginas-1){
                     lineas.get(i).addAll(getFooterTotales(factura, productos));
                     lineas.get(i).addAll(getFooterObservaciones(factura));
+                }else{
+                    
+                    while (lineas.get(i).size()<(LINEAS_POR_PAGINA)) {                    
+                        lineas.get(i).add(" ");
+                    }
+                        
+//                    if(i==totalPaginas-2 && llenarPenultimaPagina){
+//                        lineas.get(i).add(" ");
+//                        lineas.get(i).add(" ");
+//                    }
+                    
+                    
                 }
-                while (lineas.get(i).size()<LINEAS_POR_PAGINA) {                    
-                    lineas.get(i).add(" ");
-                }
+                
             }
             
         }
@@ -187,7 +198,7 @@ public class ImpresionFactura {
         lista.add("                                                                      TOTAL BRUTO     " + ventas + bonificaciones + totalBruto);
         lista.add("                                                                          RECARGO     " + recargo );
         lista.add("                                                                    TOTAL A PAGAR     " + totalPagar );
-        lista.add(getSeparador(true));
+        lista.add(getSeparador(false));
         return lista;
     }
     
@@ -195,7 +206,7 @@ public class ImpresionFactura {
         List<String> lista = new ArrayList<>();
         String observaciones = rellenar(factura.getObservaciones(), " ", 119, true);
         lista.add("Observaciones: " + observaciones);
-        lista.add("");
+        lista.add(" ");
         lista.add("Firma del Vendedor : ________________________ C.C: ______________  Firma del Cliente : __________________________ C.C: ______________ ");
         return lista;
     }
@@ -297,8 +308,8 @@ public class ImpresionFactura {
     private void calcularCantidadesProductos(){
         CANTIDAD_BASE_PRODUCTOS_PRIMERA_PAGINA = (LINEAS_POR_PAGINA - LINEAS_AJUSTE_PRIMERA_PAGINA) - (LINEAS_HEADER_FACTURA + LINEAS_HEADER_DATOS_CLIENTE + LINEAS_HEADER_DATOS_PRODUCTO + LINEAS_FOOTER_TOTALES + LINEAS_FOOTER_OBSERVACIONES);
         CANTIDAD_MAXIMA_PRODUCTOS_PRIMERA_PAGINA = (LINEAS_POR_PAGINA - LINEAS_AJUSTE_PRIMERA_PAGINA) - (LINEAS_HEADER_FACTURA + LINEAS_HEADER_DATOS_CLIENTE + LINEAS_HEADER_DATOS_PRODUCTO);
-        CANTIDAD_BASE_PRODUCTOS_OTRA_PAGINA = LINEAS_POR_PAGINA - (LINEAS_HEADER_FACTURA + LINEAS_HEADER_DATOS_PRODUCTO + LINEAS_FOOTER_TOTALES + LINEAS_FOOTER_OBSERVACIONES);
-        CANTIDAD_MAXIMA_PRODUCTOS_OTRA_PAGINA = LINEAS_POR_PAGINA - (LINEAS_HEADER_FACTURA + LINEAS_HEADER_DATOS_PRODUCTO);
+        CANTIDAD_BASE_PRODUCTOS_OTRA_PAGINA = LINEAS_POR_PAGINA - (LINEAS_HEADER_FACTURA + LINEAS_HEADER_DATOS_PRODUCTO + LINEAS_FOOTER_TOTALES + LINEAS_FOOTER_OBSERVACIONES + LINEAS_AJUSTE_ULTIMA_PAGINA);
+        CANTIDAD_MAXIMA_PRODUCTOS_OTRA_PAGINA = LINEAS_POR_PAGINA - (LINEAS_HEADER_FACTURA + LINEAS_HEADER_DATOS_PRODUCTO + LINEAS_AJUSTE_ULTIMA_PAGINA);
         System.out.println("Cantidad Lineas Por Página: "+LINEAS_POR_PAGINA);
         System.out.println("Cantidad Productos Base Primera Página: "+CANTIDAD_BASE_PRODUCTOS_PRIMERA_PAGINA);
         System.out.println("Cantidad Productos Maxima Primera Página: "+CANTIDAD_MAXIMA_PRODUCTOS_PRIMERA_PAGINA);

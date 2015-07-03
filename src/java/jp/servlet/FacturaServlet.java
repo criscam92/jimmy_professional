@@ -33,8 +33,9 @@ public class FacturaServlet extends HttpServlet {
             Factura f = facturaFacade.getFirstFactura();
             List<FacturaProducto> facturaProductos = productoFacade.getFacturaProductosByFactura(f);
             facturaProductos.addAll(facturaProductos);
-            facturaProductos.addAll(facturaProductos);
-            facturaProductos.addAll(facturaProductos);
+//            facturaProductos.addAll(facturaProductos);
+//            facturaProductos.addAll(facturaProductos);
+            
 
             ImpresionFactura impresionFactura = new ImpresionFactura(f, facturaProductos);
 
