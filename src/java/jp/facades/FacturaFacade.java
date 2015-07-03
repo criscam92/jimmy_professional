@@ -19,6 +19,7 @@ import jp.entidades.Pago;
 import jp.entidades.Promocion;
 import jp.util.EstadoPagoFactura;
 import jp.util.Moneda;
+import jp.util.TipoPago;
 
 @Stateless
 public class FacturaFacade extends AbstractFacade<Factura> {
@@ -148,10 +149,11 @@ public class FacturaFacade extends AbstractFacade<Factura> {
             if(moneda != null){
                 queryMoneda = " AND f.dolar = :dol";
             }
-            Query queryFactura = em.createQuery("SELECT f FROM Factura f WHERE f.cliente.id= :clie AND f.estado<> :est1 AND f.estado<> :est2".concat(queryMoneda));
+            Query queryFactura = em.createQuery("SELECT f FROM Factura f WHERE f.cliente.id= :clie AND f.tipoPago = :tipoPago AND f.estado<> :est1 AND f.estado<> :est2".concat(queryMoneda));
             queryFactura.setParameter("clie", c.getId());
             queryFactura.setParameter("est1", EstadoPagoFactura.ANULADO.getValor());
             queryFactura.setParameter("est2", EstadoPagoFactura.CANCELADO.getValor());
+            queryFactura.setParameter("tipoPago", TipoPago.CREDITO.getValor());
             if(moneda != null){
                 queryFactura.setParameter("dol", moneda.equals(Moneda.DOLAR));
             }
