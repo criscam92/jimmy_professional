@@ -55,7 +55,7 @@ public class Usuario implements Serializable {
     @Column(nullable = false)
     private long tipo;
     @JoinColumn(name = "empleado", referencedColumnName = "id", nullable = false)
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     private Empleado empleado;
     @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY)
     private List<Ingreso> ingresoList;

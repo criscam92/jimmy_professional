@@ -21,6 +21,10 @@
         <servlet-name>DolarServlet</servlet-name>
         <servlet-class>jp.servlet.DolarServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>FacturaServlet</servlet-name>
+        <servlet-class>jp.servlet.FacturaServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>Faces Servlet</servlet-name>
         <url-pattern>/faces/*</url-pattern>
@@ -28,6 +32,10 @@
     <servlet-mapping>
         <servlet-name>DolarServlet</servlet-name>
         <url-pattern>/DolarServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>FacturaServlet</servlet-name>
+        <url-pattern>/FacturaServlet</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

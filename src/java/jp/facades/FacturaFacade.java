@@ -259,7 +259,7 @@ public class FacturaFacade extends AbstractFacade<Factura> {
     
     public Factura getFirstFactura(){
         Factura f;
-        Query q = em.createQuery("SELECT f FROM Factura f");
+        Query q = em.createQuery("SELECT f FROM Factura f ORDER BY f.id DESC");
         q.setMaxResults(1);
         f = (Factura) q.getSingleResult();
         return f;

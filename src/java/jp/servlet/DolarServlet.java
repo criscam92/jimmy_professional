@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 import jp.entidades.Parametros;
 import jp.facades.ParametrosFacade;
 import org.apache.commons.io.IOUtils;
+import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
 
 @ManagedBean
 public class DolarServlet extends HttpServlet {
@@ -137,7 +138,7 @@ public class DolarServlet extends HttpServlet {
             sc.init(null, trustAllCerts, new java.security.SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
             // Create all-trusting host name verifier
-            HostnameVerifier allHostsValid = (String hostname, SSLSession session) -> true;
+            HostnameVerifier allHostsValid = new AllowAllHostnameVerifier();
             
             return allHostsValid;
         } catch (NoSuchAlgorithmException ex) {

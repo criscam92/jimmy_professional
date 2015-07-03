@@ -24,11 +24,13 @@ import javax.faces.event.AjaxBehaviorEvent;
 import jp.entidades.Cliente;
 import jp.entidades.Empleado;
 import jp.entidades.Factura;
+import jp.entidades.PagoDetalle;
 import jp.entidades.RelacionFactura;
 import jp.entidades.Talonario;
 import jp.facades.FacturaFacade;
 import jp.facades.RelacionFacturaFacade;
 import jp.facades.TalonarioFacade;
+import jp.util.TipoPago;
 import jp.util.TipoTalonario;
 import org.primefaces.event.SelectEvent;
 
@@ -47,12 +49,12 @@ public class NuevaRelacionFacturaController implements Serializable {
     
     private List<Pago> items = null;
     private Pago selected;
+    private PagoDetalle pagoDetalle;
     
     private Cliente clienteTemporal;
     private List<Factura> facturasTemporales;
             
     private Talonario talonario;
-    
 
     public NuevaRelacionFacturaController() {
     }
@@ -63,11 +65,25 @@ public class NuevaRelacionFacturaController implements Serializable {
     }
 
     public Pago getSelected() {
+        if(selected==null){
+            return new Pago();
+        }
         return selected;
     }
 
     public void setSelected(Pago selected) {
         this.selected = selected;
+    }
+
+    public PagoDetalle getPagoDetalle() {
+//        if(pagoDetalle==null){
+//            pagoDetalle = new PagoDetalle();
+//        }
+        return pagoDetalle;
+    }
+
+    public void setPagoDetalle(PagoDetalle pagoDetalle) {
+        this.pagoDetalle = pagoDetalle;
     }
 
     public RelacionFactura getRelacionFactura() {
@@ -334,7 +350,6 @@ public class NuevaRelacionFacturaController implements Serializable {
     }
     
     public void changedFactura(final AjaxBehaviorEvent event){
-        System.out.println("No?");
         if(selected.getFactura()!=null){
             Factura factura = facturaFacade.updatePagoPendiente(selected.getFactura());
             System.out.println("Saldo Pendiente "+selected.getFactura().getSaldo());
@@ -347,4 +362,26 @@ public class NuevaRelacionFacturaController implements Serializable {
         
     }
 
+    public TipoPago[] getTiposPago(){
+        return new TipoPago[]{TipoPago.CONTADO,TipoPago.CHEQUE,TipoPago.CONSIGNACION};
+    }
+    
+    public String mostrarCheque(){
+        if(selected!=null){
+            return selected.getFormaPago()==TipoPago.CHEQUE.getValor()?"":"display:none;";
+        }
+        return "";
+    }
+    
+    public boolean requiereCuenta(){
+        if(selected!=null){
+            return selected.getFormaPago()==TipoPago.CONSIGNACION.getValor();
+        }
+        return false;
+    }
+    
+    public String mostrarCuenta(){
+        return requiereCuenta()?"":"display:none";
+    }
+    
 }
