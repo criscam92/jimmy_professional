@@ -24,7 +24,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 @Entity
-@Table(catalog = "jimmy_professional", schema = "public")
+@Table(name = "pago")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Pago.findAll", query = "SELECT p FROM Pago p"),
@@ -84,10 +84,13 @@ public class Pago implements Serializable {
     @Size(max = 30)
     @Column(length = 30, name = "orden_pago", nullable = true)
     private String ordenPago;
+    @JoinColumn(name = "usuario", referencedColumnName = "id", nullable = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private Usuario usuario;
     @OneToMany(mappedBy = "pago", fetch = FetchType.LAZY)
     private List<PagoDetalle> pagoDetalleList;
     @OneToMany(mappedBy = "pago", fetch = FetchType.LAZY)
-    private List<PagoDevolucion> pagoDevolucionList;
+    private List<PagoDevolucion> pagoDevolucionList;    
 
     public Pago() {
     }
@@ -120,6 +123,14 @@ public class Pago implements Serializable {
 
     public void setOrdenPago(String ordenPago) {
         this.ordenPago = ordenPago;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 
     public int getFormaPago() {
