@@ -38,7 +38,7 @@ public class ReciboCajaController implements Serializable {
     private ReciboCaja selected;
 
     public ReciboCajaController() {
-        
+        prepareCreate();
     }
 
     public ReciboCaja getSelected() {
@@ -197,6 +197,7 @@ public class ReciboCajaController implements Serializable {
     }
     
     public boolean disableAnular() {
+        selected = new ReciboCaja();
         return !(selected != null && usuarioActual.isAdmin() && selected.getEstado() == EstadoPagoFactura.REALIZADA.getValor());
     }
 
