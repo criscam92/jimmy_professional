@@ -4,10 +4,10 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import jp.entidades.CajaMenor;
+import jp.entidades.Caja;
 
 @Stateless
-public class CajaMenorFacade extends AbstractFacade<CajaMenor>{
+public class CajaFacade extends AbstractFacade<Caja>{
     @PersistenceContext(unitName = "jimmy_professionalPU")
     private EntityManager em;
     
@@ -16,16 +16,16 @@ public class CajaMenorFacade extends AbstractFacade<CajaMenor>{
         return em;
     }
     
-    public CajaMenorFacade() {
-        super(CajaMenor.class);
+    public CajaFacade() {
+        super(Caja.class);
     }
     
-    public CajaMenor getCajaMenor(){
-        CajaMenor cajaMenor;
+    public Caja getCaja(){
+        Caja cajaMenor;
         try {
-            Query q = em.createQuery("SELECT cm FROM CajaMenor cm");
+            Query q = em.createQuery("SELECT c FROM Caja c");
             q.setMaxResults(1);
-            cajaMenor = (CajaMenor) q.getSingleResult();
+            cajaMenor = (Caja) q.getSingleResult();
         } catch (Exception e) {
             cajaMenor = null;
         }

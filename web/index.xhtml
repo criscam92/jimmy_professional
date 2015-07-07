@@ -42,11 +42,14 @@
                         <p:submenu class="menuPrincipal" label="Pagos">
                             <p:menuitem value="Nuevo Pago" outcome="/content/pago/Create.xhtml" />
                             <p:menuitem value="Consulta de Pagos" outcome="/content/pago/List.xhtml" />
-                            <p:menuitem value="Caja Menor" outcome="/content/cajaMenor/List.xhtml" />
                         </p:submenu>
 
                         <p:submenu class="menuPrincipal" label="Visitas">
                             <p:menuitem value="Programación de Visitas" outcome="/content/visita/List.xhtml" />
+                        </p:submenu>
+
+                        <p:submenu class="menuPrincipal" label="Cajas">
+                            <p:menuitem value="Caja Menor" outcome="/content/cajaMenor/List.xhtml" />
                         </p:submenu>
 
                         <p:submenu class="menuPrincipal" label="Configuración">
@@ -74,6 +77,11 @@
 
                             <p:submenu label="Visitas">
                                 <p:menuitem value="Procedimientos" outcome="/content/procedimiento/List.xhtml" />
+                            </p:submenu>
+
+                            <p:submenu class="menuPrincipal" label="Conceptos y Caja">
+                                <p:menuitem value="Conceptos" outcome="/content/concepto/List.xhtml" />
+                                <p:menuitem value="Caja" outcome="/content/caja/List.xhtml" />
                             </p:submenu>
 
                             <p:menuitem value="Códigos de Devolución" outcome="/content/codigoDevolucion/List.xhtml" />

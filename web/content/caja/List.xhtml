@@ -9,7 +9,7 @@
     <ui:composition template="/index.xhtml">
 
         <ui:define name="title">
-            <h:outputText value="Caja Menor"></h:outputText>
+            <h:outputText value="Parametrización Caja"></h:outputText>
         </ui:define>
 
         <ui:define name="body">
@@ -18,17 +18,17 @@
                 <p:panelGrid columns="5">
                     <f:facet name="header">
                         <p:row>
-                            <p:column>Caja Menor</p:column>
+                            <p:column>Parametrización Caja</p:column>
                         </p:row>
                     </f:facet>
                     
                     <p:outputLabel for="detalle" value="Detalle"/>
-                    <p:inputText id="detalle" value="#{cajaMenorController.selected.detalle}" required="true" requiredMessage="El campo Detalle es requerido"/>
+                    <p:inputText id="detalle" value="#{cajaController.selected.detalle}" required="true" requiredMessage="El campo Detalle es requerido"/>
                     
                     <p:outputLabel for="base" value="Base:"/>
-                    <p:inputText id="base" value="#{cajaMenorController.selected.base}" required="true" requiredMessage="El campo Base es requerido"/>
+                    <p:inputText id="base" value="#{cajaController.selected.base}" required="true" requiredMessage="El campo Base es requerido"/>
                     
-                    <p:commandButton actionListener="#{cajaMenorController.update()}" value="#{bundle.Save}" icon="ui-icon-disk" update=":growl,@form"/>
+                    <p:commandButton actionListener="#{cajaController.update()}" value="#{bundle.Save}" icon="ui-icon-disk" update=":AuditoriaForm,:growl,@form"/>
 
                 </p:panelGrid>
             </h:form><br/>
@@ -36,8 +36,8 @@
             
             <h:form id="AuditoriaForm">
 
-                <p:dataTable id="datalist"
-                             value="#{cajaMenorController.items}"
+                <p:dataTable id="datalist" rowKey="#{item.id}"
+                             value="#{cajaController.actualizacionesCaja}"
                              styleClass="tabla" var="item"
                              paginator="true" rows="10"
                              rowsPerPageTemplate="10,20,30,40,50"
@@ -52,39 +52,41 @@
                         </div>
                     </f:facet>
 
-                    <p:column>
+                    <p:column sortBy="#{item.fecha}">
                         <f:facet name="header">
                             <h:outputText value="Fecha"/>
                         </f:facet>
-                        <h:outputText value="#{item.fechaActualizacion}"/>
+                        <h:outputText value="#{item.fecha}">
+                            <f:convertDateTime pattern="dd/MMM/yyyy, hh:mm:ss a" />
+                        </h:outputText>
                     </p:column>
 
                     <p:column>
                         <f:facet name="header">
                             <h:outputText value="Valor Anterior"/>
                         </f:facet>
-                        <h:outputText/>
+                        <h:outputText value="#{item.valorAnterior}"/>
                     </p:column>
 
                     <p:column>
                         <f:facet name="header">
                             <h:outputText value="Valor Nuevo"/>
                         </f:facet>
-                        <h:outputText value="#{item.gramaje}"/>
+                        <h:outputText value="#{item.valorNuevo}"/>
                     </p:column>
 
                     <p:column>
                         <f:facet name="header">
                             <h:outputText value="Caja"/>
                         </f:facet>
-                        <h:outputText value="#{productoController.getCantidadDisponible(item)}"/>
+                        <h:outputText value="#{item.caja.toString()}"/>
                     </p:column>
                     
-                    <p:column>
+                    <p:column sortBy="#{item.usuario.toString()}">
                         <f:facet name="header">
                             <h:outputText value="Usuario"/>
                         </f:facet>
-                        <h:outputText value="#{productoController.getCantidadDisponible(item)}"/>
+                        <h:outputText value="#{item.usuario.toString()}"/>
                     </p:column>
 
                 </p:dataTable>

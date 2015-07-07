@@ -18,28 +18,40 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import jp.entidades.CajaMenor;
-import jp.facades.CajaMenorFacade;
+import jp.entidades.ActualizaBaseCaja;
+import jp.entidades.Caja;
+import jp.facades.ActualizaCajaFacade;
+import jp.facades.CajaFacade;
+import jp.seguridad.UsuarioActual;
 
-@ManagedBean(name = "cajaMenorController")
+@ManagedBean(name = "cajaController")
 @ViewScoped
-public class CajaMenorController implements Serializable {
+public class CajaController implements Serializable {
 
     @EJB
-    private CajaMenorFacade ejbFacade;
-    private CajaMenor selected;
-    private List<CajaMenor> items = null;
+    private CajaFacade ejbFacade;
+    @EJB
+    private ActualizaCajaFacade ejbActualizarCajaFacade;
+    @EJB
+    private UsuarioActual usuarioActual;
+    private Caja selected;
+    private ActualizaBaseCaja actualizaBaseCajaMenor;
+    private List<Caja> items = null;
+    private List<ActualizaBaseCaja> itemsActualizacionesCaja = null;
+    private Long valorAnterior;
 
     @PostConstruct
     private void init() {
-        findCajaMenor();
+        findCaja();
+        valorAnterior = selected.getBase();
+        actualizaBaseCajaMenor = new ActualizaBaseCaja();
     }
 
-    public CajaMenor getSelected() {
+    public Caja getSelected() {
         return selected;
     }
 
-    public void setSelected(CajaMenor selected) {
+    public void setSelected(Caja selected) {
         this.selected = selected;
     }
 
@@ -49,12 +61,24 @@ public class CajaMenorController implements Serializable {
     protected void initializeEmbeddableKey() {
     }
 
-    private CajaMenorFacade getFacade() {
+    private CajaFacade getFacade() {
         return ejbFacade;
     }
+    
+    private ActualizaCajaFacade getActualizaCajaFacade() {
+        return ejbActualizarCajaFacade;
+    }
 
-    public CajaMenor prepareCreate() {
-        selected = new CajaMenor();
+    public List<ActualizaBaseCaja> getItemsActualizacionesCaja() {
+        return itemsActualizacionesCaja;
+    }
+
+    public void setItemsActualizacionesCaja(List<ActualizaBaseCaja> itemsActualizacionesCaja) {
+        this.itemsActualizacionesCaja = itemsActualizacionesCaja;
+    }
+
+    public Caja prepareCreate() {
+        selected = new Caja();
         initializeEmbeddableKey();
         return selected;
     }
@@ -67,12 +91,21 @@ public class CajaMenorController implements Serializable {
     }
 
     public void update() {
+        
         if (selected != null) {
             selected.setFechaActualizacion(Calendar.getInstance().getTime());
+            actualizaBaseCajaMenor.setCaja(selected);
+            actualizaBaseCajaMenor.setFecha(selected.getFechaActualizacion());
+            actualizaBaseCajaMenor.setUsuario(usuarioActual.get());
+            actualizaBaseCajaMenor.setValorAnterior(valorAnterior);
+            actualizaBaseCajaMenor.setValorNuevo(selected.getBase());
+            
+            getActualizaCajaFacade().create(actualizaBaseCajaMenor);
         }
         persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessageCajaMenor", "UpdateSuccessF"}));
         if (!JsfUtil.isValidationFailed()) {
-//            RequestContext.getCurrentInstance().execute("PF('PaisEditDialog').hide()");
+            //RequestContext.getCurrentInstance().execute("PF('PaisEditDialog').hide()");
+            itemsActualizacionesCaja = null;
         }
     }
 
@@ -83,11 +116,18 @@ public class CajaMenorController implements Serializable {
         }
     }
     
-    public List<CajaMenor> getItems() {
+    public List<Caja> getItems() {
         if (items == null) {
             items = getFacade().findAll();
         }
         return items;
+    }
+    
+    public List<ActualizaBaseCaja> getActualizacionesCaja() {
+        if (itemsActualizacionesCaja == null) {
+            itemsActualizacionesCaja = getActualizaCajaFacade().getListaActualizacionesCajaByFecha();
+        }
+        return itemsActualizacionesCaja;
     }
 
     private void persist(PersistAction persistAction, String successMessage) {
@@ -118,15 +158,15 @@ public class CajaMenorController implements Serializable {
         }
     }
 
-    public List<CajaMenor> getItemsAvailableSelectMany() {
+    public List<Caja> getItemsAvailableSelectMany() {
         return getFacade().findAll();
     }
 
-    public List<CajaMenor> getItemsAvailableSelectOne() {
+    public List<Caja> getItemsAvailableSelectOne() {
         return getFacade().findAll();
     }
 
-    @FacesConverter(forClass = Pais.class, value = "cajamenorconverter")
+    @FacesConverter(forClass = Pais.class, value = "cajaconverter")
     public static class CajaMenorControllerConverter implements Converter {
 
         @Override
@@ -134,7 +174,7 @@ public class CajaMenorController implements Serializable {
             if (value == null || value.length() == 0 || value.equals(JsfUtil.getMessageBundle("SelectOneMessage"))) {
                 return null;
             }
-            CajaMenorController controller = (CajaMenorController) facesContext.getApplication().getELResolver().
+            CajaController controller = (CajaController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "cajaMenorController");
             return controller.getFacade().find(getKey(value));
         }
@@ -167,8 +207,8 @@ public class CajaMenorController implements Serializable {
 
     }
 
-    private void findCajaMenor() {
-        selected = getFacade().getCajaMenor();
+    private void findCaja() {
+        selected = getFacade().getCaja();
     }
 
 }
