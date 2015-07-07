@@ -1,6 +1,7 @@
 package jp.controllers;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -36,6 +37,9 @@ public class ReciboCajaController implements Serializable {
     private UsuarioActual usuarioActual;
     private List<ReciboCaja> items = null;
     private ReciboCaja selected;
+    private Long totalIngresos = 0l;
+    private Long totalEgresos = 0l;
+    private Long totalRecibos = 0l;
 
     public ReciboCajaController() {
         prepareCreate();
@@ -47,6 +51,30 @@ public class ReciboCajaController implements Serializable {
 
     public void setSelected(ReciboCaja selected) {
         this.selected = selected;
+    }
+
+    public Long getTotalEgresos() {
+        return totalEgresos;
+    }
+
+    public void setTotalEgresos(Long totalEgresos) {
+        this.totalEgresos = totalEgresos;
+    }
+    
+    public Long getTotalIngresos() {
+        return totalIngresos;
+    }
+
+    public void setTotalIngresos(Long totalIngresos) {
+        this.totalIngresos = totalIngresos;
+    }
+
+    public Long getTotalRecibos() {
+        return totalRecibos;
+    }
+
+    public void setTotalRecibos(Long totalRecibos) {
+        this.totalRecibos = totalRecibos;
     }
 
     protected void setEmbeddableKeys() {
@@ -85,6 +113,7 @@ public class ReciboCajaController implements Serializable {
         if (!JsfUtil.isValidationFailed()) {
             selected = new ReciboCaja();
             items = null;    // Invalidate list of items to trigger re-query.
+            getItems();
         }
     }
 
@@ -102,7 +131,9 @@ public class ReciboCajaController implements Serializable {
 
     public List<ReciboCaja> getItems() {
         if (items == null) {
-            items = getFacade().findAll();
+            items = new ArrayList<>();
+            items = getFacade().getRecibosCaja();
+            getTotalIngresosEgresos();
         }
         return items;
     }
@@ -195,10 +226,40 @@ public class ReciboCajaController implements Serializable {
             JsfUtil.addErrorMessage("Ocurrió un error anulando el Recibo de Caja");
         }
     }
-    
+
     public boolean disableAnular() {
         selected = new ReciboCaja();
         return !(selected != null && usuarioActual.isAdmin() && selected.getEstado() == EstadoPagoFactura.REALIZADA.getValor());
+    }
+
+    public Long getIngreso(ReciboCaja reciboCaja) {
+        if (reciboCaja.getConcepto().getIngreso()) {
+            return reciboCaja.getValor();
+        } else {
+            return 0l;
+        }
+    }
+    
+    public Long getEgreso(ReciboCaja reciboCaja) {
+        if (!reciboCaja.getConcepto().getIngreso()) {
+            return reciboCaja.getValor();
+        } else {
+            return 0l;
+        }
+    }
+    
+    public void getTotalIngresosEgresos() {
+        for (ReciboCaja item : items) {
+            if (item.getEstado() == EstadoPagoFactura.ANULADO.getValor()) {
+                continue;
+            }
+            if (item.getConcepto().getIngreso()) {
+                totalIngresos += item.getValor();
+            }else{
+                totalEgresos += item.getValor();
+            }
+        }
+        totalRecibos = totalIngresos - totalEgresos;
     }
 
 }

@@ -41,7 +41,7 @@
 
                     <p:outputLabel for="detalle" value="Detalle:"/>
                     <p:inputTextarea id="detalle" value="#{reciboCajaController.selected.detalle}" required="true" requiredMessage="El campo Detalle es requerido"/>
-                    
+
                     <h:outputLabel/>
                     <p:commandButton value="#{bundle.Save}" icon="ui-icon-disk" actionListener="#{reciboCajaController.create()}" update=":tablaRecibosCaja,@form,:growl"/>
 
@@ -58,10 +58,10 @@
                              emptyMessage="#{bundle.EmptyTable}"
                              widgetVar="tablaRecibosCajaMenor"
                              >
-                    
+
                     <p:ajax event="rowSelect"   update="botonAnular"/>
                     <p:ajax event="rowUnselect" update="botonAnular"/>
-                    
+
                     <f:facet name="header">
                         <div id="titulo">
                             Recibos de Caja Menor
@@ -74,65 +74,88 @@
                             </p:commandButton>
                         </div>
                     </f:facet>
-                    
+
                     <p:column sortBy="#{item.fecha}">
                         <f:facet name="header">
                             <h:outputText value="Fecha"/>
                         </f:facet>
                         <h:outputText value="#{item.fecha}">
-                            <f:convertDateTime pattern="dd/MMM/yyyy, hh:mm:ss a" />
+                            <f:convertDateTime pattern="dd/MMM/yyyy" />
                         </h:outputText>
                     </p:column>
-                    
+
                     <p:column>
                         <f:facet name="header">
-                            <h:outputText value="Caja"/>
+                            <h:outputText value="Hora"/>
                         </f:facet>
-                        <h:outputText value="#{item.caja.toString()}"/>
+                        <h:outputText value="#{item.fecha}">
+                            <f:convertDateTime pattern="hh:mm:ss a" />
+                        </h:outputText>
                     </p:column>
-                    
-                    <p:column>
-                        <f:facet name="header">
-                            <h:outputText value="Concepto"/>
-                        </f:facet>
-                        <h:outputText value="#{item.concepto.toString()}"/>
-                    </p:column>
-                    
+
                     <p:column>
                         <f:facet name="header">
                             <h:outputText value="Usuario"/>
                         </f:facet>
                         <h:outputText value="#{item.usuario.toString()}"/>
                     </p:column>
-                    
+
                     <p:column>
                         <f:facet name="header">
-                            <h:outputText value="Valor"/>
+                            <h:outputText value="Concepto"/>
                         </f:facet>
-                        <h:outputText value="#{item.valor}"/>
+                        <h:outputText value="#{item.concepto.toString()}"/>
                     </p:column>
-                    
+
                     <p:column>
                         <f:facet name="header">
                             <h:outputText value="Detalle"/>
                         </f:facet>
                         <h:outputText value="#{item.detalle}"/>
                     </p:column>
-                    
+
                     <p:column>
                         <f:facet name="header">
                             <h:outputText value="Estado"/>
                         </f:facet>
                         <h:outputText value="#{facturaController.getEstado(item.estado)}"/>
                     </p:column>
-                    
+
+                    <p:column style="font-weight: bold; text-align:center;">
+                        <f:facet name="header">
+                            <h:outputText value="Ingreso"/>
+                        </f:facet>
+                        <h:outputText value="#{reciboCajaController.getIngreso(item)}"/>
+                    </p:column>
+
+                    <p:column style="font-weight: bold; text-align:center;">
+                        <f:facet name="header">
+                            <h:outputText value="Egreso"/>
+                        </f:facet>
+                        <h:outputText value="#{reciboCajaController.getEgreso(item)}"/>
+                    </p:column>
+
+                    <p:columnGroup type="footer">
+                        <p:row>
+                            <p:column footerText="SubTotal" colspan="6" style="font-weight: bold; text-align:right;"/>
+                            <p:column footerText="$#{reciboCajaController.totalIngresos}">
+                            </p:column>
+                            <p:column footerText="$#{reciboCajaController.totalEgresos}"/>
+                        </p:row>
+
+                        <p:row>
+                            <p:column footerText="Total" colspan="6" style="font-weight: bold; text-align:right;"/>
+                            <p:column footerText="$#{reciboCajaController.totalRecibos}" colspan="2"/>
+                        </p:row>
+                    </p:columnGroup>
+
                 </p:dataTable>
-                
+
                 <p:confirmDialog global="true">
                     <p:commandButton value="Si" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
                     <p:commandButton value="No" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
                 </p:confirmDialog>
-                
+
             </h:form>
         </ui:define>
 
