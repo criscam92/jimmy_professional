@@ -4,10 +4,12 @@ import jp.entidades.Pais;
 import jp.util.JsfUtil;
 import jp.util.JsfUtil.PersistAction;
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.faces.bean.ManagedBean;
@@ -17,22 +19,39 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import jp.entidades.ActualizaBaseCaja;
+import jp.entidades.Caja;
 import jp.facades.ActualizaCajaFacade;
+import jp.facades.CajaFacade;
+import jp.seguridad.UsuarioActual;
 
-@ManagedBean(name = "actualizacionCajaController")
+@ManagedBean(name = "cajaController")
 @ViewScoped
-public class ActualizacionCajaController implements Serializable {
+public class CajaController implements Serializable {
 
     @EJB
-    private ActualizaCajaFacade ejbFacade;
-    private ActualizaBaseCaja selected;
+    private CajaFacade ejbFacade;
+    @EJB
+    private ActualizaCajaFacade ejbActualizarCajaFacade;
+    @EJB
+    private UsuarioActual usuarioActual;
+    private Caja selected;
+    private ActualizaBaseCaja actualizaBaseCajaMenor;
+    private List<Caja> items = null;
+    private List<ActualizaBaseCaja> itemsActualizacionesCaja = null;
+    private Long valorAnterior;
 
+    @PostConstruct
+    private void init() {
+        findCaja();
+        valorAnterior = selected.getBase();
+        actualizaBaseCajaMenor = new ActualizaBaseCaja();
+    }
 
-    public ActualizaBaseCaja getSelected() {
+    public Caja getSelected() {
         return selected;
     }
 
-    public void setSelected(ActualizaBaseCaja selected) {
+    public void setSelected(Caja selected) {
         this.selected = selected;
     }
 
@@ -42,12 +61,24 @@ public class ActualizacionCajaController implements Serializable {
     protected void initializeEmbeddableKey() {
     }
 
-    private ActualizaCajaFacade getFacade() {
+    private CajaFacade getFacade() {
         return ejbFacade;
     }
+    
+    private ActualizaCajaFacade getActualizaCajaFacade() {
+        return ejbActualizarCajaFacade;
+    }
 
-    public ActualizaBaseCaja prepareCreate() {
-        selected = new ActualizaBaseCaja();
+    public List<ActualizaBaseCaja> getItemsActualizacionesCaja() {
+        return itemsActualizacionesCaja;
+    }
+
+    public void setItemsActualizacionesCaja(List<ActualizaBaseCaja> itemsActualizacionesCaja) {
+        this.itemsActualizacionesCaja = itemsActualizacionesCaja;
+    }
+
+    public Caja prepareCreate() {
+        selected = new Caja();
         initializeEmbeddableKey();
         return selected;
     }
@@ -60,9 +91,21 @@ public class ActualizacionCajaController implements Serializable {
     }
 
     public void update() {
+        
+        if (selected != null) {
+            selected.setFechaActualizacion(Calendar.getInstance().getTime());
+            actualizaBaseCajaMenor.setCaja(selected);
+            actualizaBaseCajaMenor.setFecha(selected.getFechaActualizacion());
+            actualizaBaseCajaMenor.setUsuario(usuarioActual.get());
+            actualizaBaseCajaMenor.setValorAnterior(valorAnterior);
+            actualizaBaseCajaMenor.setValorNuevo(selected.getBase());
+            
+            getActualizaCajaFacade().create(actualizaBaseCajaMenor);
+        }
         persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessageCajaMenor", "UpdateSuccessF"}));
         if (!JsfUtil.isValidationFailed()) {
-//            RequestContext.getCurrentInstance().execute("PF('PaisEditDialog').hide()");
+            //RequestContext.getCurrentInstance().execute("PF('PaisEditDialog').hide()");
+            itemsActualizacionesCaja = null;
         }
     }
 
@@ -71,6 +114,20 @@ public class ActualizacionCajaController implements Serializable {
         if (!JsfUtil.isValidationFailed()) {
             selected = null; // Remove selection
         }
+    }
+    
+    public List<Caja> getItems() {
+        if (items == null) {
+            items = getFacade().findAll();
+        }
+        return items;
+    }
+    
+    public List<ActualizaBaseCaja> getActualizacionesCaja() {
+        if (itemsActualizacionesCaja == null) {
+            itemsActualizacionesCaja = getActualizaCajaFacade().getListaActualizacionesCajaByFecha();
+        }
+        return itemsActualizacionesCaja;
     }
 
     private void persist(PersistAction persistAction, String successMessage) {
@@ -101,15 +158,15 @@ public class ActualizacionCajaController implements Serializable {
         }
     }
 
-    public List<ActualizaBaseCaja> getItemsAvailableSelectMany() {
+    public List<Caja> getItemsAvailableSelectMany() {
         return getFacade().findAll();
     }
 
-    public List<ActualizaBaseCaja> getItemsAvailableSelectOne() {
+    public List<Caja> getItemsAvailableSelectOne() {
         return getFacade().findAll();
     }
 
-    @FacesConverter(forClass = Pais.class, value = "actualizacioncajaconverter")
+    @FacesConverter(forClass = Caja.class, value = "cajaconverter")
     public static class CajaMenorControllerConverter implements Converter {
 
         @Override
@@ -117,8 +174,8 @@ public class ActualizacionCajaController implements Serializable {
             if (value == null || value.length() == 0 || value.equals(JsfUtil.getMessageBundle("SelectOneMessage"))) {
                 return null;
             }
-            ActualizacionCajaController controller = (ActualizacionCajaController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "actualizacionCajaController");
+            CajaController controller = (CajaController) facesContext.getApplication().getELResolver().
+                    getValue(facesContext.getELContext(), null, "cajaController");
             return controller.getFacade().find(getKey(value));
         }
 
@@ -128,7 +185,7 @@ public class ActualizacionCajaController implements Serializable {
             return key;
         }
 
-        String getStringKey(java.lang.Long value) {
+        String getStringKey(java.lang.Integer value) {
             StringBuilder sb = new StringBuilder();
             sb.append(value);
             return sb.toString();
@@ -139,8 +196,8 @@ public class ActualizacionCajaController implements Serializable {
             if (object == null || object.equals(JsfUtil.getMessageBundle("SelectOneMessage"))) {
                 return null;
             }
-            if (object instanceof Pais) {
-                Pais o = (Pais) object;
+            if (object instanceof Caja) {
+                Caja o = (Caja) object;
                 return getStringKey(o.getId());
             } else {
                 Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "object {0} is of type {1}; expected type: {2}", new Object[]{object, object.getClass().getName(), Pais.class.getName()});
@@ -148,6 +205,10 @@ public class ActualizacionCajaController implements Serializable {
             }
         }
 
+    }
+
+    private void findCaja() {
+        selected = getFacade().getCaja();
     }
 
 }

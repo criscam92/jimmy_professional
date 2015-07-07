@@ -26,8 +26,7 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "ReciboCaja.findById", query = "SELECT r FROM ReciboCaja r WHERE r.id = :id"),
     @NamedQuery(name = "ReciboCaja.findByFecha", query = "SELECT r FROM ReciboCaja r WHERE r.fecha = :fecha"),
     @NamedQuery(name = "ReciboCaja.findByValor", query = "SELECT r FROM ReciboCaja r WHERE r.valor = :valor"),
-    @NamedQuery(name = "ReciboCaja.findByDetalle", query = "SELECT r FROM ReciboCaja r WHERE r.detalle = :detalle"),
-    @NamedQuery(name = "ReciboCaja.findByUsuario", query = "SELECT r FROM ReciboCaja r WHERE r.usuario = :usuario")})
+    @NamedQuery(name = "ReciboCaja.findByDetalle", query = "SELECT r FROM ReciboCaja r WHERE r.detalle = :detalle")})
 public class ReciboCaja implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -50,13 +49,16 @@ public class ReciboCaja implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Column(nullable = false)
-    private int usuario;
+    private int estado;
     @JoinColumn(name = "caja", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    private CajaMenor caja;
+    private Caja caja;
     @JoinColumn(name = "concepto", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Concepto concepto;
+    @JoinColumn(name = "usuario", referencedColumnName = "id", nullable = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private Usuario usuario;
 
     public ReciboCaja() {
     }
@@ -65,11 +67,10 @@ public class ReciboCaja implements Serializable {
         this.id = id;
     }
 
-    public ReciboCaja(Long id, Date fecha, long valor, int usuario) {
+    public ReciboCaja(Long id, Date fecha, long valor) {
         this.id = id;
         this.fecha = fecha;
         this.valor = valor;
-        this.usuario = usuario;
     }
 
     public Long getId() {
@@ -104,19 +105,19 @@ public class ReciboCaja implements Serializable {
         this.detalle = detalle;
     }
 
-    public int getUsuario() {
-        return usuario;
+    public int getEstado() {
+        return estado;
     }
 
-    public void setUsuario(int usuario) {
-        this.usuario = usuario;
+    public void setEstado(int estado) {
+        this.estado = estado;
     }
 
-    public CajaMenor getCaja() {
+    public Caja getCaja() {
         return caja;
     }
 
-    public void setCaja(CajaMenor caja) {
+    public void setCaja(Caja caja) {
         this.caja = caja;
     }
 
@@ -126,6 +127,14 @@ public class ReciboCaja implements Serializable {
 
     public void setConcepto(Concepto concepto) {
         this.concepto = concepto;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 
     @Override
@@ -150,7 +159,7 @@ public class ReciboCaja implements Serializable {
 
     @Override
     public String toString() {
-        return "jp.entidades.ReciboCaja[ id=" + id + " ]";
+        return "entidades.ReciboCaja[ id=" + id + " ]";
     }
     
 }

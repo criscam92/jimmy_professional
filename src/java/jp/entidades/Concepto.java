@@ -23,7 +23,7 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "Concepto.findAll", query = "SELECT c FROM Concepto c"),
     @NamedQuery(name = "Concepto.findById", query = "SELECT c FROM Concepto c WHERE c.id = :id"),
     @NamedQuery(name = "Concepto.findByDetalle", query = "SELECT c FROM Concepto c WHERE c.detalle = :detalle"),
-    @NamedQuery(name = "Concepto.findByBoolean1", query = "SELECT c FROM Concepto c WHERE c.boolean1 = :boolean1")})
+    @NamedQuery(name = "Concepto.findByIngreso", query = "SELECT c FROM Concepto c WHERE c.ingreso = :ingreso")})
 public class Concepto implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -36,8 +36,10 @@ public class Concepto implements Serializable {
     @Size(min = 1, max = 100)
     @Column(nullable = false, length = 100)
     private String detalle;
-    @Column(name = "boolean")
-    private Serializable boolean1;
+    @Basic(optional = false)
+    @NotNull
+    @Column(nullable = false)
+    private boolean ingreso;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "concepto", fetch = FetchType.LAZY)
     private List<ReciboCaja> reciboCajaList;
 
@@ -69,12 +71,12 @@ public class Concepto implements Serializable {
         this.detalle = detalle;
     }
 
-    public Serializable getBoolean1() {
-        return boolean1;
+    public boolean getIngreso() {
+        return ingreso;
     }
 
-    public void setBoolean1(Serializable boolean1) {
-        this.boolean1 = boolean1;
+    public void setIngreso(boolean ingreso) {
+        this.ingreso = ingreso;
     }
 
     public List<ReciboCaja> getReciboCajaList() {
@@ -107,7 +109,7 @@ public class Concepto implements Serializable {
 
     @Override
     public String toString() {
-        return "jp.entidades.Concepto[ id=" + id + " ]";
+        return this.getDetalle();
     }
     
 }

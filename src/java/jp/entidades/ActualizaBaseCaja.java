@@ -27,7 +27,7 @@ import javax.validation.constraints.NotNull;
     @NamedQuery(name = "ActualizaBaseCajaMenor.findByValorAnterior", query = "SELECT a FROM ActualizaBaseCajaMenor a WHERE a.valorAnterior = :valorAnterior"),
     @NamedQuery(name = "ActualizaBaseCajaMenor.findByValorNuevo", query = "SELECT a FROM ActualizaBaseCajaMenor a WHERE a.valorNuevo = :valorNuevo"),
     @NamedQuery(name = "ActualizaBaseCajaMenor.findByUsuario", query = "SELECT a FROM ActualizaBaseCajaMenor a WHERE a.usuario = :usuario")})
-public class ActualizaBaseCajaMenor implements Serializable {
+public class ActualizaBaseCaja implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,22 +47,21 @@ public class ActualizaBaseCajaMenor implements Serializable {
     @NotNull
     @Column(name = "valor_nuevo", nullable = false)
     private long valorNuevo;
-    @Basic(optional = false)
-    @NotNull
-    @Column(nullable = false)
-    private long usuario;
+    @JoinColumn(name = "usuario", referencedColumnName = "id", nullable = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private Usuario usuario;
     @JoinColumn(name = "caja", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    private CajaMenor caja;
+    private Caja caja;
 
-    public ActualizaBaseCajaMenor() {
+    public ActualizaBaseCaja() {
     }
 
-    public ActualizaBaseCajaMenor(Integer id) {
+    public ActualizaBaseCaja(Integer id) {
         this.id = id;
     }
 
-    public ActualizaBaseCajaMenor(Integer id, Date fecha, long valorAnterior, long valorNuevo, long usuario) {
+    public ActualizaBaseCaja(Integer id, Date fecha, long valorAnterior, long valorNuevo, Usuario usuario) {
         this.id = id;
         this.fecha = fecha;
         this.valorAnterior = valorAnterior;
@@ -102,19 +101,19 @@ public class ActualizaBaseCajaMenor implements Serializable {
         this.valorNuevo = valorNuevo;
     }
 
-    public long getUsuario() {
+    public Usuario getUsuario() {
         return usuario;
     }
 
-    public void setUsuario(long usuario) {
+    public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
     }
 
-    public CajaMenor getCaja() {
+    public Caja getCaja() {
         return caja;
     }
 
-    public void setCaja(CajaMenor caja) {
+    public void setCaja(Caja caja) {
         this.caja = caja;
     }
 
@@ -128,10 +127,10 @@ public class ActualizaBaseCajaMenor implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof ActualizaBaseCajaMenor)) {
+        if (!(object instanceof ActualizaBaseCaja)) {
             return false;
         }
-        ActualizaBaseCajaMenor other = (ActualizaBaseCajaMenor) object;
+        ActualizaBaseCaja other = (ActualizaBaseCaja) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }

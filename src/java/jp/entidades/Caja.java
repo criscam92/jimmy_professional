@@ -21,12 +21,12 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name = "caja_menor")
 @NamedQueries({
-    @NamedQuery(name = "CajaMenor.findAll", query = "SELECT c FROM CajaMenor c"),
-    @NamedQuery(name = "CajaMenor.findById", query = "SELECT c FROM CajaMenor c WHERE c.id = :id"),
-    @NamedQuery(name = "CajaMenor.findByDetalle", query = "SELECT c FROM CajaMenor c WHERE c.detalle = :detalle"),
-    @NamedQuery(name = "CajaMenor.findByBase", query = "SELECT c FROM CajaMenor c WHERE c.base = :base"),
-    @NamedQuery(name = "CajaMenor.findByFechaActualizacion", query = "SELECT c FROM CajaMenor c WHERE c.fechaActualizacion = :fechaActualizacion")})
-public class CajaMenor implements Serializable {
+    @NamedQuery(name = "Caja.findAll", query = "SELECT c FROM Caja c"),
+    @NamedQuery(name = "Caja.findById", query = "SELECT c FROM Caja c WHERE c.id = :id"),
+    @NamedQuery(name = "Caja.findByDetalle", query = "SELECT c FROM Caja c WHERE c.detalle = :detalle"),
+    @NamedQuery(name = "Caja.findByBase", query = "SELECT c FROM Caja c WHERE c.base = :base"),
+    @NamedQuery(name = "Caja.findByFechaActualizacion", query = "SELECT c FROM Caja c WHERE c.fechaActualizacion = :fechaActualizacion")})
+public class Caja implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
@@ -48,18 +48,18 @@ public class CajaMenor implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaActualizacion;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "caja", fetch = FetchType.LAZY)
-    private List<ActualizaBaseCajaMenor> actualizaBaseCajaMenorList;
+    private List<ActualizaBaseCaja> actualizaBaseCajaList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "caja", fetch = FetchType.LAZY)
     private List<ReciboCaja> reciboCajaList;
 
-    public CajaMenor() {
+    public Caja() {
     }
 
-    public CajaMenor(Integer id) {
+    public Caja(Integer id) {
         this.id = id;
     }
 
-    public CajaMenor(Integer id, String detalle, long base, Date fechaActualizacion) {
+    public Caja(Integer id, String detalle, long base, Date fechaActualizacion) {
         this.id = id;
         this.detalle = detalle;
         this.base = base;
@@ -98,12 +98,12 @@ public class CajaMenor implements Serializable {
         this.fechaActualizacion = fechaActualizacion;
     }
 
-    public List<ActualizaBaseCajaMenor> getActualizaBaseCajaMenorList() {
-        return actualizaBaseCajaMenorList;
+    public List<ActualizaBaseCaja> getActualizaBaseCajaList() {
+        return actualizaBaseCajaList;
     }
 
-    public void setActualizaBaseCajaMenorList(List<ActualizaBaseCajaMenor> actualizaBaseCajaMenorList) {
-        this.actualizaBaseCajaMenorList = actualizaBaseCajaMenorList;
+    public void setActualizaBaseCajaList(List<ActualizaBaseCaja> actualizaBaseCajaList) {
+        this.actualizaBaseCajaList = actualizaBaseCajaList;
     }
 
     public List<ReciboCaja> getReciboCajaList() {
@@ -124,10 +124,10 @@ public class CajaMenor implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof CajaMenor)) {
+        if (!(object instanceof Caja)) {
             return false;
         }
-        CajaMenor other = (CajaMenor) object;
+        Caja other = (Caja) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -136,7 +136,7 @@ public class CajaMenor implements Serializable {
 
     @Override
     public String toString() {
-        return "jp.entidades.CajaMenor[ id=" + id + " ]";
+        return this.getId()+" - "+this.getDetalle();
     }
     
 }

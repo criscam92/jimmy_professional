@@ -1,8 +1,5 @@
 package jp.controllers;
 
-import jp.entidades.Pais;
-import jp.util.JsfUtil;
-import jp.util.JsfUtil.PersistAction;
 import java.io.Serializable;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -11,28 +8,33 @@ import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.bean.SessionScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import jp.entidades.ActualizaBaseCaja;
-import jp.facades.ActualizaCajaFacade;
+import jp.entidades.Concepto;
+import jp.facades.ConceptoFacade;
+import jp.util.JsfUtil;
+import jp.util.JsfUtil.PersistAction;
 
-@ManagedBean(name = "actualizacionCajaController")
-@ViewScoped
-public class ActualizacionCajaController implements Serializable {
+@ManagedBean(name = "conceptoController")
+@SessionScoped
+public class ConceptoController implements Serializable {
 
     @EJB
-    private ActualizaCajaFacade ejbFacade;
-    private ActualizaBaseCaja selected;
+    private ConceptoFacade ejbFacade;
+    private List<Concepto> items = null;
+    private Concepto selected;
 
+    public ConceptoController() {
+    }
 
-    public ActualizaBaseCaja getSelected() {
+    public Concepto getSelected() {
         return selected;
     }
 
-    public void setSelected(ActualizaBaseCaja selected) {
+    public void setSelected(Concepto selected) {
         this.selected = selected;
     }
 
@@ -42,35 +44,40 @@ public class ActualizacionCajaController implements Serializable {
     protected void initializeEmbeddableKey() {
     }
 
-    private ActualizaCajaFacade getFacade() {
+    private ConceptoFacade getFacade() {
         return ejbFacade;
     }
 
-    public ActualizaBaseCaja prepareCreate() {
-        selected = new ActualizaBaseCaja();
+    public Concepto prepareCreate() {
+        selected = new Concepto();
         initializeEmbeddableKey();
         return selected;
     }
 
     public void create() {
-        persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageCajaMenor", "CreateSuccessF"}));
+        persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageConcepto", "CreateSuccessM"}));
         if (!JsfUtil.isValidationFailed()) {
-//            RequestContext.getCurrentInstance().execute("PF('PaisCreateDialog').hide()");
+            items = null;    // Invalidate list of items to trigger re-query.
         }
     }
 
     public void update() {
-        persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessageCajaMenor", "UpdateSuccessF"}));
-        if (!JsfUtil.isValidationFailed()) {
-//            RequestContext.getCurrentInstance().execute("PF('PaisEditDialog').hide()");
-        }
+        persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessageConcepto", "UpdateSuccessM"}));
     }
 
     public void destroy() {
-        persist(PersistAction.DELETE, JsfUtil.getMessageBundle(new String[]{"MessageCajaMenor", "DeleteSuccessF"}));
+        persist(PersistAction.DELETE, JsfUtil.getMessageBundle(new String[]{"MessageConcepto", "DeleteSuccessM"}));
         if (!JsfUtil.isValidationFailed()) {
             selected = null; // Remove selection
+            items = null;    // Invalidate list of items to trigger re-query.
         }
+    }
+
+    public List<Concepto> getItems() {
+        if (items == null) {
+            items = getFacade().findAll();
+        }
+        return items;
     }
 
     private void persist(PersistAction persistAction, String successMessage) {
@@ -92,43 +99,43 @@ public class ActualizacionCajaController implements Serializable {
                 if (msg.length() > 0) {
                     JsfUtil.addErrorMessage(msg);
                 } else {
-                    JsfUtil.addErrorMessage(ex, ResourceBundle.getBundle("languages/Bundle").getString("PersistenceErrorOccured"));
+                    JsfUtil.addErrorMessage(ex, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
                 }
             } catch (Exception ex) {
                 Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
-                JsfUtil.addErrorMessage(ex, ResourceBundle.getBundle("languages/Bundle").getString("PersistenceErrorOccured"));
+                JsfUtil.addErrorMessage(ex, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
             }
         }
     }
 
-    public List<ActualizaBaseCaja> getItemsAvailableSelectMany() {
+    public List<Concepto> getItemsAvailableSelectMany() {
         return getFacade().findAll();
     }
 
-    public List<ActualizaBaseCaja> getItemsAvailableSelectOne() {
+    public List<Concepto> getItemsAvailableSelectOne() {
         return getFacade().findAll();
     }
 
-    @FacesConverter(forClass = Pais.class, value = "actualizacioncajaconverter")
-    public static class CajaMenorControllerConverter implements Converter {
+    @FacesConverter(forClass = Concepto.class, value = "conceptoconverter")
+    public static class ConceptoControllerConverter implements Converter {
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
-            if (value == null || value.length() == 0 || value.equals(JsfUtil.getMessageBundle("SelectOneMessage"))) {
+            if (value == null || value.length() == 0) {
                 return null;
             }
-            ActualizacionCajaController controller = (ActualizacionCajaController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "actualizacionCajaController");
+            ConceptoController controller = (ConceptoController) facesContext.getApplication().getELResolver().
+                    getValue(facesContext.getELContext(), null, "conceptoController");
             return controller.getFacade().find(getKey(value));
         }
 
-        java.lang.Long getKey(String value) {
-            java.lang.Long key;
-            key = Long.valueOf(value);
+        java.lang.Integer getKey(String value) {
+            java.lang.Integer key;
+            key = Integer.valueOf(value);
             return key;
         }
 
-        String getStringKey(java.lang.Long value) {
+        String getStringKey(java.lang.Integer value) {
             StringBuilder sb = new StringBuilder();
             sb.append(value);
             return sb.toString();
@@ -136,18 +143,22 @@ public class ActualizacionCajaController implements Serializable {
 
         @Override
         public String getAsString(FacesContext facesContext, UIComponent component, Object object) {
-            if (object == null || object.equals(JsfUtil.getMessageBundle("SelectOneMessage"))) {
+            if (object == null) {
                 return null;
             }
-            if (object instanceof Pais) {
-                Pais o = (Pais) object;
+            if (object instanceof Concepto) {
+                Concepto o = (Concepto) object;
                 return getStringKey(o.getId());
             } else {
-                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "object {0} is of type {1}; expected type: {2}", new Object[]{object, object.getClass().getName(), Pais.class.getName()});
+                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "object {0} is of type {1}; expected type: {2}", new Object[]{object, object.getClass().getName(), Concepto.class.getName()});
                 return null;
             }
         }
 
+    }
+    
+    public String isIngreso(boolean ingreso){
+        return ingreso?"Si":"No";
     }
 
 }

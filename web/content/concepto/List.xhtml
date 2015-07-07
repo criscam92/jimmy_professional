@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/index.xhtml">
+
+
+        <ui:define name="title">
+            <h:outputText value="#{bundle.ListConceptoTitle}"></h:outputText>
+        </ui:define>
+
+        <ui:define name="body">
+            <h:form id="ConceptoListForm">
+                <p:dataTable id="datalist" value="#{conceptoController.items}" var="item"
+                             selectionMode="single" selection="#{conceptoController.selected}"
+                             paginator="true" paginatorPosition="bottom"
+                             rowKey="#{item.id}" emptyMessage="#{bundle.EmptyTable}"
+                             rows="10" styleClass="tabla"
+                             rowsPerPageTemplate="10,20,30,40,50"
+                             >
+
+                    <p:ajax event="rowSelect"   update="createButton viewButton editButton deleteButton"/>
+                    <p:ajax event="rowUnselect" update="createButton viewButton editButton deleteButton"/>
+
+                    <f:facet name="header">
+                        <div id="titulo">
+                            Conceptos
+                        </div>
+                        <div id="acciones">
+                            <p:commandButton id="createButton" icon="ui-icon-plus"   value="#{bundle.Create}" actionListener="#{conceptoController.prepareCreate}" update=":ConceptoCreateForm" oncomplete="PF('ConceptoCreateDialog').show()"/>
+                            <p:commandButton id="viewButton"   icon="ui-icon-search" value="#{bundle.View}" update=":ConceptoViewForm" oncomplete="PF('ConceptoViewDialog').show()" disabled="#{empty conceptoController.selected}"/>
+                            <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":ConceptoEditForm" oncomplete="PF('ConceptoEditDialog').show()" disabled="#{empty conceptoController.selected}"/>
+                            <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{conceptoController.destroy}" update=":growl,datalist" disabled="#{empty conceptoController.selected}"/>
+                        </div>
+                    </f:facet>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.ListConceptoTitle_detalle}"/>
+                        </f:facet>
+                        <h:outputText value="#{item.detalle}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.ListConceptoTitle_ingreso}"/>
+                        </f:facet>
+                        <h:outputText value="#{conceptoController.isIngreso(item.ingreso)}"/>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+
+            <ui:include src="Create.xhtml"/>
+            <ui:include src="Edit.xhtml"/>
+            <ui:include src="View.xhtml"/>
+        </ui:define>
+    </ui:composition>
+
+</html>
