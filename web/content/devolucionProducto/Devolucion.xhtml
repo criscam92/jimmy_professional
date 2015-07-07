@@ -9,7 +9,7 @@
         <table style="margin: auto;">
             <tr>   
                 <td>
-                    <p:panel header="#{bundle.DevolucionDetail}" style="width: 590px;">
+                    <p:panel header="#{bundle.DevolucionDetail}" style="width: 610px;">
                         <p:panelGrid columns="2">
 
                             <p:panelGrid columns="1">
@@ -43,7 +43,7 @@
                                 </p:panelGrid>
                                 <p:panelGrid columns="2">
 
-                                    <p:outputLabel value="#{bundle.CreateDevolucionProductoLabel_detalle}" for="observacion" style="margin-right: 7px;"/>
+                                    <p:outputLabel value="#{bundle.CreateDevolucionProductoLabel_detalle}" for="observacion" style="margin-right: 15px;"/>
                                     <p:inputTextarea id="observacion" value="#{devolucionController.selected.observaciones}" style="width: 433px; height: 39px;">
                                         <p:ajax event="blur" update=":formAbonoFactura" />
                                     </p:inputTextarea>
