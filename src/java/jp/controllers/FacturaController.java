@@ -425,7 +425,6 @@ public class FacturaController implements Serializable {
                 return getTalonarioFacade().update(talonarioTMP, ordenPedido);
             }
         }
-
         return false;
     }
 
@@ -494,10 +493,6 @@ public class FacturaController implements Serializable {
         selected = new Factura();
         objects = new ArrayList<>();
         return "Create.xhtml?faces-redirect=true";
-    }
-
-    public void prepararDespachos() {
-        despachosFactura = getDespachoFacturaFacade().getDespachosFacturaByFactura(selected);
     }
 
     public void addProductoOrPromocion() {
@@ -745,6 +740,18 @@ public class FacturaController implements Serializable {
 
     public String getEstado(int estado) {
         return EstadoPagoFactura.getFromValue(estado).getDetalle();
+    }
+
+    public void prepararDespachos(){
+        despachosFactura = getDespachoFacturaFacade().getDespachosFacturaByFactura(selected, false);
+    }
+    
+    public void anularDespacho() {
+        if (!getEjbTransactionFacade().anularDespachoFactura(despachoFactura)) {
+            JsfUtil.addErrorMessage("Error anulando el despacho");
+        }else{
+            despachosFactura = getDespachoFacturaFacade().getDespachosFacturaByFactura(selected, false);
+        }
     }
 
 }

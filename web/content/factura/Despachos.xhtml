@@ -26,7 +26,9 @@
                         </div>
                         <div id="acciones">
                             <p:commandButton id="detallesButton" icon="ui-icon-plus"   value="Detalles" actionListener="#{facturaController.prepararProductos}" update=":DetallesDespacho" oncomplete="PF('DetallesDespachoDialog').show()" disabled="#{empty facturaController.despachoFactura}"/>
-                            <p:commandButton id="anularButton"   icon="ui-icon-search" value="Anular"/>
+                            <p:commandButton id="anularButton"   icon="ui-icon-search" value="Anular" actionListener="#{facturaController.anularDespacho}" update=":growl, :Despachos" disabled="#{empty facturaController.despachoFactura ? true : !facturaController.despachoFactura.realizado}">
+                                <p:confirm header="Confirmar" message="Esta seguro de anular este despacho?" icon="ui-icon-alert" />
+                            </p:commandButton>
                         </div>
                     </f:facet>
 
@@ -57,7 +59,15 @@
                 <div class="botonesDialog">
                     <p:commandButton type="button" value="#{bundle.Close}" onclick="PF('DespachosDialog').hide()"/>
                 </div>
+                
+                <p:confirmDialog global="true">
+                    <p:commandButton value="Yes" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                    <p:commandButton value="No" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                </p:confirmDialog>
+                
             </h:form>
+
+
         </p:dialog>
         <p:dialog id="DetallesDespachoDlg" widgetVar="DetallesDespachoDialog" showHeader="false" modal="true" resizable="false" appendTo="@(body)">
             <h:form id="DetallesDespacho">

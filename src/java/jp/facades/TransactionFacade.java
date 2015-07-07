@@ -669,4 +669,28 @@ public class TransactionFacade {
         return result;
     }
 
+    public boolean anularDespachoFactura(DespachoFactura despachoFactura) {
+        userTransaction = sessionContext.getUserTransaction();
+        try {
+            userTransaction.begin();
+            DespachoFactura despachoFacturaTMP = getEntityManager().find(DespachoFactura.class, despachoFactura.getId());
+            despachoFacturaTMP.setRealizado(false);
+            getEntityManager().merge(despachoFacturaTMP);
+
+            Factura facturaTMP = getEntityManager().find(Factura.class, despachoFacturaTMP.getFactura().getId());
+            facturaTMP.setEstado(EstadoPagoFactura.PENDIENTE.getValor());
+            getEntityManager().merge(facturaTMP);
+            userTransaction.commit();
+            return true;
+        } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
+            try {
+                userTransaction.rollback();
+            } catch (IllegalStateException | SecurityException | SystemException ex) {
+            }
+        } finally {
+            getEntityManager().clear();
+        }
+        return false;
+    }
+
 }

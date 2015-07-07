@@ -33,7 +33,7 @@
                             <p:commandButton id="createButton" icon="ui-icon-plus" value="#{bundle.Create}" action="#{facturaController.redirectCreateFactura()}"/>    
 
                             <p:commandButton id="deleteButton" value="Despachos" icon="ui-icon-clipboard" oncomplete="PF('DespachosDialog').show()"
-                                             update=":growl,datalist,:Despachos" disabled="#{empty facturaController.selected}" actionListener="#{facturaController.prepararDespachos()}"/>
+                                             update=":growl,datalist,:Despachos" disabled="#{empty facturaController.selected}" actionListener="#{facturaController.prepararDespachos}"/>
 
                             <p:commandButton id="productos" value="#{bundle.MessageDespacharFactura}" oncomplete="PF('ProductosByVisitaDialog').show()"
                                              icon="ui-icon-check" disabled="#{empty facturaController.selected}" action="#{facturaController.redirect()}"/> 

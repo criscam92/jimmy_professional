@@ -375,7 +375,7 @@ public class DespachoFacturaController implements Serializable {
     private int getDespachosByProducto(Producto producto, Factura factura) {
         int cantDespachada = 0;
 
-        List<DespachoFactura> despachoFacturas = getDespachoFacturaFacade().getDespachosFacturaByFactura(factura);
+        List<DespachoFactura> despachoFacturas = getDespachoFacturaFacade().getDespachosFacturaByFactura(factura, true);
         for (DespachoFactura df : despachoFacturas) {
 
             List<DespachoFacturaProducto> despachoFacturaProductos = getDespachoFacturaProductoFacade().getDespachosFacturaProductoByDespachoFactura(df);
