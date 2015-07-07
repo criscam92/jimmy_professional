@@ -12,40 +12,42 @@
 
         <ui:define name="body">
             <h:form id="formReciboCaja">
-                <p:panelGrid columns="6">
-                    <f:facet name="header">
-                        <p:row>
-                            <p:column>Recibos de Caja Menor</p:column>
-                        </p:row>
+                <p:panel header="Recibos de Caja Menor" style="width: 790px; margin: auto;">
+                    <p:panelGrid columns="2">
+                        <p:panelGrid columns="2">
+                            <p:outputLabel for="detalle" value="Detalle:"/>
+                            <p:inputTextarea id="detalle" value="#{reciboCajaController.selected.detalle}" required="true" requiredMessage="El campo Detalle es requerido"/>
+                        </p:panelGrid>
+                        <p:panelGrid columns="4">
+                            <p:outputLabel for="fecha" value="Fecha:"/>
+                            <p:calendar id="fecha" value="#{reciboCajaController.selected.fecha}" showOn="button" pattern="dd/MMM/yyyy hh:mm:ss a"/>
+
+                            <p:outputLabel for="caja" value="Caja:"/>
+                            <p:selectOneMenu converter="cajaconverter" id="caja" value="#{reciboCajaController.selected.caja}" required="true" requiredMessage="#{bundle.EditCajaRequiredMessage}" style="width: 137px;">
+                                <f:selectItems value="#{cajaController.itemsAvailableSelectOne}" 
+                                               var="cajaItem"
+                                               itemValue="#{cajaItem}"/>
+                            </p:selectOneMenu>
+
+                            <p:outputLabel for="concepto" value="Concepto:"/>
+                            <p:selectOneMenu converter="conceptoconverter" id="concepto" value="#{reciboCajaController.selected.concepto}" required="true" requiredMessage="#{bundle.EditConceptoRequiredMessage}"
+                                             style="width: 166px;">
+                                <f:selectItems value="#{conceptoController.itemsAvailableSelectOne}"
+                                               var="conceptoItem"
+                                               itemValue="#{conceptoItem}"/>
+                            </p:selectOneMenu>
+
+                            <p:outputLabel for="valor" value="Valor:"/>
+                            <p:inputText id="valor" value="#{reciboCajaController.selected.valor}" required="true" requiredMessage="El campo Valor es requerido"/>
+
+                        </p:panelGrid>
+                    </p:panelGrid>
+
+                    <f:facet name="footer">
+                        <p:commandButton value="#{bundle.Save}" icon="ui-icon-disk" actionListener="#{reciboCajaController.create()}" update=":tablaRecibosCaja,@form,:growl"/>
                     </f:facet>
 
-                    <p:outputLabel for="fecha" value="Fecha:"/>
-                    <p:calendar id="fecha" value="#{reciboCajaController.selected.fecha}" showOn="button" pattern="dd/MMM/yyyy hh:mm:ss a"/>
-
-                    <p:outputLabel for="caja" value="Caja:"/>
-                    <p:selectOneMenu converter="cajaconverter" id="caja" value="#{reciboCajaController.selected.caja}" required="true" requiredMessage="#{bundle.EditCajaRequiredMessage}">
-                        <f:selectItems value="#{cajaController.itemsAvailableSelectOne}"
-                                       var="cajaItem"
-                                       itemValue="#{cajaItem}"/>
-                    </p:selectOneMenu>
-
-                    <p:outputLabel for="concepto" value="Concepto:"/>
-                    <p:selectOneMenu converter="conceptoconverter" id="concepto" value="#{reciboCajaController.selected.concepto}" required="true" requiredMessage="#{bundle.EditConceptoRequiredMessage}">
-                        <f:selectItems value="#{conceptoController.itemsAvailableSelectOne}"
-                                       var="conceptoItem"
-                                       itemValue="#{conceptoItem}"/>
-                    </p:selectOneMenu>
-
-                    <p:outputLabel for="valor" value="Valor:"/>
-                    <p:inputText id="valor" value="#{reciboCajaController.selected.valor}" required="true" requiredMessage="El campo Valor es requerido"/>
-
-                    <p:outputLabel for="detalle" value="Detalle:"/>
-                    <p:inputTextarea id="detalle" value="#{reciboCajaController.selected.detalle}" required="true" requiredMessage="El campo Detalle es requerido"/>
-
-                    <h:outputLabel/>
-                    <p:commandButton value="#{bundle.Save}" icon="ui-icon-disk" actionListener="#{reciboCajaController.create()}" update=":tablaRecibosCaja,@form,:growl"/>
-
-                </p:panelGrid>
+                </p:panel>
             </h:form><br/>
 
             <h:form id="tablaRecibosCaja">
