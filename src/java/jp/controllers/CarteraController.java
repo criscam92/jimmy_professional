@@ -158,7 +158,7 @@ public class CarteraController implements Serializable {
                 if (empleado != null) {
                     List<Cliente> clientes = getClienteFacade().getClientesByEmpleado(empleado);
                     for (Cliente c : clientes) {
-                        List<Factura> facturas = getFacade().getFacturasPendientesByCliente(cliente);
+                        List<Factura> facturas = getFacade().getFacturasPendientesByCliente(c);
                         if (facturas != null && !facturas.isEmpty()) {
                             List<CarteraFactura> carteraFacturas = getListCarteraFacturaByFacturas(facturas);
                             Cartera cartera = new Cartera();
