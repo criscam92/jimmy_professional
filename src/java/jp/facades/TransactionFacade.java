@@ -36,6 +36,7 @@ import jp.entidades.Parametros;
 import jp.entidades.Producto;
 import jp.entidades.ProductoHelper;
 import jp.entidades.ProductoPromocionHelper;
+import jp.entidades.ReciboCaja;
 import jp.entidades.Visita;
 import jp.entidades.VisitaProducto;
 import jp.util.EstadoPagoFactura;
@@ -637,6 +638,32 @@ public class TransactionFacade {
             }
         }
         return false;
+    }
+    
+    public boolean anularRecibo(ReciboCaja reciboCaja) {
+        boolean result;
+        userTransaction = sessionContext.getUserTransaction();
+        try {
+            userTransaction.begin();
+//            Visita visitaTMP = getEntityManager().find(Visita.class, v.getId());
+//            visitaTMP.setEstado(anular ? EstadoVisita.ANULADA.getValor() : EstadoVisita.CANCELADA.getValor());
+//            getEntityManager().merge(visitaTMP);
+            userTransaction.commit();
+            result = true;
+        } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException e) {
+            result = false;
+            try {
+                System.out.println("======>");
+                e.printStackTrace();
+                System.out.println("<======");
+                userTransaction.rollback();
+            } catch (IllegalStateException | SecurityException | SystemException es) {
+                System.out.println("======>");
+                es.printStackTrace();
+                System.out.println("<======");
+            }
+        }
+        return result;
     }
 
 }

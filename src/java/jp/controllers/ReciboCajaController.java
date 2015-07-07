@@ -1,6 +1,7 @@
 package jp.controllers;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -15,6 +16,7 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import jp.entidades.ReciboCaja;
 import jp.facades.ReciboCajaFacade;
+import jp.facades.TransactionFacade;
 import jp.seguridad.UsuarioActual;
 import jp.util.EstadoPagoFactura;
 import jp.util.JsfUtil;
@@ -28,10 +30,13 @@ public class ReciboCajaController implements Serializable {
     private ReciboCajaFacade ejbFacade;
     @EJB
     private UsuarioActual ejbUsuarioFacade;
+    @EJB
+    private TransactionFacade transactionFacade;
     private List<ReciboCaja> items = null;
     private ReciboCaja selected;
 
     public ReciboCajaController() {
+        selected = new ReciboCaja();
     }
 
     public ReciboCaja getSelected() {
@@ -56,6 +61,10 @@ public class ReciboCajaController implements Serializable {
         return ejbUsuarioFacade;
     }
 
+    public TransactionFacade getTransactionFacade() {
+        return transactionFacade;
+    }
+
     public ReciboCaja prepareCreate() {
         selected = new ReciboCaja();
         initializeEmbeddableKey();
@@ -66,9 +75,13 @@ public class ReciboCajaController implements Serializable {
         if (selected != null) {
             selected.setUsuario(getEjbUsuarioFacade().get());
             selected.setEstado(EstadoPagoFactura.REALIZADA.getValor());
+            if (selected.getFecha() == null) {
+                selected.setFecha(Calendar.getInstance().getTime());
+            }
             persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageReciboCaja", "CreateSuccessM"}));
         }
         if (!JsfUtil.isValidationFailed()) {
+            selected = new ReciboCaja();
             items = null;    // Invalidate list of items to trigger re-query.
         }
     }
@@ -167,6 +180,18 @@ public class ReciboCajaController implements Serializable {
             }
         }
 
+    }
+
+    public void anularRecibo() {
+        if (getTransactionFacade().anularRecibo(selected)) {
+            if (!JsfUtil.isValidationFailed()) {
+                JsfUtil.addSuccessMessage(JsfUtil.getMessageBundle(new String[]{"MessageVisita", "AnullSuccessF"}));
+                selected = null; // Remove selection
+                items = null;
+            }
+        } else {
+            JsfUtil.addErrorMessage("Ocurrió un error anulando el Recibo");
+        }
     }
 
 }

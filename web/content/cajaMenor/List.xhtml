@@ -41,7 +41,8 @@
 
                     <p:outputLabel for="detalle" value="Detalle:"/>
                     <p:inputTextarea id="detalle" value="#{reciboCajaController.selected.detalle}" required="true" requiredMessage="El campo Detalle es requerido"/>
-
+                    
+                    <h:outputLabel/>
                     <p:commandButton value="#{bundle.Save}" icon="ui-icon-disk" actionListener="#{reciboCajaController.create()}" update=":tablaRecibosCaja,@form,:growl"/>
 
                 </p:panelGrid>
@@ -60,6 +61,13 @@
                     <f:facet name="header">
                         <div id="titulo">
                             Recibos de Caja Menor
+                        </div>
+                        <div id="acciones">
+                            <p:commandButton id="botonAnular" value="#{bundle.Anull}" actionListener="#{visitaController.anularCancelarVisita(true)}" 
+                                             update=":growl,datalist,botonAnular" 
+                                             disabled="#{visitaController.disableReporteYAnular()}" rendered="#{loginController.admin}" icon="ui-icon-alert">
+                                <p:confirm header="Confirmar" message="Esta seguro de anular este recibo?" icon="ui-icon-alert" />
+                            </p:commandButton>
                         </div>
                     </f:facet>
                     
@@ -111,7 +119,7 @@
                         <f:facet name="header">
                             <h:outputText value="Estado"/>
                         </f:facet>
-                        <h:outputText value="#{item.estado}"/>
+                        <h:outputText value="#{facturaController.getEstado(item.estado)}"/>
                     </p:column>
                     
                 </p:dataTable>

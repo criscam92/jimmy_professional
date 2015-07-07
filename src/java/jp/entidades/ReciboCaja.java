@@ -35,8 +35,7 @@ public class ReciboCaja implements Serializable {
     @Column(nullable = false)
     private Long id;
     @Basic(optional = false)
-    @NotNull
-    @Column(nullable = false)
+    @Column
     @Temporal(TemporalType.TIMESTAMP)
     private Date fecha;
     @Basic(optional = false)

@@ -171,7 +171,7 @@ public class CajaController implements Serializable {
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
-            if (value == null || value.length() == 0 || value.equals(JsfUtil.getMessageBundle("SelectOneMessage"))) {
+            if (value == null || value.length() == 0) {
                 return null;
             }
             CajaController controller = (CajaController) facesContext.getApplication().getELResolver().
@@ -179,9 +179,9 @@ public class CajaController implements Serializable {
             return controller.getFacade().find(getKey(value));
         }
 
-        java.lang.Long getKey(String value) {
-            java.lang.Long key;
-            key = Long.valueOf(value);
+        java.lang.Integer getKey(String value) {
+            java.lang.Integer key;
+            key = Integer.valueOf(value);
             return key;
         }
 
@@ -193,14 +193,14 @@ public class CajaController implements Serializable {
 
         @Override
         public String getAsString(FacesContext facesContext, UIComponent component, Object object) {
-            if (object == null || object.equals(JsfUtil.getMessageBundle("SelectOneMessage"))) {
+            if (object == null) {
                 return null;
             }
             if (object instanceof Caja) {
                 Caja o = (Caja) object;
                 return getStringKey(o.getId());
             } else {
-                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "object {0} is of type {1}; expected type: {2}", new Object[]{object, object.getClass().getName(), Pais.class.getName()});
+                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "object {0} is of type {1}; expected type: {2}", new Object[]{object, object.getClass().getName(), Caja.class.getName()});
                 return null;
             }
         }
