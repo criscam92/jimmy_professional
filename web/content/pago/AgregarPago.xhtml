@@ -68,7 +68,7 @@
                             </p:column>
                             <p:column>
                                 <p:selectOneMenu id="forma_pago" value="#{nuevaRelacionFacturaController.selected.formaPago}" required="true" requiredMessage="Débe indicar la forma de pago">
-                                    <p:ajax update="cheque,label_cheque,label_cuenta,cuenta" immediate="true"/>
+                                    <p:ajax update="cheque,label_cheque,label_cuenta,cuenta,tipo_detalle_pago, label_tipo_publicidad, tipo_publicidad" immediate="true"/>
                                     <f:selectItems var="tipo" value="#{nuevaRelacionFacturaController.tiposPago}" itemLabel="#{tipo.detalle}" itemValue="#{tipo.valor}" />
                                 </p:selectOneMenu>
                             </p:column>
@@ -84,14 +84,40 @@
                             </p:column>
                         </p:row>
                         <p:row>
-                            <p:column>
-                                <p:outputLabel for="detalle_pago" value="Detalle del Pago:" />
-                            </p:column>
-                            <p:column>
-                                <p:inputText id="detalle_pago" value="#{nuevaRelacionFacturaController.pagoDetalle}" />
-                            </p:column>
-                            <p:column>
-                                <p:commandButton value="Agregar" />
+                            <p:column colspan="6">
+                                <p:fieldset legend="Detalles del Pago">
+                                    <p:panelGrid id="display_detalle_pago">
+                                        <p:row>
+                                            <p:column>
+                                                <p:outputLabel for="tipo_detalle_pago" value="Detalle del Pago:" />
+                                            </p:column>
+                                            <p:column>
+                                                <p:selectOneMenu id="tipo_detalle_pago" value="#{nuevaRelacionFacturaController.pagoDetalle.tipo}">
+                                                    <p:ajax update="tipo_publicidad,label_tipo_publicidad" immediate="true"/>
+                                                    <f:selectItems var="tip" value="#{nuevaRelacionFacturaController.tiposPagoAbono}" itemLabel="#{tip.detalle}" itemValue="#{tip.valor}" />
+                                                </p:selectOneMenu>
+                                            </p:column>
+                                            <p:column>
+                                                <p:outputLabel id="label_valor_detalle_pago" for="valor_detalle_pago" value="Valor:" />
+                                            </p:column>
+                                            <p:column>
+                                                <p:inputText id="valor_detalle_pago" value="#{nuevaRelacionFacturaController.pagoDetalle.valor}" />
+                                            </p:column>
+                                            <p:column>
+                                                <p:outputLabel style="#{nuevaRelacionFacturaController.mostrarTipoPublicidad()}" id="label_tipo_publicidad" for="tipo_publicidad" value="Tipo Publicidad:" />
+                                            </p:column>
+                                            <p:column>
+                                                <p:selectOneMenu id="tipo_publicidad" value="#{nuevaRelacionFacturaController.pagoPublicidad.tipo}"
+                                                                 style="#{nuevaRelacionFacturaController.mostrarTipoPublicidad()}">
+                                                    <f:selectItems var="pub" value="#{tipoPublicidadController.items}" itemLabel="#{pub.detalle}" itemValue="#{pub}" />
+                                                </p:selectOneMenu>
+                                            </p:column>
+                                            <p:column>
+                                                <p:commandButton value="Agregar" />
+                                            </p:column>
+                                        </p:row>
+                                    </p:panelGrid>
+                                </p:fieldset>
                             </p:column>
                         </p:row>
                     </p:panelGrid>

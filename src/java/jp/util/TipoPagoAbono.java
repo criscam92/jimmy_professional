@@ -5,9 +5,10 @@ import java.util.Map;
 
 public enum TipoPagoAbono {
 
+    ABONO(3, "Abono"),
     PUBLICIDAD(1, "Publidad"),
-    COMISION(2, "Comisión"),
-    ABONO(3, "Abono");//Si se hizo pero quedo mala
+    COMISION(2, "Comisión");
+    
 
     private int valor;
     private String detalle;

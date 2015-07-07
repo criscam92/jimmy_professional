@@ -25,12 +25,14 @@ import jp.entidades.Cliente;
 import jp.entidades.Empleado;
 import jp.entidades.Factura;
 import jp.entidades.PagoDetalle;
+import jp.entidades.PagoPublicidad;
 import jp.entidades.RelacionFactura;
 import jp.entidades.Talonario;
 import jp.facades.FacturaFacade;
 import jp.facades.RelacionFacturaFacade;
 import jp.facades.TalonarioFacade;
 import jp.util.TipoPago;
+import jp.util.TipoPagoAbono;
 import jp.util.TipoTalonario;
 import org.primefaces.event.SelectEvent;
 
@@ -50,6 +52,9 @@ public class NuevaRelacionFacturaController implements Serializable {
     private List<Pago> items = null;
     private Pago selected;
     private PagoDetalle pagoDetalle;
+    private PagoPublicidad pagoPublicidad;
+    private List<PagoPublicidad> pagosPublicidad;
+    private List<PagoDetalle> pagosDetalle;
     
     private Cliente clienteTemporal;
     private List<Factura> facturasTemporales;
@@ -76,14 +81,47 @@ public class NuevaRelacionFacturaController implements Serializable {
     }
 
     public PagoDetalle getPagoDetalle() {
-//        if(pagoDetalle==null){
-//            pagoDetalle = new PagoDetalle();
-//        }
+        if(pagoDetalle==null){
+            pagoDetalle = new PagoDetalle();
+        }
         return pagoDetalle;
     }
 
     public void setPagoDetalle(PagoDetalle pagoDetalle) {
         this.pagoDetalle = pagoDetalle;
+    }
+    
+    public PagoPublicidad getPagoPublicidad(){
+        if(pagoPublicidad==null){
+            pagoPublicidad = new PagoPublicidad();
+        }
+        return pagoPublicidad;
+    }
+
+    public void setPagoPublicidad(PagoPublicidad pagoPublicidad) {
+        this.pagoPublicidad = pagoPublicidad;
+    }
+
+    public List<PagoPublicidad> getPagosPublicidad() {
+        if(pagosPublicidad==null){
+            pagosPublicidad = new ArrayList<>();
+        }
+        return pagosPublicidad;
+    }
+
+    public void setPagosPublicidad(List<PagoPublicidad> pagosPublicidad) {
+        this.pagosPublicidad = pagosPublicidad;
+    }
+
+    public List<PagoDetalle> getPagosDetalle() {
+        if(pagosDetalle==null){
+            pagosDetalle = new ArrayList<>();
+        }
+        return pagosDetalle;
+    }
+
+    public void setPagosDetalle(List<PagoDetalle> pagosDetalle) {
+        this.pagosDetalle = pagosDetalle;
     }
 
     public RelacionFactura getRelacionFactura() {
@@ -366,6 +404,13 @@ public class NuevaRelacionFacturaController implements Serializable {
         return new TipoPago[]{TipoPago.CONTADO,TipoPago.CHEQUE,TipoPago.CONSIGNACION};
     }
     
+    public TipoPagoAbono[] getTiposPagoAbono(){
+        if(selected!=null && selected.getFormaPago() != TipoPago.CONTADO.getValor()){
+            return new TipoPagoAbono[]{TipoPagoAbono.ABONO};
+        }
+        return TipoPagoAbono.values();
+    }
+    
     public String mostrarCheque(){
         if(selected!=null){
             return selected.getFormaPago()==TipoPago.CHEQUE.getValor()?"":"display:none;";
@@ -378,6 +423,16 @@ public class NuevaRelacionFacturaController implements Serializable {
             return selected.getFormaPago()==TipoPago.CONSIGNACION.getValor();
         }
         return false;
+    }
+    
+    private boolean requiereTipoPublicidad(){
+        return selected!=null && selected.getFormaPago()==TipoPago.CONTADO.getValor() 
+                && pagoDetalle!=null 
+                && pagoDetalle.getTipo()==TipoPagoAbono.PUBLICIDAD.getValor();
+    }
+    
+    public String mostrarTipoPublicidad(){
+        return requiereTipoPublicidad()?"":"display:none";
     }
     
     public String mostrarCuenta(){
