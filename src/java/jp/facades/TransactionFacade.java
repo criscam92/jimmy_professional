@@ -449,7 +449,8 @@ public class TransactionFacade {
 
             boolean facturaRealizada = true;
             for (ProductoHelper ph : productoHelpers) {
-                if (facturaRealizada && (ph.getCantidadFacturada() != ph.getCantidadADespachar())) {
+                System.out.println(ph.getCantidadFacturada() + " - " + (ph.getCantidadADespachar() + ph.getCantidadDespachada()));
+                if (ph.getCantidadFacturada() != (ph.getCantidadADespachar() + ph.getCantidadDespachada())) {
                     facturaRealizada = false;
                 }
 
