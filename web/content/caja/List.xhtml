@@ -15,25 +15,21 @@
         <ui:define name="body">
 
             <h:form id="formCaja">
-                <p:panelGrid columns="5">
-                    <f:facet name="header">
-                        <p:row>
-                            <p:column>Parametrización Caja</p:column>
-                        </p:row>
-                    </f:facet>
-                    
-                    <p:outputLabel for="detalle" value="Detalle:"/>
-                    <p:inputText id="detalle" value="#{cajaController.selected.detalle}" required="true" requiredMessage="El campo Detalle es requerido" disabled="true"/>
-                    
-                    <p:outputLabel for="base" value="Base:"/>
-                    <p:inputText id="base" value="#{cajaController.selected.base}" required="true" requiredMessage="El campo Base es requerido"/>
-                    
-                    <p:commandButton actionListener="#{cajaController.update()}" value="#{bundle.Save}" icon="ui-icon-disk" update=":AuditoriaForm,:growl,@form"/>
+                <p:panel header="Parametrización Caja" style="width: 600px; margin: auto;">
+                    <p:panelGrid columns="5">
+                        <p:outputLabel for="detalle" value="Detalle:"/>
+                        <p:inputText id="detalle" value="#{cajaController.selected.detalle}" required="true" requiredMessage="El campo Detalle es requerido" disabled="true"/>
 
-                </p:panelGrid>
+                        <p:outputLabel for="base" value="Base:"/>
+                        <p:inputText id="base" value="#{cajaController.selected.base}" required="true" requiredMessage="El campo Base es requerido"/>
+
+                        <p:commandButton actionListener="#{cajaController.update()}" value="#{bundle.Save}" icon="ui-icon-disk" update=":AuditoriaForm,:growl,@form"/>
+
+                    </p:panelGrid>
+                </p:panel>
             </h:form><br/>
 
-            
+
             <h:form id="AuditoriaForm">
 
                 <p:dataTable id="datalist" rowKey="#{item.id}"
@@ -81,7 +77,7 @@
                         </f:facet>
                         <h:outputText value="#{item.caja.toString()}"/>
                     </p:column>
-                    
+
                     <p:column sortBy="#{item.usuario.toString()}">
                         <f:facet name="header">
                             <h:outputText value="Usuario"/>
