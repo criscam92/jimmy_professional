@@ -291,6 +291,7 @@ public class TransactionFacade {
             facturaTMP.setDescuento(factura.getDescuento());
             facturaTMP.setTotalPagar(factura.getTotalPagar());
             facturaTMP.setUsuario(factura.getUsuario());
+            facturaTMP.setEstado(factura.getEstado());
             getEntityManager().merge(facturaTMP);
 
             for (ProductoPromocionHelper pph : objects) {
@@ -448,7 +449,8 @@ public class TransactionFacade {
 
             boolean facturaRealizada = true;
             for (ProductoHelper ph : productoHelpers) {
-                if (facturaRealizada && (ph.getCantidadFacturada() != ph.getCantidadADespachar())) {
+                System.out.println(ph.getCantidadFacturada() + " - " + (ph.getCantidadADespachar() + ph.getCantidadDespachada()));
+                if (ph.getCantidadFacturada() != (ph.getCantidadADespachar() + ph.getCantidadDespachada())) {
                     facturaRealizada = false;
                 }
 
@@ -665,6 +667,30 @@ public class TransactionFacade {
             }
         }
         return result;
+    }
+
+    public boolean anularDespachoFactura(DespachoFactura despachoFactura) {
+        userTransaction = sessionContext.getUserTransaction();
+        try {
+            userTransaction.begin();
+            DespachoFactura despachoFacturaTMP = getEntityManager().find(DespachoFactura.class, despachoFactura.getId());
+            despachoFacturaTMP.setRealizado(false);
+            getEntityManager().merge(despachoFacturaTMP);
+
+            Factura facturaTMP = getEntityManager().find(Factura.class, despachoFacturaTMP.getFactura().getId());
+            facturaTMP.setEstado(EstadoPagoFactura.PENDIENTE.getValor());
+            getEntityManager().merge(facturaTMP);
+            userTransaction.commit();
+            return true;
+        } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
+            try {
+                userTransaction.rollback();
+            } catch (IllegalStateException | SecurityException | SystemException ex) {
+            }
+        } finally {
+            getEntityManager().clear();
+        }
+        return false;
     }
 
 }

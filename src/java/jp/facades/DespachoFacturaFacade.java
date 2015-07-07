@@ -23,10 +23,20 @@ public class DespachoFacturaFacade extends AbstractFacade<DespachoFactura> {
         super(DespachoFactura.class);
     }
 
-    public List<DespachoFactura> getDespachosFacturaByFactura(Factura factura) {
+    public List<DespachoFactura> getDespachosFacturaByFactura(Factura factura, boolean soloRealizadas) {
         try {
-            Query query = getEntityManager().createQuery("SELECT df FROM DespachoFactura df WHERE df.factura.id = :fac");
+            String consulta = "SELECT df FROM DespachoFactura df WHERE df.factura.id = :fac";            
+            if (soloRealizadas) {
+                 consulta += " AND df.realizado = :rea";
+            }
+            
+            Query query = getEntityManager().createQuery(consulta);
             query.setParameter("fac", factura.getId());
+            
+            if (soloRealizadas) {
+                 query.setParameter("rea", true);
+            }            
+            
             return query.getResultList();
         } catch (Exception e) {
         }
