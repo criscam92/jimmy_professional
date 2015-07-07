@@ -49,8 +49,8 @@
             </h:form><br/>
 
             <h:form id="tablaRecibosCaja">
-                <p:dataTable id="datalist" rowKey="#{item.id}"
-                             value="#{reciboCajaController.items}"
+                <p:dataTable id="datalist" rowKey="#{item.id}" selectionMode="single"
+                             value="#{reciboCajaController.items}" selection="#{reciboCajaController.selected}"
                              styleClass="tabla" var="item"
                              paginator="true" rows="10"
                              rowsPerPageTemplate="10,20,30,40,50"
@@ -58,14 +58,18 @@
                              emptyMessage="#{bundle.EmptyTable}"
                              widgetVar="tablaRecibosCajaMenor"
                              >
+                    
+                    <p:ajax event="rowSelect"   update="botonAnular"/>
+                    <p:ajax event="rowUnselect" update="botonAnular"/>
+                    
                     <f:facet name="header">
                         <div id="titulo">
                             Recibos de Caja Menor
                         </div>
                         <div id="acciones">
-                            <p:commandButton id="botonAnular" value="#{bundle.Anull}" actionListener="#{visitaController.anularCancelarVisita(true)}" 
+                            <p:commandButton id="botonAnular" value="#{bundle.Anull}" actionListener="#{reciboCajaController.anularRecibo()}" 
                                              update=":growl,datalist,botonAnular" 
-                                             disabled="#{visitaController.disableReporteYAnular()}" rendered="#{loginController.admin}" icon="ui-icon-alert">
+                                             disabled="#{reciboCajaController.disableAnular() || empty reciboCajaController.selected}" rendered="#{loginController.admin}" icon="ui-icon-alert">
                                 <p:confirm header="Confirmar" message="Esta seguro de anular este recibo?" icon="ui-icon-alert" />
                             </p:commandButton>
                         </div>

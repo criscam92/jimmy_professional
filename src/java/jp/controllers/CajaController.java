@@ -106,6 +106,7 @@ public class CajaController implements Serializable {
         if (!JsfUtil.isValidationFailed()) {
             //RequestContext.getCurrentInstance().execute("PF('PaisEditDialog').hide()");
             itemsActualizacionesCaja = null;
+            init();
         }
     }
 

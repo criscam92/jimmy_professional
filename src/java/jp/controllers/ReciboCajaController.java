@@ -32,11 +32,13 @@ public class ReciboCajaController implements Serializable {
     private UsuarioActual ejbUsuarioFacade;
     @EJB
     private TransactionFacade transactionFacade;
+    @EJB
+    private UsuarioActual usuarioActual;
     private List<ReciboCaja> items = null;
     private ReciboCaja selected;
 
     public ReciboCajaController() {
-        selected = new ReciboCaja();
+        
     }
 
     public ReciboCaja getSelected() {
@@ -185,13 +187,17 @@ public class ReciboCajaController implements Serializable {
     public void anularRecibo() {
         if (getTransactionFacade().anularRecibo(selected)) {
             if (!JsfUtil.isValidationFailed()) {
-                JsfUtil.addSuccessMessage(JsfUtil.getMessageBundle(new String[]{"MessageVisita", "AnullSuccessF"}));
+                JsfUtil.addSuccessMessage(JsfUtil.getMessageBundle(new String[]{"MessageReciboCaja", "AnullSuccessM"}));
                 selected = null; // Remove selection
                 items = null;
             }
         } else {
-            JsfUtil.addErrorMessage("Ocurrió un error anulando el Recibo");
+            JsfUtil.addErrorMessage("Ocurrió un error anulando el Recibo de Caja");
         }
+    }
+    
+    public boolean disableAnular() {
+        return !(selected != null && usuarioActual.isAdmin() && selected.getEstado() == EstadoPagoFactura.REALIZADA.getValor());
     }
 
 }

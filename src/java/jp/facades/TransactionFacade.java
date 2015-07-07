@@ -451,7 +451,7 @@ public class TransactionFacade {
                 if (!facturaRealizada && (ph.getCantidadFacturada() == ph.getCantidadADespachar())) {
                     facturaRealizada = true;
                 }
-                
+
                 if (ph.getCantidadADespachar() > 0) {
                     DespachoFacturaProducto dfp = new DespachoFacturaProducto();
                     dfp.setCantidad(ph.getCantidadADespachar());
@@ -640,15 +640,15 @@ public class TransactionFacade {
         }
         return false;
     }
-    
+
     public boolean anularRecibo(ReciboCaja reciboCaja) {
         boolean result;
         userTransaction = sessionContext.getUserTransaction();
         try {
             userTransaction.begin();
-//            Visita visitaTMP = getEntityManager().find(Visita.class, v.getId());
-//            visitaTMP.setEstado(anular ? EstadoVisita.ANULADA.getValor() : EstadoVisita.CANCELADA.getValor());
-//            getEntityManager().merge(visitaTMP);
+            ReciboCaja rc = getEntityManager().find(ReciboCaja.class, reciboCaja.getId());
+            rc.setEstado(EstadoPagoFactura.ANULADO.getValor());
+            getEntityManager().merge(rc);
             userTransaction.commit();
             result = true;
         } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException e) {
