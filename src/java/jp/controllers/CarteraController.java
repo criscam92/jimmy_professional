@@ -162,7 +162,7 @@ public class CarteraController implements Serializable {
                         if (facturas != null && !facturas.isEmpty()) {
                             List<CarteraFactura> carteraFacturas = getListCarteraFacturaByFacturas(facturas);
                             Cartera cartera = new Cartera();
-                            cartera.setCliente(cliente);
+                            cartera.setCliente(c);
                             cartera.setListCarteraFacturas(carteraFacturas);
                             carteras.add(cartera);
                         }
