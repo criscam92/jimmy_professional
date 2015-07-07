@@ -20,13 +20,13 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "actualiza_base_caja_menor")
-@NamedQueries({
-    @NamedQuery(name = "ActualizaBaseCajaMenor.findAll", query = "SELECT a FROM ActualizaBaseCajaMenor a"),
-    @NamedQuery(name = "ActualizaBaseCajaMenor.findById", query = "SELECT a FROM ActualizaBaseCajaMenor a WHERE a.id = :id"),
-    @NamedQuery(name = "ActualizaBaseCajaMenor.findByFecha", query = "SELECT a FROM ActualizaBaseCajaMenor a WHERE a.fecha = :fecha"),
-    @NamedQuery(name = "ActualizaBaseCajaMenor.findByValorAnterior", query = "SELECT a FROM ActualizaBaseCajaMenor a WHERE a.valorAnterior = :valorAnterior"),
-    @NamedQuery(name = "ActualizaBaseCajaMenor.findByValorNuevo", query = "SELECT a FROM ActualizaBaseCajaMenor a WHERE a.valorNuevo = :valorNuevo"),
-    @NamedQuery(name = "ActualizaBaseCajaMenor.findByUsuario", query = "SELECT a FROM ActualizaBaseCajaMenor a WHERE a.usuario = :usuario")})
+//@NamedQueries({
+//    @NamedQuery(name = "ActualizaBaseCajaMenor.findAll", query = "SELECT a FROM ActualizaBaseCajaMenor a"),
+//    @NamedQuery(name = "ActualizaBaseCajaMenor.findById", query = "SELECT a FROM ActualizaBaseCajaMenor a WHERE a.id = :id"),
+//    @NamedQuery(name = "ActualizaBaseCajaMenor.findByFecha", query = "SELECT a FROM ActualizaBaseCajaMenor a WHERE a.fecha = :fecha"),
+//    @NamedQuery(name = "ActualizaBaseCajaMenor.findByValorAnterior", query = "SELECT a FROM ActualizaBaseCajaMenor a WHERE a.valorAnterior = :valorAnterior"),
+//    @NamedQuery(name = "ActualizaBaseCajaMenor.findByValorNuevo", query = "SELECT a FROM ActualizaBaseCajaMenor a WHERE a.valorNuevo = :valorNuevo"),
+//    @NamedQuery(name = "ActualizaBaseCajaMenor.findByUsuario", query = "SELECT a FROM ActualizaBaseCajaMenor a WHERE a.usuario = :usuario")})
 public class ActualizaBaseCaja implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
