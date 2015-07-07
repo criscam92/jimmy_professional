@@ -291,6 +291,7 @@ public class TransactionFacade {
             facturaTMP.setDescuento(factura.getDescuento());
             facturaTMP.setTotalPagar(factura.getTotalPagar());
             facturaTMP.setUsuario(factura.getUsuario());
+            facturaTMP.setEstado(factura.getEstado());
             getEntityManager().merge(facturaTMP);
 
             for (ProductoPromocionHelper pph : objects) {
