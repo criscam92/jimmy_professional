@@ -46,6 +46,10 @@ public class ReciboCaja implements Serializable {
     @Size(max = 100)
     @Column(length = 100)
     private String detalle;
+    @Basic(optional = false)
+    @NotNull
+    @Column(nullable = false)
+    private int estado;
     @JoinColumn(name = "caja", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Caja caja;
@@ -99,6 +103,14 @@ public class ReciboCaja implements Serializable {
 
     public void setDetalle(String detalle) {
         this.detalle = detalle;
+    }
+
+    public int getEstado() {
+        return estado;
+    }
+
+    public void setEstado(int estado) {
+        this.estado = estado;
     }
 
     public Caja getCaja() {

@@ -166,7 +166,7 @@ public class CajaController implements Serializable {
         return getFacade().findAll();
     }
 
-    @FacesConverter(forClass = Pais.class, value = "cajaconverter")
+    @FacesConverter(forClass = Caja.class, value = "cajaconverter")
     public static class CajaMenorControllerConverter implements Converter {
 
         @Override
@@ -175,7 +175,7 @@ public class CajaController implements Serializable {
                 return null;
             }
             CajaController controller = (CajaController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "cajaMenorController");
+                    getValue(facesContext.getELContext(), null, "cajaController");
             return controller.getFacade().find(getKey(value));
         }
 
@@ -185,7 +185,7 @@ public class CajaController implements Serializable {
             return key;
         }
 
-        String getStringKey(java.lang.Long value) {
+        String getStringKey(java.lang.Integer value) {
             StringBuilder sb = new StringBuilder();
             sb.append(value);
             return sb.toString();
@@ -196,8 +196,8 @@ public class CajaController implements Serializable {
             if (object == null || object.equals(JsfUtil.getMessageBundle("SelectOneMessage"))) {
                 return null;
             }
-            if (object instanceof Pais) {
-                Pais o = (Pais) object;
+            if (object instanceof Caja) {
+                Caja o = (Caja) object;
                 return getStringKey(o.getId());
             } else {
                 Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "object {0} is of type {1}; expected type: {2}", new Object[]{object, object.getClass().getName(), Pais.class.getName()});

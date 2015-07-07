@@ -15,6 +15,8 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import jp.entidades.ReciboCaja;
 import jp.facades.ReciboCajaFacade;
+import jp.seguridad.UsuarioActual;
+import jp.util.EstadoPagoFactura;
 import jp.util.JsfUtil;
 import jp.util.JsfUtil.PersistAction;
 
@@ -24,6 +26,8 @@ public class ReciboCajaController implements Serializable {
 
     @EJB
     private ReciboCajaFacade ejbFacade;
+    @EJB
+    private UsuarioActual ejbUsuarioFacade;
     private List<ReciboCaja> items = null;
     private ReciboCaja selected;
 
@@ -48,6 +52,10 @@ public class ReciboCajaController implements Serializable {
         return ejbFacade;
     }
 
+    public UsuarioActual getEjbUsuarioFacade() {
+        return ejbUsuarioFacade;
+    }
+
     public ReciboCaja prepareCreate() {
         selected = new ReciboCaja();
         initializeEmbeddableKey();
@@ -55,18 +63,22 @@ public class ReciboCajaController implements Serializable {
     }
 
     public void create() {
-        persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageConcepto", "CreateSuccessM"}));
+        if (selected != null) {
+            selected.setUsuario(getEjbUsuarioFacade().get());
+            selected.setEstado(EstadoPagoFactura.REALIZADA.getValor());
+            persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageReciboCaja", "CreateSuccessM"}));
+        }
         if (!JsfUtil.isValidationFailed()) {
             items = null;    // Invalidate list of items to trigger re-query.
         }
     }
 
     public void update() {
-        persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessageConcepto", "UpdateSuccessM"}));
+        persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessageReciboCaja", "UpdateSuccessM"}));
     }
 
     public void destroy() {
-        persist(PersistAction.DELETE, JsfUtil.getMessageBundle(new String[]{"MessageConcepto", "DeleteSuccessM"}));
+        persist(PersistAction.DELETE, JsfUtil.getMessageBundle(new String[]{"MessageReciboCaja", "DeleteSuccessM"}));
         if (!JsfUtil.isValidationFailed()) {
             selected = null; // Remove selection
             items = null;    // Invalidate list of items to trigger re-query.
