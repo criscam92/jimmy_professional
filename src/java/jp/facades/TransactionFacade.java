@@ -446,11 +446,12 @@ public class TransactionFacade {
             despachoFacturaTMP.setUsuario(despachoFactura.getUsuario());
             getEntityManager().merge(despachoFacturaTMP);
 
-            boolean facturaRealizada = true;
+            boolean facturaRealizada = false;
             for (ProductoHelper ph : productoHelpers) {
-                if (facturaRealizada && (ph.getCantidadFacturada() == ph.getCantidadADespachar())) {
-                    facturaRealizada = false;
+                if (!facturaRealizada && (ph.getCantidadFacturada() == ph.getCantidadADespachar())) {
+                    facturaRealizada = true;
                 }
+                
                 if (ph.getCantidadADespachar() > 0) {
                     DespachoFacturaProducto dfp = new DespachoFacturaProducto();
                     dfp.setCantidad(ph.getCantidadADespachar());
