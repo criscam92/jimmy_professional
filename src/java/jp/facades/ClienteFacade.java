@@ -8,6 +8,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import jp.entidades.Ciudad;
 import jp.entidades.Cliente;
+import jp.entidades.Empleado;
 
 @Stateless
 public class ClienteFacade extends AbstractFacade<Cliente> {
@@ -50,6 +51,17 @@ public class ClienteFacade extends AbstractFacade<Cliente> {
             q.setParameter("param", "%" + query + "%");
             q.setFirstResult(0);
             q.setMaxResults(10);
+            return q.getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public List<Cliente> getClientesByEmpleado(Empleado empleado) {
+        try {
+            Query q = getEntityManager().createQuery("SELECT c FROM Cliente c WHERE c.empleado.id = :empleado");
+            q.setParameter("empleado", empleado.getId());
             return q.getResultList();
         } catch (Exception e) {
             e.printStackTrace();

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <ui:composition template="/index.xhtml">
+
+        <ui:define name="title">
+            <h:outputText value="Cartera"></h:outputText>
+        </ui:define>
+
+        <ui:define name="body">
+            <h:form id="formBuscar">
+                <p:panelGrid style="border: none; margin-bottom: 5px;" columns="5">
+
+                    <p:outputLabel value="Vendedor" for="empleado" />
+                    <p:autoComplete size="23" id="empleado" minQueryLength="3" panelStyle="width: 320px;" value="#{carteraController.empleado}" itemValue="#{empleado}" 
+                                    completeMethod="#{empleadoController.llenarEmpleado}" effect="fade" converter="empleadoconverter"
+                                    itemLabel="#{empleado.toString()}" var="empleado"/>
+
+                    <p:outputLabel value="#{bundle.CreateVisitaLabel_cliente}" id="labelCliente" for="cliente"/>
+                    <p:autoComplete size="23" id="cliente" minQueryLength="3" panelStyle="width: 320px;" value="#{carteraController.cliente}" itemValue="#{cliente}" 
+                                    completeMethod="#{clienteController.llenarCliente}" effect="fade" converter="clienteconverter"
+                                    itemLabel="#{cliente.toString()}" var="cliente"/>
+
+                    <p:commandButton ajax="false" value="Reporte" icon="ui-icon-search" action="#{carteraController.generarReporte()}"/>
+                   
+                </p:panelGrid>
+
+            </h:form>
+ <!--<p:commandButton value="Buscar" icon="ui-icon-search" action="{carteraController.redirect()}"/>-->
+<!--            <h:form id="ListClientesCartera">
+
+                <ui:repeat var="cartera" value="{carteraController.carteras}">
+                    <p:dataTable value="{cartera.facturas}"
+                                 styleClass="tabla"
+                                 var="item"
+                                 paginator="false"
+                                 emptyMessage="{bundle.EmptyTable}"
+                                 >
+
+                        <f:facet name="header">
+                            <div id="titulo">
+                                {cartera.cliente}
+                            </div>
+                        </f:facet>
+
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Factura"/>
+                            </f:facet>
+                            <h:outputText value="{item.ordenPedido}"/>
+                        </p:column>
+
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Actual"/>
+                            </f:facet>
+                            <h:outputText value="{carteraController.ponerValor() ? "0" : factura.saldo}"/>
+                        </p:column>
+
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="30 dias"/>
+                            </f:facet>
+                            <h:outputText value="{carteraController.ponerValor() ? "0" : factura.saldo}"/>
+                        </p:column>
+
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="+30 dias"/>
+                            </f:facet>
+                            <h:outputText value="{carteraController.ponerValor() ? "0" : factura.saldo}"/>
+                        </p:column>
+
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="+60 dias"/>
+                            </f:facet>
+                            <h:outputText value="{carteraController.ponerValor() ? "0" : factura.saldo}"/>
+                        </p:column>
+
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="+90 dias"/>
+                            </f:facet>
+                            <h:outputText value="{carteraController.ponerValor() ? "0" : factura.saldo}"/>
+                        </p:column>
+
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Total"/>
+                            </f:facet>
+                            <h:outputText value="{productoController.getCantidadDisponible(item)}"/>
+                        </p:column>                    
+
+                    </p:dataTable>
+                </ui:repeat>
+            </h:form>-->
+        </ui:define>
+    </ui:composition>
+
+</html>
