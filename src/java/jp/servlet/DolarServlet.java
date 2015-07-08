@@ -32,10 +32,9 @@ import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
 @ManagedBean
 public class DolarServlet extends HttpServlet {
 
-    
     @EJB
     private ParametrosFacade parametrosFacade;
-    
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -54,13 +53,13 @@ public class DolarServlet extends HttpServlet {
             Gson gson = new Gson();
             JsonObject j = gson.fromJson(result, JsonObject.class);
             Float currency = j.getAsJsonObject("rates").get("COP").getAsFloat();
-            
+
             Parametros parametros = parametrosFacade.getParametros();
             parametros.setPrecioDolar(currency);
             parametrosFacade.edit(parametros);
 
             out.write(currency.toString());
-            
+
         }
     }
 
@@ -117,29 +116,31 @@ public class DolarServlet extends HttpServlet {
         String body = IOUtils.toString(in, encoding);
         return body;
     }
-    
-    private HostnameVerifier getHostnameVerifier() throws KeyManagementException{
+
+    private HostnameVerifier getHostnameVerifier() throws KeyManagementException {
         try {
             // Create a trust manager that does not validate certificate chains
-            TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
+            TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
                 @Override
                 public java.security.cert.X509Certificate[] getAcceptedIssuers() {
                     return null;
                 }
+
                 @Override
                 public void checkClientTrusted(X509Certificate[] certs, String authType) {
                 }
+
                 @Override
                 public void checkServerTrusted(X509Certificate[] certs, String authType) {
                 }
-            } };
+            }};
             // Install the all-trusting trust manager
             final SSLContext sc = SSLContext.getInstance("SSL");
             sc.init(null, trustAllCerts, new java.security.SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
             // Create all-trusting host name verifier
             HostnameVerifier allHostsValid = new AllowAllHostnameVerifier();
-            
+
             return allHostsValid;
         } catch (NoSuchAlgorithmException ex) {
             Logger.getLogger(DolarServlet.class.getName()).log(Level.SEVERE, null, ex);

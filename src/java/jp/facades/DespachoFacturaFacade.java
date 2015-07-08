@@ -45,8 +45,9 @@ public class DespachoFacturaFacade extends AbstractFacade<DespachoFactura> {
 
     public long countDespachoFacturaByFactura(Factura factura) {
         try {
-            Query query = getEntityManager().createQuery("SELECT COUNT(df) FROM DespachoFactura df WHERE df.factura.id = :fac");
+            Query query = getEntityManager().createQuery("SELECT COUNT(df) FROM DespachoFactura df WHERE df.factura.id = :fac AND df.realizado = :rea");
             query.setParameter("fac", factura.getId());
+            query.setParameter("rea", true);
             return (long) query.getSingleResult();
         } catch (Exception e) {
         }

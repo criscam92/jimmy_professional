@@ -58,7 +58,7 @@
                         </div>
                     </f:facet>
 
-                    <p:column filterStyle="width: 45px" filterBy="#{item.codigo}" headerText="#{bundle.ListProductoTitle_codigo}" filterMatchMode="contains" style="text-align: center;">
+                    <p:column headerText="#{bundle.ListProductoTitle_codigo}" filterStyle="width: 45px" filterBy="#{item.codigo}" filterMatchMode="contains" style="text-align: center;">
                         <h:outputText value="#{item.codigo}"/>
                     </p:column>
                     <p:column filterBy="#{item.nombre}" filterMatchMode="contains" headerText="#{bundle.ListProductoTitle_nombre}" filterStyle="width: 70px">

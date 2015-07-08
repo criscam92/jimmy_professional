@@ -38,7 +38,9 @@ import jp.facades.DespachoFacturaFacade;
 import jp.facades.DespachoFacturaProductoFacade;
 import jp.facades.FacturaFacade;
 import jp.facades.FacturaProductoFacade;
+import jp.facades.PagoFacade;
 import jp.facades.ParametrosFacade;
+import jp.facades.PromocionFacade;
 import jp.facades.TalonarioFacade;
 import jp.facades.TransactionFacade;
 import jp.seguridad.UsuarioActual;
@@ -60,6 +62,8 @@ public class FacturaController implements Serializable {
     @EJB
     private FacturaFacade ejbFacade;
     @EJB
+    private PromocionFacade promocionFacade;
+    @EJB
     private FacturaProductoFacade ejbFacturaProductoFacade;
     @EJB
     private ParametrosFacade ejbParametrosFacade;
@@ -73,6 +77,8 @@ public class FacturaController implements Serializable {
     private DespachoFacturaFacade despachoFacturaFacade;
     @EJB
     private DespachoFacturaProductoFacade despachoFacturaProductoFacade;
+    @EJB
+    private PagoFacade pagoFacade;
     @Inject
     private UsuarioActual usuarioActual;
 
@@ -99,8 +105,16 @@ public class FacturaController implements Serializable {
     @PostConstruct
     public void init() {
         selected = new Factura();
-        cliente = new Cliente();
+        cliente = null;
         selected.setDescuento(0.0);
+    }
+
+    public PagoFacade getPagoFacade() {
+        return pagoFacade;
+    }
+
+    public PromocionFacade getPromocionFacade() {
+        return promocionFacade;
     }
 
     public List<Producto> getProductosTMP() {
@@ -275,7 +289,7 @@ public class FacturaController implements Serializable {
                                 redireccionarFormulario();
                             }
                         } else {
-                            JsfUtil.addErrorMessage("NO SE HA PODIDO GUARDAR LA PROMOCION");
+                            JsfUtil.addErrorMessage("Error guardando la ");
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -353,12 +367,17 @@ public class FacturaController implements Serializable {
         unidadesBonificacion = 0;
         unidadesVenta = 0;
         precio = 0;
+        errorProducto = "";
+        errorPromocion = "";
+        errorVenta = "";
+        errorBonificacion = "";
     }
 
     private void getMensajesError() {
 
         if (selected.getCliente() != null) {
             errorCliente = "";
+            boolean comprobar = false;
             if (getSelectOneButton() == 1) {
                 if (producto == null) {
                     errorProducto = uiError;
@@ -371,34 +390,43 @@ public class FacturaController implements Serializable {
                         errorProducto = "";
                     }
                 }
+                comprobar = true;
             } else {
                 if (promocion == null) {
                     errorPromocion = uiError;
                     JsfUtil.addErrorMessage("Debe seleccionar una promocion valida");
+                    comprobar = true;
                 } else {
-                    if (precio <= 0.0) {
-                        errorPromocion = uiError;
-                        JsfUtil.addErrorMessage("Debe seleccionar una promocion con un precio valido");
+                    if (getPromocionFacade().comprobarCategoriaPromocion(cliente, promocion)) {
+                        if (precio <= 0.0) {
+                            errorPromocion = uiError;
+                            JsfUtil.addErrorMessage("Debe seleccionar una promocion con un precio valido");
+                        } else {
+                            errorPromocion = "";
+                        }
+                        comprobar = true;
                     } else {
-                        errorProducto = "";
+                        errorPromocion = uiError;
+                        JsfUtil.addErrorMessage("La promocion " + promocion + " no pertenece a la misma categoria del cliente");
                     }
                 }
             }
 
-            if (unidadesVenta < 1) {
-                errorVenta = uiError;
-                JsfUtil.addErrorMessage("El campo venta debe ser mayor a 0");
-            } else {
-                errorVenta = "";
-            }
+            if (comprobar) {
+                if (unidadesVenta < 1) {
+                    errorVenta = uiError;
+                    JsfUtil.addErrorMessage("El campo venta debe ser mayor a 0");
+                } else {
+                    errorVenta = "";
+                }
 
-            if (unidadesBonificacion < 0) {
-                errorBonificacion = uiError;
-                JsfUtil.addErrorMessage("El campo bonificación debe ser mayor a 0");
-            } else {
-                errorBonificacion = "";
+                if (unidadesBonificacion < 0) {
+                    errorBonificacion = uiError;
+                    JsfUtil.addErrorMessage("El campo bonificación debe ser mayor a 0");
+                } else {
+                    errorBonificacion = "";
+                }
             }
-
         } else {
             errorCliente = uiError;
             JsfUtil.addErrorMessage("Debe seleccionar un cliente valido para poder agregar productos o promociones");
@@ -631,7 +659,11 @@ public class FacturaController implements Serializable {
 
     public void onItemSelectPromocion(SelectEvent event) {
         Promocion p = (Promocion) event.getObject();
-        precio = p.getValor();
+        if (moneda == 0) {
+            precio = p.getValor();
+        } else {
+            precio = p.getValorVentaUsd();
+        }
     }
 
     public void onItemSelectCliente(SelectEvent event) {
@@ -742,16 +774,45 @@ public class FacturaController implements Serializable {
         return EstadoPagoFactura.getFromValue(estado).getDetalle();
     }
 
-    public void prepararDespachos(){
+    public void prepararDespachos() {
         despachosFactura = getDespachoFacturaFacade().getDespachosFacturaByFactura(selected, false);
     }
-    
+
     public void anularDespacho() {
         if (!getEjbTransactionFacade().anularDespachoFactura(despachoFactura)) {
             JsfUtil.addErrorMessage("Error anulando el despacho");
-        }else{
+        } else {
             despachosFactura = getDespachoFacturaFacade().getDespachosFacturaByFactura(selected, false);
         }
+    }
+
+    public void anularFactura() {
+        if (selected != null) {
+            long despachos = getDespachoFacturaFacade().countDespachoFacturaByFactura(selected);
+            if(despachos > 0){
+                JsfUtil.addErrorMessage("La factura " + selected.getOrdenPedido() + " no se puede anular porque tiene despachos asociados");
+            }
+            
+            long pagos = getPagoFacade().countPagosFacturaByFactura(selected);
+            if(pagos > 0){
+                JsfUtil.addErrorMessage("La factura " + selected.getOrdenPedido() + " no se puede anular porque tiene pagos asociados");
+            }
+            
+            if (despachos <= 0 && pagos <= 0) {
+                if(getFacade().anularFactura(selected)){
+                    items = null;
+                    JsfUtil.addSuccessMessage("La factura " + selected.getOrdenPedido() + " ha sido anulada exitosamente");
+                }else{
+                    JsfUtil.addErrorMessage("Error anulando la factura " + selected.getOrdenPedido());
+                }
+            }
+        } else {
+            JsfUtil.addErrorMessage("Seleccione la factura que desea anular");
+        }
+    }
+    
+    public int estadoRealizado() {
+        return EstadoPagoFactura.REALIZADA.getValor();
     }
 
 }

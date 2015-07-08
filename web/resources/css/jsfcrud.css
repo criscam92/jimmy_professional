@@ -156,3 +156,20 @@ div.contenido div.ui-layout-unit-content.ui-widget-content{
 form#formDevolucionProducto div.ui-tabs.ui-tabs-top{
     border-bottom: none;
 }
+
+.tabs_devolucion{
+    background-color: #FFFFFF !important;
+}
+
+form#formDevolucionProducto div.ui-tabs-panels{
+    background-color: #FFFFFF !important;
+}
+
+form#formDevolucionProducto ul.ui-tabs-nav{
+    padding: 0;
+}
+
+.num-orden{
+   font-size: 20px;
+   font-weight: bold;
+}

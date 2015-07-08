@@ -18,46 +18,46 @@ import jp.util.JsfUtil;
 @ManagedBean(name = "loginController")
 @SessionScoped
 public class LoginController implements Serializable {
-    
+
     public static final String AUTH_KEY = "jp.usuario";
     public static final String LOGOUT_PARAM = "logout";
-    
+
     @EJB
     private UsuarioFacade ejbFacade;
-    
+
     @Inject
     private UsuarioActual usuarioActual;
-    
+
     private String userName;
     private String password;
-    
+
     public LoginController() {
     }
-    
+
     public Usuario getUser() {
         return usuarioActual.get();
     }
-    
+
     public String getUserName() {
         return userName;
     }
-    
+
     public void setUserName(String userName) {
         this.userName = userName;
     }
-    
+
     public String getPassword() {
         return password;
     }
-    
+
     public void setPassword(String password) {
         this.password = password;
     }
-    
+
     private UsuarioFacade getFacade() {
         return ejbFacade;
     }
-    
+
     public void login() {
         try {
             Usuario user = getFacade().login(userName, password);
@@ -73,15 +73,15 @@ public class LoginController implements Serializable {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
             JsfUtil.addErrorMessage(e, JsfUtil.getMessageBundle("PersistenceErrorOccured"));
         }
-        
+
     }
-    
+
     public boolean isAdmin() {
         return usuarioActual.isAdmin();
     }
-    
+
     public void logoutLink() {
-        
+
         String url = ((HttpServletRequest) FacesContext.getCurrentInstance()
                 .getExternalContext().getRequest()).getContextPath()
                 .concat("/faces/content/content/?").concat(LOGOUT_PARAM);
@@ -93,5 +93,5 @@ public class LoginController implements Serializable {
             JsfUtil.addErrorMessage(ex, "Error...");
         }
     }
-    
+
 }

@@ -11,7 +11,7 @@
         <ui:define name="title">
             <h:outputText value="#{bundle.MessageCreateOrdenPedido}"/>
         </ui:define>
-        <ui:define name="body">
+        <ui:define name="body">            
             <h:form id="FacturaCreateForm" style="overflow-y: hidden">
                 <p:panel  header="DATOS FACTURA" style="margin: auto;width: 955px;" id="datosFactura">
                     <p:panelGrid columns="2">
@@ -87,20 +87,20 @@
 
                         <c:if test="#{facturaController.selectOneButton == 2}">
                             <p:outputLabel styleClass="#{facturaController.errorPromocion}" value="#{bundle.CreatePromocionProductoLabel_promocion}" for="promocion"/>
-                            <p:autoComplete styleClass="#{facturaController.errorPromocion}" id="promocion" minQueryLength="3" value="#{facturaController.promocion}" itemValue="#{pro}" onclick="select()"
+                            <p:autoComplete styleClass="#{facturaController.errorPromocion}" id="promocion" value="#{facturaController.promocion}" itemValue="#{pro}" onclick="select()" 
                                             completeMethod="#{facturaController.llenarPromocion}" effect="fade" converter="promocionconverter" itemLabel="#{pro.toString()}" var="pro">
-                                <p:ajax event="itemSelect" listener="#{facturaController.onItemSelectPromocion}" update="precio" />
+                                <p:ajax event="itemSelect" listener="#{facturaController.onItemSelectPromocion}" update="precio, cliente, labelCliente, promocion"/>
                             </p:autoComplete>
                         </c:if>
 
                         <p:outputLabel styleClass="#{facturaController.errorVenta}" value="#{bundle.MessageCreateVenta}" for="venta"/>
-                        <p:inputText styleClass="#{facturaController.errorVenta}" value="#{facturaController.unidadesVenta}" id="venta" onkeypress="return isNumber(event)" onclick="select()"/>
+                        <p:inputText style="width: 50px;" styleClass="#{facturaController.errorVenta}" value="#{facturaController.unidadesVenta}" id="venta" onkeypress="return isNumber(event)" onclick="select()"/>
 
                         <p:outputLabel styleClass="#{facturaController.errorBonificacion}" value="#{bundle.MessageCreateBonificacion}" for="bonificacion"/>
-                        <p:inputText styleClass="#{facturaController.errorBonificacion}" value="#{facturaController.unidadesBonificacion}" id="bonificacion"  onkeypress="return isNumber(event)" onclick="select()"/>
+                        <p:inputText style="width: 50px;" styleClass="#{facturaController.errorBonificacion}" value="#{facturaController.unidadesBonificacion}" id="bonificacion"  onkeypress="return isNumber(event)" onclick="select()"/>
 
                         <p:outputLabel value="#{bundle.MessageCreatePrecio}" for="precio"/>
-                        <p:inputText value="#{facturaController.moneda == 0 ? facturaController.producto.valorVenta :  facturaController.producto.valorVentaUsd}" id="precio" readonly="true"/>
+                        <p:inputText value="#{facturaController.selectOneButton == 1 ? (facturaController.moneda == 0 ? facturaController.producto.valorVenta :  facturaController.producto.valorVentaUsd) : (facturaController.moneda == 0 ? facturaController.promocion.valor :  facturaController.promocion.valorVentaUsd)}" id="precio" readonly="true"/>
 
                         <p:commandButton value="#{bundle.AddItem}" icon="ui-icon-plus" actionListener="#{facturaController.addProductoOrPromocion}"
                                          update="listaProductos,opciones,:growl,cliente,labelCliente" process="opciones"/>

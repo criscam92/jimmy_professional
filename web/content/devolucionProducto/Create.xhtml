@@ -11,20 +11,20 @@
         </ui:define>
 
         <ui:define name="body">
-            <h:form id="formDevolucionProducto">
+            <h:form id="formDevolucionProducto" class="devolucion-producto">
 
                 <p:tabView id="pestanas" activeIndex="#{devolucionController.index}">
                     <p:ajax event="tabChange" listener="#{devolucionController.onTabChange}" update="pestanas, :growl"/>
 
-                    <p:tab title="Devolucion">
+                    <p:tab title="Devolucion" titleStyleClass="tabs_devolucion" >
                            <ui:include src="Devolucion.xhtml"/>
                     </p:tab>
 
-                    <p:tab title="Cambio mano a mano" disabled="#{devolucionController.cambioManoAMano}">                        
+                    <p:tab title="Cambio mano a mano" titleStyleClass="tabs_devolucion">                        
                         <ui:include src="DevolucionCambio.xhtml"/>
                     </p:tab>
 
-                    <p:tab title="Abono Factura">
+                    <p:tab title="Abono Factura" titleStyleClass="tabs_devolucion">
                         <!--<ui:include src="Devolucion.xhtml"/>-->
                     </p:tab>
 
