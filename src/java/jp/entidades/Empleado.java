@@ -1,6 +1,7 @@
 package jp.entidades;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -11,10 +12,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -26,12 +27,6 @@ import jp.entidades.auxiliar.Codificable;
 @Table(catalog = "jimmy_professional", schema = "public", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"codigo"})})
 @XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "Empleado.findAll", query = "SELECT e FROM Empleado e"),
-    @NamedQuery(name = "Empleado.findById", query = "SELECT e FROM Empleado e WHERE e.id = :id"),
-    @NamedQuery(name = "Empleado.findByNombre", query = "SELECT e FROM Empleado e WHERE e.nombre = :nombre"),
-    @NamedQuery(name = "Empleado.findByCodigo", query = "SELECT e FROM Empleado e WHERE e.codigo = :codigo"),
-    @NamedQuery(name = "Empleado.findByTelefonos", query = "SELECT e FROM Empleado e WHERE e.telefonos = :telefonos")})
 public class Empleado implements Serializable, Codificable {
 
     private static final long serialVersionUID = 1L;
@@ -53,6 +48,18 @@ public class Empleado implements Serializable, Codificable {
     @Size(max = 100)
     @Column(length = 100)
     private String telefonos;
+    @Size(max = 100)
+    @Column(length = 100, name = "telefono_celular")
+    private String telefonoCelular;
+    @Size(max = 100)
+    @Column(length = 100)
+    private String direccion;
+    @Column(name = "fecha_nacimiento")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date fechaNacimiento;
+    @Size(max = 15)
+    @Column(length = 15)
+    private String documento;
     @JoinColumn(name = "tipo", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private TipoEmpleado tipoEmpleado;
@@ -89,6 +96,7 @@ public class Empleado implements Serializable, Codificable {
         this.id = id;
     }
 
+    @Override
     public String getNombre() {
         return nombre;
     }
@@ -112,6 +120,38 @@ public class Empleado implements Serializable, Codificable {
 
     public void setTelefonos(String telefonos) {
         this.telefonos = telefonos;
+    }
+
+    public String getTelefonoCelular() {
+        return telefonoCelular;
+    }
+
+    public void setTelefonoCelular(String telefonoCelular) {
+        this.telefonoCelular = telefonoCelular;
+    }
+
+    public String getDireccion() {
+        return direccion;
+    }
+
+    public void setDireccion(String direccion) {
+        this.direccion = direccion;
+    }
+
+    public Date getFechaNacimiento() {
+        return fechaNacimiento;
+    }
+
+    public void setFechaNacimiento(Date fechaNacimiento) {
+        this.fechaNacimiento = fechaNacimiento;
+    }
+
+    public String getDocumento() {
+        return documento;
+    }
+
+    public void setDocumento(String documento) {
+        this.documento = documento;
     }
 
     @XmlTransient

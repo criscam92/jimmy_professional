@@ -34,5 +34,26 @@ public class EmpleadoFacade extends AbstractFacade<Empleado> {
         }
         return null;
     }
+    
+    public boolean existeDocumento(Empleado empleado){
+        try {
+            String jpql = "SELECT COUNT(e.id) FROM Empleado e WHERE e.documento = :documento";
+            if(empleado.getId()!=null){
+                jpql += " AND e.id != :id";
+            }
+            Query query = getEntityManager().createQuery(jpql);
+            query.setParameter("documento", empleado.getDocumento());
+            if(empleado.getId()!=null){
+                query.setParameter("id", empleado.getId());
+            }
+            Long result = (Long) query.getSingleResult();
+            if(result>0l){
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
 }

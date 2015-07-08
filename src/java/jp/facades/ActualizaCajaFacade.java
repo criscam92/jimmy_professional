@@ -25,9 +25,10 @@ public class ActualizaCajaFacade extends AbstractFacade<ActualizaBaseCaja> {
     public List<ActualizaBaseCaja> getListaActualizacionesCajaByFecha() {
         List<ActualizaBaseCaja> actualizaBaseCajaMenor;
         try {
-            Query q = em.createQuery("SELECT ac FROM ActualizaBaseCajaMenor ac ORDER BY ac.fecha DESC");
+            Query q = em.createQuery("SELECT ac FROM ActualizaBaseCaja ac ORDER BY ac.fecha DESC");
             actualizaBaseCajaMenor = q.getResultList();
         } catch (Exception e) {
+            e.printStackTrace();
             actualizaBaseCajaMenor = null;
         }
         return actualizaBaseCajaMenor;

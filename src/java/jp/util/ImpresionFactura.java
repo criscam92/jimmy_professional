@@ -138,8 +138,8 @@ public class ImpresionFactura {
         String fechaFactura = rellenar(dateFormat.format(f.getFecha()).toUpperCase(), " ", 13, false);
         String paginado = rellenar(getPaginado(paginaActual, totalPaginas), " ", 39, false);
 
-        lista.add("LINDA INES AREVALO PAMO                   **** J I M M Y   P R O F E S S I O N A L ****      " + paginado );
-        lista.add("NIT 51.898.276-5                                  ****   S Y S T E M   ****                           FACTURA DE VENTA:" + idFactura);
+        lista.add("ERIKA ANDREA SEGURA AREVALO               **** J I M M Y   P R O F E S S I O N A L ****      " + paginado );
+        lista.add("NIT 1.144.055.474-8                               ****   S Y S T E M   ****                           FACTURA DE VENTA:" + idFactura);
         lista.add("REGIMEN SIMPLIFICADO                        (+57 2) 372 23 26 - CALLE 17 # 83 A - 10                             FECHA:" + fechaFactura);
         lista.add(getSeparador(true));
         return lista;

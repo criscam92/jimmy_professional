@@ -26,7 +26,8 @@ public class EmpleadoController implements Serializable {
     private EmpleadoFacade ejbFacade;
     private List<Empleado> items = null;
     private Empleado selected;
-    private String uiError, error;
+    private final String uiError;
+    private String error;
 
     public EmpleadoController() {
         uiError = "ui-state-error";
@@ -66,12 +67,17 @@ public class EmpleadoController implements Serializable {
 
     public void create() {
         if (!getFacade().getEntityByCodigoOrTipo(selected)) {
-            persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageEmpleado", "CreateSuccessM"}));
-            if (!JsfUtil.isValidationFailed()) {
-                selected = null; // Remove selection
-                items = null;    // Invalidate list of items to trigger re-query.
-                setError("");
-                RequestContext.getCurrentInstance().execute("PF('EmpleadoCreateDialog').hide()");
+            if(!getFacade().existeDocumento(selected)){
+                persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageEmpleado", "CreateSuccessM"}));
+                if (!JsfUtil.isValidationFailed()) {
+                    selected = null; // Remove selection
+                    items = null;    // Invalidate list of items to trigger re-query.
+                    setError("");
+                    RequestContext.getCurrentInstance().execute("PF('EmpleadoCreateDialog').hide()");
+                }
+            }else{
+                setError(uiError);
+                JsfUtil.addErrorMessage("El documento ya se encuentra en la base de datos.");
             }
         } else {
             setError(uiError);
@@ -81,9 +87,14 @@ public class EmpleadoController implements Serializable {
 
     public void update() {
         if (!getFacade().getEntityByCodigoOrTipo(selected)) {
-            persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessageEmpleado", "UpdateSuccessM"}));
-            setError("");
-            RequestContext.getCurrentInstance().execute("PF('EmpleadoEditDialog').hide()");
+            if(!getFacade().existeDocumento(selected)){
+                persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessageEmpleado", "UpdateSuccessM"}));
+                setError("");
+                RequestContext.getCurrentInstance().execute("PF('EmpleadoEditDialog').hide()");
+            }else{
+                setError(uiError);
+                JsfUtil.addErrorMessage("El documento ya se encuentra en la base de datos.");
+            } 
         } else {
             setError(uiError);
             JsfUtil.addErrorMessage(JsfUtil.getMessageBundle("MessageEmpleadoCodigoExist").replaceAll("%cod%", selected.getCodigo()));

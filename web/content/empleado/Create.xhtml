@@ -14,10 +14,19 @@
                     <p:panelGrid columns="2" rendered="#{empleadoController.selected != null}">                        
                         <p:outputLabel styleClass="#{empleadoController.error}" value="#{bundle.CreateEmpleadoLabel_codigo}" for="codigo" />
                         <p:inputText styleClass="#{empleadoController.error}" id="codigo" value="#{empleadoController.selected.codigo}" title="#{bundle.CreateEmpleadoTitle_codigo}" required="true" requiredMessage="#{bundle.CreateEmpleadoRequiredMessage_codigo}"/>
+                        <p:outputLabel styleClass="#{empleadoController.error}" value="Documento" for="documento" />
+                        <p:inputText styleClass="#{empleadoController.error}" id="documento" value="#{empleadoController.selected.documento}" title="Empleado" required="true" requiredMessage="El documento es requerido"/>
                         <p:outputLabel value="#{bundle.CreateEmpleadoLabel_nombre}" for="nombre" />
                         <p:inputText id="nombre" value="#{empleadoController.selected.nombre}" title="#{bundle.CreateEmpleadoTitle_nombre}" required="true" requiredMessage="#{bundle.CreateEmpleadoRequiredMessage_nombre}"/>
-                        <p:outputLabel value="#{bundle.CreateEmpleadoLabel_telefonos}" for="telefonos" />
-                        <p:inputText id="telefonos" value="#{empleadoController.selected.telefonos}" title="#{bundle.CreateEmpleadoTitle_telefonos}" />
+                        <p:outputLabel value="Teléfono" for="telefonos" />
+                        <p:inputText id="telefonos" value="#{empleadoController.selected.telefonos}" title="Teléfono" />
+                        <p:outputLabel value="Celular" for="celular" />
+                        <p:inputText id="celular" value="#{empleadoController.selected.telefonoCelular}" title="Celular" />
+                        <p:outputLabel value="Dirección" for="direccion" />
+                        <p:inputText id="direccion" value="#{empleadoController.selected.direccion}" title="Dirección" />
+                        <p:outputLabel value="Fecha de Nacimiento" for="cumpleanos" />
+                        <p:calendar id="cumpleanos" pattern="dd/MM/yyyy" value="#{empleadoController.selected.fechaNacimiento}" yearRange="c-100:c-10" maxdate="now()" 
+                                        title="#{bundle.CreateClienteTitle_cumple}" showOn="button" navigator="true"/>
                         <p:outputLabel value="#{bundle.CreateEmpleadoLabel_tipo}" for="tipo" />
                         <p:selectOneMenu id="tipo" value="#{empleadoController.selected.tipoEmpleado}" required="true" requiredMessage="#{bundle.EditEmpleadoRequiredMessage_tipo}">
                             <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>

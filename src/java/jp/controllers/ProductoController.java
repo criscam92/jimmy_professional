@@ -106,57 +106,67 @@ public class ProductoController implements Serializable {
     }
 
     public String getValorRecargoPublico(Producto producto, float valor, String currency) {
+        try{
+            if (producto.getVentaPublico()) {
 
-        if (producto.getVentaPublico()) {
+                valor = getValorProducto(valor);
 
-            valor = getValorProducto(valor);
-
-            if (recargoPublico == null) {
-                recargoPublico = parametrosFacade.getParametros().getPorcentajeVentaPublic();
-                recargoPublico = getRecargoDecimal(recargoPublico);
                 if (recargoPublico == null) {
-                    recargoPublico = 1.0f;
+                    recargoPublico = parametrosFacade.getParametros().getPorcentajeVentaPublic();
+                    recargoPublico = getRecargoDecimal(recargoPublico);
+                    if (recargoPublico == null) {
+                        recargoPublico = 1.0f;
+                    }
                 }
+                currency = currency == null ? "" : currency;
+                String resultado = currency.concat(new DecimalFormat("#.##", DecimalFormatSymbols.getInstance(Locale.forLanguageTag("es-co"))).format(valor * recargoPublico));
+                return resultado;
+            } else {
+                return "No aplica";
             }
+        }catch(Exception e){
             currency = currency == null ? "" : currency;
-            String resultado = currency.concat(new DecimalFormat("#.##", DecimalFormatSymbols.getInstance(Locale.forLanguageTag("es-co"))).format(valor * recargoPublico));
+            String resultado = currency.concat(new DecimalFormat("#.##", DecimalFormatSymbols.getInstance(Locale.forLanguageTag("es-co"))).format(valor));
             return resultado;
-        } else {
-            return "No aplica";
         }
+        
     }
 
     public Float getValorProducto(Float valor) {
-        if (tipoLista == null) {
-            return valor;
-        } else {
+        try {
+            if (tipoLista == null) {
+                return valor;
+            } else {
 
-            if (recargosTipoPrecio == null) {
-                recargosTipoPrecio = new HashMap<>();
-                Parametros parametros = null;
-                try {
-                    parametros = parametrosFacade.getParametros();
-                } catch (Exception e) {
+                if (recargosTipoPrecio == null) {
+                    recargosTipoPrecio = new HashMap<>();
+                    Parametros parametros = null;
+                    try {
+                        parametros = parametrosFacade.getParametros();
+                    } catch (Exception e) {
+                    }
+
+                    if (parametros != null) {
+                        if (parametros.getRecargoLocal() == null) {
+                            parametros.setRecargoLocal(0.0f);
+                        }
+                        recargosTipoPrecio.put(ProductoFacade.TIPO_PRECIO.LOCALES, getRecargoDecimal(parametros.getRecargoLocal()));
+
+                        if (parametros.getRecargoNacional() == null) {
+                            parametros.setRecargoNacional(0.0f);
+                        }
+                        recargosTipoPrecio.put(ProductoFacade.TIPO_PRECIO.NACIONALES, getRecargoDecimal(parametros.getRecargoNacional()));
+
+                        if (parametros.getRecargoInternacional() == null) {
+                            parametros.setRecargoInternacional(0.0f);
+                        }
+                        recargosTipoPrecio.put(ProductoFacade.TIPO_PRECIO.EXTRANJEROS, getRecargoDecimal(parametros.getRecargoInternacional()));
+                    }
                 }
-
-                if (parametros != null) {
-                    if (parametros.getRecargoLocal() == null) {
-                        parametros.setRecargoLocal(0.0f);
-                    }
-                    recargosTipoPrecio.put(ProductoFacade.TIPO_PRECIO.LOCALES, getRecargoDecimal(parametros.getRecargoLocal()));
-
-                    if (parametros.getRecargoNacional() == null) {
-                        parametros.setRecargoNacional(0.0f);
-                    }
-                    recargosTipoPrecio.put(ProductoFacade.TIPO_PRECIO.NACIONALES, getRecargoDecimal(parametros.getRecargoNacional()));
-
-                    if (parametros.getRecargoInternacional() == null) {
-                        parametros.setRecargoInternacional(0.0f);
-                    }
-                    recargosTipoPrecio.put(ProductoFacade.TIPO_PRECIO.EXTRANJEROS, getRecargoDecimal(parametros.getRecargoInternacional()));
-                }
+                return recargosTipoPrecio.get(tipoLista) * valor;
             }
-            return recargosTipoPrecio.get(tipoLista) * valor;
+        } catch (Exception e) {
+            return valor;
         }
     }
 
