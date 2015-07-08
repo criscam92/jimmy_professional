@@ -8,7 +8,10 @@ package jp.facades;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import jp.entidades.Factura;
 import jp.entidades.Pago;
+import jp.util.EstadoPagoFactura;
 
 /**
  *
@@ -16,6 +19,7 @@ import jp.entidades.Pago;
  */
 @Stateless
 public class PagoFacade extends AbstractFacade<Pago> {
+
     @PersistenceContext(unitName = "jimmy_professionalPU")
     private EntityManager em;
 
@@ -27,5 +31,16 @@ public class PagoFacade extends AbstractFacade<Pago> {
     public PagoFacade() {
         super(Pago.class);
     }
-    
+
+    public long countPagosFacturaByFactura(Factura factura) {
+        try {
+            Query query = getEntityManager().createQuery("SELECT COUNT(p) FROM Pago p WHERE p.factura.id = :fac AND p.estado = :est");
+            query.setParameter("fac", factura.getId());
+            query.setParameter("est", EstadoPagoFactura.ANULADO.getValor());
+            return (long) query.getSingleResult();
+        } catch (Exception e) {
+        }
+        return 0;
+    }
+
 }

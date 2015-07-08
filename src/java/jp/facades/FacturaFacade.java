@@ -23,7 +23,7 @@ import jp.util.TipoPago;
 
 @Stateless
 public class FacturaFacade extends AbstractFacade<Factura> {
-    
+
     @PersistenceContext(unitName = "jimmy_professionalPU")
     private EntityManager em;
 
@@ -128,25 +128,28 @@ public class FacturaFacade extends AbstractFacade<Factura> {
         }
         return null;
     }
-   
-    public List<Factura> getFacturasPendientesByCliente(Cliente c){
+
+    public List<Factura> getFacturasPendientesByCliente(Cliente c) {
         return getFacturasPendientesByCliente(c, null);
     }
-    
+
     /**
-     * Retorna las facturas con pago pendiente del cliente indicado y con la moneda indicada
+     * Retorna las facturas con pago pendiente del cliente indicado y con la
+     * moneda indicada
+     *
      * @param c Instancia del cliente de las facturas
-     * @param moneda Indica la moneda a buscar, si desea obtener todas las facturas, envíe el valor nulo
+     * @param moneda Indica la moneda a buscar, si desea obtener todas las
+     * facturas, envíe el valor nulo
      * @return listado de facturas, si no encuentra, retorna nulo
-     * 
+     *
      * @see Moneda
-     * 
+     *
      */
     public List<Factura> getFacturasPendientesByCliente(Cliente c, Moneda moneda) {
         List<Factura> facturasPendientesTMP;
         try {
             String queryMoneda = "";
-            if(moneda != null){
+            if (moneda != null) {
                 queryMoneda = " AND f.dolar = :dol";
             }
             Query queryFactura = em.createQuery("SELECT f FROM Factura f WHERE f.cliente.id= :clie AND f.tipoPago = :tipoPago AND f.estado<> :est1 AND f.estado<> :est2".concat(queryMoneda));
@@ -154,25 +157,28 @@ public class FacturaFacade extends AbstractFacade<Factura> {
             queryFactura.setParameter("est1", EstadoPagoFactura.ANULADO.getValor());
             queryFactura.setParameter("est2", EstadoPagoFactura.CANCELADO.getValor());
             queryFactura.setParameter("tipoPago", TipoPago.CREDITO.getValor());
-            if(moneda != null){
+            if (moneda != null) {
                 queryFactura.setParameter("dol", moneda.equals(Moneda.DOLAR));
             }
-            
+
             facturasPendientesTMP = queryFactura.getResultList();
 
             facturasPendientesTMP = getFacturasPendientesPago(facturasPendientesTMP);
-            
+
             return facturasPendientesTMP;
-            
+
         } catch (NoResultException e) {
             return null;
         }
     }
 
     /**
-     * Retorna una lista de facturas con pagos pendientes a partir de una lista inicial
+     * Retorna una lista de facturas con pagos pendientes a partir de una lista
+     * inicial
+     *
      * @param fs listado inicial de facturas a evaluar
-     * @return listado final con la lista de facturas que tienen pagos pendientes
+     * @return listado final con la lista de facturas que tienen pagos
+     * pendientes
      */
     public List<Factura> getFacturasPendientesPago(List<Factura> fs) {
         List<Factura> facturasFinal = new ArrayList<>();
@@ -180,7 +186,7 @@ public class FacturaFacade extends AbstractFacade<Factura> {
         try {
             for (Factura factura : fs) {
                 factura = updatePagoPendiente(factura);
-                if(factura!=null){
+                if (factura != null) {
                     facturasFinal.add(factura);
                 }
             }
@@ -190,13 +196,16 @@ public class FacturaFacade extends AbstractFacade<Factura> {
             return null;
         }
     }
-    
+
     /**
-     * Obtener una referencia de la factura con los valores de los pagos realizados y los que tenga pendientes
+     * Obtener una referencia de la factura con los valores de los pagos
+     * realizados y los que tenga pendientes
+     *
      * @param factura referencia inicial de la factura a evaluar
-     * @return la nueva referencia de la factura, en caso de que no tenga pago pendiente retorna nula
+     * @return la nueva referencia de la factura, en caso de que no tenga pago
+     * pendiente retorna nula
      */
-    public Factura updatePagoPendiente(Factura factura){
+    public Factura updatePagoPendiente(Factura factura) {
         try {
             Query q = em.createQuery("SELECT SUM(p.valorTotal) FROM Pago p WHERE p.estado = :estado AND p.factura.id = :f");
             q.setParameter("f", factura.getId());
@@ -228,7 +237,7 @@ public class FacturaFacade extends AbstractFacade<Factura> {
         }
         return null;
     }
-    
+
     public List<Promocion> getPromocionByQuery(String query, Cliente cliente) {
         try {
             List<Promocion> promociones;
@@ -258,13 +267,24 @@ public class FacturaFacade extends AbstractFacade<Factura> {
         }
         return null;
     }
-    
-    public Factura getFirstFactura(){
+
+    public Factura getFirstFactura() {
         Factura f;
         Query q = em.createQuery("SELECT f FROM Factura f ORDER BY f.id DESC");
         q.setFirstResult(1);
         q.setMaxResults(1);
         f = (Factura) q.getSingleResult();
         return f;
+    }
+
+    public boolean anularFactura(Factura factura) {
+        try {
+            Factura facturaTMP = getEntityManager().find(Factura.class, factura.getId());
+            facturaTMP.setEstado(EstadoPagoFactura.ANULADO.getValor());
+            getEntityManager().merge(facturaTMP);
+            return true;
+        } catch (Exception e) {
+        }
+        return false;
     }
 }

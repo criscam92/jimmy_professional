@@ -67,7 +67,6 @@ public class DespachoFacturaController implements Serializable {
     private DespachoFactura selected;
     private List<ProductoHelper> productoHelpers;
     private Factura factura;
-    long sizeDespachosForFactura;
     boolean sePuedeDespachar;
 
     public DespachoFacturaController() {
@@ -85,8 +84,6 @@ public class DespachoFacturaController implements Serializable {
             factura = new Factura();
             factura = getFacturaFacade().getFacturaByOrdenPedido(ordenPedido);
             selected.setFactura(factura);
-
-            sizeDespachosForFactura = getDespachoFacturaFacade().countDespachoFacturaByFactura(factura);
 
             List<FacturaProducto> facturaProductos = getFacturaFacade().getFacturaProductoByFactura(factura);
             for (FacturaProducto fp : facturaProductos) {

@@ -6,6 +6,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import jp.entidades.Cliente;
 import jp.entidades.Factura;
 import jp.entidades.FacturaPromocion;
 import jp.entidades.Producto;
@@ -58,6 +59,22 @@ public class PromocionFacade extends AbstractFacade<Promocion> {
         } catch (NoResultException e) {
         }
         return null;
+    }
+
+    public boolean comprobarCategoriaPromocion(Cliente cliente, Promocion promocion) {
+        try {
+            Query q = getEntityManager().createQuery("SELECT p FROM Promocion p WHERE p.id = :prom AND p.categoria.id = :cat");
+            q.setParameter("prom", promocion.getId());
+            q.setParameter("cat", cliente.getCategoria().getId());
+            Promocion promo = (Promocion) q.getSingleResult();
+            
+            if (promo != null) {
+                return true;
+            }
+            
+        } catch (NoResultException e) {
+        }
+        return false;
     }
 
 }
