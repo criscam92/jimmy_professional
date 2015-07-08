@@ -17,6 +17,7 @@ import jp.entidades.Concepto;
 import jp.facades.ConceptoFacade;
 import jp.util.JsfUtil;
 import jp.util.JsfUtil.PersistAction;
+import org.primefaces.context.RequestContext;
 
 @ManagedBean(name = "conceptoController")
 @SessionScoped
@@ -26,8 +27,11 @@ public class ConceptoController implements Serializable {
     private ConceptoFacade ejbFacade;
     private List<Concepto> items = null;
     private Concepto selected;
+    private final String uiError;
+    private String error;
 
     public ConceptoController() {
+        uiError = "ui-state-error";
     }
 
     public Concepto getSelected() {
@@ -48,6 +52,14 @@ public class ConceptoController implements Serializable {
         return ejbFacade;
     }
 
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
+    }
+
     public Concepto prepareCreate() {
         selected = new Concepto();
         initializeEmbeddableKey();
@@ -55,14 +67,32 @@ public class ConceptoController implements Serializable {
     }
 
     public void create() {
-        persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageConcepto", "CreateSuccessM"}));
-        if (!JsfUtil.isValidationFailed()) {
-            items = null;    // Invalidate list of items to trigger re-query.
+        if (!getFacade().getEntityByCodigoOrTipo(selected)) {
+            persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageConcepto", "CreateSuccessM"}));
+            if (!JsfUtil.isValidationFailed()) {
+                items = null;    // Invalidate list of items to trigger re-query.
+                setError("");
+                RequestContext.getCurrentInstance().execute("PF('ConceptoCreateDialog').hide()");
+            }
+        } else {
+            setError(uiError);
+            JsfUtil.addErrorMessage("Ya existe el Código: " + selected.getCodigo());
         }
     }
 
     public void update() {
-        persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessageConcepto", "UpdateSuccessM"}));
+        if (!getFacade().getEntityByCodigoOrTipo(selected)) {
+            persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessageConcepto", "UpdateSuccessM"}));
+            if (!JsfUtil.isValidationFailed()) {
+                items = null;
+                setError("");
+                RequestContext.getCurrentInstance().execute("PF('ConceptoEditDialog').hide()");
+            }
+        } else {
+            items = null;
+            setError(uiError);
+            JsfUtil.addErrorMessage("Ya existe el Código: " + selected.getCodigo());
+        }
     }
 
     public void destroy() {
@@ -156,9 +186,9 @@ public class ConceptoController implements Serializable {
         }
 
     }
-    
-    public String isIngreso(boolean ingreso){
-        return ingreso?"Si":"No";
+
+    public String getTipoConcepto(boolean ingreso) {
+        return ingreso ? "Ingreso" : "Egreso";
     }
 
 }

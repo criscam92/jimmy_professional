@@ -14,17 +14,20 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import jp.entidades.auxiliar.Codificable;
 
 @Entity
-@Table(name = "concepto")
+@Table(name = "concepto", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"codigo"})})
 @NamedQueries({
     @NamedQuery(name = "Concepto.findAll", query = "SELECT c FROM Concepto c"),
     @NamedQuery(name = "Concepto.findById", query = "SELECT c FROM Concepto c WHERE c.id = :id"),
     @NamedQuery(name = "Concepto.findByDetalle", query = "SELECT c FROM Concepto c WHERE c.detalle = :detalle"),
     @NamedQuery(name = "Concepto.findByIngreso", query = "SELECT c FROM Concepto c WHERE c.ingreso = :ingreso")})
-public class Concepto implements Serializable {
+public class Concepto implements Serializable, Codificable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,6 +43,10 @@ public class Concepto implements Serializable {
     @NotNull
     @Column(nullable = false)
     private boolean ingreso;
+    @NotNull
+    @Size(min = 1, max = 45)
+    @Column(nullable = false, length = 45)
+    private String codigo;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "concepto", fetch = FetchType.LAZY)
     private List<ReciboCaja> reciboCajaList;
 
@@ -55,6 +62,7 @@ public class Concepto implements Serializable {
         this.detalle = detalle;
     }
 
+    @Override
     public Integer getId() {
         return id;
     }
@@ -77,6 +85,15 @@ public class Concepto implements Serializable {
 
     public void setIngreso(boolean ingreso) {
         this.ingreso = ingreso;
+    }
+
+    @Override
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
     }
 
     public List<ReciboCaja> getReciboCajaList() {
@@ -110,6 +127,16 @@ public class Concepto implements Serializable {
     @Override
     public String toString() {
         return this.getDetalle();
+    }
+
+    @Override
+    public String getTipo() {
+        return null;
+    }
+
+    @Override
+    public String getNombre() {
+        return null;
     }
     
 }

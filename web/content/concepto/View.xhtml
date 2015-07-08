@@ -14,10 +14,12 @@
                     <p:panelGrid columns="2" rendered="#{conceptoController.selected != null}">
                         <h:outputText value="#{bundle.CreateConceptoLabel_id}"/>
                         <h:outputText value="#{conceptoController.selected.id}" title="#{bundle.ListConceptoTitle_id}"/>
+                        <h:outputText value="#{bundle.EditCodigoDevolucionLabel_codigo}"/>
+                        <h:outputText value="#{conceptoController.selected.codigo}" title="#{bundle.ListConceptoTitle_id}"/>
                         <h:outputText value="#{bundle.CreateConceptoLabel_detalle}"/>
                         <h:outputText value="#{conceptoController.selected.detalle}" title="#{bundle.ListConceptoTitle_detalle}"/>
-                        <h:outputText value="#{bundle.CreateConceptoLabel_ingreso}"/>
-                        <h:outputText value="#{conceptoController.isIngreso(conceptoController.selected.ingreso)}" title="#{bundle.ListConceptoTitle_ingreso}"/>
+                        <h:outputText value="#{bundle.CreateConceptoLabel_tipo}"/>
+                        <h:outputText value="#{conceptoController.getTipoConcepto(conceptoController.selected.ingreso)}" title="#{bundle.ListConceptoTitle_ingreso}"/>
                     </p:panelGrid>
                     <p:commandButton value="#{bundle.Close}" onclick="ConceptoViewDialog.hide()"/>
                 </h:panelGroup>

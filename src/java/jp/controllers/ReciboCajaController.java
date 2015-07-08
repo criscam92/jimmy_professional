@@ -1,12 +1,17 @@
 package jp.controllers;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.faces.bean.ManagedBean;
@@ -37,12 +42,37 @@ public class ReciboCajaController implements Serializable {
     private UsuarioActual usuarioActual;
     private List<ReciboCaja> items = null;
     private ReciboCaja selected;
-    private Long totalIngresos = 0l;
-    private Long totalEgresos = 0l;
-    private Long totalRecibos = 0l;
+    private Long totalIngresos;
+    private Long totalEgresos;
+    private Long totalRecibos;
+    private final SimpleDateFormat formatoDelTexto;
+    private Date fechaIni, fechaFin;
 
     public ReciboCajaController() {
-        prepareCreate();
+        selected = new ReciboCaja();
+        fechaIni = new Date();
+        fechaFin = new Date();
+        formatoDelTexto = new SimpleDateFormat("dd/MMM/yyyy");
+    }
+
+    @PostConstruct
+    private void init() {
+        Map<String, String> requestMap = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+        FacesContext.getCurrentInstance().getExternalContext().getSession(true);
+        try {
+            fechaIni = formatoDelTexto.parse(requestMap.get("date1"));
+            System.out.println("Fecha Inicio ==> " + formatoDelTexto.format(fechaIni));
+        } catch (Exception e) {
+            fechaIni = null;
+            System.out.println("No se recibe fecha Inicial en el filtro");
+        }
+        try {
+            fechaFin = formatoDelTexto.parse(requestMap.get("date2"));
+            System.out.println("Fecha Final ==> " + formatoDelTexto.format(fechaFin));
+        } catch (Exception e) {
+            fechaFin = null;
+            System.out.println("No se recibe fecha Final en el filtro");
+        }
     }
 
     public ReciboCaja getSelected() {
@@ -60,7 +90,7 @@ public class ReciboCajaController implements Serializable {
     public void setTotalEgresos(Long totalEgresos) {
         this.totalEgresos = totalEgresos;
     }
-    
+
     public Long getTotalIngresos() {
         return totalIngresos;
     }
@@ -75,6 +105,22 @@ public class ReciboCajaController implements Serializable {
 
     public void setTotalRecibos(Long totalRecibos) {
         this.totalRecibos = totalRecibos;
+    }
+
+    public Date getFechaIni() {
+        return fechaIni;
+    }
+
+    public void setFechaIni(Date fechaIni) {
+        this.fechaIni = fechaIni;
+    }
+
+    public Date getFechaFin() {
+        return fechaFin;
+    }
+
+    public void setFechaFin(Date fechaFin) {
+        this.fechaFin = fechaFin;
     }
 
     protected void setEmbeddableKeys() {
@@ -113,7 +159,7 @@ public class ReciboCajaController implements Serializable {
         if (!JsfUtil.isValidationFailed()) {
             selected = new ReciboCaja();
             items = null;    // Invalidate list of items to trigger re-query.
-            getItems();
+//            getItems();
         }
     }
 
@@ -131,8 +177,7 @@ public class ReciboCajaController implements Serializable {
 
     public List<ReciboCaja> getItems() {
         if (items == null) {
-            items = new ArrayList<>();
-            items = getFacade().getRecibosCaja();
+            items = getFacade().getRecibosCaja(null, null);
             getTotalIngresosEgresos();
         }
         return items;
@@ -239,7 +284,7 @@ public class ReciboCajaController implements Serializable {
             return 0l;
         }
     }
-    
+
     public Long getEgreso(ReciboCaja reciboCaja) {
         if (!reciboCaja.getConcepto().getIngreso()) {
             return reciboCaja.getValor();
@@ -247,19 +292,36 @@ public class ReciboCajaController implements Serializable {
             return 0l;
         }
     }
-    
+
     public void getTotalIngresosEgresos() {
+        totalIngresos = 0l;
+        totalEgresos = 0l;
         for (ReciboCaja item : items) {
             if (item.getEstado() == EstadoPagoFactura.ANULADO.getValor()) {
                 continue;
             }
             if (item.getConcepto().getIngreso()) {
                 totalIngresos += item.getValor();
-            }else{
+            } else {
                 totalEgresos += item.getValor();
             }
         }
         totalRecibos = totalIngresos - totalEgresos;
+    }
+
+    public void redirect() throws IOException {
+        String url = "?";
+        if (fechaIni != null) {
+            url += "&date1=" + formatoDelTexto.format(fechaIni);
+        }
+        if (fechaFin != null) {
+            url += "&date2=" + formatoDelTexto.format(fechaFin);
+        }
+        items = getFacade().getRecibosCaja(fechaIni, fechaFin);
+        System.out.println("TAMAÑO lista despues del filtro --> "+items.size());
+        getTotalIngresosEgresos();
+        System.out.println("URL");
+        FacesContext.getCurrentInstance().getExternalContext().redirect(url);
     }
 
 }

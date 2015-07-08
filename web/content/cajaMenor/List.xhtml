@@ -50,6 +50,18 @@
                 </p:panel>
             </h:form><br/>
 
+            <h:form id="formFiltro">
+                <p:panelGrid style="border: none;" columns="5">
+                    <p:outputLabel for="fechaInicial" value="Fecha Inicial:"/>
+                    <p:calendar id="fechaInicial" showOn="button" navigator="true" pattern="dd/MMM/yyyy" value="#{reciboCajaController.fechaIni}"
+                                required="true" requiredMessage="El campo Fecha Inicial es requerido"/>
+                    <p:outputLabel for="fechaFinal" value="Fecha Final:"/>
+                    <p:calendar id="fechaFinal" showOn="button" navigator="true" pattern="dd/MMM/yyyy" 
+                                required="true" requiredMessage="El campo Fecha Final es requerido" value="#{reciboCajaController.fechaFin}"/>
+                    <p:commandButton value="#{bundle.Filter}" icon="ui-icon-search" action="#{reciboCajaController.redirect()}" 
+                                     update=":tablaRecibosCaja"/>
+                </p:panelGrid>
+            </h:form>
             <h:form id="tablaRecibosCaja">
                 <p:dataTable id="datalist" rowKey="#{item.id}" selectionMode="single"
                              value="#{reciboCajaController.items}" selection="#{reciboCajaController.selected}"
@@ -140,14 +152,13 @@
                     <p:columnGroup type="footer">
                         <p:row>
                             <p:column footerText="SubTotal" colspan="6" style="font-weight: bold; text-align:right;"/>
-                            <p:column footerText="$#{reciboCajaController.totalIngresos}">
-                            </p:column>
-                            <p:column footerText="$#{reciboCajaController.totalEgresos}"/>
+                            <p:column footerText="$#{reciboCajaController.totalIngresos}" style="font-weight: bold;"/>
+                            <p:column footerText="$#{reciboCajaController.totalEgresos}" style="font-weight: bold;"/>
                         </p:row>
 
                         <p:row>
                             <p:column footerText="Total" colspan="6" style="font-weight: bold; text-align:right;"/>
-                            <p:column footerText="$#{reciboCajaController.totalRecibos}" colspan="2"/>
+                            <p:column footerText="$#{reciboCajaController.totalRecibos}" colspan="2" style="font-weight: bold;"/>
                         </p:row>
                     </p:columnGroup>
 

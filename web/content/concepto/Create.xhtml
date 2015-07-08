@@ -12,10 +12,15 @@
             <h:form id="ConceptoCreateForm">
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{conceptoController.selected != null}">
+                        <p:outputLabel value="#{bundle.CreateProductoLabel_codigo}" for="codigo" styleClass="#{conceptoController.error}"/>
+                        <p:inputText id="codigo" styleClass="#{conceptoController.error}" value="#{conceptoController.selected.codigo}" title="#{bundle.CreateProductoTitle_codigo}" required="true" requiredMessage="#{bundle.CreateConceptoRequiredMessage_codigo}"/>
                         <p:outputLabel value="#{bundle.CreateConceptoLabel_detalle}" for="detalle" />
                         <p:inputText id="detalle" value="#{conceptoController.selected.detalle}" title="#{bundle.ListConceptoTitle_detalle}" required="true" requiredMessage="#{bundle.CreateConceptoRequiredMessage_detalle}"/>
-                        <p:outputLabel value="#{bundle.CreateConceptoLabel_ingreso}" for="ingreso" />
-                        <p:selectBooleanCheckbox id="ingreso" value="#{conceptoController.selected.ingreso}"/>
+                        <p:outputLabel value="#{bundle.CreateConceptoLabel_tipo}" for="tipo" />
+                        <p:selectOneRadio id="tipo" value="#{conceptoController.selected.ingreso}">
+                            <f:selectItem itemValue="#{true}" itemLabel="Ingreso"/>
+                            <f:selectItem itemValue="#{false}" itemLabel="Engreso" />
+                        </p:selectOneRadio>
                     </p:panelGrid>
                     <p:commandButton actionListener="#{conceptoController.create}" value="#{bundle.Save}" update="display,:ConceptoListForm:datalist,:growl" oncomplete="handleSubmit(args,'ConceptoCreateDialog');"/>
                     <p:commandButton value="#{bundle.Cancel}" onclick="ConceptoCreateDialog.hide()"/>

@@ -40,6 +40,12 @@
 
                     <p:column>
                         <f:facet name="header">
+                            <h:outputText value="#{bundle.CreateProductoTitle_codigo}"/>
+                        </f:facet>
+                        <h:outputText value="#{item.codigo}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
                             <h:outputText value="#{bundle.ListConceptoTitle_detalle}"/>
                         </f:facet>
                         <h:outputText value="#{item.detalle}"/>
@@ -48,7 +54,7 @@
                         <f:facet name="header">
                             <h:outputText value="#{bundle.ListConceptoTitle_ingreso}"/>
                         </f:facet>
-                        <h:outputText value="#{conceptoController.isIngreso(item.ingreso)}"/>
+                        <h:outputText value="#{conceptoController.getTipoConcepto(item.ingreso)}"/>
                     </p:column>
                 </p:dataTable>
             </h:form>
