@@ -19,7 +19,7 @@
                         <p:outputLabel value="#{bundle.CreateConceptoLabel_tipo}" for="tipo" />
                         <p:selectOneRadio id="tipo" value="#{conceptoController.selected.ingreso}">
                             <f:selectItem itemValue="#{true}" itemLabel="Ingreso"/>
-                            <f:selectItem itemValue="#{false}" itemLabel="Engreso" />
+                            <f:selectItem itemValue="#{false}" itemLabel="Egreso" />
                         </p:selectOneRadio>
                     </p:panelGrid>
                     <p:commandButton actionListener="#{conceptoController.create}" value="#{bundle.Save}" update="display,:ConceptoListForm:datalist,:growl" oncomplete="handleSubmit(args,'ConceptoCreateDialog');"/>
