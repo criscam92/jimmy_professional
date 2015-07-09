@@ -21,7 +21,7 @@
                         <h:outputText value="#{bundle.CreateConceptoLabel_tipo}"/>
                         <h:outputText value="#{conceptoController.getTipoConcepto(conceptoController.selected.ingreso)}" title="#{bundle.ListConceptoTitle_ingreso}"/>
                     </p:panelGrid>
-                    <p:commandButton value="#{bundle.Close}" onclick="ConceptoViewDialog.hide()"/>
+                    <p:commandButton value="#{bundle.Close}" type="button" onclick="PF('ConceptoViewDialog').hide()"/>
                 </h:panelGroup>
             </h:form>
         </p:dialog>
