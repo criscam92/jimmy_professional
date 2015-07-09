@@ -40,6 +40,10 @@ public class TipoCliente implements Serializable, Codificable {
     @Size(min = 1, max = 100)
     @Column(nullable = false, length = 100)
     private String tipo;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "descuento", nullable = false)
+    private double descuento;
     @OneToMany(mappedBy = "tipo", fetch = FetchType.LAZY)
     private List<Cliente> clienteList;
 
@@ -71,6 +75,14 @@ public class TipoCliente implements Serializable, Codificable {
 
     public void setTipo(String tipo) {
         this.tipo = tipo;
+    }
+
+    public double getDescuento() {
+        return descuento;
+    }
+
+    public void setDescuento(double descuento) {
+        this.descuento = descuento;
     }
 
     @XmlTransient

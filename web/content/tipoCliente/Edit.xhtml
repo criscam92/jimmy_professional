@@ -3,7 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <ui:composition>
 
@@ -13,6 +14,10 @@
                     <p:panelGrid columns="2" rendered="#{tipoClienteController.selected != null}">
                         <p:outputLabel styleClass="#{tipoClienteController.error}" value="#{bundle.EditTipoClienteLabel_tipo}" for="tipo" />
                         <p:inputText styleClass="#{tipoClienteController.error}" id="tipo" value="#{tipoClienteController.selected.tipo}" title="#{bundle.EditTipoClienteTitle_tipo}" required="true" requiredMessage="#{bundle.EditTipoClienteRequiredMessage_tipo}"/>
+                        <p:outputLabel value="% Descuento" for="descuento" />
+                        <p:inputText id="descuento" value="#{tipoClienteController.selected.descuento}" title="Descuento" required="true" requiredMessage="Débe indicar un valor de descuento">
+                            <f:validateDoubleRange minimum="0.0" maximum="100.0" />
+                        </p:inputText>
                     </p:panelGrid>                    
                 </h:panelGroup>
                 <div class="botonesDialog">

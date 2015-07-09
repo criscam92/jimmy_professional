@@ -7,7 +7,8 @@ public enum TipoTalonario {
 
     REMISION(0, "Remisión"),
     RECIBO_CAJA(1, "Recibo de Caja"),
-    RECIBO_DINERO_EFECTIVO(2, "Recibo de Dinero en Efectivo");
+    RECIBO_DINERO_EFECTIVO(2, "Recibo de Dinero en Efectivo"),
+    RELACION_FACTURAS(3, "Relación de Facturas");
 
     /**
      * Cadena a mostrar cuando el tipo no coincida con ninguno de los registrados

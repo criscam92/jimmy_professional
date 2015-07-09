@@ -20,11 +20,6 @@
                     <p:panel header="Comisiones y Publicidad" styleClass="tabla_centrada">
                         <p:panelGrid columns="4">
 
-                            <p:outputLabel value="Porcentaje Comisión" for="comision"/>
-                            <p:inputText id="comision" value="#{parametrosController.selected.porcentajeComision}" validatorMessage="La comisión el vendedor debe estar entre 0 y 100">
-                                <f:validateDoubleRange minimum="0" maximum="100"/>
-                            </p:inputText>
-
                             <p:outputLabel value="Porcentaje Publicidad" for="publicidad"/>
                             <p:inputText id="publicidad" value="#{parametrosController.selected.porcentajePublicidad}" validatorMessage="El porcentaje de publicidad debe estar entre 0 y 100">
                                 <f:validateDoubleRange minimum="0" maximum="100"/>
