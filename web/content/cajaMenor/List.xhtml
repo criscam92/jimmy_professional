@@ -53,11 +53,9 @@
             <h:form id="formFiltro">
                 <p:panelGrid style="border: none;" columns="5">
                     <p:outputLabel for="fechaInicial" value="Fecha Inicial:"/>
-                    <p:calendar id="fechaInicial" showOn="button" navigator="true" pattern="dd/MMM/yyyy" value="#{reciboCajaController.fechaIni}"
-                                required="true" requiredMessage="El campo Fecha Inicial es requerido"/>
+                    <p:calendar id="fechaInicial" showOn="button" navigator="true" pattern="dd/MMM/yyyy" value="#{reciboCajaController.fechaIni}"/>
                     <p:outputLabel for="fechaFinal" value="Fecha Final:"/>
-                    <p:calendar id="fechaFinal" showOn="button" navigator="true" pattern="dd/MMM/yyyy" 
-                                required="true" requiredMessage="El campo Fecha Final es requerido" value="#{reciboCajaController.fechaFin}"/>
+                    <p:calendar id="fechaFinal" showOn="button" navigator="true" pattern="dd/MMM/yyyy" value="#{reciboCajaController.fechaFin}"/>
                     <p:commandButton value="#{bundle.Filter}" icon="ui-icon-search" action="#{reciboCajaController.redirect()}" 
                                      update=":tablaRecibosCaja"/>
                 </p:panelGrid>

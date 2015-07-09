@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -317,7 +318,20 @@ public class ReciboCajaController implements Serializable {
         if (fechaFin != null) {
             url += "&date2=" + formatoDelTexto.format(fechaFin);
         }
-        items = getFacade().getRecibosCaja(fechaIni, fechaFin);
+        
+        Calendar calendar = Calendar.getInstance();
+	calendar.setTime(fechaIni);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        
+        Calendar calendar2 = Calendar.getInstance();
+        calendar2.setTime(fechaFin);
+        calendar2.set(Calendar.HOUR_OF_DAY, 23);
+        calendar2.set(Calendar.MINUTE, 59);
+        calendar2.set(Calendar.SECOND, 59);
+        
+        items = getFacade().getRecibosCaja(calendar.getTime(), calendar2.getTime());
         System.out.println("TAMAÑO lista despues del filtro --> "+items.size());
         getTotalIngresosEgresos();
         System.out.println("URL");
