@@ -24,7 +24,7 @@
                         </p:selectOneRadio>
                     </p:panelGrid>
                     <p:commandButton actionListener="#{conceptoController.update}" value="#{bundle.Save}" update="display,:ConceptoListForm:datalist,:growl" oncomplete="handleSubmit(args, 'ConceptoEditDialog');"/>
-                    <p:commandButton value="#{bundle.Cancel}" onclick="ConceptoEditDialog.hide()"/>
+                    <p:commandButton value="#{bundle.Cancel}" type="button" onclick="PF('ConceptoEditDialog').hide()"/>
                 </h:panelGroup>
             </h:form>
         </p:dialog>
