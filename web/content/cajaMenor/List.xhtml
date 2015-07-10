@@ -14,23 +14,20 @@
             <h:form id="formReciboCaja">
                 <p:panel header="Recibos de Caja Menor" style="width: 790px; margin: auto;">
                     <p:panelGrid columns="2">
-                        <p:panelGrid columns="2">
-                            <p:outputLabel for="detalle" value="Detalle:"/>
-                            <p:inputTextarea id="detalle" value="#{reciboCajaController.selected.detalle}" required="true" requiredMessage="El campo Detalle es requerido"/>
-                        </p:panelGrid>
                         <p:panelGrid columns="4">
-                            <p:outputLabel for="fecha" value="Fecha:"/>
-                            <p:calendar id="fecha" value="#{reciboCajaController.selected.fecha}" showOn="button" pattern="dd/MMM/yyyy hh:mm:ss a"/>
-
+                            
                             <p:outputLabel for="caja" value="Caja:"/>
-                            <p:selectOneMenu converter="cajaconverter" id="caja" value="#{reciboCajaController.selected.caja}" required="true" requiredMessage="#{bundle.EditCajaRequiredMessage}" style="width: 137px;">
+                            <p:selectOneMenu converter="cajaconverter" id="caja" value="#{reciboCajaController.nuevoRecibo.caja}" required="true" requiredMessage="#{bundle.EditCajaRequiredMessage}" style="width: 137px;">
                                 <f:selectItems value="#{cajaController.itemsAvailableSelectOne}" 
                                                var="cajaItem"
                                                itemValue="#{cajaItem}"/>
                             </p:selectOneMenu>
+                            
+                            <p:outputLabel for="fecha" value="Fecha:"/>
+                            <p:calendar id="fecha" value="#{reciboCajaController.nuevoRecibo.fecha}" showOn="button" pattern="dd/MM/yyyy" maxdate="now()"/>
 
                             <p:outputLabel for="concepto" value="Concepto:"/>
-                            <p:selectOneMenu converter="conceptoconverter" id="concepto" value="#{reciboCajaController.selected.concepto}" required="true" requiredMessage="#{bundle.EditConceptoRequiredMessage}"
+                            <p:selectOneMenu converter="conceptoconverter" id="concepto" value="#{reciboCajaController.nuevoRecibo.concepto}" required="true" requiredMessage="#{bundle.EditConceptoRequiredMessage}"
                                              style="width: 166px;">
                                 <f:selectItems value="#{conceptoController.itemsAvailableSelectOne}"
                                                var="conceptoItem"
@@ -38,52 +35,81 @@
                             </p:selectOneMenu>
 
                             <p:outputLabel for="valor" value="Valor:"/>
-                            <p:inputText id="valor" value="#{reciboCajaController.selected.valor}" required="true" requiredMessage="El campo Valor es requerido"/>
+                            <p:inputText id="valor" value="#{reciboCajaController.nuevoRecibo.valor}" required="true" requiredMessage="El campo Valor es requerido"/>
 
+                        </p:panelGrid>
+                        <p:panelGrid columns="2">
+                            <p:outputLabel for="detalle" value="Detalle:"/>
+                            <p:inputTextarea id="detalle" value="#{reciboCajaController.nuevoRecibo.detalle}" required="true" requiredMessage="El campo Detalle es requerido"/>
                         </p:panelGrid>
                     </p:panelGrid>
 
                     <f:facet name="footer">
-                        <p:commandButton value="#{bundle.Save}" icon="ui-icon-disk" actionListener="#{reciboCajaController.create()}" update=":tablaRecibosCaja,@form,:growl"/>
+                        <p:commandButton value="Registrar" icon="ui-icon-disk" actionListener="#{reciboCajaController.create()}" update=":tablaRecibosCaja,@form,:growl"/>
+                        <div class="cajamenor">
+                            
+                            <p:outputLabel value="Base:" />
+                            <p:outputLabel styleClass="valor" value="#{reciboCajaController.base}">
+                                <f:convertNumber type="currency" currencySymbol="$" maxFractionDigits="0" locale="es_CO" />
+                            </p:outputLabel>
+                            <p:outputLabel value="Ingresos:" />
+                            <p:outputLabel styleClass="valor" value="#{reciboCajaController.ingresos}">
+                                <f:convertNumber type="currency" currencySymbol="$" maxFractionDigits="0" locale="es_CO" />
+                            </p:outputLabel>
+                            <p:outputLabel value="Egresos:" />
+                            <p:outputLabel styleClass="valor" value="#{reciboCajaController.egresos}">
+                                <f:convertNumber type="currency" currencySymbol="$" maxFractionDigits="0" locale="es_CO" />
+                            </p:outputLabel>
+                            <p:outputLabel value="Total:" />
+                            <p:outputLabel styleClass="valor" value="#{reciboCajaController.total}">
+                                <f:convertNumber type="currency" currencySymbol="$" maxFractionDigits="0" locale="es_CO" />
+                            </p:outputLabel>
+                            
+                        </div>
                     </f:facet>
 
                 </p:panel>
             </h:form><br/>
 
-            <h:form id="formFiltro">
-                <p:panelGrid style="border: none;" columns="5">
-                    <p:outputLabel for="fechaInicial" value="Fecha Inicial:"/>
-                    <p:calendar id="fechaInicial" showOn="button" navigator="true" pattern="dd/MMM/yyyy" value="#{reciboCajaController.fechaIni}"/>
-                    <p:outputLabel for="fechaFinal" value="Fecha Final:"/>
-                    <p:calendar id="fechaFinal" showOn="button" navigator="true" pattern="dd/MMM/yyyy" value="#{reciboCajaController.fechaFin}"/>
-                    <p:commandButton value="#{bundle.Filter}" icon="ui-icon-search" action="#{reciboCajaController.redirect()}" 
-                                     update=":tablaRecibosCaja"/>
-                </p:panelGrid>
-            </h:form>
             <h:form id="tablaRecibosCaja">
                 <p:dataTable id="datalist" rowKey="#{item.id}" selectionMode="single"
                              value="#{reciboCajaController.items}" selection="#{reciboCajaController.selected}"
                              styleClass="tabla" var="item"
-                             paginator="true" rows="5"
+                             paginator="true" rows="7"
                              rowsPerPageTemplate="10,20,30,40,50"
                              paginatorPosition="bottom"
                              emptyMessage="#{bundle.EmptyTable}"
-                             widgetVar="tablaRecibosCajaMenor"
-                             >
+                             rowStyleClass="#{item.estado == reciboCajaController.estadoAnulado ? 'anulado' : 'realizado'}"
+                             widgetVar="tablaRecibosCajaMenor">
 
                     <p:ajax event="rowSelect"   update="botonAnular"/>
                     <p:ajax event="rowUnselect" update="botonAnular"/>
 
                     <f:facet name="header">
-                        <div id="titulo">
-                            Recibos de Caja Menor
-                        </div>
-                        <div id="acciones">
-                            <p:commandButton id="botonAnular" value="#{bundle.Anull}" actionListener="#{reciboCajaController.anularRecibo()}" 
-                                             update=":growl,datalist,botonAnular" 
-                                             disabled="#{reciboCajaController.disableAnular() || empty reciboCajaController.selected}" rendered="#{loginController.admin}" icon="ui-icon-alert">
-                                <p:confirm header="Confirmar" message="Esta seguro de anular este recibo?" icon="ui-icon-alert" />
-                            </p:commandButton>
+                        <div class="clearfix">
+                            <div id="titulo">
+                                Recibos de Caja Menor
+                            </div>
+                            <div id="acciones">
+
+                                <p:outputLabel for="fechaInicial" value="Fecha Inicial:"/>
+                                <p:calendar id="fechaInicial" showOn="button" navigator="true" pattern="dd/MMM/yyyy" value="#{reciboCajaController.fechaIni}"/>
+                                <p:outputLabel for="fechaFinal" value="Fecha Final:"/>
+                                <p:calendar id="fechaFinal" showOn="button" navigator="true" pattern="dd/MMM/yyyy" value="#{reciboCajaController.fechaFin}"/>
+                                <p:commandButton title="Filtrar Resultados" icon="ui-icon-search" action="#{reciboCajaController.redirect()}" 
+                                                 update="@form"/>
+
+                                <p:commandButton styleClass="boton_accion" id="botonAnular" value="#{bundle.Anull}" actionListener="#{reciboCajaController.anularRecibo()}" 
+                                                 update=":growl,datalist,botonAnular" 
+                                                 disabled="#{reciboCajaController.disableAnular() || empty reciboCajaController.selected}" rendered="#{loginController.admin}" icon="ui-icon-alert">
+                                    <p:confirm header="Confirmar" message="Esta seguro de anular este recibo?" icon="ui-icon-alert" />
+                                </p:commandButton>
+                                
+                                <p:commandButton icon="fa fa-file-excel-o" title="Exportar a Excel" ajax="false">
+                                    <p:dataExporter type="xls" target="datalist" fileName="caja_menor" />
+                                </p:commandButton>
+                                
+                            </div>
                         </div>
                     </f:facet>
 
@@ -92,7 +118,7 @@
                             <h:outputText value="Fecha"/>
                         </f:facet>
                         <h:outputText value="#{item.fecha}">
-                            <f:convertDateTime pattern="dd/MMM/yyyy" />
+                            <f:convertDateTime pattern="dd/MM/yyyy" />
                         </h:outputText>
                     </p:column>
 
@@ -101,7 +127,7 @@
                             <h:outputText value="Hora"/>
                         </f:facet>
                         <h:outputText value="#{item.fecha}">
-                            <f:convertDateTime pattern="hh:mm:ss a" />
+                            <f:convertDateTime pattern="hh:mm a" />
                         </h:outputText>
                     </p:column>
 
@@ -137,26 +163,30 @@
                         <f:facet name="header">
                             <h:outputText value="Ingreso"/>
                         </f:facet>
-                        <h:outputText value="#{reciboCajaController.getIngreso(item)}"/>
+                        <h:outputText value="#{reciboCajaController.getIngreso(item)}">
+                            <f:convertNumber type="currency" currencySymbol="" maxFractionDigits="0" locale="es_ES" />
+                        </h:outputText>
                     </p:column>
 
                     <p:column style="font-weight: bold; text-align:center;">
                         <f:facet name="header">
                             <h:outputText value="Egreso"/>
                         </f:facet>
-                        <h:outputText value="#{reciboCajaController.getEgreso(item)}"/>
+                        <h:outputText value="#{reciboCajaController.getEgreso(item)}">
+                            <f:convertNumber type="currency" currencySymbol="" maxFractionDigits="0" locale="es_ES" />
+                        </h:outputText>
                     </p:column>
 
                     <p:columnGroup type="footer">
                         <p:row>
                             <p:column footerText="SubTotal" colspan="6" style="font-weight: bold; text-align:right;"/>
-                            <p:column footerText="$#{reciboCajaController.totalIngresos}" style="font-weight: bold;"/>
-                            <p:column footerText="$#{reciboCajaController.totalEgresos}" style="font-weight: bold;"/>
+                            <p:column footerText="$ #{reciboCajaController.totalIngresos}" style="font-weight: bold;"/>
+                            <p:column footerText="$ #{reciboCajaController.totalEgresos}" style="font-weight: bold;"/>
                         </p:row>
 
                         <p:row>
                             <p:column footerText="Total" colspan="6" style="font-weight: bold; text-align:right;"/>
-                            <p:column footerText="$#{reciboCajaController.totalRecibos}" colspan="2" style="font-weight: bold;"/>
+                            <p:column footerText="$ #{reciboCajaController.totalRecibos}" colspan="2" style="font-weight: bold;"/>
                         </p:row>
                     </p:columnGroup>
 

@@ -1,6 +1,7 @@
 package jp.entidades;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -60,10 +61,12 @@ public class ReciboCaja implements Serializable {
     private Usuario usuario;
 
     public ReciboCaja() {
+        this.fecha = Calendar.getInstance().getTime();
     }
 
     public ReciboCaja(Long id) {
         this.id = id;
+        this.fecha = Calendar.getInstance().getTime();
     }
 
     public ReciboCaja(Long id, Date fecha, long valor) {

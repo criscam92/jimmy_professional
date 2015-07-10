@@ -52,7 +52,7 @@
                             <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{productoController.destroy}" update=":growl,datalist" disabled="#{empty productoController.selected}">
                                 <p:confirm icon="ui-icon-alert" header="Confirmación" message="Esta seguro de eliminar este producto?"/>
                             </p:commandButton>
-                            <p:commandButton icon="fa fa-table" value="Excel" ajax="false">
+                            <p:commandButton icon="fa fa-file-excel-o" ajax="false">
                                 <p:dataExporter type="xls" target="datalist" fileName="Listado_#{productoController.tipoLista}" postProcessor="#{productoController.postProcessXLS}" />
                             </p:commandButton>
                         </div>

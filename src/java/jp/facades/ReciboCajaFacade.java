@@ -30,8 +30,7 @@ public class ReciboCajaFacade extends AbstractFacade<ReciboCaja> {
     }
     
     public List<ReciboCaja> getRecibosCaja(Date fecha1, Date fecha2){
-        System.out.println("Parametros de consulta filtro-->\n fecha1: "+fecha1+"\nfecha2: "+fecha2);
-        List<ReciboCaja> reciboCajas = new ArrayList<>();
+        List<ReciboCaja> reciboCajas;
         Map<String, Object> parametros = new HashMap<>();
         String consulta = "SELECT rc FROM ReciboCaja rc WHERE rc.fecha >= :fec";
         try {
@@ -40,6 +39,7 @@ public class ReciboCajaFacade extends AbstractFacade<ReciboCaja> {
                 parametros.put("fechaInicio", fecha1);
                 parametros.put("fechaFin", fecha2);
             }
+            consulta += " ORDER BY rc.fecha DESC";
             Query q = em.createQuery(consulta);
             q.setParameter("fec", cajaFacade.getCaja().getFechaActualizacion());
             
