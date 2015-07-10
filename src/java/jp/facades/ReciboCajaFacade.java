@@ -51,7 +51,6 @@ public class ReciboCajaFacade extends AbstractFacade<ReciboCaja> {
                 
             }
             reciboCajas = q.getResultList();
-            System.out.println("LISTA EN FACADE--> "+reciboCajas.size()+"\nQUERY-> "+q.toString() );
         } catch (Exception e) {
             e.printStackTrace();
             reciboCajas = new ArrayList<>();
