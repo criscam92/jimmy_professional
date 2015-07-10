@@ -15,14 +15,14 @@
                 <p:panel header="Recibos de Caja Menor" style="width: 790px; margin: auto;">
                     <p:panelGrid columns="2">
                         <p:panelGrid columns="4">
-                            
+
                             <p:outputLabel for="caja" value="Caja:"/>
                             <p:selectOneMenu converter="cajaconverter" id="caja" value="#{reciboCajaController.nuevoRecibo.caja}" required="true" requiredMessage="#{bundle.EditCajaRequiredMessage}" style="width: 137px;">
                                 <f:selectItems value="#{cajaController.itemsAvailableSelectOne}" 
                                                var="cajaItem"
                                                itemValue="#{cajaItem}"/>
                             </p:selectOneMenu>
-                            
+
                             <p:outputLabel for="fecha" value="Fecha:"/>
                             <p:calendar id="fecha" value="#{reciboCajaController.nuevoRecibo.fecha}" showOn="button" pattern="dd/MM/yyyy" maxdate="now()"/>
 
@@ -47,7 +47,7 @@
                     <f:facet name="footer">
                         <p:commandButton value="Registrar" icon="ui-icon-disk" actionListener="#{reciboCajaController.create()}" update=":tablaRecibosCaja,@form,:growl"/>
                         <div class="cajamenor">
-                            
+
                             <p:outputLabel value="Base:" />
                             <p:outputLabel styleClass="valor" value="#{reciboCajaController.base}">
                                 <f:convertNumber type="currency" currencySymbol="$" maxFractionDigits="0" locale="es_CO" />
@@ -64,7 +64,7 @@
                             <p:outputLabel styleClass="valor" value="#{reciboCajaController.total}">
                                 <f:convertNumber type="currency" currencySymbol="$" maxFractionDigits="0" locale="es_CO" />
                             </p:outputLabel>
-                            
+
                         </div>
                     </f:facet>
 
@@ -104,11 +104,16 @@
                                                  disabled="#{reciboCajaController.disableAnular() || empty reciboCajaController.selected}" rendered="#{loginController.admin}" icon="ui-icon-alert">
                                     <p:confirm header="Confirmar" message="Esta seguro de anular este recibo?" icon="ui-icon-alert" />
                                 </p:commandButton>
-                                
-                                <p:commandButton icon="fa fa-file-excel-o" title="Exportar a Excel" ajax="false">
+
+                                <p:commandLink styleClass="exporter" title="Exportar a Excel" ajax="false" disabled="#{cajaController.items == null}">
+                                    <i class="fa fa-file-excel-o"></i>
                                     <p:dataExporter type="xls" target="datalist" fileName="caja_menor" />
-                                </p:commandButton>
-                                
+                                </p:commandLink>
+                                <p:commandLink styleClass="exporter" title="Exportar a PDF" ajax="false" disabled="#{cajaController.items == null}">
+                                    <i class="fa fa-file-pdf-o"></i>
+                                    <p:dataExporter type="pdf" target="datalist" fileName="caja_menor" />
+                                </p:commandLink>
+
                             </div>
                         </div>
                     </f:facet>

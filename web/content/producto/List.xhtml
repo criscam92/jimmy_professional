@@ -52,9 +52,14 @@
                             <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{productoController.destroy}" update=":growl,datalist" disabled="#{empty productoController.selected}">
                                 <p:confirm icon="ui-icon-alert" header="Confirmación" message="Esta seguro de eliminar este producto?"/>
                             </p:commandButton>
-                            <p:commandButton icon="fa fa-file-excel-o" ajax="false">
-                                <p:dataExporter type="xls" target="datalist" fileName="Listado_#{productoController.tipoLista}" postProcessor="#{productoController.postProcessXLS}" />
-                            </p:commandButton>
+                            <p:commandLink styleClass="exporter" title="Exportar a Excel" ajax="false" disabled="#{cajaController.items == null}">
+                                <i class="fa fa-file-excel-o"></i>
+                                <p:dataExporter type="xls" target="datalist" fileName="Listado_#{productoController.tipoLista}" postProcessor="#{productoController.postProcessXLS}"/>
+                            </p:commandLink>
+                            <p:commandLink styleClass="exporter" title="Exportar a PDF" ajax="false" disabled="#{cajaController.items == null}">
+                                <i class="fa fa-file-pdf-o"></i>
+                                <p:dataExporter type="pdf" target="datalist" fileName="Listado_#{productoController.tipoLista}" />
+                            </p:commandLink>
                         </div>
                     </f:facet>
 
