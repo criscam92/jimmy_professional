@@ -136,7 +136,6 @@ public class TransactionFacade {
             parametroTMP.setCiudad(p.getCiudad());
             parametroTMP.setCorreo(p.getCorreo());
             parametroTMP.setDiasDescuentoProntoPago(p.getDiasDescuentoProntoPago());
-            parametroTMP.setPorcentajeComision(p.getPorcentajeComision());
             parametroTMP.setPorcentajeProntoPago(p.getPorcentajeProntoPago());
             parametroTMP.setPorcentajePublicidad(p.getPorcentajePublicidad());
             parametroTMP.setPorcentajeVentaPublic(p.getPorcentajeVentaPublic());

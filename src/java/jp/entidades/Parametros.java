@@ -39,10 +39,10 @@ public class Parametros implements Serializable {
     @NotNull
     @Column(name = "porcentaje_publicidad", nullable = false)
     private Float porcentajePublicidad;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "porcentaje_comision", nullable = false)
-    private Float porcentajeComision;
+//    @Basic(optional = false)
+//    @NotNull
+//    @Column(name = "porcentaje_comision", nullable = false)
+//    private Float porcentajeComision;
     @Basic(optional = false)
     @NotNull
     @Column(name = "porcentaje_venta_public", nullable = false)
@@ -79,13 +79,13 @@ public class Parametros implements Serializable {
         this.id = id;
     }
 
-    public Parametros(Integer id, Float recargoLocal, Float recargoNacional, Float recargoInternacional, Float porcentajePublicidad, Float porcentajeComision, Float porcentajeVentaPublic, Float precioDolar, Float valorProntoPago, Float porcentajeProntoPago, int diasDescuentoProntoPago, String correo) {
+    public Parametros(Integer id, Float recargoLocal, Float recargoNacional, Float recargoInternacional, Float porcentajePublicidad, Float porcentajeVentaPublic, Float precioDolar, Float valorProntoPago, Float porcentajeProntoPago, int diasDescuentoProntoPago, String correo) {
         this.id = id;
         this.recargoLocal = recargoLocal;
         this.recargoNacional = recargoNacional;
         this.recargoInternacional = recargoInternacional;
         this.porcentajePublicidad = porcentajePublicidad;
-        this.porcentajeComision = porcentajeComision;
+//        this.porcentajeComision = porcentajeComision;
         this.porcentajeVentaPublic = porcentajeVentaPublic;
         this.precioDolar = precioDolar;
         this.valorProntoPago = valorProntoPago;
@@ -134,13 +134,13 @@ public class Parametros implements Serializable {
         this.porcentajePublicidad = porcentajePublicidad;
     }
 
-    public Float getPorcentajeComision() {
-        return porcentajeComision;
-    }
-
-    public void setPorcentajeComision(Float porcentajeComision) {
-        this.porcentajeComision = porcentajeComision;
-    }
+//    public Float getPorcentajeComision() {
+//        return porcentajeComision;
+//    }
+//
+//    public void setPorcentajeComision(Float porcentajeComision) {
+//        this.porcentajeComision = porcentajeComision;
+//    }
 
     public Float getPorcentajeVentaPublic() {
         return porcentajeVentaPublic;

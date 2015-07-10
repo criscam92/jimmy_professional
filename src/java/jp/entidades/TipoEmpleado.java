@@ -41,6 +41,10 @@ public class TipoEmpleado implements Serializable, Codificable {
     @Size(min = 1, max = 100)
     @Column(nullable = false, length = 100)
     private String tipo;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "comision", nullable = false)
+    private double comision;
     @OneToMany(mappedBy = "tipoEmpleado", fetch = FetchType.LAZY)
     private List<Empleado> empleadoList;
 
@@ -72,6 +76,14 @@ public class TipoEmpleado implements Serializable, Codificable {
 
     public void setTipo(String tipo) {
         this.tipo = tipo;
+    }
+
+    public double getComision() {
+        return comision;
+    }
+
+    public void setComision(double comision) {
+        this.comision = comision;
     }
 
     @XmlTransient
