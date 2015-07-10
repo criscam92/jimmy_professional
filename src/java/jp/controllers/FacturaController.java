@@ -7,6 +7,7 @@ import jp.util.JsfUtil;
 import jp.util.JsfUtil.PersistAction;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -93,6 +94,8 @@ public class FacturaController implements Serializable {
     private String errorProducto, errorPromocion, errorVenta, errorBonificacion, errorCliente;
     private List<Producto> productosTMP = null;
     private Cliente cliente;
+    private Date fechaIni;
+    private Date fechaFin;
 
     private DespachoFactura despachoFactura;
     private List<DespachoFactura> despachosFactura = null;
@@ -107,6 +110,22 @@ public class FacturaController implements Serializable {
         selected = new Factura();
         cliente = null;
         selected.setDescuento(0.0);
+    }
+
+    public Date getFechaIni() {
+        return fechaIni;
+    }
+
+    public void setFechaIni(Date fechaIni) {
+        this.fechaIni = fechaIni;
+    }
+
+    public Date getFechaFin() {
+        return fechaFin;
+    }
+
+    public void setFechaFin(Date fechaFin) {
+        this.fechaFin = fechaFin;
     }
 
     public PagoFacade getPagoFacade() {
@@ -517,6 +536,10 @@ public class FacturaController implements Serializable {
         return Moneda.getMonedas();
     }
 
+    public EstadoPagoFactura[] getEstadosFactura() {
+        return EstadoPagoFactura.getFromValue(new Integer[]{0, 1, 2});
+    }
+
     public String redirectCreateFactura() {
         selected = new Factura();
         objects = new ArrayList<>();
@@ -789,20 +812,20 @@ public class FacturaController implements Serializable {
     public void anularFactura() {
         if (selected != null) {
             long despachos = getDespachoFacturaFacade().countDespachoFacturaByFactura(selected);
-            if(despachos > 0){
+            if (despachos > 0) {
                 JsfUtil.addErrorMessage("La factura " + selected.getOrdenPedido() + " no se puede anular porque tiene despachos asociados");
             }
-            
+
             long pagos = getPagoFacade().countPagosFacturaByFactura(selected);
-            if(pagos > 0){
+            if (pagos > 0) {
                 JsfUtil.addErrorMessage("La factura " + selected.getOrdenPedido() + " no se puede anular porque tiene pagos asociados");
             }
-            
+
             if (despachos <= 0 && pagos <= 0) {
-                if(getFacade().anularFactura(selected)){
+                if (getFacade().anularFactura(selected)) {
                     items = null;
                     JsfUtil.addSuccessMessage("La factura " + selected.getOrdenPedido() + " ha sido anulada exitosamente");
-                }else{
+                } else {
                     JsfUtil.addErrorMessage("Error anulando la factura " + selected.getOrdenPedido());
                 }
             }
@@ -810,9 +833,13 @@ public class FacturaController implements Serializable {
             JsfUtil.addErrorMessage("Seleccione la factura que desea anular");
         }
     }
-    
+
     public int estadoRealizado() {
         return EstadoPagoFactura.REALIZADA.getValor();
+    }
+    
+    public void buscar(){
+        
     }
 
 }
