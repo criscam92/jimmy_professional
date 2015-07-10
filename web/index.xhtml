@@ -13,6 +13,12 @@
     </h:head>
 
     <h:body>
+        
+        <p:ajaxStatus onstart="PF('statusDialog').show();" onsuccess="PF('statusDialog').hide();"/>  
+              
+        <p:dialog modal="true" widgetVar="statusDialog" draggable="false" closable="false">  
+            <p:graphicImage library="src" name="jimmy-loader.gif" width="230" alt="Cargando..." />
+        </p:dialog> 
 
         <p:growl id="growl" life="3000" />
 
