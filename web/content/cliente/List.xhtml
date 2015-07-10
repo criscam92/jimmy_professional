@@ -37,9 +37,14 @@
                             <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{clienteController.destroy}" update=":growl,datalist" disabled="#{empty clienteController.selected}">
                                 <p:confirm header="Confirmar" message="Esta seguro de eliminar este cliente?" icon="ui-icon-alert" />
                             </p:commandButton>
-                            <p:commandButton icon="fa fa-table" value="Excel" ajax="false" disabled="#{clienteController.items == null}">
-                                <p:dataExporter type="xls" target="datalist" fileName="Clientes" />
-                            </p:commandButton>
+                            <p:commandLink styleClass="exporter" title="Exportar a Excel" ajax="false" disabled="#{clienteController.items == null}">
+                                <i class="fa fa-file-excel-o"></i>
+                                <p:dataExporter type="xls" target="datalist" fileName="clientes" />
+                            </p:commandLink>
+                            <p:commandLink styleClass="exporter" title="Exportar a PDF" ajax="false" disabled="#{clienteController.items == null}">
+                                <i class="fa fa-file-pdf-o"></i>
+                                <p:dataExporter type="pdf" target="datalist" fileName="clientes" />
+                            </p:commandLink>
                         </div>
                     </f:facet>
 
@@ -67,19 +72,17 @@
                         </f:facet>
                         <h:outputText value="#{item.barrio}"/>
                     </p:column>
-                    <p:column width="70">
-                        <f:facet name="header">
-                            <h:outputText value="#{bundle.MessageCreateTitleZona}"/>
-                        </f:facet>
-                        <h:outputText value="#{item.zona.toString()}"/>
-                    </p:column>
-                    <p:column filterBy="#{item.ciudad}" headerText="Ciudad" filterMatchMode="in">
+                    <p:column filterBy="#{item.zona}" headerText="#{bundle.MessageCreateTitleZona}" filterMatchMode="exact">
                         <f:facet name="filter">
-                            <p:selectCheckboxMenu label="Ciudades" onchange="PF('tablaClientes').filter()" panelStyle="width:210px" scrollHeight="150">
-                                <f:selectItems value="#{ciudadController.itemsAvailableSelectMany}"/>
-                            </p:selectCheckboxMenu>
+                            <p:selectOneMenu onchange="PF('tablaClientes').filter()" style="width: 90px;">
+                                <f:selectItem itemLabel="#{bundle.All}" itemValue="#{null}" noSelectionOption="true" />
+                                <f:selectItems value="#{zonaController.itemsAvailableSelectOne}" />
+                            </p:selectOneMenu>
                         </f:facet>
-                        <h:outputText value="#{item.ciudad.toString()}" />
+                        <h:outputText value="#{item.zona}"/>
+                    </p:column>
+                    <p:column filterBy="#{item.ciudad.toString()}" filterMatchMode="contains" headerText="#{bundle.ListClienteTitle_ciudad}" filterStyle="width: 80px">
+                        <h:outputText value="#{item.ciudad.toString()}"/>
                     </p:column>
                     <p:column width="70">
                         <f:facet name="header">
@@ -87,7 +90,7 @@
                         </f:facet>
                         <h:outputText value="#{item.telefonos}"/>
                     </p:column>
-                    <p:column width="70">
+                    <p:column width="80">
                         <f:facet name="header">
                             <h:outputText value="#{bundle.ListClienteTitle_cupoCredito}"/>
                         </f:facet>

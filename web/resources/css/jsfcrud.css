@@ -60,6 +60,8 @@ div.tabla div.ui-datatable-header {
 
 #acciones{
     float: right; 
+    display: table-cell;
+    vertical-align: middle;
 }
 
 .clearfix:after{
@@ -194,8 +196,22 @@ form#formDevolucionProducto ul.ui-tabs-nav{
 }
 
 .fa{
-    font-weight: bold !important;
+    padding-top: 5px;
     line-height: 17px !important;
+    font-size: 20px !important;
+    text-decoration: none;
+}
+
+.exporter{
+    text-decoration: none;
+}
+
+.fa-file-excel-o{
+    color: green;
+}
+
+.fa-file-pdf-o{
+    color: red;
 }
 
 /** Calendar en Caja Menor **/
