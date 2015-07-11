@@ -13,13 +13,49 @@
                 <h:panelGroup id="display">
                     <p:panelGrid columns="3" rendered="#{facturaController.selected != null}">
                         <p:panelGrid columns="1">
+                            <h:outputText styleClass="titleVista" value="N° de Órden"/>
+                            <h:outputText value="#{facturaController.selected.ordenPedido}" title="N° de Órden"/>
 
+                            <h:outputText styleClass="titleVista" value="#{bundle.ViewFacturaTitle_fecha}"/>
+                            <h:outputText value="#{facturaController.selected.fecha}" title="#{bundle.ViewFacturaTitle_fecha}">
+                                <f:convertDateTime pattern="dd-MMM-yyyy h:mm a"/>
+                            </h:outputText>
+
+                            <h:outputText styleClass="titleVista" value="#{bundle.ViewFacturaTitle_empleado}"/>
+                            <h:outputText value="#{facturaController.selected.empleado.toString()}" title="#{bundle.ViewFacturaTitle_empleado}"/>
+                            
+                            <h:outputText styleClass="titleVista" value="#{bundle.ViewFacturaTitle_cliente}"/>
+                            <h:outputText value="#{facturaController.selected.cliente.toString()}" title="#{bundle.ViewFacturaTitle_cliente}"/>
                         </p:panelGrid>
                         <p:panelGrid columns="1">
+                            <h:outputText styleClass="titleVista" value="Tipo Pago"/>
+                            <h:outputText value="#{facturaController.tipo(facturaController.selected.tipoPago)}" title="Tipo Pago"/>
 
+                            <h:outputText styleClass="titleVista" value="Estado"/>
+                            <h:outputText value="#{facturaController.estadoFactura(facturaController.selected.estado)}" title="Estado"/>  
+                            
+                            <h:outputText styleClass="titleVista" value="Total Bruto"/>
+                            <h:outputText value="#{facturaController.selected.totalBruto}" title="Total Bruto">
+                                <f:convertNumber type="currency"  currencySymbol="$"/>
+                            </h:outputText>
+
+                            <h:outputText styleClass="titleVista" value="Total Pagar"/>
+                            <h:outputText value="#{facturaController.selected.totalPagar}" title="Total Pagar">
+                                <f:convertNumber type="currency"  currencySymbol="$"/>
+                            </h:outputText>
                         </p:panelGrid>
                         <p:panelGrid columns="1">
+                            <h:outputText styleClass="titleVista" value="Unidades Ventas"/>
+                            <h:outputText value="#{facturaController.getCantidadVentasOrBonificacionesByFactura(facturaController.selected, 1)}" title="Unidades Ventas"/>
+                            
+                            <h:outputText styleClass="titleVista" value="Unidades Bonificacion"/>
+                            <h:outputText value="#{facturaController.getCantidadVentasOrBonificacionesByFactura(facturaController.selected, 2)}" title="Unidades Bonificacion"/>
 
+                            <h:outputText styleClass="titleVista" value="Usuario"/>
+                            <h:outputText value="#{facturaController.selected.usuario.toString()}" title="Usuario"/>
+                            
+                            <h:outputText styleClass="titleVista" value="#{bundle.ViewFacturaTitle_observaciones}"/>
+                            <h:outputText value="#{facturaController.selected.observaciones}" title="#{bundle.ViewFacturaTitle_observaciones}"/>
                         </p:panelGrid>
                     </p:panelGrid>                    
                 </h:panelGroup>

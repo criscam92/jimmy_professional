@@ -65,8 +65,8 @@
                              paginatorPosition="bottom"                             
                              >
 
-                    <p:ajax event="rowSelect"   update="productos createButton deleteButton reporte anularButton"/>
-                    <p:ajax event="rowUnselect" update="productos createButton deleteButton reporte anularButton"/>
+                    <p:ajax event="rowSelect"   update="productos createButton deleteButton reporte anularButton viewButton"/>
+                    <p:ajax event="rowUnselect" update="productos createButton deleteButton reporte anularButton viewButton"/>
 
                     <f:facet name="header">
                         <div id="titulo">
@@ -82,7 +82,7 @@
                                              icon="ui-icon-check" disabled="#{facturaController.selected.id == null}" action="#{facturaController.redirect()}"/> 
 
                             <p:commandButton ajax="false" id="reporte" value="Reporte" icon="ui-icon-document" actionListener="#{facturaController.generarReporte}" disabled="#{facturaController.selected.id == null}"/>
-                            <p:commandButton id="anularButton" value="Anular" icon="ui-icon-document" actionListener="#{facturaController.anularFactura}" disabled="#{facturaController.selected.id == null ? true : (facturaController.selected.estado == facturaController.estadoRealizado())}" update=":growl,datalist">
+                            <p:commandButton id="anularButton" value="Anular" icon="ui-icon-document" actionListener="#{facturaController.anularFactura}" disabled="#{facturaController.selected.id == null ? true : (facturaController.selected.estado == facturaController.estadoRealizado()) ? true : (facturaController.selected.estado == facturaController.estadoAnulado())}" update=":growl,datalist">
                                 <p:confirm header="Confirmar" message="Esta seguro de anular esta factura?" icon="ui-icon-alert" />
                             </p:commandButton>
                         </div>

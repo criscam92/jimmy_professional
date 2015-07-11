@@ -945,6 +945,10 @@ public class FacturaController implements Serializable {
     public int estadoRealizado() {
         return EstadoPagoFactura.REALIZADA.getValor();
     }
+    
+    public int estadoAnulado(){
+        return EstadoPagoFactura.ANULADO.getValor();
+    }
 
     public void redirec() throws IOException {
         String url = "List.xhtml?";
@@ -976,5 +980,13 @@ public class FacturaController implements Serializable {
         } else {
             return null;
         }
+    }
+    
+    public String tipo(int tipo){
+        return TipoPago.getFromValue(tipo).getDetalle();
+    }
+    
+    public String estadoFactura(int estado){
+        return EstadoPagoFactura.getFromValue(estado).getDetalle();
     }
 }
