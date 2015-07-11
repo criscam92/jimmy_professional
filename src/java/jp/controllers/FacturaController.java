@@ -6,6 +6,7 @@ import jp.entidades.Factura;
 import jp.util.JsfUtil;
 import jp.util.JsfUtil.PersistAction;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -35,8 +36,10 @@ import jp.entidades.Producto;
 import jp.entidades.ProductoPromocionHelper;
 import jp.entidades.Promocion;
 import jp.entidades.Talonario;
+import jp.facades.ClienteFacade;
 import jp.facades.DespachoFacturaFacade;
 import jp.facades.DespachoFacturaProductoFacade;
+import jp.facades.EmpleadoFacade;
 import jp.facades.FacturaFacade;
 import jp.facades.FacturaProductoFacade;
 import jp.facades.PagoFacade;
@@ -80,6 +83,10 @@ public class FacturaController implements Serializable {
     private DespachoFacturaProductoFacade despachoFacturaProductoFacade;
     @EJB
     private PagoFacade pagoFacade;
+    @EJB
+    private EmpleadoFacade empleFacade;
+    @EJB
+    private ClienteFacade clienteFacade;
     @Inject
     private UsuarioActual usuarioActual;
 
@@ -94,24 +101,84 @@ public class FacturaController implements Serializable {
     private String errorProducto, errorPromocion, errorVenta, errorBonificacion, errorCliente;
     private List<Producto> productosTMP = null;
     private Cliente cliente;
+    private SimpleDateFormat sdf;
+
+    //=== DATOS FILTRO ===
+    private Empleado empleadoFiltro;
+    private Cliente clienteFiltro;
+    private int tipoPago;
+    private int estado;
     private Date fechaIni;
     private Date fechaFin;
+    //====================
 
     private DespachoFactura despachoFactura;
     private List<DespachoFactura> despachosFactura = null;
 
     public FacturaController() {
+        sdf = new SimpleDateFormat("yyyy-MM-dd");
+        selected = new Factura();
+        cliente = null;
+        selected.setDescuento(0.0);
         selectOneButton = 1;
         objects = new ArrayList<>();
     }
 
     @PostConstruct
     public void init() {
-        selected = new Factura();
-        cliente = null;
-        selected.setDescuento(0.0);
+
+        Map<String, String> requestMap = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+        FacesContext.getCurrentInstance().getExternalContext().getSession(true);
+
+        String date1 = requestMap.get("date1");
+        String date2 = requestMap.get("date2");
+
+        try {
+            empleadoFiltro = getEmpleFacade().find(Long.valueOf(requestMap.get("empleado")));
+        } catch (Exception e) {
+            empleadoFiltro = null;
+        }
+
+        try {
+            clienteFiltro = getClienteFacade().find(Long.valueOf(requestMap.get("cliente")));
+        } catch (Exception e) {
+            clienteFiltro = null;
+        }
+
+        try {
+            tipoPago = Integer.parseInt(requestMap.get("tipo"));
+        } catch (Exception e) {
+            tipoPago = -1;
+        }
+
+        try {
+            tipoPago = Integer.parseInt(requestMap.get("tipo"));
+        } catch (Exception e) {
+            tipoPago = -1;
+        }
+
+        try {
+            estado = Integer.parseInt(requestMap.get("estado"));
+        } catch (Exception e) {
+            estado = -1;
+        }
+        
+        try {
+            fechaIni = sdf.parse(date1);
+        } catch (Exception e) {
+            fechaIni = null;
+        }
+        
+        try {
+            fechaFin = sdf.parse(date2);
+        } catch (Exception e) {
+            fechaFin = null;
+        }
+        
+        items = getFacade().filterFactura(empleadoFiltro, cliente, tipoPago, estado, fechaIni, fechaFin);
     }
 
+    //=== DATOS FILTRO ===
     public Date getFechaIni() {
         return fechaIni;
     }
@@ -120,6 +187,39 @@ public class FacturaController implements Serializable {
         this.fechaIni = fechaIni;
     }
 
+    public int getTipoPago() {
+        return tipoPago;
+    }
+
+    public void setTipoPago(int tipoPago) {
+        this.tipoPago = tipoPago;
+    }
+
+    public int getEstado() {
+        return estado;
+    }
+
+    public void setEstado(int estado) {
+        this.estado = estado;
+    }
+
+    public Empleado getEmpleadoFiltro() {
+        return empleadoFiltro;
+    }
+
+    public void setEmpleadoFiltro(Empleado empleadoFiltro) {
+        this.empleadoFiltro = empleadoFiltro;
+    }
+
+    public Cliente getClienteFiltro() {
+        return clienteFiltro;
+    }
+
+    public void setClienteFiltro(Cliente clienteFiltro) {
+        this.clienteFiltro = clienteFiltro;
+    }
+
+    //=====================
     public Date getFechaFin() {
         return fechaFin;
     }
@@ -130,6 +230,14 @@ public class FacturaController implements Serializable {
 
     public PagoFacade getPagoFacade() {
         return pagoFacade;
+    }
+
+    public EmpleadoFacade getEmpleFacade() {
+        return empleFacade;
+    }
+
+    public ClienteFacade getClienteFacade() {
+        return clienteFacade;
     }
 
     public PromocionFacade getPromocionFacade() {
@@ -837,9 +945,36 @@ public class FacturaController implements Serializable {
     public int estadoRealizado() {
         return EstadoPagoFactura.REALIZADA.getValor();
     }
-    
-    public void buscar(){
-        
+
+    public void redirec() throws IOException {
+        String url = "List.xhtml?";
+        if (empleadoFiltro != null) {
+            url += "&empleado=" + empleadoFiltro.getId();
+        }
+        if (clienteFiltro != null) {
+            url += "&cliente=" + clienteFiltro.getId();
+        }
+        if (tipoPago != -1) {
+            url += "&tipo=" + tipoPago;
+        }
+        if (estado != -1) {
+            url += "&estado=" + estado;
+        }
+        if (fechaIni != null && fechaFin != null) {
+            url += "&date1=" + sdf.format(fechaIni) + "&date2=" + sdf.format(fechaFin);
+        }
+        FacesContext.getCurrentInstance().getExternalContext().redirect(url);
     }
 
+    public void cleanFilter() throws IOException {
+        FacesContext.getCurrentInstance().getExternalContext().redirect("List.xhtml");
+    }
+
+    public Date getFechaActual() {
+        if (fechaIni != null) {
+            return fechaIni;
+        } else {
+            return null;
+        }
+    }
 }

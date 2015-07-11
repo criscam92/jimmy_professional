@@ -14,39 +14,42 @@
             <h:form id="FiltroFactura">
                 <p:panel header="Filtro" style="width: 925px; margin: auto;">
                     <p:panelGrid columns="6">                        
-                        <p:outputLabel value="#{bundle.CreateVisitaLabel_empleado}" for="empleado" />
-                        <p:autoComplete size="20" id="empleado" minQueryLength="3" panelStyle="width: 320px;" value="#{facturaController.selected.empleado}" itemValue="#{empleado}" 
+                        <p:outputLabel value="#{bundle.CreateVisitaLabel_empleado}" for="empleadoFiltro" />
+                        <p:autoComplete size="20" id="empleadoFiltro" minQueryLength="3" panelStyle="width: 320px;" value="#{facturaController.empleadoFiltro}" itemValue="#{empleado}" 
                                         completeMethod="#{empleadoController.llenarEmpleado}" effect="fade" converter="empleadoconverter"
                                         itemLabel="#{empleado.toString()}" var="empleado"/>
 
-                        <p:outputLabel styleClass="#{facturaController.errorCliente}" value="#{bundle.CreateVisitaLabel_cliente}" id="labelCliente" for="cliente"/>
-                        <p:autoComplete styleClass="#{facturaController.errorCliente}" size="20" id="cliente" minQueryLength="3" panelStyle="width: 320px;" value="#{facturaController.selected.cliente}" itemValue="#{cliente}" 
+                        <p:outputLabel value="#{bundle.CreateVisitaLabel_cliente}" id="labelCliente" for="clienteFiltro"/>
+                        <p:autoComplete size="20" id="clienteFiltro" minQueryLength="3" panelStyle="width: 320px;" value="#{facturaController.clienteFiltro}" itemValue="#{cliente}" 
                                         completeMethod="#{clienteController.llenarCliente}" effect="fade" converter="clienteconverter"
                                         itemLabel="#{cliente.toString()}" var="cliente"/>
 
                         <p:outputLabel value="Estado" for="estado" />
-                        <p:selectOneMenu style="width: 153px;" id="estado" value="#{facturaController.selected.estado}">  
-                            <f:selectItem  itemLabel="#{bundle.SelectOneMessage}"/>
+                        <p:selectOneMenu style="width: 153px;" id="estado" value="#{facturaController.estado}">  
+                            <f:selectItem  itemLabel="#{bundle.SelectOneMessage}" itemValue="-1"/>
                             <f:selectItems value="#{facturaController.estadosFactura}" var="estado" itemLabel="#{estado.detalle}" itemValue="#{estado.valor}"/>
                         </p:selectOneMenu>
 
                         <p:outputLabel value="#{bundle.MessageCreateTipoPago}" for="tipo_pago" />
-                        <p:selectOneMenu style="width: 155px;" id="tipo_pago" value="#{facturaController.selected.tipoPago}">
-                            <f:selectItem  itemLabel="#{bundle.SelectOneMessage}" id="primer-item"/>
+                        <p:selectOneMenu style="width: 155px;" id="tipo_pago" value="#{facturaController.tipoPago}">
+                            <f:selectItem  itemLabel="#{bundle.SelectOneMessage}" itemValue="-1"/>
                             <f:selectItems value="#{facturaController.tiposPagos}" var="tipo_pago" itemLabel="#{tipoPago.detalle}" itemValue="#{tipo_pago.valor}" />
                         </p:selectOneMenu>
 
                         <p:outputLabel style="margin-right: 35px;" value="Fecha Inicio" for="fechaInicio"/>
-                        <p:calendar size="15" mindate="#{visitaController.fechaActual}" id="fechaInicio" pattern="MM/dd/yyyy"
-                                    value="#{facturaController.fechaIni}" title="#{bundle.EditVisitaTitle_fecha}" showOn="button"/>
+                        <p:calendar size="15" id="fechaInicio" pattern="MM/dd/yyyy"
+                                    value="#{facturaController.fechaIni}" title="#{bundle.EditVisitaTitle_fecha}" showOn="button">
+                            <p:ajax event="dateSelect" update="fechaFin"/>
+                        </p:calendar>
 
                         <p:outputLabel style="margin-right: 35px;" value="Fecha Fin" for="fechaFin"/>
-                        <p:calendar size="15" mindate="#{visitaController.fechaActual}" id="fechaFin" pattern="MM/dd/yyyy"
+                        <p:calendar size="15" mindate="#{facturaController.fechaActual}" id="fechaFin" pattern="MM/dd/yyyy"
                                     value="#{facturaController.fechaFin}" title="#{bundle.EditVisitaTitle_fecha}" showOn="button"/>
                     </p:panelGrid>
 
                     <f:facet name="footer">
-                        <p:commandButton value="Buscar" icon="ui-icon-search" actionListener="#{facturaController.buscar()}"/>
+                        <p:commandButton value="Buscar" icon="ui-icon-search" action="#{facturaController.redirec()}" update=":FormFactura:datalist"/>
+                        <p:commandButton style="margin-left: 5px;" value="Limpiar" icon="ui-icon-trash" action="#{facturaController.cleanFilter()}" update=":FormFactura:datalist, FiltroFactura"/>
                     </f:facet>
                 </p:panel>
             </h:form>
@@ -71,7 +74,7 @@
                         </div>
                         <div id="acciones">
                             <p:commandButton id="createButton" icon="ui-icon-plus" value="#{bundle.Create}" action="#{facturaController.redirectCreateFactura()}"/>    
-
+                            <p:commandButton id="viewButton"   icon="ui-icon-search" value="#{bundle.View}" update=":FacturaViewForm" oncomplete="PF('FacturaViewDialog').show()" disabled="#{facturaController.selected.id == null}"/>
                             <p:commandButton id="deleteButton" value="Despachos" icon="ui-icon-clipboard" oncomplete="PF('DespachosDialog').show()"
                                              update=":growl,datalist,:Despachos" disabled="#{facturaController.selected.id == null}" actionListener="#{facturaController.prepararDespachos}"/>
 
@@ -147,6 +150,7 @@
                 </p:confirmDialog>
             </h:form>
             <ui:include src="Despachos.xhtml"/>
+            <ui:include src="View.xhtml"/>
         </ui:define>
 
     </ui:composition>

@@ -1,7 +1,10 @@
 package jp.facades;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -13,6 +16,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import jp.entidades.Cliente;
 import jp.entidades.DespachoFactura;
+import jp.entidades.Empleado;
 import jp.entidades.Factura;
 import jp.entidades.FacturaProducto;
 import jp.entidades.Pago;
@@ -286,5 +290,63 @@ public class FacturaFacade extends AbstractFacade<Factura> {
         } catch (Exception e) {
         }
         return false;
+    }
+
+    public List<Factura> filterFactura(Empleado empleado, Cliente cliente, int tipoPago, int estado, Date fechaIni, Date fechaFin) {
+        if (empleado != null || cliente != null || tipoPago != -1 || estado != -1 || (fechaIni != null && fechaFin != null)) {
+            String sql = "SELECT f FROM Factura f";
+            Map<String, Object> parametros = new HashMap<>();
+            if (empleado != null) {
+                if (!sql.contains("WHERE")) {
+                    sql += " WHERE ";
+                }
+                sql += "f.empleado.id = :empleado AND ";
+                parametros.put("empleado", empleado.getId());
+            }
+            if (cliente != null) {
+                if (!sql.contains("WHERE")) {
+                    sql += " WHERE ";
+                }
+                sql += "f.cliente.id = :cliente AND ";
+                parametros.put("cliente", cliente.getId());
+            }
+            if (tipoPago != -1) {
+                if (!sql.contains("WHERE")) {
+                    sql += " WHERE ";
+                }
+                sql += "f.tipoPago = :tipo AND ";
+                parametros.put("tipo", tipoPago);
+            }
+            if (estado != -1) {
+                if (!sql.contains("WHERE")) {
+                    sql += " WHERE ";
+                }
+                sql += "f.estado = :estado AND ";
+                parametros.put("estado", estado);
+            }
+
+            boolean fechaIsNull = false;
+            if (fechaIni != null && fechaFin != null) {
+                fechaIsNull = true;
+                if (!sql.contains("WHERE")) {
+                    sql += " WHERE ";
+                }
+                sql += "f.fecha BETWEEN :fechaini AND :fechafin";
+                parametros.put("fechaini", fechaIni);
+                parametros.put("fechafin", fechaFin);
+            }
+
+            if (!fechaIsNull) {
+                sql = sql.substring(0, sql.length()- 4);
+            }
+            Query q = getEntityManager().createQuery(sql);            
+            for (Map.Entry<String, Object> entrySet : parametros.entrySet()) {
+                String key = entrySet.getKey();
+                Object value = entrySet.getValue();
+                q.setParameter(key, value);
+            }
+            return q.getResultList();
+        }
+        return null;
     }
 }
