@@ -286,7 +286,7 @@ public class CambioDevolucionController implements Serializable {
         factura = new Factura();
         factura.setFecha(devolucion.getFecha());
         factura.setCliente(devolucion.getCliente());
-        factura.setUsuario(usuarioActual.get());
+        factura.setUsuario(usuarioActual.getUsuario());
         //empleado seteado desde el form
         factura.setTipoPago(TipoPago.MANO_A_MANO.getValor());
         if (devolucion.getObservaciones() != null) {

@@ -181,7 +181,7 @@ public class ReciboCajaController implements Serializable {
 
     public void create() {
         if (nuevoRecibo != null) {
-            nuevoRecibo.setUsuario(getEjbUsuarioFacade().get());
+            nuevoRecibo.setUsuario(getEjbUsuarioFacade().getUsuario());
             nuevoRecibo.setEstado(EstadoPagoFactura.REALIZADA.getValor());
             if (nuevoRecibo.getFecha() == null) {
                 nuevoRecibo.setFecha(Calendar.getInstance().getTime());
@@ -335,9 +335,9 @@ public class ReciboCajaController implements Serializable {
     }
 
     public boolean disableAnular() {
-        System.out.println("Admin: "+usuarioActual.isAdmin());
+        System.out.println("Admin: "+usuarioActual.getUsuario().isAdmin());
         System.out.println("Selected: "+selected);
-        boolean result = !(usuarioActual.isAdmin() && selected != null  && (selected.getEstado() == EstadoPagoFactura.REALIZADA.getValor()));
+        boolean result = !(usuarioActual.getUsuario().isAdmin() && selected != null  && (selected.getEstado() == EstadoPagoFactura.REALIZADA.getValor()));
         System.out.println("ANULAR: "+result);
         return result;
     }

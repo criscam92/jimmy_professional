@@ -10,7 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.faces.bean.ViewScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
@@ -23,7 +23,7 @@ import jp.seguridad.UsuarioActual;
 import org.primefaces.context.RequestContext;
 
 @ManagedBean(name = "ingresoController")
-@SessionScoped
+@ViewScoped
 public class IngresoController implements Serializable {
 
     @EJB
@@ -123,7 +123,7 @@ public class IngresoController implements Serializable {
 
     public void create(boolean guardar) {
         if (ingresoProductos.size() >= 1) {
-            selected.setUsuario(usuarioActual.get());
+            selected.setUsuario(usuarioActual.getUsuario());
             if (getTransactionFacade().createIngreso(selected, ingresoProductos)) {
                 if (!JsfUtil.isValidationFailed()) {
                     items = null;    // Invalidate list of items to trigger re-query.
@@ -146,7 +146,7 @@ public class IngresoController implements Serializable {
 
     public void update() {
         if (ingresoProductos.size() >= 1) {
-            selected.setUsuario(usuarioActual.get());
+            selected.setUsuario(usuarioActual.getUsuario());
             if (getTransactionFacade().updateIngreso(selected, ingresoProductosGuardar, ingresoProductosEliminar, ingresoProductosEditar)) {
                 if (!JsfUtil.isValidationFailed()) {
                     items = null;    // Invalidate list of items to trigger re-query.

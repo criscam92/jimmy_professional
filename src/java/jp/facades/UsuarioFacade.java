@@ -46,16 +46,18 @@ public class UsuarioFacade extends AbstractFacade<Usuario> {
     }
     
     public Usuario login(String userName, String password) {
+        System.out.println("USUARIO LOGIN: " + userName);
         Usuario usuario = null;
         try {
-            System.out.println("Clave: " + Encrypt.getStringMessageDigest(password));
             Query query = getEntityManager().createQuery("SELECT u FROM Usuario u WHERE u.usuario = :usuario AND u.contrasena = :contrasena");
             query.setParameter("usuario", userName);
             query.setParameter("contrasena", Encrypt.getStringMessageDigest(password));
             usuario = (Usuario) query.getSingleResult();
         } catch (NoResultException e) {
+            System.out.println("\n======================= NO EXISTE EL USUARIO  ======================");
+        }catch(Exception e){
             System.out.println("\n======================= ERROR CONSULTANDO EL USUARIO Y CONTRASENA ======================");
-//            e.printStackTrace();
+            e.printStackTrace();
             System.out.println("======================= ERROR CONSULTANDO EL USUARIO Y CONTRASENA ======================\n");
         }
         return usuario;

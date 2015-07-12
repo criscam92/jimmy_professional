@@ -8,6 +8,14 @@
         <param-name>primefaces.THEME</param-name>
         <param-value>bootstrap</param-value>
     </context-param>
+    <context-param>
+        <param-name>javax.faces.DATETIMECONVERTER_DEFAULT_TIMEZONE_IS_SYSTEM_TIMEZONE</param-name>
+        <param-value>true</param-value>
+    </context-param>
+    <servlet>
+        <servlet-name>PdfServlet</servlet-name>
+        <servlet-class>net.sf.jasperreports.j2ee.servlets.PdfServlet</servlet-class>
+    </servlet>
     <servlet>
         <servlet-name>Faces Servlet</servlet-name>
         <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
@@ -22,10 +30,6 @@
         <servlet-class>jp.servlet.FacturaServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>Faces Servlet</servlet-name>
-        <url-pattern>/faces/*</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>DolarServlet</servlet-name>
         <url-pattern>/DolarServlet</url-pattern>
     </servlet-mapping>
@@ -33,28 +37,28 @@
         <servlet-name>FacturaServlet</servlet-name>
         <url-pattern>/FacturaServlet</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Faces Servlet</servlet-name>
+        <url-pattern>*.xhtml</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>
             30
         </session-timeout>
-    </session-config>
-    <welcome-file-list>
-        <welcome-file>faces/index.xhtml</welcome-file>
-    </welcome-file-list>
-    <context-param>
-        <param-name>javax.faces.DATETIMECONVERTER_DEFAULT_TIMEZONE_IS_SYSTEM_TIMEZONE</param-name>
-        <param-value>true</param-value>
-    </context-param>
+    </session-config>    
     <filter>
-        <filter-name>AuthenticationFilter</filter-name>
+        <filter-name>FiltroSeguridad</filter-name>
         <filter-class>jp.seguridad.FiltroSeguridad</filter-class>
+        <init-param>
+            <param-name>pattern</param-name>
+            <param-value>logout</param-value>
+        </init-param>
     </filter>
     <filter-mapping>
-        <filter-name>AuthenticationFilter</filter-name>
-        <url-pattern>/faces/content/*</url-pattern>
+        <filter-name>FiltroSeguridad</filter-name>
+        <url-pattern>/content/*</url-pattern>
     </filter-mapping>
-    <servlet>
-        <servlet-name>PdfServlet</servlet-name>
-        <servlet-class>net.sf.jasperreports.j2ee.servlets.PdfServlet</servlet-class>
-    </servlet>
+    <welcome-file-list>
+        <welcome-file>index.xhtml</welcome-file>
+    </welcome-file-list>    
 </web-app>

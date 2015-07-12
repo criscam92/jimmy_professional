@@ -156,7 +156,7 @@ public class VisitaController implements Serializable {
 
     public List<Visita> getItems() {
         if (items == null) {
-            items = getFacade().findVisitasByEmpleado(usuarioActual.get().getEmpleado(), usuarioActual.isAdmin());
+            items = getFacade().findVisitasByEmpleado(usuarioActual.getUsuario().getEmpleado(), usuarioActual.getUsuario().isAdmin());
         }
         return items;
     }
@@ -263,19 +263,19 @@ public class VisitaController implements Serializable {
     }
 
     public boolean disableRealizarVisita() {
-        if (selected != null && usuarioActual.isAdmin() && selected.getEstado() != EstadoVisita.ANULADA.getValor() && selected.getEstado() != EstadoVisita.CANCELADA.getValor()) {
+        if (selected != null && usuarioActual.getUsuario().isAdmin() && selected.getEstado() != EstadoVisita.ANULADA.getValor() && selected.getEstado() != EstadoVisita.CANCELADA.getValor()) {
             return false;
         } else {
-            return !(selected != null && !usuarioActual.isAdmin() && selected.getEstado() == EstadoVisita.PENDIENTE.getValor());
+            return !(selected != null && !usuarioActual.getUsuario().isAdmin() && selected.getEstado() == EstadoVisita.PENDIENTE.getValor());
         }
     }
 
     public boolean disableEditarVisita() {
-        return !(selected != null && usuarioActual.isAdmin() && selected.getEstado() == EstadoVisita.PENDIENTE.getValor());
+        return !(selected != null && usuarioActual.getUsuario().isAdmin() && selected.getEstado() == EstadoVisita.PENDIENTE.getValor());
     }
 
     public boolean disableReporteYAnular() {
-        return !(selected != null && usuarioActual.isAdmin() && selected.getEstado() == EstadoVisita.REALIZADA.getValor());
+        return !(selected != null && usuarioActual.getUsuario().isAdmin() && selected.getEstado() == EstadoVisita.REALIZADA.getValor());
     }
 
     public void anularCancelarVisita(boolean anular) {

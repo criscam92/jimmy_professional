@@ -363,7 +363,7 @@ public class DevolucionController implements Serializable {
                 if (!selected.getObservaciones().trim().equals("")) {
                     pago.setObservaciones(selected.getObservaciones());
                 }
-                selected.setUsuario(usuarioActual.get());
+                selected.setUsuario(usuarioActual.getUsuario());
 
                 if (getEjbTransactionFacade().createPagoDevolucion(pago, selected, fac)) {
                     JsfUtil.getMessageBundle(new String[]{"MessagePagoDevolucion", "CreateSuccessM"});

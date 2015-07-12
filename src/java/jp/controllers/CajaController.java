@@ -96,7 +96,7 @@ public class CajaController implements Serializable {
             selected.setFechaActualizacion(Calendar.getInstance().getTime());
             actualizaBaseCajaMenor.setCaja(selected);
             actualizaBaseCajaMenor.setFecha(selected.getFechaActualizacion());
-            actualizaBaseCajaMenor.setUsuario(usuarioActual.get());
+            actualizaBaseCajaMenor.setUsuario(usuarioActual.getUsuario());
             actualizaBaseCajaMenor.setValorAnterior(valorAnterior);
             actualizaBaseCajaMenor.setValorNuevo(selected.getBase());
             

@@ -400,7 +400,7 @@ public class FacturaController implements Serializable {
             if (getFacade().getFacturaByOrdenPedido(opTMP) == null) {
 
                 if (actulizarTalonario(opTMP)) {
-                    selected.setUsuario(usuarioActual.get());
+                    selected.setUsuario(usuarioActual.getUsuario());
                     selected.setEstado(EstadoPagoFactura.PENDIENTE.getValor());
                     if (moneda == 1) {
                         selected.setDolarActual(parametrosFacade.getParametros().getPrecioDolar());

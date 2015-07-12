@@ -1,0 +1,120 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title><ui:insert name="title">#{bundle.AppName}</ui:insert></title>
+        <link rel="stylesheet" href="/maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" />
+        <h:outputStylesheet library="css" name="jsfcrud.css"/>
+        <h:outputScript library="js" name="jsfcrud.js"/>
+    </h:head>
+
+    <h:body>
+        
+        <p:ajaxStatus onstart="PF('statusDialog').show();" onsuccess="PF('statusDialog').hide();"/>  
+              
+        <p:dialog modal="true" widgetVar="statusDialog" draggable="false" closable="false">  
+            <p:graphicImage library="src" name="jimmy-loader.gif" width="230" alt="Cargando..." />
+        </p:dialog> 
+
+        <p:growl id="growl" life="3000" />
+
+        <p:layout fullPage="true">
+            <p:layoutUnit position="north" size="135">
+                <div id="logo"></div>
+                <h:form id="menuForm">
+
+                    <p:menubar>
+                        <p:menuitem class="menuPrincipal" value="#{bundle.Home}" icon="ui-icon-home"/>
+
+                        <p:submenu class="menuPrincipal" label="Clientes">
+                            <p:menuitem value="Clientes" outcome="/content/cliente/List.xhtml" />                            
+                            <p:menuitem value="Cartera" outcome="/content/cartera/List.xhtml" />
+                        </p:submenu>
+
+                        <p:submenu class="menuPrincipal" label="Productos">
+                            <p:menuitem value="Ingreso a Inventario" outcome="/content/ingreso/List.xhtml" />
+                            <p:menuitem value="Productos" outcome="/content/producto/List.xhtml" />
+                            <p:menuitem value="Promociones" outcome="/content/promocion/List.xhtml" />
+                            <p:menuitem value="Consultar" outcome="/content/consultar/List.xhtml" />
+                        </p:submenu>
+
+                        <p:submenu class="menuPrincipal" label="Pedidos">
+                            <p:menuitem value="Crear Orden de Pedido" outcome="/content/factura/Create.xhtml" />
+                            <p:menuitem value="Órdenes de Pedido" outcome="/content/factura/List.xhtml" />
+                            <p:menuitem value="Devoluciones" outcome="/content/devolucionProducto/List.xhtml" />
+                        </p:submenu>
+
+                        <p:submenu class="menuPrincipal" label="Pagos">
+                            <p:menuitem value="Nuevo Pago" outcome="/content/pago/Create.xhtml" />
+                            <p:menuitem value="Consulta de Pagos" outcome="/content/pago/List.xhtml" />
+                        </p:submenu>
+
+                        <p:submenu class="menuPrincipal" label="Visitas">
+                            <p:menuitem value="Programación de Visitas" outcome="/content/visita/List.xhtml" />
+                        </p:submenu>
+
+                        <p:submenu class="menuPrincipal" label="Cajas">
+                            <p:menuitem value="Caja Menor" outcome="/content/cajaMenor/List.xhtml" />
+                        </p:submenu>
+
+                        <p:submenu class="menuPrincipal" label="Configuración">
+
+                            <p:submenu label="Lugares">
+                                <p:menuitem value="Paises" outcome="/content/pais/List.xhtml" />
+                                <p:menuitem value="Ciudades" outcome="/content/ciudad/List.xhtml" />
+                            </p:submenu>
+
+                            <p:submenu label="Empleados">
+                                <p:menuitem value="Empleados" outcome="/content/empleado/List.xhtml" />
+                                <p:menuitem value="Tipos de Empleados" outcome="/content/tipoEmpleado/List.xhtml" />
+                            </p:submenu>
+
+                            <p:submenu label="Clientes">
+                                <p:menuitem value="Tipos de Clientes" outcome="/content/tipoCliente/List.xhtml" />
+                                <p:menuitem value="Zonas" outcome="/content/zona/List.xhtml" />              
+                                <p:menuitem value="Categorias" outcome="/content/categoria/List.xhtml" />
+                            </p:submenu>
+
+                            <p:submenu label="Pagos">
+                                <p:menuitem value="Tipos de Publicidad" outcome="/content/tipoPublicidad/List.xhtml" />                            
+                                <p:menuitem value="Cuentas Bancarias" outcome="/content/cuentaBancaria/List.xhtml" />
+                            </p:submenu>
+
+                            <p:submenu label="Visitas">
+                                <p:menuitem value="Procedimientos" outcome="/content/procedimiento/List.xhtml" />
+                            </p:submenu>
+
+                            <p:submenu class="menuPrincipal" label="Conceptos y Caja">
+                                <p:menuitem value="Conceptos" outcome="/content/concepto/List.xhtml" />
+                                <p:menuitem value="Caja" outcome="/content/caja/List.xhtml" />
+                            </p:submenu>
+
+                            <p:menuitem value="Códigos de Devolución" outcome="/content/codigoDevolucion/List.xhtml" />
+                            <p:menuitem value="Talonarios" outcome="/content/talonario/List.xhtml" />
+
+
+                            <p:menuitem value="Parametros Adicionales" outcome="/content/recargo/index.xhtml" />
+
+
+                        </p:submenu>
+
+                        <p:submenu style="float:right;" class="menuPrincipal" label="Usuario Actual: #{currentUser.usuario.usuario}" rendered="#{currentUser.usuario != null}">
+                            <p:menuitem value="Usuarios" outcome="/content/usuario/List.xhtml" rendered="#{currentUser.usuario.admin}"/>
+                            <p:menuitem action="#{loginController.logoutLink()}" icon="ui-icon-power" value="#{bundle.LogOut}" />
+                        </p:submenu>
+                    </p:menubar>
+                </h:form>
+            </p:layoutUnit>
+
+            <p:layoutUnit styleClass="contenido" position="center">
+                <ui:insert name="body"/>
+            </p:layoutUnit>
+
+        </p:layout>
+    </h:body>
+
+</html>

@@ -208,7 +208,7 @@ public class DespachoFacturaController implements Serializable {
         selected.setDespacho(null);
         selected.setFecha(Calendar.getInstance().getTime());
         selected.setRealizado(true);
-        selected.setUsuario(usuarioActual.get());
+        selected.setUsuario(usuarioActual.getUsuario());
 
         switch (comprobarIngresos()) {
             case 0:
