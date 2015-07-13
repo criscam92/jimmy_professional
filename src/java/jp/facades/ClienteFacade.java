@@ -68,5 +68,26 @@ public class ClienteFacade extends AbstractFacade<Cliente> {
         }
         return null;
     }
+    
+    public boolean existeDocumento(Cliente cliente){
+        try {
+            String jpql = "SELECT COUNT(c.id) FROM Cliente c WHERE c.documento = :documento";
+            if(cliente.getId()!=null){
+                jpql += " AND c.id != :id";
+            }
+            Query query = getEntityManager().createQuery(jpql);
+            query.setParameter("documento", cliente.getDocumento());
+            if(cliente.getId()!=null){
+                query.setParameter("id", cliente.getId());
+            }
+            Long result = (Long) query.getSingleResult();
+            if(result>0l){
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
 }

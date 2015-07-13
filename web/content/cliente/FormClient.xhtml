@@ -13,8 +13,8 @@
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{clienteController.selected != null}">
                         <p:panelGrid columns="2">
-                            <p:outputLabel value="#{bundle.CreateClienteLabel_documento}" for="documento" />
-                            <p:inputText id="documento" value="#{clienteController.selected.documento}" title="#{bundle.CreateClienteTitle_documento}" required="true" requiredMessage="El campo documento es obligatorio"/>
+                            <p:outputLabel value="#{bundle.CreateClienteLabel_documento}" for="documento" styleClass="#{clienteController.error}"/>
+                            <p:inputText id="documento" styleClass="#{clienteController.error}" value="#{clienteController.selected.documento}" title="#{bundle.CreateClienteTitle_documento}" required="true" requiredMessage="El campo documento es obligatorio"/>
                             <p:outputLabel value="#{bundle.CreateClienteLabel_nombre}" for="nombre" />
                             <p:inputText id="nombre" value="#{clienteController.selected.nombre}" title="#{bundle.CreateClienteTitle_nombre}" required="true" requiredMessage="#{bundle.CreateClienteRequiredMessage_nombre}"/>
                             <p:outputLabel value="#{bundle.CreateClienteLabel_direccion}" for="direccion" />
@@ -91,7 +91,7 @@
                     </p:panelGrid>
                 </h:panelGroup>
                 <div class="botonesDialog">
-                    <p:commandButton actionListener="#{clienteController.createOrEdit}" value="#{bundle.Save}" update="display,:ClienteListForm:datalist,:growl" oncomplete="handleSubmit(args,'ClienteFormDialog');"/>
+                    <p:commandButton actionListener="#{clienteController.createOrEdit}" value="#{bundle.Save}" update="display,:ClienteListForm:datalist,:growl" oncomplete="PF('ClienteFormDialog').hide()"/>
                     <p:commandButton  value="#{bundle.Cancel}" update="display" process="@this" onclick="PF('ClienteFormDialog').hide()">
                         <p:resetInput target="display" />
                     </p:commandButton>

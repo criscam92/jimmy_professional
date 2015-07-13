@@ -20,6 +20,7 @@ import javax.faces.convert.FacesConverter;
 import javax.faces.event.AjaxBehaviorEvent;
 import jp.facades.ClienteFacade;
 import jp.facades.ParametrosFacade;
+import org.primefaces.context.RequestContext;
 
 @ManagedBean(name = "clienteController")
 @SessionScoped
@@ -31,6 +32,8 @@ public class ClienteController implements Serializable {
     private ParametrosFacade ejbRecargoFacade;
     private List<Cliente> items = null;
     private Cliente selected;
+    private final String uiError;
+    private String error;
     private Boolean disable = false;
     private boolean recargo = false;
     private int valorSelect;
@@ -38,6 +41,7 @@ public class ClienteController implements Serializable {
     private String header;
 
     public ClienteController() {
+        uiError = "ui-state-error";
     }
 
     public Cliente getSelected() {
@@ -46,6 +50,14 @@ public class ClienteController implements Serializable {
 
     public void setSelected(Cliente selected) {
         this.selected = selected;
+    }
+
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
     }
 
     public Boolean getDisable() {
@@ -123,13 +135,20 @@ public class ClienteController implements Serializable {
     }
 
     public void createOrEdit() {
-        String msm = (selected.getId() != null ? JsfUtil.getMessageBundle(new String[]{"MessageCliente", "UpdateSuccessM"})
-                : JsfUtil.getMessageBundle(new String[]{"MessageCliente", "CreateSuccessM"}));
+        if (!getFacade().existeDocumento(selected)) {
+            String mensaje = (selected.getId() != null ? JsfUtil.getMessageBundle(new String[]{"MessageCliente", "UpdateSuccessM"})
+                    : JsfUtil.getMessageBundle(new String[]{"MessageCliente", "CreateSuccessM"}));
 
-        persist(PersistAction.CREATE, msm);
+            persist(PersistAction.CREATE, mensaje);
 
-        if (!JsfUtil.isValidationFailed() && selected.getId() == null) {
-            items = null;    // Invalidate list of items to trigger re-query.
+            if (!JsfUtil.isValidationFailed() && selected.getId() == null) {
+                setError("");
+                items = null;    // Invalidate list of items to trigger re-query.
+                RequestContext.getCurrentInstance().execute("PF('ClienteFormDialog').hide()");
+            }
+        } else {
+            setError(uiError);
+            JsfUtil.addErrorMessage("El documento ya se encuentra en la base de datos.");
         }
     }
 
