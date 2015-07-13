@@ -12,9 +12,9 @@
 
         <ui:define name="body">
             <h:form id="formReciboCaja">
-                <p:panel header="Recibos de Caja Menor" style="width: 830px; margin: auto;">
-                    <p:panelGrid columns="2">
-                        <p:panelGrid columns="4">
+                <p:panel header="Recibos de Caja Menor" style="width: 900px; margin: auto;">
+
+                    <p:panelGrid columns="6" styleClass="center">
 
                             <p:outputLabel for="caja" value="Caja:"/>
                             <p:selectOneMenu converter="cajaconverter" id="caja" value="#{reciboCajaController.nuevoRecibo.caja}" required="true" requiredMessage="#{bundle.EditCajaRequiredMessage}" style="width: 137px;">
@@ -25,6 +25,22 @@
 
                             <p:outputLabel for="fecha" value="Fecha:"/>
                             <p:calendar id="fecha" value="#{reciboCajaController.nuevoRecibo.fecha}" showOn="button" pattern="dd/MM/yyyy" maxdate="now()"/>
+                            
+                            <p:outputLabel value="#{bundle.MessageTerceroTitle}" for="tercero" />
+                            
+                            <p:outputPanel>
+                                
+                                <p:autoComplete size="26" id="tercero" minQueryLength="3" panelStyle="width: 320px;" value="#{reciboCajaController.nuevoRecibo.tercero}"
+                                            itemValue="#{tercero}" completeMethod="#{reciboCajaController.llenarTercero}" effect="fade" converter="terceroconverter"
+                                            itemLabel="#{tercero.toString()}" var="tercero" required="true" requiredMessage="#{bundle.MessageTerceroCajaRequiredMessage}"/>
+                                
+                                <p:commandLink styleClass="exporter ui-state-default boton-tercero" oncomplete="PF('TerceroCreateDialog').show()"
+                                           title="#{bundle.CreateTerceroTitle}" actionListener="#{reciboCajaController.prepareCreateTercero}" update=":TerceroCreateForm">
+                                    <i class="fa fa-male"></i>
+
+                                </p:commandLink>
+                            </p:outputPanel>
+                            
 
                             <p:outputLabel for="concepto" value="Concepto:"/>
                             <p:selectOneMenu converter="conceptoconverter" id="concepto" value="#{reciboCajaController.nuevoRecibo.concepto}" required="true" requiredMessage="#{bundle.EditConceptoRequiredMessage}"
@@ -36,17 +52,11 @@
 
                             <p:outputLabel for="valor" value="Valor:"/>
                             <p:inputText id="valor" value="#{reciboCajaController.nuevoRecibo.valor}" required="true" requiredMessage="El campo Valor es requerido"/>
-
-                        </p:panelGrid>
-                        <p:panelGrid columns="2">
-                            <p:outputLabel value="#{bundle.MessageTerceroTitle}" for="tercero" />
-                            <p:autoComplete size="26" id="tercero" minQueryLength="3" panelStyle="width: 320px;" value="#{reciboCajaController.nuevoRecibo.tercero}"
-                                            itemValue="#{tercero}" completeMethod="#{reciboCajaController.llenarTercero}" effect="fade" converter="terceroconverter"
-                                            itemLabel="#{tercero.toString()}" var="tercero" required="true" requiredMessage="#{bundle.MessageTerceroCajaRequiredMessage}"/>
+                            
                             <p:outputLabel for="detalle" value="Detalle:"/>
-                            <p:inputTextarea id="detalle" value="#{reciboCajaController.nuevoRecibo.detalle}" required="true" 
+                            <p:inputText id="detalle" value="#{reciboCajaController.nuevoRecibo.detalle}" required="true" 
                                              requiredMessage="El campo Detalle es requerido" style="width: 156px;"/>
-                        </p:panelGrid>
+                            
                     </p:panelGrid>
 
                     <f:facet name="footer">
@@ -160,7 +170,7 @@
                         </f:facet>
                         <h:outputText value="#{item.detalle}"/>
                     </p:column>
-                    
+
                     <p:column>
                         <f:facet name="header">
                             <h:outputText value="Tercero"/>
@@ -214,6 +224,27 @@
                 </p:confirmDialog>
 
             </h:form>
+
+            <p:dialog id="TerceroCreateDlg" widgetVar="TerceroCreateDialog" modal="true" resizable="false" appendTo="@(body)" 
+                      header="#{bundle.CreateTerceroTitle}">
+                <h:form id="TerceroCreateForm">
+                    <h:panelGroup id="display">
+                        <p:panelGrid columns="2" rendered="#{reciboCajaController.tercero != null}">
+                            <p:outputLabel value="#{bundle.CreateTerceroLabel_nombre}" for="nombre" />
+                            <p:inputText id="nombre" value="#{reciboCajaController.tercero.nombre}" title="#{bundle.CreateTerceroTitle_nombre}" required="true" requiredMessage="#{bundle.CreateTerceroRequiredMessage_nombre}"/>
+                            <p:outputLabel value="#{bundle.CreateTerceroLabel_numdocumento}" for="numdocumento" />
+                            <p:inputText id="numdocumento" value="#{reciboCajaController.tercero.numdocumento}" title="#{bundle.CreateTerceroTitle_numdocumento}" required="true" requiredMessage="#{bundle.CreateTerceroRequiredMessage_numdocumento}"/>                        
+                            <p:outputLabel value="#{bundle.CreateTerceroLabel_tipodocumento}" for="tipodocumento" />
+                            <p:selectOneMenu id="tipodocumento" value="#{reciboCajaController.tercero.tipodocumento}" required="true" 
+                                             requiredMessage="#{bundle.CreateTerceroRequiredMessage_tipodocumento}" style="width: 134px;">
+                                <f:selectItems value="#{terceroController.tipoDocumentos}"/>
+                            </p:selectOneMenu>
+                        </p:panelGrid>
+                        <p:commandButton actionListener="#{reciboCajaController.createTercero()}" value="#{bundle.Save}" update="display,:tablaRecibosCaja:datalist,:growl" oncomplete="handleSubmit(args,'TerceroCreateDialog');"/>
+                        <p:commandButton value="#{bundle.Cancel}" type="button" onclick="PF('TerceroCreateDialog').hide()"/>
+                    </h:panelGroup>
+                </h:form>
+            </p:dialog>
         </ui:define>
 
     </ui:composition>

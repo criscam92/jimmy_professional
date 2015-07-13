@@ -242,3 +242,20 @@ form#formDevolucionProducto ul.ui-tabs-nav{
     color: #b3b3b3 !important;
     text-shadow: 1px 1px 1px #ffffff;
 }
+
+table.center {
+  margin: 0px auto;
+}
+
+.boton-tercero{
+    display: inline-block;
+    width: 27px;
+    height: 25px;
+    text-align: center;
+    line-height: 25px;
+    /* margin-left: 5px; */
+}
+
+.boton-tercero .fa{
+    font-size: 14px !important;
+}
