@@ -42,7 +42,7 @@
                             <p:outputLabel value="#{bundle.MessageTerceroTitle}" for="tercero" />
                             <p:autoComplete size="26" id="tercero" minQueryLength="3" panelStyle="width: 320px;" value="#{reciboCajaController.nuevoRecibo.tercero}"
                                             itemValue="#{tercero}" completeMethod="#{reciboCajaController.llenarTercero}" effect="fade" converter="terceroconverter"
-                                            itemLabel="#{tercero.toString()}" var="tercero"/>
+                                            itemLabel="#{tercero.toString()}" var="tercero" required="true" requiredMessage="#{bundle.MessageTerceroCajaRequiredMessage}"/>
                             <p:outputLabel for="detalle" value="Detalle:"/>
                             <p:inputTextarea id="detalle" value="#{reciboCajaController.nuevoRecibo.detalle}" required="true" 
                                              requiredMessage="El campo Detalle es requerido" style="width: 156px;"/>
