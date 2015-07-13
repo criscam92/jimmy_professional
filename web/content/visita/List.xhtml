@@ -35,28 +35,28 @@
                         <div id="acciones">
                             <p:commandButton id="createButton" icon="ui-icon-plus" value="#{bundle.Create}" 
                                              actionListener="#{visitaController.prepareCreate}" update=":VisitaCreateForm" 
-                                             oncomplete="PF('VisitaCreateDialog').show()" rendered="#{loginController.admin}"/>
+                                             oncomplete="PF('VisitaCreateDialog').show()" rendered="#{usuarioActual.usuario.admin}"/>
 
                             <p:commandButton id="editButton" icon="ui-icon-pencil" value="#{bundle.Edit}"
                                              update=":VisitaCreateForm" actionListener="#{visitaController.preparaEdit}" 
                                              oncomplete="PF('VisitaCreateDialog').show()" disabled="#{visitaController.disableEditarVisita()}"
-                                             rendered="#{loginController.admin}"/>
+                                             rendered="#{usuarioActual.usuario.admin}"/>
 
                             <p:commandButton id="botonAnular" value="#{bundle.Anull}" actionListener="#{visitaController.anularCancelarVisita(true)}" 
                                              update=":growl,datalist,botonRealizar,createButton,botonAnular,editButton,botonReporte,botonCancelar" 
-                                             disabled="#{visitaController.disableReporteYAnular()}" rendered="#{loginController.admin}" icon="ui-icon-alert">
+                                             disabled="#{visitaController.disableReporteYAnular()}" rendered="#{usuarioActual.usuario.admin}" icon="ui-icon-alert">
                                 <p:confirm header="Confirmar" message="Esta seguro de anular esta visita?" icon="ui-icon-alert" />
                             </p:commandButton>
 
                             <p:commandButton id="botonCancelar" value="#{bundle.Cancel}" actionListener="#{visitaController.anularCancelarVisita(false)}" 
                                              update=":growl,datalist,botonRealizar,createButton,botonAnular,editButton,botonReporte,botonCancelar" 
-                                             disabled="#{visitaController.disableEditarVisita()}" rendered="#{loginController.admin}" icon="ui-icon-close">
+                                             disabled="#{visitaController.disableEditarVisita()}" rendered="#{usuarioActual.usuario.admin}" icon="ui-icon-close">
                                 <p:confirm header="Confirmar" message="Esta seguro de cancelar esta visita?" icon="ui-icon-alert" />
                             </p:commandButton>
                             
                             <p:commandButton id="botonReporte" ajax="false" value="#{bundle.Reporte}" icon="ui-icon-document" 
                                              actionListener="#{visitaController.generarReporte}" disabled="#{visitaController.disableReporteYAnular()}"
-                                             rendered="#{loginController.admin}"/> 
+                                             rendered="#{usuarioActual.usuario.admin}"/> 
 
                             <p:commandButton id="botonRealizar" value="#{bundle.MessageRealizarVisita}" icon="ui-icon-check"
                                              oncomplete="PF('RealizarVisitaDialog').show()" disabled="#{visitaController.disableRealizarVisita()}"

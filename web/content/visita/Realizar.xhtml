@@ -13,7 +13,7 @@
                 <p:panelGrid columns="2">
                     <p:panel header="Datos Visita" style="width: 540px;">
 
-                        <c:if test="#{loginController.admin}">
+                        <c:if test="#{usuarioActual.usuario.admin}">
                             <p:panelGrid columns="1">
 
                                 <p:inputTextarea placeholder="#{bundle.CreateObservacionLabel_producto}" id="observacion" 
@@ -31,7 +31,7 @@
 
                             </p:panelGrid>
                         </c:if>
-                        <c:if test="#{!loginController.admin}">
+                        <c:if test="#{!usuarioActual.usuario.admin}">
                             <div class="containerVisita">
                                 <p>Solo el usuario administrador puede editar los datos de la visita</p>
                             </div>

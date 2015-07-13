@@ -24,8 +24,10 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import jp.entidades.ReciboCaja;
+import jp.entidades.Tercero;
 import jp.facades.CajaFacade;
 import jp.facades.ReciboCajaFacade;
+import jp.facades.TerceroFacade;
 import jp.facades.TransactionFacade;
 import jp.seguridad.UsuarioActual;
 import jp.util.EstadoPagoFactura;
@@ -40,6 +42,8 @@ public class ReciboCajaController implements Serializable {
     private ReciboCajaFacade ejbFacade;
     @EJB
     private UsuarioActual ejbUsuarioFacade;
+    @EJB
+    private TerceroFacade ejbTerceroFacade;
     @EJB
     private TransactionFacade transactionFacade;
     @EJB
@@ -168,6 +172,10 @@ public class ReciboCajaController implements Serializable {
 
     public UsuarioActual getEjbUsuarioFacade() {
         return ejbUsuarioFacade;
+    }
+
+    public TerceroFacade getEjbTerceroFacade() {
+        return ejbTerceroFacade;
     }
 
     public TransactionFacade getTransactionFacade() {
@@ -404,6 +412,10 @@ public class ReciboCajaController implements Serializable {
     
     public int getEstadoAnulado(){
         return EstadoPagoFactura.ANULADO.getValor();
+    }
+    
+    public List<Tercero> llenarTercero(String query) {
+        return getEjbTerceroFacade().getTerceroByQuery(query);
     }
 
 }

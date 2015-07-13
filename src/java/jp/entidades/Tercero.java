@@ -13,13 +13,14 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import jp.entidades.auxiliar.Codificable;
 
 @Entity
 @Table(uniqueConstraints = {
     @UniqueConstraint(columnNames = {"numdocumento"})})
 @NamedQueries({
     @NamedQuery(name = "Tercero.findAll", query = "SELECT t FROM Tercero t")})
-public class Tercero implements Serializable {
+public class Tercero implements Serializable, Codificable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,6 +56,7 @@ public class Tercero implements Serializable {
         this.nombre = nombre;
     }
 
+    @Override
     public Long getId() {
         return id;
     }
@@ -79,6 +81,7 @@ public class Tercero implements Serializable {
         this.numdocumento = numdocumento;
     }
 
+    @Override
     public String getNombre() {
         return nombre;
     }
@@ -110,6 +113,16 @@ public class Tercero implements Serializable {
     @Override
     public String toString() {
         return this.getNombre();
+    }
+
+    @Override
+    public String getCodigo() {
+        return null;
+    }
+
+    @Override
+    public String getTipo() {
+        return null;
     }
     
 }

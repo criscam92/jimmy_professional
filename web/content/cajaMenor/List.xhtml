@@ -12,7 +12,7 @@
 
         <ui:define name="body">
             <h:form id="formReciboCaja">
-                <p:panel header="Recibos de Caja Menor" style="width: 790px; margin: auto;">
+                <p:panel header="Recibos de Caja Menor" style="width: 830px; margin: auto;">
                     <p:panelGrid columns="2">
                         <p:panelGrid columns="4">
 
@@ -39,8 +39,13 @@
 
                         </p:panelGrid>
                         <p:panelGrid columns="2">
+                            <p:outputLabel value="#{bundle.MessageTerceroTitle}" for="tercero" />
+                            <p:autoComplete size="26" id="tercero" minQueryLength="3" panelStyle="width: 320px;" value="#{reciboCajaController.nuevoRecibo.tercero}"
+                                            itemValue="#{tercero}" completeMethod="#{reciboCajaController.llenarTercero}" effect="fade" converter="terceroconverter"
+                                            itemLabel="#{tercero.toString()}" var="tercero"/>
                             <p:outputLabel for="detalle" value="Detalle:"/>
-                            <p:inputTextarea id="detalle" value="#{reciboCajaController.nuevoRecibo.detalle}" required="true" requiredMessage="El campo Detalle es requerido"/>
+                            <p:inputTextarea id="detalle" value="#{reciboCajaController.nuevoRecibo.detalle}" required="true" 
+                                             requiredMessage="El campo Detalle es requerido" style="width: 156px;"/>
                         </p:panelGrid>
                     </p:panelGrid>
 
@@ -64,7 +69,6 @@
                             <p:outputLabel styleClass="valor" value="#{reciboCajaController.total}">
                                 <f:convertNumber type="currency" currencySymbol="$" maxFractionDigits="0" locale="es_CO" />
                             </p:outputLabel>
-
                         </div>
                     </f:facet>
 
@@ -156,6 +160,13 @@
                         </f:facet>
                         <h:outputText value="#{item.detalle}"/>
                     </p:column>
+                    
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Tercero"/>
+                        </f:facet>
+                        <h:outputText value="#{item.tercero}"/>
+                    </p:column>
 
                     <p:column>
                         <f:facet name="header">
@@ -184,13 +195,13 @@
 
                     <p:columnGroup type="footer">
                         <p:row>
-                            <p:column footerText="SubTotal" colspan="6" style="font-weight: bold; text-align:right;"/>
+                            <p:column footerText="SubTotal" colspan="7" style="font-weight: bold; text-align:right;"/>
                             <p:column footerText="$ #{reciboCajaController.totalIngresos}" style="font-weight: bold;"/>
                             <p:column footerText="$ #{reciboCajaController.totalEgresos}" style="font-weight: bold;"/>
                         </p:row>
 
                         <p:row>
-                            <p:column footerText="Total" colspan="6" style="font-weight: bold; text-align:right;"/>
+                            <p:column footerText="Total" colspan="7" style="font-weight: bold; text-align:right;"/>
                             <p:column footerText="$ #{reciboCajaController.totalRecibos}" colspan="2" style="font-weight: bold;"/>
                         </p:row>
                     </p:columnGroup>
