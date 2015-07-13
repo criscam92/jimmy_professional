@@ -13,11 +13,13 @@ import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import javax.inject.Inject;
 import jp.entidades.ActualizaBaseCaja;
 import jp.entidades.Caja;
 import jp.facades.ActualizaCajaFacade;
@@ -32,7 +34,7 @@ public class CajaController implements Serializable {
     private CajaFacade ejbFacade;
     @EJB
     private ActualizaCajaFacade ejbActualizarCajaFacade;
-    @EJB
+    @Inject
     private UsuarioActual usuarioActual;
     private Caja selected;
     private ActualizaBaseCaja actualizaBaseCajaMenor;

@@ -101,7 +101,7 @@
 
                                 <p:commandButton styleClass="boton_accion" id="botonAnular" value="#{bundle.Anull}" actionListener="#{reciboCajaController.anularRecibo()}" 
                                                  update=":growl,datalist,botonAnular" 
-                                                 disabled="#{reciboCajaController.disableAnular() || empty reciboCajaController.selected}" rendered="#{loginController.admin}" icon="ui-icon-alert">
+                                                 disabled="#{reciboCajaController.disableAnular() || empty reciboCajaController.selected}" rendered="#{usuarioActual.usuario.admin}" icon="ui-icon-alert">
                                     <p:confirm header="Confirmar" message="Esta seguro de anular este recibo?" icon="ui-icon-alert" />
                                 </p:commandButton>
 

@@ -3,14 +3,16 @@ package jp.seguridad;
 import java.io.Serializable;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
+import javax.ejb.Stateless;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import jp.entidades.Usuario;
 import jp.facades.UsuarioFacade;
 
-@ManagedBean(name = "currentUser")
+@ManagedBean(name = "usuarioActual")
 @ViewScoped
+@Stateless
 public class UsuarioActual implements Serializable {
 
     private Usuario usuario;

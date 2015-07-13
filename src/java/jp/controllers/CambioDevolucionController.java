@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.faces.bean.ManagedBean;
@@ -23,10 +22,8 @@ import javax.faces.convert.FacesConverter;
 import javax.inject.Inject;
 import jp.entidades.Devolucion;
 import jp.entidades.DevolucionProducto;
-import jp.entidades.Empleado;
 import jp.entidades.Factura;
 import jp.entidades.FacturaProducto;
-import jp.entidades.Producto;
 import jp.entidades.Talonario;
 import jp.facades.DevolucionFacade;
 import jp.facades.FacturaFacade;
@@ -37,7 +34,6 @@ import jp.seguridad.UsuarioActual;
 import jp.util.EstadoPagoFactura;
 import jp.util.TipoPago;
 import jp.util.TipoTalonario;
-import org.primefaces.event.SelectEvent;
 
 @ManagedBean(name = "cambioDevolucionController")
 @ViewScoped
