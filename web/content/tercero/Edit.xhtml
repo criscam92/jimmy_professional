@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="TerceroEditDlg" widgetVar="TerceroEditDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.EditTerceroTitle}">
+            <h:form id="TerceroEditForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{terceroController.selected != null}">
+                        <p:outputLabel value="#{bundle.EditTerceroLabel_nombre}" for="nombre" />
+                        <p:inputText id="nombre" value="#{terceroController.selected.nombre}" title="#{bundle.EditTerceroTitle_nombre}" required="true" requiredMessage="#{bundle.EditTerceroRequiredMessage_nombre}"/>
+                        <p:outputLabel value="#{bundle.EditTerceroLabel_numdocumento}" for="numdocumento" />
+                        <p:inputText id="numdocumento" value="#{terceroController.selected.numdocumento}" title="#{bundle.EditTerceroTitle_numdocumento}" required="true" requiredMessage="#{bundle.EditTerceroRequiredMessage_numdocumento}"/>
+                        <p:outputLabel value="#{bundle.CreateTerceroLabel_tipodocumento}" for="tipodocumento" />
+                        <p:selectOneMenu id="tipodocumento" value="#{terceroController.selected.tipodocumento}" required="true" 
+                                         requiredMessage="#{bundle.CreateTerceroRequiredMessage_tipodocumento}" style="width: 134px;">
+                            <f:selectItems value="#{terceroController.tipoDocumentos}"/>
+                        </p:selectOneMenu>                        
+                    </p:panelGrid>
+                    <p:commandButton actionListener="#{terceroController.update}" value="#{bundle.Save}" update="display,:TerceroListForm:datalist,:growl" oncomplete="handleSubmit(args, 'TerceroEditDialog');"/>
+                    <p:commandButton value="#{bundle.Cancel}" type="button" onclick="PF('TerceroEditDialog').hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>
