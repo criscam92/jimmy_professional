@@ -28,10 +28,10 @@
                 <h:form id="menuForm">
 
                     <p:menubar>
-                        <p:menuitem class="menuPrincipal" value="#{bundle.Home}" icon="ui-icon-home"/>
+                        <p:menuitem class="menuPrincipal" value="#{bundle.Home}" icon="ui-icon-home" outcome="/content/index.xhtml"/>
 
                         <p:submenu class="menuPrincipal" label="Clientes">
-                            <p:menuitem value="Clientes" outcome="/content/cliente/List.xhtml" />                            
+                            <p:menuitem value="Clientes" outcome="/content/cliente/List.xhtml" />
                             <p:menuitem value="Cartera" outcome="/content/cartera/List.xhtml" />
                         </p:submenu>
 
@@ -40,6 +40,10 @@
                             <p:menuitem value="Productos" outcome="/content/producto/List.xhtml" />
                             <p:menuitem value="Promociones" outcome="/content/promocion/List.xhtml" />
                             <p:menuitem value="Consultar" outcome="/content/consultar/List.xhtml" />
+                            <p:submenu class="menuPrincipal" label="Salida de Productos">
+                                <p:menuitem value="Salida" outcome="/content/salidaProducto/Create.xhtml" />
+                                <p:menuitem value="Consulta de Salidas" outcome="/content/salidaProducto/List.xhtml" />
+                            </p:submenu>
                         </p:submenu>
 
                         <p:submenu class="menuPrincipal" label="Pedidos">
@@ -93,6 +97,8 @@
                                 <p:menuitem value="Conceptos" outcome="/content/concepto/List.xhtml" />
                                 <p:menuitem value="Caja" outcome="/content/caja/List.xhtml" />
                             </p:submenu>
+                            
+                            <p:menuitem value="Tipos de Salida" outcome="/content/tipoSalidaProducto/List.xhtml" />
 
                             <p:menuitem value="Códigos de Devolución" outcome="/content/codigoDevolucion/List.xhtml" />
                             <p:menuitem value="Talonarios" outcome="/content/talonario/List.xhtml" />

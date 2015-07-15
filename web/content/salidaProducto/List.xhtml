@@ -1,0 +1,115 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <ui:composition template="/content/index.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.ListSalidaTitle}"></h:outputText>
+        </ui:define>
+
+        <ui:define name="body">
+            <h:form id="formSalidas">
+                <p:dataTable id="datalist" rowKey="#{item.id}" selectionMode="single"
+                             value="#{salidaProductoController.salidaItems}" selection="#{salidaProductoController.salida}"
+                             styleClass="tabla" var="item"
+                             paginator="true" rows="10"
+                             rowsPerPageTemplate="10,20,30,40,50"
+                             paginatorPosition="bottom"
+                             emptyMessage="#{bundle.EmptyTable}"
+                             rowStyleClass="#{item.estado == salidaProductoController.estadoAnulado ? 'anulado' : 'realizado'}"
+                             widgetVar="tablaSalidas">
+
+                    <p:ajax event="rowSelect" update="botonAnular,:formSalidasProductos" listener="#{salidaProductoController.updateListSalidaProductos(salidaProductoController.salida)}"/>
+                    <p:ajax event="rowUnselect" update="botonAnular,:formSalidasProductos" listener="#{salidaProductoController.updateListSalidaProductos(salidaProductoController.salida)}"/>
+
+                    <f:facet name="header">
+                        <div id="titulo">
+                            <h:outputText value="#{bundle.ListSalidaTitle}"/>
+                        </div>
+                        <div id="acciones">
+                            <p:commandButton styleClass="boton_accion" id="botonAnular" value="#{bundle.Anull}" actionListener="#{salidaProductoController.anularSalida()}" 
+                                             update="@form,:growl,datalist,botonAnular" 
+                                             disabled="#{salidaProductoController.disableAnular() || empty salidaProductoController.salida}" rendered="#{usuarioActual.usuario.admin}" icon="ui-icon-alert">
+                                <p:confirm header="Confirmar" message="Esta seguro de anular esta Salida?" icon="ui-icon-alert" />
+                            </p:commandButton>
+                            <p:commandLink styleClass="exporter" title="Exportar a Excel" ajax="false" disabled="#{salidaProductoController.salidaItems == null}">
+                                <i class="fa fa-file-excel-o"></i>
+                                <p:dataExporter type="xls" target="datalist" fileName="salidas" />
+                            </p:commandLink>
+                        </div>
+                    </f:facet>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.DescripcionTitle}"/>
+                        </f:facet>
+                        <h:outputText value="#{item.descripcion}"/>                            
+                    </p:column>
+                    <p:column sortBy="#{item.fecha}">
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.FechaTitle}"/>
+                        </f:facet>
+                        <h:outputText value="#{item.fecha}">
+                            <f:convertDateTime pattern="dd/MM/yyyy HH:MM a" />
+                        </h:outputText>
+                    </p:column>
+                    <p:column sortBy="#{item.tipo.toString()}">
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.TipoTitle}"/>
+                        </f:facet>
+                        <h:outputText value="#{item.tipo.toString()}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.UsuarioTitle}"/>
+                        </f:facet>
+                        <h:outputText value="#{item.usuario.toString()}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.EstadoTitle}"/>
+                        </f:facet>
+                        <h:outputText value="#{salidaProductoController.getEstadoSalida(item.estado)}"/>
+                    </p:column>
+                </p:dataTable>
+            </h:form><br/>
+
+            <h:form id="formSalidasProductos">
+                <p:dataTable id="datalist" rowKey="#{item.id}"
+                             value="#{salidaProductoController.itemsSalidaProductos}"
+                             styleClass="tabla" var="item"
+                             paginator="true" rows="10"
+                             rowsPerPageTemplate="10,20,30,40,50"
+                             paginatorPosition="bottom"
+                             emptyMessage="#{bundle.EmptyTable}"
+                             widgetVar="tablaSalidasProductos">
+
+                    <f:facet name="header">
+                        <div id="titulo">
+                            <h:outputText value="#{bundle.ListSalidaProductoTitle}"/>
+                        </div>
+                    </f:facet>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.ProductoTitle}"/>
+                        </f:facet>
+                        <h:outputText value="#{item.producto.toString()}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.CantidadTitle}"/>
+                        </f:facet>
+                        <h:outputText value="#{item.cantidad}"/>
+                    </p:column>
+                </p:dataTable>
+                <p:confirmDialog global="true">
+                    <p:commandButton value="Si" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" update="@form"/>
+                    <p:commandButton value="No" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                </p:confirmDialog>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>
+

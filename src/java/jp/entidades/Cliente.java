@@ -92,6 +92,9 @@ public class Cliente implements Serializable {
     @JoinColumn(name = "empleado", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Empleado empleado;
+    @JoinColumn(name = "usuario", referencedColumnName = "id", nullable = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private Usuario usuario;
     @JoinColumn(name = "tipo", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private TipoCliente tipo;
@@ -236,6 +239,14 @@ public class Cliente implements Serializable {
 
     public void setEmpleado(Empleado empleado) {
         this.empleado = empleado;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 
     public TipoCliente getTipo() {

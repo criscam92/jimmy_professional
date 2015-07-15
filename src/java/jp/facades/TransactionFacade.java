@@ -1,5 +1,6 @@
 package jp.facades;
 
+import java.util.Calendar;
 import java.util.List;
 import javax.annotation.Resource;
 import javax.ejb.LocalBean;
@@ -37,6 +38,8 @@ import jp.entidades.Producto;
 import jp.entidades.ProductoHelper;
 import jp.entidades.ProductoPromocionHelper;
 import jp.entidades.ReciboCaja;
+import jp.entidades.Salida;
+import jp.entidades.SalidaProducto;
 import jp.entidades.Visita;
 import jp.entidades.VisitaProducto;
 import jp.util.EstadoPagoFactura;
@@ -690,6 +693,68 @@ public class TransactionFacade {
             getEntityManager().clear();
         }
         return false;
+    }
+
+    public void createSalidaProducto(Salida salida, List<SalidaProducto> salidasProductos) {
+        userTransaction = sessionContext.getUserTransaction();
+        try {
+            userTransaction.begin();
+
+            Salida salidaTMP = new Salida();
+            salidaTMP.setDescripcion(salida.getDescripcion());
+            salidaTMP.setFecha(Calendar.getInstance().getTime());
+            salidaTMP.setTipo(salida.getTipo());
+            salidaTMP.setUsuario(salida.getUsuario());
+            getEntityManager().merge(salidaTMP);
+
+            for (SalidaProducto sp : salidasProductos) {
+                SalidaProducto salidaProducto = new SalidaProducto();
+                salidaProducto.setSalida(salidaTMP);
+                salidaProducto.setId(null);
+                salidaProducto.setProducto(sp.getProducto());
+                salidaProducto.setCantidad(sp.getCantidad());
+                getEntityManager().merge(salidaProducto);
+            }
+
+            userTransaction.commit();
+        } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
+            try {
+                System.out.println("======>");
+                e.printStackTrace();
+                System.out.println("<======");
+                userTransaction.rollback();
+            } catch (IllegalStateException | SecurityException | SystemException es) {
+                System.out.println("======>");
+                es.printStackTrace();
+                System.out.println("<======");
+            }
+        }
+    }
+    
+    public boolean anularSalida(Salida salida) {
+        boolean result;
+        userTransaction = sessionContext.getUserTransaction();
+        try {
+            userTransaction.begin();
+            Salida s = getEntityManager().find(Salida.class, salida.getId());
+            s.setEstado(EstadoPagoFactura.ANULADO.getValor());
+            getEntityManager().merge(s);
+            userTransaction.commit();
+            result = true;
+        } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException e) {
+            result = false;
+            try {
+                System.out.println("======>");
+                e.printStackTrace();
+                System.out.println("<======");
+                userTransaction.rollback();
+            } catch (IllegalStateException | SecurityException | SystemException es) {
+                System.out.println("======>");
+                es.printStackTrace();
+                System.out.println("<======");
+            }
+        }
+        return result;
     }
 
 }
