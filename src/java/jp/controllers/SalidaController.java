@@ -17,12 +17,14 @@ import javax.faces.convert.FacesConverter;
 import jp.entidades.Producto;
 import jp.entidades.Salida;
 import jp.entidades.SalidaProducto;
+import jp.facades.ProductoFacade;
 import jp.facades.SalidaFacade;
 import jp.facades.TransactionFacade;
 import jp.seguridad.UsuarioActual;
 import jp.util.EstadoPagoFactura;
 import jp.util.JsfUtil;
 import jp.util.JsfUtil.PersistAction;
+import org.primefaces.event.SelectEvent;
 
 @ManagedBean(name = "salidaController")
 @ViewScoped
@@ -34,11 +36,14 @@ public class SalidaController implements Serializable {
     private TransactionFacade ejbTransactionFacade;
     @EJB
     private UsuarioActual ejbUsuarioActual;
+    @EJB
+    private ProductoFacade productoFacade;
     private List<Salida> items = null;
     private Salida selected;
     private List<SalidaProducto> salidasProducto;
     private int cantidad;
     private Producto producto;
+    private Integer disponible;
 
     public SalidaController() {
         selected = new Salida();
@@ -77,12 +82,24 @@ public class SalidaController implements Serializable {
         this.cantidad = cantidad;
     }
 
+    public Integer getDisponible() {
+        return disponible;
+    }
+
+    public void setDisponible(Integer diponible) {
+        this.disponible = diponible;
+    }
+
     public TransactionFacade getEjbTransactionFacade() {
         return ejbTransactionFacade;
     }
 
     public UsuarioActual getEjbUsuarioActual() {
         return ejbUsuarioActual;
+    }
+
+    public ProductoFacade getProductoFacade() {
+        return productoFacade;
     }
 
     protected void setEmbeddableKeys() {
@@ -225,26 +242,62 @@ public class SalidaController implements Serializable {
     }
 
     public void addSalidaProducto() {
-        if (producto != null && cantidad > 0) {
-            for (SalidaProducto sp : salidasProducto) {
-                if (sp.getProducto().getId().equals(producto.getId())) {
-                    int indice = salidasProducto.indexOf(sp);
-                    salidasProducto.get(indice).setCantidad(sp.getCantidad() + cantidad);
-                    producto = null;
-                    cantidad = 0;
-                    return;
+        if (salidaProductoValido()) {
+            if (producto != null && cantidad > 0) {
+                for (SalidaProducto sp : salidasProducto) {
+                    if (sp.getProducto().getId().equals(producto.getId())) {
+                        int indice = salidasProducto.indexOf(sp);
+                        salidasProducto.get(indice).setCantidad(sp.getCantidad() + cantidad);
+                        producto = null;
+                        cantidad = 0;
+                        disponible = null;
+                        return;
+                    }
                 }
+                SalidaProducto sp = new SalidaProducto();
+                sp.setId(salidasProducto.size() + 1l);
+                sp.setCantidad(cantidad);
+                sp.setProducto(producto);
+                sp.setSalida(selected);
+                salidasProducto.add(sp);
+                producto = null;
+                cantidad = 0;
+                disponible = null;
+            } else {
+                JsfUtil.addErrorMessage("El campo cantidad debe ser mayor a 0");
             }
-            SalidaProducto sp = new SalidaProducto();
-            sp.setId(salidasProducto.size() + 1l);
-            sp.setCantidad(cantidad);
-            sp.setProducto(producto);
-            sp.setSalida(selected);
-            salidasProducto.add(sp);
-            producto = null;
-            cantidad = 0;
-        } else {
-            JsfUtil.addErrorMessage("El campo cantidad debe ser mayor a 0");
         }
+    }
+
+    private boolean salidaProductoValido() {
+        if (disponible != null) {
+            if (cantidad > disponible) {
+                JsfUtil.addErrorMessage("La cantidad no puede ser mayor a la cantidad disponible");
+                return false;
+            } else {
+                return true;
+            }
+        }
+        return true;
+    }
+
+    public void onItemSelectProducto(SelectEvent event) {
+        Producto p = (Producto) event.getObject();
+        disponible = getProductoFacade().getCantidadDisponibleByProducto(p) - getCantidadProductosAgregados(p);
+        if (disponible <= 0) {
+            disponible = null;
+            cantidad = 1;
+            producto = null;
+            JsfUtil.addErrorMessage("No hay existencias del producto " + p.toString());
+        }
+    }
+
+    private int getCantidadProductosAgregados(Producto p) {
+        for (SalidaProducto sp : salidasProducto) {
+            if (sp.getProducto().getId().equals(p.getId())) {
+                return sp.getCantidad();
+            }
+        }
+        return 0;
     }
 }

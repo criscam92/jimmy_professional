@@ -28,16 +28,19 @@
                 <br/>
 
                 <div style="width: 900px; margin: 0 auto;">
-                    <p:panel header="Productos a Salir">
-                            <p:panelGrid columns="5">
-                                <p:outputLabel for="producto" value="#{bundle.CreateDevolucionProductoLabel_producto}"/>
-                                <p:autoComplete id="producto" minQueryLength="3" value="#{salidaController.producto}" itemValue="#{pro}" onclick="select()"
-                                                completeMethod="#{promocionController.llenarProducto}" effect="fade" converter="productoconverter" itemLabel="#{pro.toString()}" var="pro"/>
-                                <p:outputLabel for="cantidad" value="#{bundle.CreateDevolucionProductoLabel_cantidad}"/>
-                                <p:inputText value="#{salidaController.cantidad}" required="true" id="cantidad" requiredMessage="#{bundle.CreateDevolucionProductoRequiredMessage_cantidad}"/>
-                                <p:commandButton value="#{bundle.AddItem}" icon="ui-icon-plus" actionListener="#{salidaController.addSalidaProducto()}"
-                                                 update="@form,:growl" process="@form"/>
-                            </p:panelGrid>
+                    <p:panel header="Productos a Salir" id="panelProductosSalida">
+                        <p:panelGrid columns="6">
+                            <p:outputLabel for="producto" value="#{bundle.CreateDevolucionProductoLabel_producto}"/>
+                            <p:autoComplete id="producto" minQueryLength="3" value="#{salidaController.producto}" itemValue="#{pro}" onclick="select()"
+                                            completeMethod="#{promocionController.llenarProducto}" effect="fade" converter="productoconverter" itemLabel="#{pro.toString()}" var="pro">
+                                <p:ajax event="itemSelect" listener="#{salidaController.onItemSelectProducto}" update="panelProductosSalida,:growl" />
+                            </p:autoComplete>
+                            <p:outputLabel for="cantidad" value="#{bundle.CreateDevolucionProductoLabel_cantidad}"/>
+                            <p:inputText value="#{salidaController.cantidad}" required="true" id="cantidad" requiredMessage="#{bundle.CreateDevolucionProductoRequiredMessage_cantidad}"/>
+                            <p:inputText id="disponible" readonly="true" placeholder="Disponible" value="#{salidaController.disponible}" style="text-align: center;width: 60px;"/>
+                            <p:commandButton value="#{bundle.AddItem}" icon="ui-icon-plus" actionListener="#{salidaController.addSalidaProducto()}"
+                                             update="panelProductosSalida,@form,:growl" process="@form"/>
+                        </p:panelGrid>
 
                         <h:form id="formTabla">
                             <p:dataTable id="datalist" rowKey="#{item.id}" selectionMode="single"

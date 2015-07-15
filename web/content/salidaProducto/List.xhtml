@@ -52,7 +52,7 @@
                             <h:outputText value="#{bundle.FechaTitle}"/>
                         </f:facet>
                         <h:outputText value="#{item.fecha}">
-                            <f:convertDateTime pattern="dd/MM/yyyy HH:MM a" />
+                            <f:convertDateTime pattern="dd/MMM/yyyy hh:mm a" />
                         </h:outputText>
                     </p:column>
                     <p:column sortBy="#{item.tipo.toString()}">
@@ -80,7 +80,7 @@
                 <p:dataTable id="datalist" rowKey="#{item.id}"
                              value="#{salidaProductoController.itemsSalidaProductos}"
                              styleClass="tabla" var="item"
-                             paginator="true" rows="10"
+                             paginator="true" rows="5"
                              rowsPerPageTemplate="10,20,30,40,50"
                              paginatorPosition="bottom"
                              emptyMessage="#{bundle.EmptyTable}"
