@@ -34,4 +34,25 @@ public class TerceroFacade extends AbstractFacade<Tercero> {
         return null;
     }
     
+    public boolean existeDocumento(Tercero tercero){
+        try {
+            String jpql = "SELECT COUNT(t.id) FROM Tercero t WHERE t.numdocumento = :documento";
+            if(tercero.getId()!=null){
+                jpql += " AND e.id != :id";
+            }
+            Query query = getEntityManager().createQuery(jpql);
+            query.setParameter("documento", tercero.getNumdocumento());
+            if(tercero.getId()!=null){
+                query.setParameter("id", tercero.getId());
+            }
+            Long result = (Long) query.getSingleResult();
+            if(result>0l){
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    
 }

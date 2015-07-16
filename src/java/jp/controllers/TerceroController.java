@@ -57,9 +57,13 @@ public class TerceroController implements Serializable {
     }
 
     public void create() {
-        persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageTercero", "CreateSuccessM"}));
-        if (!JsfUtil.isValidationFailed()) {
-            items = null;    // Invalidate list of items to trigger re-query.
+        if (!getFacade().existeDocumento(selected)) {
+            persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageTercero", "CreateSuccessM"}));
+            if (!JsfUtil.isValidationFailed()) {
+                items = null;    // Invalidate list of items to trigger re-query.
+            }
+        } else {
+            JsfUtil.addErrorMessage("El Documento ya se encuentra en la base de datos.");
         }
     }
 
@@ -81,11 +85,11 @@ public class TerceroController implements Serializable {
         }
         return items;
     }
-    
+
     public Map<String, Integer> getTipoDocumentos() {
         return TipoDocumento.getMapTipoDocumentos();
     }
-    
+
     public String getTipoDocumento(int tipo) {
         return TipoDocumento.getFromValue(tipo).getDetalle();
     }
