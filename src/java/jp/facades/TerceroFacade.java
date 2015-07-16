@@ -23,7 +23,7 @@ public class TerceroFacade extends AbstractFacade<Tercero> {
     
     public List<Tercero> getTerceroByQuery(String query) {
         try {
-            Query q = getEntityManager().createQuery("SELECT t FROM Tercero t WHERE UPPER(t.nombre) LIKE UPPER(:param)");
+            Query q = getEntityManager().createQuery("SELECT t FROM Tercero t WHERE UPPER(CONCAT(t.numdocumento,' - ',t.nombre)) LIKE UPPER(:param)");
             q.setParameter("param", "%" + query + "%");
             q.setFirstResult(0);
             q.setMaxResults(10);
