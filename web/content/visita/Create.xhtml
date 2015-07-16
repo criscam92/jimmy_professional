@@ -13,7 +13,7 @@
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{visitaController.selected != null}">
                         <p:outputLabel value="#{bundle.CreateVisitaLabel_fecha}" for="fecha" />
-                        <p:calendar size="20" mindate="#{visitaController.fechaActual}" id="fecha" pattern="MM/dd/yyyy HH:mm:ss" value="#{visitaController.selected.fecha}" title="#{bundle.EditVisitaTitle_fecha}" required="true" requiredMessage="#{bundle.EditVisitaRequiredMessage_fecha}" showOn="button"/>
+                        <p:calendar size="20" mindate="#{visitaController.fechaActual}" id="fecha" pattern="MM/dd/yyyy HH:mm" value="#{visitaController.selected.fecha}" title="#{bundle.EditVisitaTitle_fecha}" required="true" requiredMessage="#{bundle.EditVisitaRequiredMessage_fecha}" showOn="button"/>
                         <p:outputLabel value="#{bundle.CreateVisitaLabel_cliente}" for="cliente" />
                         <p:autoComplete size="25" id="cliente" minQueryLength="3" value="#{visitaController.selected.cliente}" requiredMessage="#{bundle.EditTalonarioRequiredMessage_cli}"
                                         itemValue="#{cliente}" completeMethod="#{clienteController.llenarCliente}" effect="fade" converter="clienteconverter" 

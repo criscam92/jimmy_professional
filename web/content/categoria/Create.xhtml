@@ -17,6 +17,9 @@
                         <p:outputLabel value="#{bundle.EditCategoriaLabel_desc}" for="descripcion" />
                         <p:inputText id="descripcion" value="#{categoriaController.selected.descripcion}"
                                      title="#{bundle.EditCategoriaTitle_desc}" required="true" requiredMessage="#{bundle.EditCategoriaRequiredMessage_desc}"/>
+                        <p:outputLabel value="#{bundle.EditCategoriaLabel_cupo}" for="cupo_maximo" />
+                        <p:inputText id="cupo_maximo" value="#{categoriaController.selected.cupoMaximo}"
+                                     title="#{bundle.EditCategoriaTitle_cupo}" required="true" requiredMessage="#{bundle.EditCategoriaRequiredMessage_cupo}"/>
                     </p:panelGrid>
                 </h:panelGroup>
                 <div class="botonesDialog">
