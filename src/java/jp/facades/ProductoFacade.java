@@ -12,7 +12,9 @@ import jp.entidades.Factura;
 import jp.entidades.FacturaProducto;
 import jp.entidades.IngresoProducto;
 import jp.entidades.Producto;
+import jp.entidades.SalidaProducto;
 import jp.entidades.VisitaProducto;
+import jp.util.EstadoPagoFactura;
 import jp.util.EstadoVisita;
 
 @Stateless
@@ -60,7 +62,7 @@ public class ProductoFacade extends AbstractFacade<Producto> {
     public int getCantidadDisponibleByProducto(Producto producto) {
         int result;
         try {
-            int productosIngresos = 0, productosVisitas = 0, productosDevolucion = 0, productosDespachoFactura = 0;
+            int productosIngresos = 0, productosVisitas = 0, productosDevolucion = 0, productosDespachoFactura = 0, productosSalidas = 0;
             Query query1 = getEntityManager().createQuery("SELECT ip FROM IngresoProducto ip WHERE ip.producto.id = :prod");
             query1.setParameter("prod", producto.getId());
 
@@ -92,8 +94,17 @@ public class ProductoFacade extends AbstractFacade<Producto> {
             for (Object o : query4.getResultList()) {
                 productosDespachoFactura += ((DespachoFacturaProducto) o).getCantidad();
             }
+            
+            Query query5 = getEntityManager().createQuery("SELECT sp FROM SalidaProducto sp WHERE sp.producto.id = :prod AND sp.salida.estado <> :est1 AND sp.salida.estado <> :est2");
+            query5.setParameter("prod", producto.getId());
+            query5.setParameter("est1", EstadoPagoFactura.ANULADO.getValor());
+            query5.setParameter("est2", EstadoPagoFactura.CANCELADO.getValor());
 
-            result = (productosIngresos - productosVisitas - productosDespachoFactura) + productosDevolucion;
+            for (Object o : query5.getResultList()) {
+                productosSalidas += ((SalidaProducto) o).getCantidad();
+            }
+
+            result = (productosIngresos - productosVisitas - productosDespachoFactura - productosSalidas) + productosDevolucion;
 
         } catch (Exception e) {
             result = 0;
