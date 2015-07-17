@@ -50,7 +50,9 @@
                         <f:facet name="header">
                             <h:outputText value="% Comisión"/>
                         </f:facet>
-                        <h:outputText value="#{item.comision}"/>
+                        <h:outputText value="#{item.comision}">
+                            <f:convertNumber pattern="$ #,##0.00" currencySymbol="$" />
+                        </h:outputText>
                     </p:column>
                     
                 </p:dataTable>

@@ -4,7 +4,8 @@
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions">
 
     <ui:composition>
 
@@ -31,7 +32,8 @@
 
                             </p:selectOneMenu>
                             <p:outputLabel value="#{bundle.CreateClienteLabel_cat}" for="categoria" />
-                            <p:selectOneMenu converter="categoriaconverter" style="width: 155px" id="categoria" value="#{clienteController.selected.categoria}">
+                            <p:selectOneMenu converter="categoriaconverter" style="width: 155px" id="categoria" value="#{clienteController.selected.categoria}"
+                                             required="true" requiredMessage="El campo Categoria es requerido">
                                 <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>
                                 <f:selectItems  value="#{categoriaController.itemsAvailableSelectOne}"
                                                 var="categoriaItem"
@@ -39,10 +41,10 @@
                             </p:selectOneMenu>
                             <p:outputLabel value="#{bundle.CreateClienteLabel_contacto}" for="contacto" />
                             <p:inputText id="contacto" value="#{clienteController.selected.contacto}" title="#{bundle.CreateClienteTitle_contacto}"/>
-                            <p:outputLabel value="#{bundle.CreateClienteLabel_cupoCredito}" for="cupoCredito" />
-                            <p:inputText id="cupoCredito" value="#{clienteController.selected.cupoCredito}" title="#{bundle.CreateClienteTitle_cupoCredito}" required="true" requiredMessage="#{bundle.CreateClienteRequiredMessage_cupoCredito}">
-                                <f:validateDoubleRange minimum="0" />
-                            </p:inputText>
+                            <p:outputLabel value="#{bundle.CreateClienteLabel_cupoCredito}" />
+                            <pe:inputNumber value="#{clienteController.selected.cupoCredito}" title="#{bundle.CreateClienteTitle_cupoCredito}" 
+                                            required="true" requiredMessage="#{bundle.CreateClienteRequiredMessage_cupoCredito}" symbolPosition="s" emptyValue="zero"/>
+                                            
                             <p:outputLabel value="#{bundle.MessageCreateRecargoForm}"/>
                             <p:selectBooleanCheckbox  id="checkRecargo" value="#{clienteController.recargo}" disabled="#{clienteController.disable}">
                                 <p:ajax update="tarifa tarifaEspecial" listener="#{clienteController.showTarifaEspecial}"/>

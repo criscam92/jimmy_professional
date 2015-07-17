@@ -143,6 +143,9 @@ public class ClienteController implements Serializable {
 
     public void createOrEdit() {
         if (!getFacade().existeDocumento(selected)) {
+            if (selected.getCupoCredito() == 0.0) {
+                selected.setCupoCredito(selected.getCategoria().getCupoMaximo());
+            }
             String mensaje = (selected.getId() != null ? JsfUtil.getMessageBundle(new String[]{"MessageCliente", "UpdateSuccessM"})
                     : JsfUtil.getMessageBundle(new String[]{"MessageCliente", "CreateSuccessM"}));
             selected.setUsuario(getEjbUsuarioActualFacade().getUsuario());
@@ -155,7 +158,7 @@ public class ClienteController implements Serializable {
             }
         } else {
             setError(uiError);
-            JsfUtil.addErrorMessage("El documento ya se encuentra en la base de datos.");
+            JsfUtil.addErrorMessage("El Documento ya se encuentra en la base de datos.");
         }
     }
 

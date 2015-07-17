@@ -59,7 +59,7 @@
                             <h:outputText value="#{bundle.EditCategoriaTitle_cupo}"/>
                         </f:facet>
                         <h:outputText value="#{item.cupoMaximo}">
-                            <f:convertNumber type="currency" currencySymbol="$ " maxFractionDigits="0" />
+                            <f:convertNumber pattern="$ #,##0.00" currencySymbol="$" />
                         </h:outputText>
                     </p:column>
                 </p:dataTable>
