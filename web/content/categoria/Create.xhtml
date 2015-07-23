@@ -3,7 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions">
 
     <ui:composition>
 
@@ -17,6 +18,10 @@
                         <p:outputLabel value="#{bundle.EditCategoriaLabel_desc}" for="descripcion" />
                         <p:inputText id="descripcion" value="#{categoriaController.selected.descripcion}"
                                      title="#{bundle.EditCategoriaTitle_desc}" required="true" requiredMessage="#{bundle.EditCategoriaRequiredMessage_desc}"/>
+                        <p:outputLabel value="#{bundle.EditCategoriaLabel_cupo}" for="cupo_maximo" />
+                        <pe:inputNumber id="cupo_maximo" value="#{categoriaController.selected.cupoMaximo}"
+                                     title="#{bundle.EditCategoriaTitle_cupo}" required="true" requiredMessage="#{bundle.EditCategoriaRequiredMessage_cupo}"
+                                     symbolPosition="s" emptyValue="zero"/>
                     </p:panelGrid>
                 </h:panelGroup>
                 <div class="botonesDialog">

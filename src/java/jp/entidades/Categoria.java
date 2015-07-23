@@ -44,6 +44,10 @@ public class Categoria implements Serializable, Codificable {
     @Size(max = 40)
     @Column(length = 40)
     private String descripcion;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "cupo_maximo", nullable = false)
+    private double cupoMaximo;
     @OneToMany(mappedBy = "categoria", fetch = FetchType.LAZY)
     private List<Promocion> promocionList;
 
@@ -82,6 +86,14 @@ public class Categoria implements Serializable, Codificable {
 
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
+    }
+
+    public double getCupoMaximo() {
+        return cupoMaximo;
+    }
+
+    public void setCupoMaximo(double cupoMaximo) {
+        this.cupoMaximo = cupoMaximo;
     }
 
     @XmlTransient

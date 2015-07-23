@@ -2,7 +2,6 @@ package jp.controllers;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,29 +13,28 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import jp.entidades.Tercero;
-import jp.facades.TerceroFacade;
+import jp.entidades.TipoSalidaProducto;
+import jp.facades.TipoSalidaProductoFacade;
 import jp.util.JsfUtil;
 import jp.util.JsfUtil.PersistAction;
-import jp.util.TipoDocumento;
 
-@ManagedBean(name = "terceroController")
+@ManagedBean(name = "tipoSalidaProductoController")
 @ViewScoped
-public class TerceroController implements Serializable {
+public class TipoSalidaProductoController implements Serializable {
 
     @EJB
-    private TerceroFacade ejbFacade;
-    private List<Tercero> items = null;
-    private Tercero selected;
+    private TipoSalidaProductoFacade ejbFacade;
+    private List<TipoSalidaProducto> items = null;
+    private TipoSalidaProducto selected;
 
-    public TerceroController() {
+    public TipoSalidaProductoController() {
     }
 
-    public Tercero getSelected() {
+    public TipoSalidaProducto getSelected() {
         return selected;
     }
 
-    public void setSelected(Tercero selected) {
+    public void setSelected(TipoSalidaProducto selected) {
         this.selected = selected;
     }
 
@@ -46,52 +44,40 @@ public class TerceroController implements Serializable {
     protected void initializeEmbeddableKey() {
     }
 
-    private TerceroFacade getFacade() {
+    private TipoSalidaProductoFacade getFacade() {
         return ejbFacade;
     }
 
-    public Tercero prepareCreate() {
-        selected = new Tercero();
+    public TipoSalidaProducto prepareCreate() {
+        selected = new TipoSalidaProducto();
         initializeEmbeddableKey();
         return selected;
     }
 
     public void create() {
-        if (!getFacade().existeDocumento(selected)) {
-            persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageTercero", "CreateSuccessM"}));
-            if (!JsfUtil.isValidationFailed()) {
-                items = null;    // Invalidate list of items to trigger re-query.
-            }
-        } else {
-            JsfUtil.addErrorMessage("El Documento ya se encuentra en la base de datos.");
+        persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"TipoSalidaProductoMessage", "CreateSuccessM"}));
+        if (!JsfUtil.isValidationFailed()) {
+            items = null;    // Invalidate list of items to trigger re-query.
         }
     }
 
     public void update() {
-        persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessageTercero", "UpdateSuccessM"}));
+        persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"TipoSalidaProductoMessage", "UpdateSuccessM"}));
     }
 
     public void destroy() {
-        persist(PersistAction.DELETE, JsfUtil.getMessageBundle(new String[]{"MessageTercero", "DeleteSuccessM"}));
+        persist(PersistAction.DELETE, JsfUtil.getMessageBundle(new String[]{"TipoSalidaProductoMessage", "DeleteSuccessM"}));
         if (!JsfUtil.isValidationFailed()) {
             selected = null; // Remove selection
             items = null;    // Invalidate list of items to trigger re-query.
         }
     }
 
-    public List<Tercero> getItems() {
+    public List<TipoSalidaProducto> getItems() {
         if (items == null) {
             items = getFacade().findAll();
         }
         return items;
-    }
-
-    public Map<String, Integer> getTipoDocumentos() {
-        return TipoDocumento.getMapTipoDocumentos();
-    }
-
-    public String getTipoDocumento(int tipo) {
-        return TipoDocumento.getFromValue(tipo).getDetalle();
     }
 
     private void persist(PersistAction persistAction, String successMessage) {
@@ -122,34 +108,34 @@ public class TerceroController implements Serializable {
         }
     }
 
-    public List<Tercero> getItemsAvailableSelectMany() {
+    public List<TipoSalidaProducto> getItemsAvailableSelectMany() {
         return getFacade().findAll();
     }
 
-    public List<Tercero> getItemsAvailableSelectOne() {
+    public List<TipoSalidaProducto> getItemsAvailableSelectOne() {
         return getFacade().findAll();
     }
 
-    @FacesConverter(forClass = Tercero.class, value = "terceroconverter")
-    public static class TerceroControllerConverter implements Converter {
+    @FacesConverter(forClass = TipoSalidaProducto.class, value = "tiposalidaproductoconverter")
+    public static class TipoSalidaProductoControllerConverter implements Converter {
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
             if (value == null || value.length() == 0) {
                 return null;
             }
-            TerceroController controller = (TerceroController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "terceroController");
+            TipoSalidaProductoController controller = (TipoSalidaProductoController) facesContext.getApplication().getELResolver().
+                    getValue(facesContext.getELContext(), null, "tipoSalidaProductoController");
             return controller.getFacade().find(getKey(value));
         }
 
-        java.lang.Long getKey(String value) {
-            java.lang.Long key;
-            key = Long.valueOf(value);
+        java.lang.Integer getKey(String value) {
+            java.lang.Integer key;
+            key = Integer.valueOf(value);
             return key;
         }
 
-        String getStringKey(java.lang.Long value) {
+        String getStringKey(java.lang.Integer value) {
             StringBuilder sb = new StringBuilder();
             sb.append(value);
             return sb.toString();
@@ -160,11 +146,11 @@ public class TerceroController implements Serializable {
             if (object == null) {
                 return null;
             }
-            if (object instanceof Tercero) {
-                Tercero o = (Tercero) object;
+            if (object instanceof TipoSalidaProducto) {
+                TipoSalidaProducto o = (TipoSalidaProducto) object;
                 return getStringKey(o.getId());
             } else {
-                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "object {0} is of type {1}; expected type: {2}", new Object[]{object, object.getClass().getName(), Tercero.class.getName()});
+                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "object {0} is of type {1}; expected type: {2}", new Object[]{object, object.getClass().getName(), TipoSalidaProducto.class.getName()});
                 return null;
             }
         }

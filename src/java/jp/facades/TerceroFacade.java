@@ -23,7 +23,7 @@ public class TerceroFacade extends AbstractFacade<Tercero> {
     
     public List<Tercero> getTerceroByQuery(String query) {
         try {
-            Query q = getEntityManager().createQuery("SELECT t FROM Tercero t WHERE UPPER(t.nombre) LIKE UPPER(:param)");
+            Query q = getEntityManager().createQuery("SELECT t FROM Tercero t WHERE UPPER(CONCAT(t.numdocumento,' - ',t.nombre)) LIKE UPPER(:param)");
             q.setParameter("param", "%" + query + "%");
             q.setFirstResult(0);
             q.setMaxResults(10);
@@ -32,6 +32,27 @@ public class TerceroFacade extends AbstractFacade<Tercero> {
             e.printStackTrace();
         }
         return null;
+    }
+    
+    public boolean existeDocumento(Tercero tercero){
+        try {
+            String jpql = "SELECT COUNT(t.id) FROM Tercero t WHERE t.numdocumento = :documento";
+            if(tercero.getId()!=null){
+                jpql += " AND e.id != :id";
+            }
+            Query query = getEntityManager().createQuery(jpql);
+            query.setParameter("documento", tercero.getNumdocumento());
+            if(tercero.getId()!=null){
+                query.setParameter("id", tercero.getId());
+            }
+            Long result = (Long) query.getSingleResult();
+            if(result>0l){
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
     
 }

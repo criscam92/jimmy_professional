@@ -20,6 +20,7 @@ import javax.faces.convert.FacesConverter;
 import javax.faces.event.AjaxBehaviorEvent;
 import jp.facades.ClienteFacade;
 import jp.facades.ParametrosFacade;
+import jp.seguridad.UsuarioActual;
 import org.primefaces.context.RequestContext;
 
 @ManagedBean(name = "clienteController")
@@ -30,6 +31,8 @@ public class ClienteController implements Serializable {
     private jp.facades.ClienteFacade ejbFacade;
     @EJB
     private ParametrosFacade ejbRecargoFacade;
+    @EJB
+    private UsuarioActual ejbUsuarioActualFacade;
     private List<Cliente> items = null;
     private Cliente selected;
     private final String uiError;
@@ -100,6 +103,10 @@ public class ClienteController implements Serializable {
         return ejbRecargoFacade;
     }
 
+    public UsuarioActual getEjbUsuarioActualFacade() {
+        return ejbUsuarioActualFacade;
+    }
+
     public String getHeader() {
         return header;
     }
@@ -136,9 +143,12 @@ public class ClienteController implements Serializable {
 
     public void createOrEdit() {
         if (!getFacade().existeDocumento(selected)) {
+            if (selected.getCupoCredito() == 0.0) {
+                selected.setCupoCredito(selected.getCategoria().getCupoMaximo());
+            }
             String mensaje = (selected.getId() != null ? JsfUtil.getMessageBundle(new String[]{"MessageCliente", "UpdateSuccessM"})
                     : JsfUtil.getMessageBundle(new String[]{"MessageCliente", "CreateSuccessM"}));
-
+            selected.setUsuario(getEjbUsuarioActualFacade().getUsuario());
             persist(PersistAction.CREATE, mensaje);
 
             if (!JsfUtil.isValidationFailed() && selected.getId() == null) {
@@ -148,7 +158,7 @@ public class ClienteController implements Serializable {
             }
         } else {
             setError(uiError);
-            JsfUtil.addErrorMessage("El documento ya se encuentra en la base de datos.");
+            JsfUtil.addErrorMessage("El Documento ya se encuentra en la base de datos.");
         }
     }
 

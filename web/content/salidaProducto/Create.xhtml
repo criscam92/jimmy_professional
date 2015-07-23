@@ -1,0 +1,88 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <ui:composition template="/content/index.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.TitleSalidaProducto}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:form id="formSalida">
+                <p:panel header="Datos de la Salida" style="width: 900px; margin: auto;">
+                    <p:panelGrid columns="4" styleClass="center">
+                        <p:outputLabel for="tipoSalida" value="#{bundle.CreateTipoSalida}"/>
+                        <p:selectOneMenu converter="tiposalidaproductoconverter" id="tipoSalida" value="#{salidaController.selected.tipo}"
+                                         required="true" requiredMessage="#{bundle.MessageTipoSalidaRequired}" style="width: 137px;">
+                            <f:selectItems value="#{tipoSalidaProductoController.itemsAvailableSelectOne}" 
+                                           var="tipoSalidaItem"
+                                           itemValue="#{tipoSalidaItem}"/>
+                        </p:selectOneMenu>
+
+                        <p:outputLabel for="descripcion" value="#{bundle.CreateTipoSalidaDescripcion}"/>
+                        <p:inputText id="descripcion" value="#{salidaController.selected.descripcion}" style="width: 156px;"/>
+                    </p:panelGrid>
+                </p:panel>
+                <br/>
+
+                <div style="width: 900px; margin: 0 auto;">
+                    <p:panel header="Productos a Salir" id="panelProductosSalida">
+                        <p:panelGrid columns="6">
+                            <p:outputLabel for="producto" value="#{bundle.CreateDevolucionProductoLabel_producto}"/>
+                            <p:autoComplete id="producto" minQueryLength="3" value="#{salidaController.producto}" itemValue="#{pro}" onclick="select()"
+                                            completeMethod="#{promocionController.llenarProducto}" effect="fade" converter="productoconverter" itemLabel="#{pro.toString()}" var="pro">
+                                <p:ajax event="itemSelect" listener="#{salidaController.onItemSelectProducto}" update="panelProductosSalida,:growl" />
+                            </p:autoComplete>
+                            <p:outputLabel for="cantidad" value="#{bundle.CreateDevolucionProductoLabel_cantidad}"/>
+                            <p:inputText value="#{salidaController.cantidad}" required="true" id="cantidad" requiredMessage="#{bundle.CreateDevolucionProductoRequiredMessage_cantidad}"/>
+                            <p:inputText id="disponible" readonly="true" placeholder="Disponible" value="#{salidaController.disponible}" style="text-align: center;width: 60px;"/>
+                            <p:commandButton value="#{bundle.AddItem}" icon="ui-icon-plus" actionListener="#{salidaController.addSalidaProducto()}"
+                                             update="panelProductosSalida,@form,:growl" process="@form"/>
+                        </p:panelGrid>
+
+                        <h:form id="formTabla">
+                            <p:dataTable id="datalist" rowKey="#{item.id}" selectionMode="single"
+                                         value="#{salidaController.salidasProducto}"
+                                         styleClass="tabla" var="item"
+                                         paginator="true" rows="10"
+                                         rowsPerPageTemplate="10,20,30,40,50"
+                                         paginatorPosition="bottom"
+                                         emptyMessage="#{bundle.EmptyTable}"
+                                         widgetVar="tablaSalidaProducto">
+                                <f:facet name="header">
+                                    <h:outputText value="#{bundle.ListSalidaProductoTitle}"/>
+                                </f:facet>
+                                <p:column>
+                                    <f:facet name="header">
+                                        Producto
+                                    </f:facet>
+                                    <h:outputText value="#{item.producto.toString()}"/>
+                                </p:column>
+                                <p:column>
+
+                                    <f:facet name="header">
+                                        Cantidad
+                                    </f:facet>
+                                    <h:outputText value="#{item.cantidad}"/>
+                                </p:column>
+                                <p:column style="text-align: center;" width="100">
+                                    <f:facet name="header">
+                                        <h:outputText value="Quitar"/>
+                                    </f:facet>
+                                    <p:commandButton icon="ui-icon-closethick" update="datalist"
+                                                     actionListener="#{salidaController.removeSalidaProducto(item)}" process="datalist"/>
+                                </p:column>
+                            </p:dataTable>
+                        </h:form><br/>
+
+                    </p:panel><br/>
+                    <p:commandButton actionListener="#{salidaController.create()}" value="#{bundle.Save}"
+                                     icon="ui-icon-disk" update="@form,:growl"/>
+                </div>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>
+

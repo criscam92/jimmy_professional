@@ -112,7 +112,7 @@ public class Tercero implements Serializable, Codificable {
 
     @Override
     public String toString() {
-        return this.getNombre();
+        return this.getNumdocumento()+ " - " + this.getNombre();
     }
 
     @Override

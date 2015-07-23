@@ -3,7 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <ui:composition>
 
@@ -17,6 +18,10 @@
                         <h:outputText value="#{categoriaController.selected.codigo}" title="#{bundle.EditCategoriaTitle_cod}"/>
                         <h:outputText value="#{bundle.EditCategoriaLabel_desc}"/>
                         <h:outputText value="#{categoriaController.selected.descripcion}" title="#{bundle.EditCategoriaTitle_desc}"/>
+                        <h:outputText value="#{bundle.EditCategoriaLabel_cupo}"/>
+                        <h:outputText value="#{categoriaController.selected.cupoMaximo}" title="#{bundle.EditCategoriaTitle_cupo}">
+                            <f:convertNumber type="currency" currencySymbol="$ " maxFractionDigits="0" />
+                        </h:outputText>
                     </p:panelGrid>                   
                 </h:panelGroup>
                 <div class="botonesDialog">

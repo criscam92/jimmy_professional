@@ -4,7 +4,8 @@
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:pe="http://primefaces.org/ui/extensions">
 
     <ui:composition>
 
@@ -24,7 +25,8 @@
                                 </p:inputText>
 
                                 <p:outputLabel value="#{bundle.CreatePromocionLabel_valor}" for="valor" />
-                                <p:inputText style="width: 100px" id="valor" value="#{promocionController.selected.valor}" title="#{bundle.CreatePromocionTitle_valor}" required="true" requiredMessage="#{bundle.CreatePromocionRequiredMessage_valor}"/>
+                                <pe:inputNumber id="valor" value="#{promocionController.selected.valor}" title="#{bundle.CreatePromocionTitle_valor}"
+                                                required="true" requiredMessage="#{bundle.CreatePromocionRequiredMessage_valor}" symbolPosition="s" emptyValue="zero"/>
 
                                 <p:outputLabel value="#{bundle.CreateClienteLabel_cat}" for="categoria" />
                                 <p:selectOneMenu converter="categoriaconverter" style="width: 155px" id="categoria" value="#{promocionController.selected.categoria}">
@@ -35,7 +37,8 @@
                                 </p:selectOneMenu>
 
                                 <p:outputLabel value="Valor(US)" for="valorVentaUsd" />
-                                <p:inputText style="width: 100px" id="valorVentaUsd" value="#{promocionController.selected.valorVentaUsd}" title="#{bundle.CreateProductoTitle_valorVentaUsd}" required="true" requiredMessage="EL CAMPO VALOR Valor Venta (US) ES OBLIGATORIO"/>
+                                <pe:inputNumber style="width: 100px" id="valorVentaUsd" value="#{promocionController.selected.valorVentaUsd}" title="#{bundle.CreateProductoTitle_valorVentaUsd}" 
+                                                required="true" requiredMessage="EL CAMPO VALOR Valor Venta (US) ES OBLIGATORIO" symbolPosition="s" emptyValue="zero"/>
 
                             </p:panelGrid>
                         </p:panel>

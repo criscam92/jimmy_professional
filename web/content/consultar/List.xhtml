@@ -16,23 +16,24 @@
             <h:form id="ProductosDisponiblesListForm">
 
                 <p:dataTable id="datalist"
-                    value="#{productoController.items}"
-                    styleClass="tabla" var="item"
-                    paginator="true" rows="10"
-                    rowsPerPageTemplate="10,20,30,40,50"
-                    paginatorPosition="bottom"
-                    emptyMessage="#{bundle.EmptyTable}"
-                    widgetVar="tablaIngresosProductos"
-                    >
+                             value="#{productoController.items}"
+                             styleClass="tabla" var="item"
+                             paginator="true" rows="10"
+                             rowsPerPageTemplate="10,20,30,40,50"
+                             paginatorPosition="bottom"
+                             emptyMessage="#{bundle.EmptyTable}"
+                             widgetVar="tablaIngresosProductos"
+                             >
 
                     <f:facet name="header">
                         <div id="titulo">
                             Productos Disponibles
                         </div>
                         <div id="acciones">
-                            <p:commandButton icon="fa fa-table" value="Excel" ajax="false">
-                                <p:dataExporter type="xls" target="datalist" fileName="Inventario" postProcessor="#{productoController.postProcessXLS}" />
-                            </p:commandButton>
+                            <p:commandLink styleClass="exporter" title="Exportar a Excel" ajax="false" disabled="#{productoController.items == null}">
+                                <i class="fa fa-file-excel-o"></i>
+                                <p:dataExporter type="xls" target="datalist" fileName="Inventario" postProcessor="#{productoController.postProcessXLS}"/>
+                            </p:commandLink>
                         </div>
                     </f:facet>
 

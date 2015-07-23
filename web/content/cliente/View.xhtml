@@ -23,6 +23,8 @@
                             <h:outputText value="#{clienteController.selected.ciudad.toString()}" title="#{bundle.ViewClienteTitle_ciudad}"/>                            
                             <h:outputText styleClass="titleVista" value="#{bundle.CreateClienteLabel_contacto}"/>
                             <h:outputText value="#{clienteController.setValorString(clienteController.selected.contacto)}" title="#{bundle.ViewClienteTitle_ciudad}"/>                           
+                            <h:outputText styleClass="titleVista" value="#{bundle.CreateClienteLabel_usuario}"/>
+                            <h:outputText value="#{clienteController.setValorString(clienteController.selected.usuario.toString())}" title="#{bundle.CreateClienteTitle_usuario}"/>                           
                         </p:panelGrid>
                         <p:panelGrid columns="1">
                             <h:outputText styleClass="titleVista" value="#{bundle.ViewClienteLabel_cupoCredito}"/>
@@ -44,8 +46,8 @@
                             <h:outputText styleClass="titleVista" value="#{bundle.ViewClienteLabel_telefonos}"/>
                             <h:outputText value="#{clienteController.setValorString(clienteController.selected.telefonos)}" title="#{bundle.ViewClienteTitle_telefonos}"/>                            
                             <h:outputText styleClass="titleVista" value="#{bundle.CreateClienteLabel_cumple}"/>
-                            <h:outputText value="#{clienteController.selected.fechaCumpleanos}" title="#{bundle.CreateClienteTitle_cumple}">
-                                <f:convertDateTime pattern="dd-MMM-yyyy h:mm a"/>
+                            <h:outputText value="#{clienteController.setValorObject(clienteController.selected.fechaCumpleanos)}" title="#{bundle.CreateClienteTitle_cumple}">
+                                <f:convertDateTime pattern="dd-MMM-yyyy"/>
                             </h:outputText>
                             <h:outputText styleClass="titleVista" value="#{bundle.ViewClienteLabel_empleado}"/>
                             <h:outputText value="#{clienteController.selected.empleado.toString()}" title="#{bundle.ViewClienteTitle_empleado}"/>

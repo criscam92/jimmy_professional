@@ -53,6 +53,15 @@
                         </f:facet>
                         <h:outputText value="#{item.descripcion}"/>
                     </p:column>
+                    
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.EditCategoriaTitle_cupo}"/>
+                        </f:facet>
+                        <h:outputText value="#{item.cupoMaximo}">
+                            <f:convertNumber pattern="$ #,##0.00" currencySymbol="$" />
+                        </h:outputText>
+                    </p:column>
                 </p:dataTable>
             </h:form>
 

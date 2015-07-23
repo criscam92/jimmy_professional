@@ -4,7 +4,8 @@
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:pe="http://primefaces.org/ui/extensions">
 
     <ui:composition>
         
@@ -28,13 +29,16 @@
                         <p:inputText id="gramaje" value="#{productoController.selected.gramaje}" title="#{bundle.CreateProductoTitle_gramaje}" required="true" requiredMessage="#{bundle.CreateProductoRequiredMessage_gramaje}"/>
                         
                         <p:outputLabel value="#{bundle.CreateProductoLabel_valorCosto}" for="valorCosto" />
-                        <p:inputText id="valorCosto" value="#{productoController.selected.valorCosto}" title="#{bundle.CreateProductoTitle_valorCosto}" required="true" requiredMessage="#{bundle.CreateProductoRequiredMessage_valorCosto}"/>
+                        <pe:inputNumber id="valorCosto" value="#{productoController.selected.valorCosto}" title="#{bundle.CreateProductoTitle_valorCosto}"
+                                        required="true" requiredMessage="#{bundle.CreateProductoRequiredMessage_valorCosto}" symbolPosition="s" emptyValue="zero"/>
                         
                         <p:outputLabel value="#{bundle.CreateProductoLabel_valorVenta}" for="valorVenta" />
-                        <p:inputText id="valorVenta" value="#{productoController.selected.valorVenta}" title="#{bundle.CreateProductoTitle_valorVenta}" required="true" requiredMessage="#{bundle.CreateProductoRequiredMessage_valorVenta}"/>
+                        <pe:inputNumber id="valorVenta" value="#{productoController.selected.valorVenta}" title="#{bundle.CreateProductoTitle_valorVenta}" 
+                                        required="true" requiredMessage="#{bundle.CreateProductoRequiredMessage_valorVenta}" symbolPosition="s" emptyValue="zero"/>
                         
                         <p:outputLabel value="#{bundle.CreateProductoLabel_valorVentaUsd}" for="valorVentaUsd" />
-                        <p:inputText id="valorVentaUsd" value="#{productoController.selected.valorVentaUsd}" title="#{bundle.CreateProductoTitle_valorVentaUsd}" required="true" requiredMessage="#{bun.CreateProductoRequiredMessage_valorVentaUSD}" />
+                        <pe:inputNumber id="valorVentaUsd" value="#{productoController.selected.valorVentaUsd}" title="#{bundle.CreateProductoTitle_valorVentaUsd}" 
+                                        required="true" requiredMessage="#{bun.CreateProductoRequiredMessage_valorVentaUSD}" symbolPosition="s" emptyValue="zero"/>
                         
                         <p:outputLabel value="#{bun.CreateProductoLabel_venta_publico}" for="ventapublico"/>
                         <p:selectBooleanCheckbox value="#{productoController.selected.ventaPublico}" id="ventapublico">
