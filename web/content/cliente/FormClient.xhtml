@@ -78,7 +78,7 @@
                                         title="#{bundle.CreateClienteTitle_cumple}" showOn="button" navigator="true"/>
 
                             <p:outputLabel value="#{bundle.CreateClienteLabel_empleado}" for="empleado" />
-                            <p:autoComplete size="23" id="empleado" minQueryLength="3" panelStyle="width: 320px;" value="#{clienteController.selected.empleado}" itemValue="#{empleado}" 
+                            <p:autoComplete size="20" id="empleado" minQueryLength="3" value="#{clienteController.selected.empleado}" itemValue="#{empleado}" 
                                             completeMethod="#{empleadoController.llenarEmpleado}" effect="fade" converter="empleadoconverter"
                                             itemLabel="#{empleado.toString()}" var="empleado" required="true">
                             </p:autoComplete>

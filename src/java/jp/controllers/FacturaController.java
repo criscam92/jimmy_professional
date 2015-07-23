@@ -162,19 +162,19 @@ public class FacturaController implements Serializable {
         } catch (Exception e) {
             estado = -1;
         }
-        
+
         try {
             fechaIni = sdf.parse(date1);
         } catch (Exception e) {
             fechaIni = null;
         }
-        
+
         try {
             fechaFin = sdf.parse(date2);
         } catch (Exception e) {
             fechaFin = null;
         }
-        
+
         items = getFacade().filterFactura(empleadoFiltro, cliente, tipoPago, estado, fechaIni, fechaFin);
     }
 
@@ -540,12 +540,12 @@ public class FacturaController implements Serializable {
             }
 
             if (comprobar) {
-                if (unidadesVenta < 1) {
-                    errorVenta = uiError;
-                    JsfUtil.addErrorMessage("El campo venta debe ser mayor a 0");
-                } else {
-                    errorVenta = "";
-                }
+//                if (unidadesVenta < 1) {
+//                    errorVenta = uiError;
+//                    JsfUtil.addErrorMessage("El campo venta debe ser mayor a 0");
+//                } else {
+//                    errorVenta = "";
+//                }
 
                 if (unidadesBonificacion < 0) {
                     errorBonificacion = uiError;
@@ -581,6 +581,16 @@ public class FacturaController implements Serializable {
             }
         }
         return false;
+    }
+
+    private boolean validaUnidades() {
+        if (unidadesVenta == 0 && unidadesBonificacion > 0) {
+            return true;
+        } else if (unidadesVenta > 0 && unidadesBonificacion < 1) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @FacesConverter(forClass = Factura.class, value = "facturaConverter")
@@ -655,7 +665,7 @@ public class FacturaController implements Serializable {
     }
 
     public void addProductoOrPromocion() {
-        if ((producto != null || promocion != null) && unidadesVenta > 0 && precio > 0 && selected.getCliente() != null) {
+        if ((producto != null || promocion != null) && validaUnidades() && precio > 0 && selected.getCliente() != null) {
             boolean isProducto = producto != null;
 
             boolean existe = false;
@@ -945,8 +955,8 @@ public class FacturaController implements Serializable {
     public int estadoRealizado() {
         return EstadoPagoFactura.REALIZADA.getValor();
     }
-    
-    public int estadoAnulado(){
+
+    public int estadoAnulado() {
         return EstadoPagoFactura.ANULADO.getValor();
     }
 
@@ -981,12 +991,12 @@ public class FacturaController implements Serializable {
             return null;
         }
     }
-    
-    public String tipo(int tipo){
+
+    public String tipo(int tipo) {
         return TipoPago.getFromValue(tipo).getDetalle();
     }
-    
-    public String estadoFactura(int estado){
+
+    public String estadoFactura(int estado) {
         return EstadoPagoFactura.getFromValue(estado).getDetalle();
     }
 }
