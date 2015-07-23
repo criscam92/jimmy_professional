@@ -31,6 +31,8 @@ import jp.entidades.IngresoProducto;
 import jp.entidades.Pago;
 import jp.entidades.PagoDetalle;
 import jp.entidades.PagoDevolucion;
+import jp.entidades.PagoHelper;
+import jp.entidades.PagoPublicidad;
 import jp.entidades.Promocion;
 import jp.entidades.PromocionProducto;
 import jp.entidades.Parametros;
@@ -38,8 +40,10 @@ import jp.entidades.Producto;
 import jp.entidades.ProductoHelper;
 import jp.entidades.ProductoPromocionHelper;
 import jp.entidades.ReciboCaja;
+import jp.entidades.RelacionFactura;
 import jp.entidades.Salida;
 import jp.entidades.SalidaProducto;
+import jp.entidades.TipoPagoHelper;
 import jp.entidades.Visita;
 import jp.entidades.VisitaProducto;
 import jp.util.EstadoPagoFactura;
@@ -730,7 +734,7 @@ public class TransactionFacade {
             }
         }
     }
-    
+
     public boolean anularSalida(Salida salida) {
         boolean result;
         userTransaction = sessionContext.getUserTransaction();
@@ -755,6 +759,63 @@ public class TransactionFacade {
             }
         }
         return result;
+    }
+
+    public void crearPago(List<PagoHelper> pagoHelpers, RelacionFactura relacionFactura) {
+        userTransaction = sessionContext.getUserTransaction();
+        try {
+            userTransaction.begin();
+            RelacionFactura rf = new RelacionFactura();
+            rf.setFecha(relacionFactura.getFecha());
+            rf.setObservaciones(relacionFactura.getObservaciones());
+            rf.setVendedor(relacionFactura.getVendedor());
+            getEntityManager().persist(rf);
+
+            for (PagoHelper ph : pagoHelpers) {
+                Factura f = getEntityManager().find(Factura.class, ph.getPago().getFactura().getId());
+                f.setSaldo(ph.getPago().getFactura().getSaldo());
+                getEntityManager().merge(f);
+
+                Pago p = new Pago();
+                p.setCuenta(ph.getPago().getCuenta());
+                p.setDolar(ph.getPago().getFactura().getDolar());
+                p.setEstado(ph.getPago().getEstado());
+                p.setFactura(f);
+                p.setFecha(ph.getPago().getFecha());
+                p.setFormaPago(ph.getPago().getFormaPago());
+                p.setNumeroCheque(ph.getPago().getNumeroCheque());
+                p.setObservaciones(ph.getPago().getObservaciones());
+                p.setOrdenPago(ph.getPago().getOrdenPago());
+                p.setRelacionFactura(rf);
+                p.setUsuario(ph.getPago().getUsuario());
+                p.setValorTotal(ph.getPago().getValorTotal());
+                getEntityManager().persist(p);
+
+                for (TipoPagoHelper tph : ph.getTipoPagoHelpers()) {
+                    PagoDetalle pd = new PagoDetalle();
+                    pd.setPago(p);
+                    pd.setTipo(tph.getTipo());
+                    pd.setValor(tph.getValor());
+                    getEntityManager().persist(pd);
+
+                    if (tph.getTipoPublicidad() != null) {
+                        PagoPublicidad pp = new PagoPublicidad();
+                        pp.setPagoDetalle(pd);
+                        pp.setTipo(tph.getTipoPublicidad());
+                        getEntityManager().persist(pp);
+                    }
+                }
+            }
+
+            userTransaction.commit();
+        } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
+            try {
+                userTransaction.rollback();
+            } catch (IllegalStateException | SecurityException | SystemException ex) {
+            }
+        } finally {
+            getEntityManager().clear();
+        }
     }
 
 }
