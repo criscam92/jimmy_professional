@@ -9,6 +9,8 @@ import jp.entidades.PagoPublicidad;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import jp.entidades.PagoDetalle;
 
 /**
  *
@@ -26,6 +28,19 @@ public class PagoPublicidadFacade extends AbstractFacade<PagoPublicidad> {
 
     public PagoPublicidadFacade() {
         super(PagoPublicidad.class);
+    }
+
+    public PagoPublicidad getPagoPublicidadByPagoDetalle(PagoDetalle pd) {
+        PagoPublicidad pagoPublicidad;
+        try {
+            Query query = getEntityManager().createQuery("SELECT pp FROM PagoPublicidad pp WHERE pp.pagoDetalle.id = :pd");
+            query.setParameter("pd", pd.getId());
+            query.setMaxResults(1);
+            pagoPublicidad = (PagoPublicidad) query.getSingleResult();
+        } catch (Exception e) {
+            pagoPublicidad = null;
+        }
+        return pagoPublicidad;
     }
     
 }

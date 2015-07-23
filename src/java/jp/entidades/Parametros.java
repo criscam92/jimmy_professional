@@ -39,10 +39,6 @@ public class Parametros implements Serializable {
     @NotNull
     @Column(name = "porcentaje_publicidad", nullable = false)
     private Float porcentajePublicidad;
-//    @Basic(optional = false)
-//    @NotNull
-//    @Column(name = "porcentaje_comision", nullable = false)
-//    private Float porcentajeComision;
     @Basic(optional = false)
     @NotNull
     @Column(name = "porcentaje_venta_public", nullable = false)
@@ -85,7 +81,6 @@ public class Parametros implements Serializable {
         this.recargoNacional = recargoNacional;
         this.recargoInternacional = recargoInternacional;
         this.porcentajePublicidad = porcentajePublicidad;
-//        this.porcentajeComision = porcentajeComision;
         this.porcentajeVentaPublic = porcentajeVentaPublic;
         this.precioDolar = precioDolar;
         this.valorProntoPago = valorProntoPago;
@@ -133,14 +128,6 @@ public class Parametros implements Serializable {
     public void setPorcentajePublicidad(Float porcentajePublicidad) {
         this.porcentajePublicidad = porcentajePublicidad;
     }
-
-//    public Float getPorcentajeComision() {
-//        return porcentajeComision;
-//    }
-//
-//    public void setPorcentajeComision(Float porcentajeComision) {
-//        this.porcentajeComision = porcentajeComision;
-//    }
 
     public Float getPorcentajeVentaPublic() {
         return porcentajeVentaPublic;
@@ -207,15 +194,11 @@ public class Parametros implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Parametros)) {
             return false;
         }
         Parametros other = (Parametros) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return !((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)));
     }
 
     @Override

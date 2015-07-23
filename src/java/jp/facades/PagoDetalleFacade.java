@@ -1,21 +1,17 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package jp.facades;
 
+import java.util.ArrayList;
+import java.util.List;
 import jp.entidades.PagoDetalle;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import jp.entidades.Pago;
 
-/**
- *
- * @author arturo
- */
 @Stateless
 public class PagoDetalleFacade extends AbstractFacade<PagoDetalle> {
+
     @PersistenceContext(unitName = "jimmy_professionalPU")
     private EntityManager em;
 
@@ -27,5 +23,17 @@ public class PagoDetalleFacade extends AbstractFacade<PagoDetalle> {
     public PagoDetalleFacade() {
         super(PagoDetalle.class);
     }
-    
+
+    public List<PagoDetalle> getPagoDetallesByPago(Pago pago) {
+        List<PagoDetalle> pagoDetalles;
+        try {
+            Query query = getEntityManager().createQuery("SELECT pd FROM PagoDetalle pd WHERE pd.pago.id = :pago");
+            query.setParameter("pago", pago.getId());
+            pagoDetalles = query.getResultList();
+        } catch (Exception e) {
+            pagoDetalles = new ArrayList<>();
+        }
+        return pagoDetalles;
+    }
+
 }

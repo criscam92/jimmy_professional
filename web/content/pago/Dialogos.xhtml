@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="PublicidadDlg" widgetVar="PublicidadDialog" modal="true" resizable="false" appendTo="@(body)" header="Publicidad">
+            <h:form id="PublicidadForm">
+
+                <p:dataTable styleClass="tabla" id="listPublicidad" value="#{nuevaRelacionFacturaController.tipoPagoHelpersPublicidad}" var="item"
+                             selectionMode="single" widgetVar="tblPublicidad" paginator="true" style="text-align: center; width: 500px;" rows="10"
+                             rowsPerPageTemplate="10,20,30,40,50" emptyMessage="#{bundle.EmptyTable}" paginatorPosition="bottom"
+                             paginatorAlwaysVisible="false" rowKey="#{item.id}"
+                             >
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Tipo"/>
+                        </f:facet>
+                        <h:outputText value="#{nuevaRelacionFacturaController.getTiposPagoAbono(item.tipo)}"/>
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Valor"/>
+                        </f:facet>
+                        <h:outputText value="#{item.valor}"/>
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Tipo Publicidad"/>
+                        </f:facet>
+                        <h:outputText value="#{item.tipoPublicidad.detalle}"/>
+                    </p:column>
+
+                </p:dataTable>
+                <div class="botonesDialog">
+                    <p:commandButton type="button" value="#{bundle.Close}" onclick="PF('PublicidadDialog').hide()"/>
+                </div>                
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="ComisionDlg" widgetVar="ComisionDialog" modal="true" resizable="false" appendTo="@(body)" header="Comisión">
+            <h:form id="ComisionForm">
+
+                <p:dataTable styleClass="tabla" id="listComision" value="#{nuevaRelacionFacturaController.tipoPagoHelpersComision}" var="item"
+                             selectionMode="single" widgetVar="tblComision" paginator="true" style="text-align: center; width: 500px;"
+                             rows="10" rowsPerPageTemplate="10,20,30,40,50" emptyMessage="#{bundle.EmptyTable}" paginatorPosition="bottom"
+                             paginatorAlwaysVisible="false" rowKey="#{item.id}"
+                             >
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Tipo"/>
+                        </f:facet>
+                        <h:outputText value="#{nuevaRelacionFacturaController.getTiposPagoAbono(item.tipo)}"/>
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Valor"/>
+                        </f:facet>
+                        <h:outputText value="#{item.valor}"/>
+                    </p:column>
+
+                </p:dataTable>
+                <div class="botonesDialog">
+                    <p:commandButton type="button" value="#{bundle.Close}" onclick="PF('ComisionDialog').hide()"/>
+                </div>
+            </h:form>
+        </p:dialog>
+    </ui:composition>
+</html>

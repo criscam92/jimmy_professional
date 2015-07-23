@@ -14,123 +14,109 @@
 
         <ui:define name="body">
             <h:form id="relacionFacturaForm">
+                <p:panel header="Nueva Relación de Facturas" style="width: 640px; margin: auto;">
 
-                <div class="ui-grid ui-grid-responsive">
-                    <div class="ui-grid-row">
-                        <div class="ui-grid-col-3 col-3-fixed">
-                            <p:panel>
-                                <f:facet name="header">
-                                    <h:outputText value="Nueva Relación de Facturas" />
-                                </f:facet>  
+                    <p:panelGrid columns="2">
+                        <p:panelGrid columns="2">
+                            <h:outputLabel for="fecha" value="Fecha:" />
+                            <p:calendar id="fecha" locale="es_CO" size="20" value="#{nuevaRelacionFacturaController.relacionFactura.fecha}" 
+                                        showOn="button" pattern="dd/MM/yyyy" required="true"
+                                        requiredMessage="Débe indicar la fecha para la relación de facturas"/>
+                            <p:outputLabel value="Vendedor:" for="empleado" />
+                            <p:autoComplete id="empleado" size="25" minQueryLength="3" value="#{nuevaRelacionFacturaController.relacionFactura.vendedor}" itemValue="#{empleado}" 
+                                            completeMethod="#{empleadoController.llenarEmpleado}" effect="fade" converter="empleadoconverter"
+                                            itemLabel="#{empleado.toString()}" var="empleado" required="true"
+                                            requiredMessage="Débe indicar el vendedor para la relación de facturas">
+                                <p:ajax event="itemSelect" listener="#{nuevaRelacionFacturaController.changedEmpleado}" update=":growl, :PagoCreateForm, empleado, datalist:createButton" />
+                            </p:autoComplete>
+                        </p:panelGrid>
+                        <p:panelGrid>
 
-                                <f:facet name="footer">
-                                    <p:commandButton value="Guardar" icon="ui-icon-disk" />
-                                </f:facet>
+                            <p:inputTextarea placeholder="Observaciones:" id="observaciones" cols="41" rows="4" autoResize="true" value="#{nuevaRelacionFacturaController.relacionFactura.observaciones}" />
+                        </p:panelGrid>
 
-                                <p:panelGrid>
+                    </p:panelGrid>
+                </p:panel>
+                <br/>
+                <p:dataTable styleClass="tabla" id="datalist" value="#{nuevaRelacionFacturaController.pagoHelpers}" var="item"
+                             selectionMode="single" selection="#{nuevaRelacionFacturaController.pagoHelper}"
+                             paginator="true"
+                             rowKey="#{item.id}"
+                             rows="10"
+                             rowsPerPageTemplate="10,20,30,40,50"
+                             emptyMessage="#{bundle.EmptyTable}"
+                             paginatorPosition="bottom"
+                             paginatorAlwaysVisible="false"
+                             >
 
-                                    <p:row>
-                                        <p:column>
-                                            <h:outputLabel for="fecha" value="Fecha:" />
-                                        </p:column>
-                                        <p:column>
-                                            <p:calendar id="fecha" locale="es_CO" size="19" value="#{nuevaRelacionFacturaController.relacionFactura.fecha}" 
-                                                        showOn="button" pattern="dd/MM/yyyy" required="true"
-                                                        requiredMessage="Débe indicar la fecha para la relación de facturas"/>
-                                        </p:column>
-                                    </p:row>
+                    <p:ajax event="rowSelect"   update="createButton editButton deleteButton"/>
+                    <p:ajax event="rowUnselect" update="createButton editButton deleteButton"/>
 
-                                    <p:row>
-                                        <p:column>
-                                            <p:outputLabel value="Vendedor:" for="empleado" />
-                                        </p:column>
-                                        <p:column>                                            
-                                            <p:autoComplete id="empleado" size="25" minQueryLength="3" value="#{nuevaRelacionFacturaController.relacionFactura.vendedor}" itemValue="#{empleado}" 
-                                                            completeMethod="#{empleadoController.llenarEmpleado}" effect="fade" converter="empleadoconverter"
-                                                            itemLabel="#{empleado.toString()}" var="empleado" required="true"
-                                                            requiredMessage="Débe indicar el vendedor para la relación de facturas">
-                                                <p:ajax event="itemSelect" listener="#{nuevaRelacionFacturaController.changedEmpleado}" update=":growl, :PagoCreateForm, empleado, datalist:createButton" />
-                                            </p:autoComplete>
-                                        </p:column>
-                                    </p:row>
-
-                                    <p:row>
-                                        <p:column colspan="2">
-                                            <p:outputLabel for="observaciones" value="Observaciones:"/>
-                                        </p:column>
-                                    </p:row>
-                                    <p:row>
-                                        <p:column colspan="2">
-                                            <p:inputTextarea id="observaciones" cols="41" rows="4" autoResize="true" value="#{nuevaRelacionFacturaController.relacionFactura.observaciones}" />
-                                        </p:column>
-                                    </p:row>
-
-                                </p:panelGrid>
-                            </p:panel>
+                    <f:facet name="header">
+                        <div id="titulo">
+                            Listado de Recibos
                         </div>
+                        <div id="acciones">
+                            <p:commandButton id="createButton" icon="ui-icon-plus" 
+                                             value="#{bundle.AddItem}" 
+                                             update=":growl, :PagoCreateForm"
+                                             disabled="#{nuevaRelacionFacturaController.relacionFactura.vendedor==null}"
+                                             oncomplete="if (args &amp;&amp; !args.validationFailed) PF('PagoCreateDialog').show()"
+                                             actionListener="#{nuevaRelacionFacturaController.prepareCreatePago}" />
 
-                        <div class="ui-grid-col-9 col-9-auto">
+                            <p:commandButton id="editButton" icon="ui-icon-pencil" 
+                                             value="#{bundle.Edit}" 
+                                             update=":growl, :PagoCreateForm"
+                                             disabled="#{nuevaRelacionFacturaController.pagoHelper.pago == null}"
+                                             oncomplete="if (args &amp;&amp; !args.validationFailed) PF('PagoCreateDialog').show()"
+                                             actionListener="#{nuevaRelacionFacturaController.prepareEditPago()}" />
 
-                            <p:panel header="Listado de Recibos">
-                                <p:dataTable id="datalist" value="#{nuevaRelacionFacturaController.items}" var="item"
-                                             selectionMode="single" selection="#{nuevaRelacionFacturaController.selected}"
-                                             paginator="true"
-                                             rowKey="#{item.id}"
-                                             rows="10"
-                                             rowsPerPageTemplate="10,20,30,40,50"
-                                             >
-
-                                    <p:ajax event="rowSelect"   update="createButton"/>
-                                    <p:ajax event="rowUnselect" update="createButton"/>
-
-                                    <p:column>
-                                        <f:facet name="header">
-                                            <h:outputText value="No Factura"/>
-                                        </f:facet>
-                                        <h:outputText value="#{item.factura.ordenPedido}"/>
-                                    </p:column>
-                                    <p:column>
-                                        <f:facet name="header">
-                                            <h:outputText value="No Recibo"/>
-                                        </f:facet>
-                                        <h:outputText value="#{item.ordenPago}"/>
-                                    </p:column>
-                                    <p:column>
-                                        <f:facet name="header">
-                                            <h:outputText value="Cliente"/>
-                                        </f:facet>
-                                        <h:outputText value="#{item.factura.cliente.nombre}"/>
-                                    </p:column>
-                                    <p:column>
-                                        <f:facet name="header">
-                                            <h:outputText value="Valor"/>
-                                        </f:facet>
-                                        <h:outputText value="#{item.valorTotal}"/>
-                                    </p:column>
-                                    <p:column>
-                                        <f:facet name="header">
-                                            <h:outputText value="Saldo"/>
-                                        </f:facet>
-                                        <h:outputText value="#{item.valorTotal}"/>
-                                    </p:column>
-                                    <f:facet name="footer">
-                                        <p:commandButton id="createButton" icon="ui-icon-plus" 
-                                                         value="#{bundle.AddItem}" 
-                                                         update=":growl, :PagoCreateForm:display"
-                                                         disabled="#{nuevaRelacionFacturaController.relacionFactura.vendedor==null}"
-                                                         oncomplete="if (args &amp;&amp; !args.validationFailed) PF('PagoCreateDialog').show()"
-                                                         actionListener="#{nuevaRelacionFacturaController.prepareCreatePago}" />
-                                    </f:facet>
-                                </p:dataTable>
-                            </p:panel>
-
+                            <p:commandButton id="deleteButton" icon="ui-icon-trash" 
+                                             value="#{bundle.Delete}" 
+                                             update=":growl, datalist"
+                                             disabled="#{nuevaRelacionFacturaController.pagoHelper.pago == null}"
+                                             actionListener="#{nuevaRelacionFacturaController.removeRecibo()}" >
+                                <p:confirm header="Confirmacion" message="Esta seguro de eliminar este recibo" icon="ui-icon-alert"/>
+                            </p:commandButton>
                         </div>
-                    </div>
+                    </f:facet>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="No Factura"/>
+                        </f:facet>
+                        <h:outputText value="#{item.pago.factura.ordenPedido}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="No Recibo"/>
+                        </f:facet>
+                        <h:outputText value="#{item.pago.ordenPago}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Cliente"/>
+                        </f:facet>
+                        <h:outputText value="#{item.pago.factura.cliente.nombre}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Valor"/>
+                        </f:facet>
+                        <h:outputText value="#{item.pago.valorTotal}"/>
+                    </p:column>
+                </p:dataTable>
+
+                <div style="margin-top: 10px;">
+                    <p:commandButton update=":growl, relacionFacturaForm" value="Guardar" icon="ui-icon-disk" actionListener="#{nuevaRelacionFacturaController.crearRecibo()}"/>
                 </div>
+                
+                <p:confirmDialog global="true">
+                    <p:commandButton value="Yes" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"/>
+                    <p:commandButton value="No"  styleClass="ui-confirmdialog-no"  icon="ui-icon-check"/>
+                </p:confirmDialog>
             </h:form>
-            
             <ui:include src="AgregarPago.xhtml" />
-            
         </ui:define>
     </ui:composition>
 

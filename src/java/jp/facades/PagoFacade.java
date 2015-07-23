@@ -5,6 +5,8 @@
  */
 package jp.facades;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -41,6 +43,19 @@ public class PagoFacade extends AbstractFacade<Pago> {
         } catch (Exception e) {
         }
         return 0;
+    }
+
+    public List<Pago> getPagosByFactura(Factura factura) {
+        List<Pago> pagos;
+        try {
+            Query query = getEntityManager().createQuery("SELECT p FROM Pago p WHERE p.factura.id = :fac AND p.estado = :est");
+            query.setParameter("fac", factura.getId());
+            query.setParameter("est", EstadoPagoFactura.REALIZADA.getValor());
+            pagos = query.getResultList();
+        } catch (Exception e) {
+            pagos = new ArrayList<>();
+        }
+        return pagos;
     }
 
 }
