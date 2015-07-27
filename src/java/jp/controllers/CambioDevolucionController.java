@@ -31,7 +31,7 @@ import jp.facades.ParametrosFacade;
 import jp.facades.TalonarioFacade;
 import jp.facades.TransactionFacade;
 import jp.seguridad.UsuarioActual;
-import jp.util.EstadoPagoFactura;
+import jp.util.EstadoFactura;
 import jp.util.TipoPago;
 import jp.util.TipoTalonario;
 
@@ -290,7 +290,7 @@ public class CambioDevolucionController implements Serializable {
         }
         factura.setTotalBruto(devolucion.getValorTotal());
         factura.setTotalPagar(devolucion.getValorTotal());
-        factura.setEstado(EstadoPagoFactura.REALIZADA.getValor());
+        factura.setEstado(EstadoFactura.REALIZADA.getValor());
         factura.setDolar(devolucion.getDolar());
         //orden_pedido desde el form
         if (factura.getDolar()) {

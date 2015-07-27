@@ -14,7 +14,7 @@ import jp.entidades.IngresoProducto;
 import jp.entidades.Producto;
 import jp.entidades.SalidaProducto;
 import jp.entidades.VisitaProducto;
-import jp.util.EstadoPagoFactura;
+import jp.util.EstadoFactura;
 import jp.util.EstadoVisita;
 
 @Stateless
@@ -97,8 +97,8 @@ public class ProductoFacade extends AbstractFacade<Producto> {
             
             Query query5 = getEntityManager().createQuery("SELECT sp FROM SalidaProducto sp WHERE sp.producto.id = :prod AND sp.salida.estado <> :est1 AND sp.salida.estado <> :est2");
             query5.setParameter("prod", producto.getId());
-            query5.setParameter("est1", EstadoPagoFactura.ANULADO.getValor());
-            query5.setParameter("est2", EstadoPagoFactura.CANCELADO.getValor());
+            query5.setParameter("est1", EstadoFactura.ANULADO.getValor());
+            query5.setParameter("est2", EstadoFactura.CANCELADO.getValor());
 
             for (Object o : query5.getResultList()) {
                 productosSalidas += ((SalidaProducto) o).getCantidad();

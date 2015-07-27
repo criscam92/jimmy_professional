@@ -11,7 +11,7 @@ import jp.entidades.Cliente;
 import jp.entidades.Devolucion;
 import jp.entidades.Factura;
 import jp.entidades.Pago;
-import jp.util.EstadoPagoFactura;
+import jp.util.EstadoFactura;
 
 @Stateless
 public class DevolucionFacade extends AbstractFacade<Devolucion> {

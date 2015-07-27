@@ -30,7 +30,7 @@ import jp.facades.ReciboCajaFacade;
 import jp.facades.TerceroFacade;
 import jp.facades.TransactionFacade;
 import jp.seguridad.UsuarioActual;
-import jp.util.EstadoPagoFactura;
+import jp.util.EstadoFactura;
 import jp.util.JsfUtil;
 import jp.util.JsfUtil.PersistAction;
 
@@ -206,7 +206,7 @@ public class ReciboCajaController implements Serializable {
     public void create() {
         if (nuevoRecibo != null) {
             nuevoRecibo.setUsuario(getEjbUsuarioFacade().getUsuario());
-            nuevoRecibo.setEstado(EstadoPagoFactura.REALIZADA.getValor());
+            nuevoRecibo.setEstado(EstadoFactura.REALIZADA.getValor());
             if (nuevoRecibo.getFecha() == null) {
                 nuevoRecibo.setFecha(Calendar.getInstance().getTime());
             }
@@ -292,7 +292,7 @@ public class ReciboCajaController implements Serializable {
         ingresos = 0l;
 
         for (ReciboCaja transaccione : transacciones) {
-            if (transaccione.getEstado() == EstadoPagoFactura.REALIZADA.getValor()) {
+            if (transaccione.getEstado() == EstadoFactura.REALIZADA.getValor()) {
                 if (transaccione.getConcepto().getIngreso()) {
                     ingresos += transaccione.getValor();
                 } else {
@@ -359,7 +359,7 @@ public class ReciboCajaController implements Serializable {
     public boolean disableAnular() {
         System.out.println("Admin: " + usuarioActual.getUsuario().isAdmin());
         System.out.println("Selected: " + selected);
-        boolean result = !(usuarioActual.getUsuario().isAdmin() && selected != null && (selected.getEstado() == EstadoPagoFactura.REALIZADA.getValor()));
+        boolean result = !(usuarioActual.getUsuario().isAdmin() && selected != null && (selected.getEstado() == EstadoFactura.REALIZADA.getValor()));
         System.out.println("ANULAR: " + result);
         return result;
     }
@@ -384,7 +384,7 @@ public class ReciboCajaController implements Serializable {
         totalIngresos = 0l;
         totalEgresos = 0l;
         for (ReciboCaja item : items) {
-            if (item.getEstado() == EstadoPagoFactura.ANULADO.getValor()) {
+            if (item.getEstado() == EstadoFactura.ANULADO.getValor()) {
                 continue;
             }
             if (item.getConcepto().getIngreso()) {
@@ -425,7 +425,7 @@ public class ReciboCajaController implements Serializable {
     }
 
     public int getEstadoAnulado() {
-        return EstadoPagoFactura.ANULADO.getValor();
+        return EstadoFactura.ANULADO.getValor();
     }
 
     public List<Tercero> llenarTercero(String query) {

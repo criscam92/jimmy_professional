@@ -21,7 +21,7 @@ import jp.entidades.Factura;
 import jp.entidades.FacturaProducto;
 import jp.entidades.Pago;
 import jp.entidades.Promocion;
-import jp.util.EstadoPagoFactura;
+import jp.util.EstadoFactura;
 import jp.util.Moneda;
 import jp.util.TipoPago;
 
@@ -59,7 +59,7 @@ public class FacturaFacade extends AbstractFacade<Factura> {
             Root<Pago> fac = cq.from(Pago.class);
             cq.select(cb.sum(fac.get("valorTotal").as(Double.class)));
             cq.where(cb.and(cb.equal(fac.get("factura"), factura),
-                    cb.equal(fac.get("estado"), EstadoPagoFactura.REALIZADA.getValor())));
+                    cb.equal(fac.get("estado"), EstadoFactura.REALIZADA.getValor())));
             TypedQuery<Double> q = getEntityManager().createQuery(cq);
             Double valorAbono = q.getSingleResult();
 
@@ -158,8 +158,8 @@ public class FacturaFacade extends AbstractFacade<Factura> {
             }
             Query queryFactura = em.createQuery("SELECT f FROM Factura f WHERE f.cliente.id= :clie AND f.tipoPago = :tipoPago AND f.estado<> :est1 AND f.estado<> :est2".concat(queryMoneda));
             queryFactura.setParameter("clie", c.getId());
-            queryFactura.setParameter("est1", EstadoPagoFactura.ANULADO.getValor());
-            queryFactura.setParameter("est2", EstadoPagoFactura.CANCELADO.getValor());
+            queryFactura.setParameter("est1", EstadoFactura.ANULADO.getValor());
+            queryFactura.setParameter("est2", EstadoFactura.CANCELADO.getValor());
             queryFactura.setParameter("tipoPago", TipoPago.CREDITO.getValor());
             if (moneda != null) {
                 queryFactura.setParameter("dol", moneda.equals(Moneda.DOLAR));
@@ -213,7 +213,7 @@ public class FacturaFacade extends AbstractFacade<Factura> {
         try {
             Query q = em.createQuery("SELECT SUM(p.valorTotal) FROM Pago p WHERE p.estado = :estado AND p.factura.id = :f");
             q.setParameter("f", factura.getId());
-            q.setParameter("estado", EstadoPagoFactura.REALIZADA.getValor());
+            q.setParameter("estado", EstadoFactura.REALIZADA.getValor());
 
             Double totalPago = (Double) q.getSingleResult();
             System.out.println("Pagos a la factura: " + factura + "->" + totalPago);
@@ -284,7 +284,7 @@ public class FacturaFacade extends AbstractFacade<Factura> {
     public boolean anularFactura(Factura factura) {
         try {
             Factura facturaTMP = getEntityManager().find(Factura.class, factura.getId());
-            facturaTMP.setEstado(EstadoPagoFactura.ANULADO.getValor());
+            facturaTMP.setEstado(EstadoFactura.ANULADO.getValor());
             getEntityManager().merge(facturaTMP);
             return true;
         } catch (Exception e) {
@@ -292,7 +292,7 @@ public class FacturaFacade extends AbstractFacade<Factura> {
         return false;
     }
 
-    public List<Factura> filterFactura(Empleado empleado, Cliente cliente, int tipoPago, int estado, Date fechaIni, Date fechaFin) {
+    public List<Factura> filterFactura(Empleado empleado, Cliente cliente, int tipoPago, int estado, int estadoDespacho, int estadoPago, Date fechaIni, Date fechaFin) {
         if (empleado != null || cliente != null || tipoPago != -1 || estado != -1 || (fechaIni != null && fechaFin != null)) {
             String sql = "SELECT f FROM Factura f";
             Map<String, Object> parametros = new HashMap<>();
@@ -324,6 +324,22 @@ public class FacturaFacade extends AbstractFacade<Factura> {
                 sql += "f.estado = :estado AND ";
                 parametros.put("estado", estado);
             }
+            
+            if (estadoDespacho != -1) {
+                if (!sql.contains("WHERE")) {
+                    sql += " WHERE ";
+                }
+                sql += "f.estadoDespacho = :estadoDespacho AND ";
+                parametros.put("estadoDespacho", estadoDespacho);
+            }
+            
+            if (estadoPago != -1) {
+                if (!sql.contains("WHERE")) {
+                    sql += " WHERE ";
+                }
+                sql += "f.estadoPago = :estadoPago AND ";
+                parametros.put("estadoPago", estadoPago);
+            }
 
             boolean fechaIsNull = false;
             if (fechaIni != null && fechaFin != null) {
@@ -339,7 +355,7 @@ public class FacturaFacade extends AbstractFacade<Factura> {
             if (!fechaIsNull) {
                 sql = sql.substring(0, sql.length()- 4);
             }
-            Query q = getEntityManager().createQuery(sql);            
+            Query q = getEntityManager().createQuery("SELECT f FROM Factura f WHERE f.estadoDespacho");            
             for (Map.Entry<String, Object> entrySet : parametros.entrySet()) {
                 String key = entrySet.getKey();
                 Object value = entrySet.getValue();

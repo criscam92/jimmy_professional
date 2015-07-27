@@ -21,7 +21,7 @@ import jp.facades.ProductoFacade;
 import jp.facades.SalidaFacade;
 import jp.facades.TransactionFacade;
 import jp.seguridad.UsuarioActual;
-import jp.util.EstadoPagoFactura;
+import jp.util.EstadoFactura;
 import jp.util.JsfUtil;
 import jp.util.JsfUtil.PersistAction;
 import org.primefaces.event.SelectEvent;
@@ -123,7 +123,7 @@ public class SalidaController implements Serializable {
             try {
 //                persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageSalida", "CreateSuccessF"}));
                 selected.setUsuario(getEjbUsuarioActual().getUsuario());
-                selected.setEstado(EstadoPagoFactura.REALIZADA.getValor());
+                selected.setEstado(EstadoFactura.REALIZADA.getValor());
                 getEjbTransactionFacade().createSalidaProducto(selected, salidasProducto);
                 if (!JsfUtil.isValidationFailed()) {
                     items = null;    // Invalidate list of items to trigger re-query.

@@ -12,7 +12,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import jp.entidades.Tercero;
-import jp.util.EstadoPagoFactura;
+import jp.util.EstadoFactura;
 
 @Stateless
 public class ReciboCajaFacade extends AbstractFacade<ReciboCaja> {

@@ -8,61 +8,63 @@
 
     <ui:composition template="/content/index.xhtml">
 
-
         <ui:define name="title">
             <h:outputText value="#{bundle.ListPagoTitle}"></h:outputText>
         </ui:define>
 
         <ui:define name="body">
             <h:form id="PagoListForm">
-                <p:panel header="#{bundle.ListPagoTitle}">
-                    <p:dataTable id="datalist" value="#{pagoController.items}" var="item"
-                                 selectionMode="single" selection="#{pagoController.selected}"
-                                 paginator="true"
-                                 rowKey="#{item.id}"
-                                 rows="10"
-                                 rowsPerPageTemplate="10,20,30,40,50"
-                                 >
+                <p:dataTable styleClass="tabla" id="datalist" value="#{pagoController.items}" var="item"
+                             selectionMode="single" selection="#{pagoController.selected}"
+                             paginator="true"
+                             rowKey="#{item.id}"
+                             rows="10"
+                             rowsPerPageTemplate="10,20,30,40,50"
+                             emptyMessage="#{bundle.EmptyTable}"
+                             paginatorPosition="bottom"
+                             >
 
-                        <p:ajax event="rowSelect"   update="createButton viewButton editButton deleteButton"/>
-                        <p:ajax event="rowUnselect" update="createButton viewButton editButton deleteButton"/>
+                    <!--<p:ajax event="rowSelect"   update="createButton viewButton editButton deleteButton"/>-->
+                    <!--<p:ajax event="rowUnselect" update="createButton viewButton editButton deleteButton"/>-->
 
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="#{bundle.ListPagoTitle_id}"/>
-                            </f:facet>
-                            <h:outputText value="#{item.id}"/>
-                        </p:column>
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="#{bundle.ListPagoTitle_pendiente}"/>
-                            </f:facet>
-                            <h:outputText value="#{item.observaciones}"/>
-                        </p:column>
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="#{bundle.ListPagoTitle_factura}"/>
-                            </f:facet>
-                            <h:outputText value="#{item.factura}"/>
-                        </p:column>
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="#{bundle.ListPagoTitle_tipo}"/>
-                            </f:facet>
-                            <h:outputText value="#{item.formaPago}"/>
-                        </p:column>
-                        <f:facet name="footer">
-                            <p:commandButton id="createButton" icon="ui-icon-plus" value="#{bundle.Create}"  action="./Create.xhtml?faces-redirect=true"/>
-                            <p:commandButton id="viewButton"   icon="ui-icon-search" value="#{bundle.View}" update=":PagoViewForm" oncomplete="PF('PagoViewDialog').show()" disabled="#{empty pagoController.selected}"/>
-                            <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":PagoEditForm" oncomplete="PF('PagoEditDialog').show()" disabled="#{empty pagoController.selected}"/>
-                            <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{pagoController.destroy}" update=":growl,datalist" disabled="#{empty pagoController.selected}"/>
+                    <f:facet name="header">
+                        <div id="titulo">
+                            Lista de pagos
+                        </div>
+                        <div id="acciones">
+                            
+                        </div>
+                    </f:facet>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Orden Pago"/>
                         </f:facet>
-                    </p:dataTable>
-                </p:panel>
+                        <h:outputText value="#{item.ordenPago}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Observaciones"/>
+                        </f:facet>
+                        <h:outputText value="#{item.observaciones}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.ListPagoTitle_factura}"/>
+                        </f:facet>
+                        <h:outputText value="#{item.factura.ordenPedido}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.ListPagoTitle_tipo}"/>
+                        </f:facet>
+                        <h:outputText value="#{nuevaRelacionFacturaController.getFormaPago(item.formaPago)}"/>
+                    </p:column>
+                </p:dataTable>
             </h:form>
-            
-            <ui:include src="Edit.xhtml"/>
-            <ui:include src="View.xhtml"/>
+
+            <!--<ui:include src="Edit.xhtml"/>-->
+            <!--<ui:include src="View.xhtml"/>-->
         </ui:define>
     </ui:composition>
 

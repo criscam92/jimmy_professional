@@ -13,7 +13,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import jp.entidades.Factura;
 import jp.entidades.Pago;
-import jp.util.EstadoPagoFactura;
+import jp.util.EstadoFactura;
 
 /**
  *
@@ -38,7 +38,7 @@ public class PagoFacade extends AbstractFacade<Pago> {
         try {
             Query query = getEntityManager().createQuery("SELECT COUNT(p) FROM Pago p WHERE p.factura.id = :fac AND p.estado = :est");
             query.setParameter("fac", factura.getId());
-            query.setParameter("est", EstadoPagoFactura.ANULADO.getValor());
+            query.setParameter("est", EstadoFactura.ANULADO.getValor());
             return (long) query.getSingleResult();
         } catch (Exception e) {
         }
@@ -50,7 +50,7 @@ public class PagoFacade extends AbstractFacade<Pago> {
         try {
             Query query = getEntityManager().createQuery("SELECT p FROM Pago p WHERE p.factura.id = :fac AND p.estado = :est");
             query.setParameter("fac", factura.getId());
-            query.setParameter("est", EstadoPagoFactura.REALIZADA.getValor());
+            query.setParameter("est", EstadoFactura.REALIZADA.getValor());
             pagos = query.getResultList();
         } catch (Exception e) {
             pagos = new ArrayList<>();

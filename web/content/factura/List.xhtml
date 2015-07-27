@@ -12,7 +12,7 @@
 
         <ui:define name="body">
             <h:form id="FiltroFactura">
-                <p:panel header="Filtro" style="width: 925px; margin: auto;">
+                <p:panel header="Filtro" style="width: 900px; margin: auto;">
                     <p:panelGrid columns="6">                        
                         <p:outputLabel value="#{bundle.CreateVisitaLabel_empleado}" for="empleadoFiltro" />
                         <p:autoComplete size="20" id="empleadoFiltro" minQueryLength="3" panelStyle="width: 320px;" value="#{facturaController.empleadoFiltro}" itemValue="#{empleado}" 
@@ -24,16 +24,28 @@
                                         completeMethod="#{clienteController.llenarCliente}" effect="fade" converter="clienteconverter"
                                         itemLabel="#{cliente.toString()}" var="cliente"/>
 
+                        <p:outputLabel value="#{bundle.MessageCreateTipoPago}" for="tipo_pago" />
+                        <p:selectOneMenu style="width: 154px;" id="tipo_pago" value="#{facturaController.tipoPago}">
+                            <f:selectItem  itemLabel="#{bundle.SelectOneMessage}" itemValue="-1"/>
+                            <f:selectItems value="#{facturaController.tiposPagos}" var="tipo_pago" itemLabel="#{tipoPago.detalle}" itemValue="#{tipo_pago.valor}" />
+                        </p:selectOneMenu>
+
                         <p:outputLabel value="Estado" for="estado" />
-                        <p:selectOneMenu style="width: 153px;" id="estado" value="#{facturaController.estado}">  
+                        <p:selectOneMenu style="width: 154px;" id="estado" value="#{facturaController.estado}">  
                             <f:selectItem  itemLabel="#{bundle.SelectOneMessage}" itemValue="-1"/>
                             <f:selectItems value="#{facturaController.estadosFactura}" var="estado" itemLabel="#{estado.detalle}" itemValue="#{estado.valor}"/>
                         </p:selectOneMenu>
 
-                        <p:outputLabel value="#{bundle.MessageCreateTipoPago}" for="tipo_pago" />
-                        <p:selectOneMenu style="width: 155px;" id="tipo_pago" value="#{facturaController.tipoPago}">
+                        <p:outputLabel value="Estado Despacho" for="estado_despacho" />
+                        <p:selectOneMenu style="width: 154px;" id="estado_despacho" value="#{facturaController.estadoDespacho}">  
                             <f:selectItem  itemLabel="#{bundle.SelectOneMessage}" itemValue="-1"/>
-                            <f:selectItems value="#{facturaController.tiposPagos}" var="tipo_pago" itemLabel="#{tipoPago.detalle}" itemValue="#{tipo_pago.valor}" />
+                            <f:selectItems value="#{facturaController.estadosDespachoFactura}" var="estadoDespacho" itemLabel="#{estadoDespacho.detalle}" itemValue="#{estadoDespacho.valor}"/>
+                        </p:selectOneMenu>
+
+                        <p:outputLabel value="Estado Pago" for="estado_pago" />
+                        <p:selectOneMenu style="width: 154px;" id="estado_pago" value="#{facturaController.estadoPago}">  
+                            <f:selectItem  itemLabel="#{bundle.SelectOneMessage}" itemValue="-1"/>
+                            <f:selectItems value="#{facturaController.estadosPagoFactura}" var="estadoPago" itemLabel="#{estadoPago.detalle}" itemValue="#{estadoPago.valor}"/>
                         </p:selectOneMenu>
 
                         <p:outputLabel style="margin-right: 35px;" value="Fecha Inicio" for="fechaInicio"/>

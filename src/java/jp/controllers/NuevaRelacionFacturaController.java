@@ -38,7 +38,7 @@ import jp.facades.RelacionFacturaFacade;
 import jp.facades.TalonarioFacade;
 import jp.facades.TransactionFacade;
 import jp.seguridad.UsuarioActual;
-import jp.util.EstadoPagoFactura;
+import jp.util.EstadoFactura;
 import jp.util.TipoPago;
 import jp.util.TipoPagoAbono;
 import jp.util.TipoTalonario;
@@ -294,7 +294,7 @@ public class NuevaRelacionFacturaController implements Serializable {
         valorPublicidad = 0.0;
         valorComision = 0.0;
         selected.setFecha(relacionFactura.getFecha());
-        selected.setEstado(EstadoPagoFactura.REALIZADA.getValor());
+        selected.setEstado(EstadoFactura.REALIZADA.getValor());
         selected.setUsuario(usuarioActual.getUsuario());
         desabilitarButton = true;
         if (talonario != null) {
@@ -328,7 +328,7 @@ public class NuevaRelacionFacturaController implements Serializable {
     public void cancelar() {
         if (editar) {
             for (PagoHelper ph : pagoHelpers) {
-                if(ph.getId() == pagoHelperTMP.getId()){
+                if (ph.getId() == pagoHelperTMP.getId()) {
                     ph.setPago(pagoHelperTMP.getPago());
                     ph.setTipoPagoHelpers(pagoHelperTMP.getTipoPagoHelpers());
                     break;
@@ -514,6 +514,10 @@ public class NuevaRelacionFacturaController implements Serializable {
 
     public String getTiposPagoAbono(int tipo) {
         return TipoPagoAbono.getFromValue(tipo).getDetalle();
+    }
+
+    public String getFormaPago(int tipo) {
+        return TipoPago.getFromValue(tipo).getDetalle();
     }
 
     public boolean requiereCheque() {

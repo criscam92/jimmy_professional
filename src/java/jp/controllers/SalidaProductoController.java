@@ -19,7 +19,7 @@ import jp.facades.SalidaFacade;
 import jp.facades.SalidaProductoFacade;
 import jp.facades.TransactionFacade;
 import jp.seguridad.UsuarioActual;
-import jp.util.EstadoPagoFactura;
+import jp.util.EstadoFactura;
 import jp.util.JsfUtil;
 import jp.util.JsfUtil.PersistAction;
 
@@ -203,14 +203,14 @@ public class SalidaProductoController implements Serializable {
     }
     
     public String getEstadoSalida(int estado){
-        return EstadoPagoFactura.getFromValue(estado).getDetalle();
+        return EstadoFactura.getFromValue(estado).getDetalle();
     }
     
     public int getEstadoAnulado() {
-        return EstadoPagoFactura.ANULADO.getValor();
+        return EstadoFactura.ANULADO.getValor();
     }
     public boolean disableAnular() {
-        boolean result = !(ejbUsuarioActual.getUsuario().isAdmin() && salida != null && (salida.getEstado() == EstadoPagoFactura.REALIZADA.getValor()));
+        boolean result = !(ejbUsuarioActual.getUsuario().isAdmin() && salida != null && (salida.getEstado() == EstadoFactura.REALIZADA.getValor()));
         return result;
     }
     

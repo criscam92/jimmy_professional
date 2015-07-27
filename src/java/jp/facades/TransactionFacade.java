@@ -46,7 +46,7 @@ import jp.entidades.SalidaProducto;
 import jp.entidades.TipoPagoHelper;
 import jp.entidades.Visita;
 import jp.entidades.VisitaProducto;
-import jp.util.EstadoPagoFactura;
+import jp.util.EstadoFactura;
 import jp.util.EstadoVisita;
 
 @Stateful
@@ -471,7 +471,7 @@ public class TransactionFacade {
             }
 
             Factura facturaTMP = getEntityManager().find(Factura.class, despachoFacturaTMP.getFactura().getId());
-            facturaTMP.setEstado(facturaRealizada ? EstadoPagoFactura.REALIZADA.getValor() : EstadoPagoFactura.PENDIENTE.getValor());
+            facturaTMP.setEstado(facturaRealizada ? EstadoFactura.REALIZADA.getValor() : EstadoFactura.PENDIENTE.getValor());
             getEntityManager().merge(facturaTMP);
 
             userTransaction.commit();
@@ -655,7 +655,7 @@ public class TransactionFacade {
         try {
             userTransaction.begin();
             ReciboCaja rc = getEntityManager().find(ReciboCaja.class, reciboCaja.getId());
-            rc.setEstado(EstadoPagoFactura.ANULADO.getValor());
+            rc.setEstado(EstadoFactura.ANULADO.getValor());
             getEntityManager().merge(rc);
             userTransaction.commit();
             result = true;
@@ -684,7 +684,7 @@ public class TransactionFacade {
             getEntityManager().merge(despachoFacturaTMP);
 
             Factura facturaTMP = getEntityManager().find(Factura.class, despachoFacturaTMP.getFactura().getId());
-            facturaTMP.setEstado(EstadoPagoFactura.PENDIENTE.getValor());
+            facturaTMP.setEstado(EstadoFactura.PENDIENTE.getValor());
             getEntityManager().merge(facturaTMP);
             userTransaction.commit();
             return true;
@@ -741,7 +741,7 @@ public class TransactionFacade {
         try {
             userTransaction.begin();
             Salida s = getEntityManager().find(Salida.class, salida.getId());
-            s.setEstado(EstadoPagoFactura.ANULADO.getValor());
+            s.setEstado(EstadoFactura.ANULADO.getValor());
             getEntityManager().merge(s);
             userTransaction.commit();
             result = true;

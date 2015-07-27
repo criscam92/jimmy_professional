@@ -37,6 +37,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Factura.findByDescuento", query = "SELECT f FROM Factura f WHERE f.descuento = :descuento"),
     @NamedQuery(name = "Factura.findByTotalPagar", query = "SELECT f FROM Factura f WHERE f.totalPagar = :totalPagar"),
     @NamedQuery(name = "Factura.findByEstado", query = "SELECT f FROM Factura f WHERE f.estado = :estado"),
+    @NamedQuery(name = "Factura.findByEstadoDespacho", query = "SELECT f FROM Factura f WHERE f.estadoDespacho = :estadoDespacho"),
+    @NamedQuery(name = "Factura.findByEstadoPago", query = "SELECT f FROM Factura f WHERE f.estadoPago = :estadoPago"),
     @NamedQuery(name = "Factura.findByDolar", query = "SELECT f FROM Factura f WHERE f.dolar = :dolar")})
 public class Factura implements Serializable {
 
@@ -73,6 +75,12 @@ public class Factura implements Serializable {
     @NotNull
     @Column(nullable = false)
     private int estado;
+    @Basic(optional = false)
+    @Column(name = "estado_despacho", nullable = true)
+    private int estadoDespacho;
+    @Basic(optional = false)
+    @Column(name = "estado_pago", nullable = true)
+    private int estadoPago;
     @Basic(optional = false)
     @NotNull
     @Column(nullable = false)
@@ -114,13 +122,15 @@ public class Factura implements Serializable {
         this.id = id;
     }
 
-    public Factura(Long id, Date fecha, int tipoPago, double totalBruto, double totalPagar, int estado, boolean dolar) {
+    public Factura(Long id, Date fecha, int tipoPago, double totalBruto, double totalPagar, int estado, int estadoDespacho, int estadoPago, boolean dolar) {
         this.id = id;
         this.fecha = fecha;
         this.tipoPago = tipoPago;
         this.totalBruto = totalBruto;
         this.totalPagar = totalPagar;
         this.estado = estado;
+        this.estadoDespacho = estadoDespacho;
+        this.estadoPago = estadoPago;
         this.dolar = dolar;
     }
 
@@ -186,6 +196,22 @@ public class Factura implements Serializable {
 
     public void setEstado(int estado) {
         this.estado = estado;
+    }
+
+    public int getEstadoDespacho() {
+        return estadoDespacho;
+    }
+
+    public void setEstadoDespacho(int estadoDespacho) {
+        this.estadoDespacho = estadoDespacho;
+    }
+
+    public int getEstadoPago() {
+        return estadoPago;
+    }
+
+    public void setEstadoPago(int estadoPago) {
+        this.estadoPago = estadoPago;
     }
 
     public boolean getDolar() {

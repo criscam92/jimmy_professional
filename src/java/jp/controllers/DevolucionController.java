@@ -28,7 +28,7 @@ import jp.facades.FacturaFacade;
 import jp.facades.TalonarioFacade;
 import jp.facades.TransactionFacade;
 import jp.seguridad.UsuarioActual;
-import jp.util.EstadoPagoFactura;
+import jp.util.EstadoFactura;
 import jp.util.Moneda;
 import jp.util.TipoPago;
 import jp.util.TipoTalonario;
@@ -357,7 +357,7 @@ public class DevolucionController implements Serializable {
                 }
 
                 pago.setFecha(selected.getFecha());
-                pago.setEstado(EstadoPagoFactura.REALIZADA.getValor());
+                pago.setEstado(EstadoFactura.REALIZADA.getValor());
                 pago.setFormaPago(TipoPago.DEVOLUCION.getValor());
                 pago.setDolar(selected.getDolar());
                 if (!selected.getObservaciones().trim().equals("")) {

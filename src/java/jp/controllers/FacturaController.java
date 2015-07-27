@@ -48,6 +48,8 @@ import jp.facades.PromocionFacade;
 import jp.facades.TalonarioFacade;
 import jp.facades.TransactionFacade;
 import jp.seguridad.UsuarioActual;
+import jp.util.EstadoDespachoFactura;
+import jp.util.EstadoFactura;
 import jp.util.EstadoPagoFactura;
 import jp.util.Moneda;
 import jp.util.TipoPago;
@@ -108,6 +110,8 @@ public class FacturaController implements Serializable {
     private Cliente clienteFiltro;
     private int tipoPago;
     private int estado;
+    private int estadoDespacho;
+    private int estadoPago;
     private Date fechaIni;
     private Date fechaFin;
     //====================
@@ -164,6 +168,18 @@ public class FacturaController implements Serializable {
         }
 
         try {
+            estadoDespacho = Integer.parseInt(requestMap.get("estadoDespacho"));
+        } catch (Exception e) {
+            estadoDespacho = -1;
+        }
+
+        try {
+            estadoPago = Integer.parseInt(requestMap.get("estadoPago"));
+        } catch (Exception e) {
+            estadoPago = -1;
+        }
+
+        try {
             fechaIni = sdf.parse(date1);
         } catch (Exception e) {
             fechaIni = null;
@@ -175,7 +191,7 @@ public class FacturaController implements Serializable {
             fechaFin = null;
         }
 
-        items = getFacade().filterFactura(empleadoFiltro, cliente, tipoPago, estado, fechaIni, fechaFin);
+        items = getFacade().filterFactura(empleadoFiltro, cliente, tipoPago, estado, estadoDespacho, estadoPago, fechaIni, fechaFin);
     }
 
     //=== DATOS FILTRO ===
@@ -201,6 +217,22 @@ public class FacturaController implements Serializable {
 
     public void setEstado(int estado) {
         this.estado = estado;
+    }
+
+    public int getEstadoDespacho() {
+        return estadoDespacho;
+    }
+
+    public void setEstadoDespacho(int estadoDespacho) {
+        this.estadoDespacho = estadoDespacho;
+    }
+
+    public int getEstadoPago() {
+        return estadoPago;
+    }
+
+    public void setEstadoPago(int estadoPago) {
+        this.estadoPago = estadoPago;
     }
 
     public Empleado getEmpleadoFiltro() {
@@ -401,7 +433,7 @@ public class FacturaController implements Serializable {
 
                 if (actulizarTalonario(opTMP)) {
                     selected.setUsuario(usuarioActual.getUsuario());
-                    selected.setEstado(EstadoPagoFactura.PENDIENTE.getValor());
+                    selected.setEstado(EstadoFactura.PENDIENTE.getValor());
                     if (moneda == 1) {
                         selected.setDolarActual(parametrosFacade.getParametros().getPrecioDolar());
                     }
@@ -654,8 +686,16 @@ public class FacturaController implements Serializable {
         return Moneda.getMonedas();
     }
 
-    public EstadoPagoFactura[] getEstadosFactura() {
-        return EstadoPagoFactura.getFromValue(new Integer[]{0, 1, 2});
+    public EstadoFactura[] getEstadosFactura() {
+        return EstadoFactura.getFromValue(new Integer[]{0, 1, 2});
+    }
+
+    public EstadoDespachoFactura[] getEstadosDespachoFactura() {
+        return EstadoDespachoFactura.values();
+    }
+
+    public EstadoPagoFactura[] getEstadosPagoFactura() {
+        return EstadoPagoFactura.values();
     }
 
     public String redirectCreateFactura() {
@@ -912,7 +952,7 @@ public class FacturaController implements Serializable {
     }
 
     public String getEstado(int estado) {
-        return EstadoPagoFactura.getFromValue(estado).getDetalle();
+        return EstadoFactura.getFromValue(estado).getDetalle();
     }
 
     public void prepararDespachos() {
@@ -953,11 +993,11 @@ public class FacturaController implements Serializable {
     }
 
     public int estadoRealizado() {
-        return EstadoPagoFactura.REALIZADA.getValor();
+        return EstadoFactura.REALIZADA.getValor();
     }
 
     public int estadoAnulado() {
-        return EstadoPagoFactura.ANULADO.getValor();
+        return EstadoFactura.ANULADO.getValor();
     }
 
     public void redirec() throws IOException {
@@ -973,6 +1013,12 @@ public class FacturaController implements Serializable {
         }
         if (estado != -1) {
             url += "&estado=" + estado;
+        }
+        if (estadoDespacho != -1) {
+            url += "&estadoDespacho=" + estadoDespacho;
+        }
+        if (estadoPago != -1) {
+            url += "&estadoPago=" + estadoPago;
         }
         if (fechaIni != null && fechaFin != null) {
             url += "&date1=" + sdf.format(fechaIni) + "&date2=" + sdf.format(fechaFin);
@@ -997,6 +1043,6 @@ public class FacturaController implements Serializable {
     }
 
     public String estadoFactura(int estado) {
-        return EstadoPagoFactura.getFromValue(estado).getDetalle();
+        return EstadoFactura.getFromValue(estado).getDetalle();
     }
 }
