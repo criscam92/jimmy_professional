@@ -5,10 +5,9 @@ import java.util.Map;
 
 public enum EstadoPagoFactura {
 
-    REALIZADA(0, "Realizado"),
-    ANULADO(1, "Anulado"),
-    PENDIENTE(2, "Pendiente"),
-    CANCELADO(3, "Cancelado");
+    SIN_PAGO(0, "Sin pago"),
+    PAGO_PARCIAL(1, "Pago parcial"),
+    PAGADA(2, "Pagada");
 
     private int valor;
     private String detalle;
@@ -28,19 +27,19 @@ public enum EstadoPagoFactura {
     }
 
     public static EstadoPagoFactura[] getFromValue(Integer[] arre) {
-        EstadoPagoFactura[] estadoVisitasTMP = new EstadoPagoFactura[arre.length];
+        EstadoPagoFactura[] estado = new EstadoPagoFactura[arre.length];
         int count = 0;
         for (int b : arre) {
-            estadoVisitasTMP[count] = getFromValue(b);
+            estado[count] = getFromValue(b);
             count++;
         }
-        return estadoVisitasTMP;
+        return estado;
     }
 
     public static Map<Integer, String> getMapaEstados() {
         Map<Integer, String> mapTMP = new HashMap<>();
-        for (EstadoPagoFactura estadoVisita : EstadoPagoFactura.values()) {
-            mapTMP.put(estadoVisita.getValor(), estadoVisita.getDetalle());
+        for (EstadoPagoFactura estado : EstadoPagoFactura.values()) {
+            mapTMP.put(estado.getValor(), estado.getDetalle());
 
         }
         return mapTMP;
