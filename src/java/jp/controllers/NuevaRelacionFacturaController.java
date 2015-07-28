@@ -77,7 +77,7 @@ public class NuevaRelacionFacturaController implements Serializable {
     private Pago selected;
     private PagoHelper pagoHelper;
     private PagoHelper pagoHelperTMP;
-    private Talonario talonario;
+    private List<Talonario> talonarios;
     private Cliente clienteTemporal;
     private TipoPagoHelper tipoPagoHelper;
     private RelacionFactura relacionFactura;
@@ -297,9 +297,6 @@ public class NuevaRelacionFacturaController implements Serializable {
         selected.setEstado(EstadoFactura.REALIZADA.getValor());
         selected.setUsuario(usuarioActual.getUsuario());
         desabilitarButton = true;
-        if (talonario != null) {
-            selected.setOrdenPago(talonario.getActual() + "");
-        }
         return selected;
     }
 
@@ -401,13 +398,19 @@ public class NuevaRelacionFacturaController implements Serializable {
             }
 
             if (reciboActual != null) {
-                if ((reciboActual >= talonario.getInicial()) && reciboActual <= talonario.getFinal1()) {
-                    setError("");
-                    isVaild = validarPagos();
-                } else {
-                    isVaild = false;
-                    setError(uiError);
-                    JsfUtil.addErrorMessage("el numero de recibo " + selected.getOrdenPago() + " no esta permitido");
+                for (Talonario t : talonarios) {
+                    if ((reciboActual >= t.getInicial()) && reciboActual <= t.getFinal1()) {
+                        setError("");
+                        isVaild = validarPagos();
+                        if (!isVaild) {
+                            break;
+                        }
+                    } else {
+                        isVaild = false;
+                        setError(uiError);
+                        JsfUtil.addErrorMessage("el numero de recibo " + selected.getOrdenPago() + " no esta permitido");
+                        break;
+                    }
                 }
             } else {
                 isVaild = false;
@@ -472,14 +475,13 @@ public class NuevaRelacionFacturaController implements Serializable {
     public void changedEmpleado(SelectEvent e) {
         System.out.println("Se seleccionó el empleado...");
         if (e != null && e.getObject() != null) {
-            talonario = getTalonarioFacade().getActiveTalonario(TipoTalonario.RECIBO_CAJA, (Empleado) e.getObject());
-            if (talonario == null) {
+            talonarios = getTalonarioFacade().getTalonariosByTipo(TipoTalonario.RECIBO_CAJA, (Empleado) e.getObject());
+            if (talonarios == null || talonarios.isEmpty()) {
                 JsfUtil.addWarnMessage("El empleado seleccionado no cuenta con un talonario de pagos actualmente");
             } else {
                 return;
             }
         }
-        talonario = null;
         relacionFactura.setVendedor(null);
     }
 
@@ -494,7 +496,6 @@ public class NuevaRelacionFacturaController implements Serializable {
             System.out.println("Factura Nula");
             selected.setFactura(new Factura());
         }
-
     }
 
     public void changedFormaPago(final AjaxBehaviorEvent event) {

@@ -23,9 +23,12 @@ public class PromocionProductoFacade extends AbstractFacade<PromocionProducto> {
         super(PromocionProducto.class);
     }
 
-    public List<PromocionProducto> getPromocionProductoByProducto(Promocion promocion) {
+    public List<PromocionProducto> getPromocionProductoByProducto(Promocion promocion, EntityManager em) {
+        if (em == null) {
+            em = getEntityManager();
+        }
         try {
-            Query query = getEntityManager().createQuery("SELECT pp FROM PromocionProducto pp WHERE pp.promocion.id = :prom");
+            Query query = em.createQuery("SELECT pp FROM PromocionProducto pp WHERE pp.promocion.id = :prom");
             query.setParameter("prom", promocion.getId());
             return query.getResultList();
         } catch (Exception e) {

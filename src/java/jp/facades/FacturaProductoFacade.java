@@ -47,26 +47,27 @@ public class FacturaProductoFacade extends AbstractFacade<FacturaProducto> {
      * @return
      */
     public Long getCantidadVentaOrBonificacionByFactura(Factura factura, int tipo) {
-        Long cantidadFProd = 0l;
+        Long cantidadFProd;
         Long cantidadFProm = 0l;
-        Long cantidad = 0l;
+        Long cantidad;
         try {
             String sql = "SELECT SUM(" + (tipo == 1 ? "fp.unidadesVenta" : "fp.unidadesBonificacion") + ") FROM FacturaProducto fp WHERE fp.factura.id = :fact";
             Query queryFP = getEntityManager().createQuery(sql);
             queryFP.setParameter("fact", factura.getId());
             cantidadFProd = (Long) queryFP.getSingleResult();
+            
             if (cantidadFProd == null) {
                 cantidadFProd = 0l;
             }
 
-            List<FacturaPromocion> facturaPromociones = getFacturaPromocionFacade().getFacturaPromocionByFactura(factura);
+            List<FacturaPromocion> facturaPromociones = getFacturaPromocionFacade().getFacturaPromocionByFactura(factura, null);
             for (FacturaPromocion fp : facturaPromociones) {
-                List<PromocionProducto> promocionProductos = getPromocionProductoFacade().getPromocionProductoByProducto(fp.getPromocion());
+                List<PromocionProducto> promocionProductos = getPromocionProductoFacade().getPromocionProductoByProducto(fp.getPromocion(), null);
                 for (PromocionProducto pp : promocionProductos) {
-                    cantidadFProd += (tipo == 1 ? fp.getUnidadesVenta() : fp.getUnidadesBonificacion()) * pp.getCantidad();
+                    cantidadFProm += (tipo == 1 ? fp.getUnidadesVenta() : fp.getUnidadesBonificacion()) * pp.getCantidad();
                 }
             }
-
+            
             cantidad = cantidadFProd + cantidadFProm;
         } catch (Exception e) {
             cantidad = null;

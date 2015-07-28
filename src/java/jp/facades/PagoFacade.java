@@ -14,6 +14,7 @@ import javax.persistence.Query;
 import jp.entidades.Factura;
 import jp.entidades.Pago;
 import jp.util.EstadoFactura;
+import jp.util.EstadoPago;
 
 /**
  *
@@ -50,7 +51,7 @@ public class PagoFacade extends AbstractFacade<Pago> {
         try {
             Query query = getEntityManager().createQuery("SELECT p FROM Pago p WHERE p.factura.id = :fac AND p.estado = :est");
             query.setParameter("fac", factura.getId());
-            query.setParameter("est", EstadoFactura.REALIZADA.getValor());
+            query.setParameter("est", EstadoPago.REALIZADO.getValor());
             pagos = query.getResultList();
         } catch (Exception e) {
             pagos = new ArrayList<>();

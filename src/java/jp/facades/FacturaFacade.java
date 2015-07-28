@@ -21,7 +21,9 @@ import jp.entidades.Factura;
 import jp.entidades.FacturaProducto;
 import jp.entidades.Pago;
 import jp.entidades.Promocion;
+import jp.util.EstadoDespachoFactura;
 import jp.util.EstadoFactura;
+import jp.util.EstadoPagoFactura;
 import jp.util.Moneda;
 import jp.util.TipoPago;
 
@@ -285,6 +287,8 @@ public class FacturaFacade extends AbstractFacade<Factura> {
         try {
             Factura facturaTMP = getEntityManager().find(Factura.class, factura.getId());
             facturaTMP.setEstado(EstadoFactura.ANULADO.getValor());
+            facturaTMP.setEstadoDespacho(EstadoDespachoFactura.ANULADO.getValor());
+            facturaTMP.setEstadoPago(EstadoPagoFactura.ANULADO.getValor());
             getEntityManager().merge(facturaTMP);
             return true;
         } catch (Exception e) {
@@ -324,7 +328,7 @@ public class FacturaFacade extends AbstractFacade<Factura> {
                 sql += "f.estado = :estado AND ";
                 parametros.put("estado", estado);
             }
-            
+
             if (estadoDespacho != -1) {
                 if (!sql.contains("WHERE")) {
                     sql += " WHERE ";
@@ -332,7 +336,7 @@ public class FacturaFacade extends AbstractFacade<Factura> {
                 sql += "f.estadoDespacho = :estadoDespacho AND ";
                 parametros.put("estadoDespacho", estadoDespacho);
             }
-            
+
             if (estadoPago != -1) {
                 if (!sql.contains("WHERE")) {
                     sql += " WHERE ";
@@ -353,9 +357,9 @@ public class FacturaFacade extends AbstractFacade<Factura> {
             }
 
             if (!fechaIsNull) {
-                sql = sql.substring(0, sql.length()- 4);
+                sql = sql.substring(0, sql.length() - 4);
             }
-            Query q = getEntityManager().createQuery("SELECT f FROM Factura f WHERE f.estadoDespacho");            
+            Query q = getEntityManager().createQuery(sql);
             for (Map.Entry<String, Object> entrySet : parametros.entrySet()) {
                 String key = entrySet.getKey();
                 Object value = entrySet.getValue();

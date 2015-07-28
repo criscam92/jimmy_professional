@@ -107,7 +107,7 @@
                         </f:facet>
                         <h:outputText value="#{item.ordenPedido}" styleClass="num-orden"/>
                     </p:column>
-                    <p:column width="125">
+                    <p:column >
                         <f:facet name="header">
                             <h:outputText value="#{bundle.ListVisitaTitle_fecha}"/>
                         </f:facet>
@@ -115,25 +115,25 @@
                             <f:convertDateTime pattern="dd-MMM-yyyy h:mm a"/>
                         </h:outputText>
                     </p:column>
-                    <p:column>
+                    <p:column >
                         <f:facet name="header">
                             <h:outputText value="#{bundle.ListFacturaTitle_empleado}"/>
                         </f:facet>
                         <h:outputText value="#{item.cliente.empleado.toString()}"/>
                     </p:column>
-                    <p:column>
+                    <p:column >
                         <f:facet name="header">
                             <h:outputText value="#{bundle.ListFacturaTitle_cliente}"/>
                         </f:facet>
                         <h:outputText value="#{item.cliente.toString()}"/>
                     </p:column>
-                    <p:column width="100">
+                    <p:column >
                         <f:facet name="header">
                             <h:outputText value="#{bundle.MeesageTipoPago}"/>
                         </f:facet>
                         <h:outputText value="#{facturaController.getTipoPagofactura(item.tipoPago)}"/>
                     </p:column>
-                    <p:column width="100">
+                    <p:column >
                         <f:facet name="header">
                             <h:outputText value="#{bundle.CreateFacturaTitle_totalBruto}"/>
                         </f:facet>
@@ -141,7 +141,7 @@
                             <f:convertNumber type="currency"  currencySymbol="$"/>
                         </h:outputText>
                     </p:column>
-                    <p:column width="100">
+                    <p:column >
                         <f:facet name="header">
                             <h:outputText value="#{bundle.CreateFacturaTitle_totalPagar}"/>
                         </f:facet>
@@ -149,11 +149,23 @@
                             <f:convertNumber type="currency"  currencySymbol="$"/>
                         </h:outputText>
                     </p:column>
-                    <p:column width="100">
+                    <p:column width="60">
                         <f:facet name="header">
                             <h:outputText value="Estado"/>
                         </f:facet>
                         <h:outputText value="#{facturaController.getEstado(item.estado)}"/>
+                    </p:column>
+                    <p:column >
+                        <f:facet name="header">
+                            <h:outputText value="Estado Despacho"/>
+                        </f:facet>
+                        <h:outputText value="#{facturaController.getEstadoDespacho(item.estadoDespacho)}"/>
+                    </p:column>
+                    <p:column >
+                        <f:facet name="header">
+                            <h:outputText value="Estado Pago"/>
+                        </f:facet>
+                        <h:outputText value="#{facturaController.getEstadoPago(item.estadoPago)}"/>
                     </p:column>
                 </p:dataTable>
                 <p:confirmDialog>

@@ -7,7 +7,8 @@ public enum EstadoPagoFactura {
 
     SIN_PAGO(0, "Sin pago"),
     PAGO_PARCIAL(1, "Pago parcial"),
-    PAGADA(2, "Pagada");
+    PAGADA(2, "Pagada"),
+    ANULADO(3, "Anulado");
 
     private int valor;
     private String detalle;

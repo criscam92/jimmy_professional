@@ -3,6 +3,7 @@ package jp.facades;
 import java.util.Calendar;
 import java.util.List;
 import javax.annotation.Resource;
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateful;
@@ -46,7 +47,10 @@ import jp.entidades.SalidaProducto;
 import jp.entidades.TipoPagoHelper;
 import jp.entidades.Visita;
 import jp.entidades.VisitaProducto;
+import jp.util.EstadoDespachoFactura;
 import jp.util.EstadoFactura;
+import jp.util.EstadoPago;
+import jp.util.EstadoPagoFactura;
 import jp.util.EstadoVisita;
 
 @Stateful
@@ -58,11 +62,24 @@ public class TransactionFacade {
     private EntityManager em;
     private UserTransaction userTransaction;
 
+    @EJB
+    private FacturaPromocionFacade facturaPromocionFacade;
+    @EJB
+    private PromocionProductoFacade promocionProductoFacade;
+
     @Resource
     private SessionContext sessionContext;
 
     protected EntityManager getEntityManager() {
         return em;
+    }
+
+    public FacturaPromocionFacade getFacturaPromocionFacade() {
+        return facturaPromocionFacade;
+    }
+
+    public PromocionProductoFacade getPromocionProductoFacade() {
+        return promocionProductoFacade;
     }
 
     public boolean createVisitaProducto(List<VisitaProducto> visitaProducto, Visita v) {
@@ -298,6 +315,8 @@ public class TransactionFacade {
             facturaTMP.setTotalPagar(factura.getTotalPagar());
             facturaTMP.setUsuario(factura.getUsuario());
             facturaTMP.setEstado(factura.getEstado());
+            facturaTMP.setEstadoDespacho(factura.getEstadoDespacho());
+            facturaTMP.setEstadoPago(factura.getEstadoPago());
             getEntityManager().merge(facturaTMP);
 
             for (ProductoPromocionHelper pph : objects) {
@@ -453,13 +472,7 @@ public class TransactionFacade {
             despachoFacturaTMP.setUsuario(despachoFactura.getUsuario());
             getEntityManager().merge(despachoFacturaTMP);
 
-            boolean facturaRealizada = true;
             for (ProductoHelper ph : productoHelpers) {
-                System.out.println(ph.getCantidadFacturada() + " - " + (ph.getCantidadADespachar() + ph.getCantidadDespachada()));
-                if (ph.getCantidadFacturada() != (ph.getCantidadADespachar() + ph.getCantidadDespachada())) {
-                    facturaRealizada = false;
-                }
-
                 if (ph.getCantidadADespachar() > 0) {
                     DespachoFacturaProducto dfp = new DespachoFacturaProducto();
                     dfp.setCantidad(ph.getCantidadADespachar());
@@ -471,7 +484,7 @@ public class TransactionFacade {
             }
 
             Factura facturaTMP = getEntityManager().find(Factura.class, despachoFacturaTMP.getFactura().getId());
-            facturaTMP.setEstado(facturaRealizada ? EstadoFactura.REALIZADA.getValor() : EstadoFactura.PENDIENTE.getValor());
+            updateEstadosFactura(facturaTMP);
             getEntityManager().merge(facturaTMP);
 
             userTransaction.commit();
@@ -684,7 +697,7 @@ public class TransactionFacade {
             getEntityManager().merge(despachoFacturaTMP);
 
             Factura facturaTMP = getEntityManager().find(Factura.class, despachoFacturaTMP.getFactura().getId());
-            facturaTMP.setEstado(EstadoFactura.PENDIENTE.getValor());
+            updateEstadosFactura(facturaTMP);
             getEntityManager().merge(facturaTMP);
             userTransaction.commit();
             return true;
@@ -774,6 +787,7 @@ public class TransactionFacade {
             for (PagoHelper ph : pagoHelpers) {
                 Factura f = getEntityManager().find(Factura.class, ph.getPago().getFactura().getId());
                 f.setSaldo(ph.getPago().getFactura().getSaldo());
+                updateEstadosFactura(f);
                 getEntityManager().merge(f);
 
                 Pago p = new Pago();
@@ -816,6 +830,72 @@ public class TransactionFacade {
         } finally {
             getEntityManager().clear();
         }
+    }
+
+    private Factura updateEstadosFactura(Factura factura) {
+        try {
+            Query query1 = getEntityManager().createQuery("SELECT SUM(p.valorTotal) FROM Pago p WHERE p.factura.id = :fac AND p.estado = :est");
+            query1.setParameter("fac", factura.getId());
+            query1.setParameter("est", EstadoPago.REALIZADO.getValor());
+            long valor = (long) query1.getSingleResult();
+
+            if (factura.getTotalPagar() == valor) {
+                factura.setEstadoPago(EstadoPagoFactura.PAGADA.getValor());
+            }
+
+            Query query2 = getEntityManager().createQuery("SELECT df FROM DespachoFactura df WHERE df.factura.id = :fac AND df.realizado = :rea");
+            query2.setParameter("fac", factura.getId());
+            query2.setParameter("rea", true);
+            List<DespachoFacade> despachoFacades = query2.getResultList();
+
+            long cantidadDespachos = 0;
+            for (DespachoFacade df : despachoFacades) {
+                Query query3 = getEntityManager().createQuery("SELECT SUM(dfp.cantidad) FROM DespachoFacturaProducto dfp WHERE dfp.despachoFactura.id = :desF");
+                query3.setParameter("fac", factura.getId());
+                query3.setParameter("rea", true);
+                cantidadDespachos += (long) query3.getSingleResult();
+            }
+
+            long cantidadFacturada = getCantidadProductosFacturadosByFactura(factura);
+
+            if (cantidadFacturada == cantidadDespachos) {
+                factura.setEstadoDespacho(EstadoDespachoFactura.DESPACHADO.getValor());
+            }
+
+            if ((factura.getEstadoPago() == EstadoPagoFactura.PAGADA.getValor()) && (factura.getEstadoDespacho() == EstadoDespachoFactura.DESPACHADO.getValor())) {
+                factura.setEstado(EstadoFactura.REALIZADA.getValor());
+            }
+        } catch (Exception e) {
+        }
+        return null;
+    }
+
+    public long getCantidadProductosFacturadosByFactura(Factura factura) {
+        Long cantidadFProd;
+        Long cantidadFProm = 0l;
+        Long cantidad;
+        try {
+            String sql = "SELECT SUM(fp.unidadesVenta) + SUM(fp.unidadesBonificacion) FROM FacturaProducto fp WHERE fp.factura.id = :fact";
+            Query queryFP = getEntityManager().createQuery(sql);
+            queryFP.setParameter("fact", factura.getId());
+            cantidadFProd = (Long) queryFP.getSingleResult();
+            if (cantidadFProd == null) {
+                cantidadFProd = 0l;
+            }
+
+            List<FacturaPromocion> facturaPromociones = getFacturaPromocionFacade().getFacturaPromocionByFactura(factura, getEntityManager());
+            for (FacturaPromocion fp : facturaPromociones) {
+                List<PromocionProducto> promocionProductos = getPromocionProductoFacade().getPromocionProductoByProducto(fp.getPromocion(), getEntityManager());
+                for (PromocionProducto pp : promocionProductos) {
+                    cantidadFProm += (fp.getUnidadesVenta() + fp.getUnidadesBonificacion()) * pp.getCantidad();
+                }
+            }
+            cantidad = cantidadFProd + cantidadFProm;
+        } catch (Exception e) {
+            cantidad = null;
+            e.printStackTrace();
+        }
+        return cantidad;
     }
 
 }

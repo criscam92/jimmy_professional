@@ -433,7 +433,9 @@ public class FacturaController implements Serializable {
 
                 if (actulizarTalonario(opTMP)) {
                     selected.setUsuario(usuarioActual.getUsuario());
-                    selected.setEstado(EstadoFactura.PENDIENTE.getValor());
+
+                    asinarEstados();
+
                     if (moneda == 1) {
                         selected.setDolarActual(parametrosFacade.getParametros().getPrecioDolar());
                     }
@@ -453,9 +455,7 @@ public class FacturaController implements Serializable {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-
                 }
-
             } else {
                 JsfUtil.addErrorMessage("El pedido " + selected.getOrdenPedido() + " ya existe");
             }
@@ -618,10 +618,26 @@ public class FacturaController implements Serializable {
     private boolean validaUnidades() {
         if (unidadesVenta == 0 && unidadesBonificacion > 0) {
             return true;
-        } else if (unidadesVenta > 0 && unidadesBonificacion < 1) {
-            return true;
         } else {
-            return false;
+            return unidadesVenta > 0 && unidadesBonificacion < 1;
+        }
+    }
+
+    private void asinarEstados() {
+        boolean soloBonificacion = true;
+        for (ProductoPromocionHelper pph : objects) {
+            if (pph.getUnidadesVenta() > 0 && pph.getUnidadesBonificacion() >= 0) {
+                soloBonificacion = false;
+                break;
+            }
+        }
+
+        selected.setEstado(EstadoFactura.PENDIENTE.getValor());
+        selected.setEstadoDespacho(EstadoDespachoFactura.SIN_DESPACHAR.getValor());
+        if ((soloBonificacion) || (selected.getTipoPago() == TipoPago.CONTADO.getValor())) {
+            selected.setEstadoPago(EstadoPagoFactura.PAGADA.getValor());
+        } else {
+            selected.setEstadoPago(EstadoPagoFactura.SIN_PAGO.getValor());
         }
     }
 
@@ -691,11 +707,11 @@ public class FacturaController implements Serializable {
     }
 
     public EstadoDespachoFactura[] getEstadosDespachoFactura() {
-        return EstadoDespachoFactura.values();
+        return EstadoDespachoFactura.getFromValue(new Integer[]{0, 1, 2});
     }
 
     public EstadoPagoFactura[] getEstadosPagoFactura() {
-        return EstadoPagoFactura.values();
+        return EstadoPagoFactura.getFromValue(new Integer[]{0, 1, 2});
     }
 
     public String redirectCreateFactura() {
@@ -953,6 +969,14 @@ public class FacturaController implements Serializable {
 
     public String getEstado(int estado) {
         return EstadoFactura.getFromValue(estado).getDetalle();
+    }
+
+    public String getEstadoDespacho(int estado) {
+        return EstadoDespachoFactura.getFromValue(estado).getDetalle();
+    }
+
+    public String getEstadoPago(int estado) {
+        return EstadoPagoFactura.getFromValue(estado).getDetalle();
     }
 
     public void prepararDespachos() {
