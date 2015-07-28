@@ -142,7 +142,7 @@ public class ClienteController implements Serializable {
     }
 
     public void createOrEdit() {
-        if (!getFacade().existeDocumento(selected)) {
+        if (!existeDocumentoCliente()) {
             if (selected.getCupoCredito() == 0.0) {
                 selected.setCupoCredito(selected.getCategoria().getCupoMaximo());
             }
@@ -151,14 +151,14 @@ public class ClienteController implements Serializable {
             selected.setUsuario(getEjbUsuarioActualFacade().getUsuario());
             persist(PersistAction.CREATE, mensaje);
 
-            if (!JsfUtil.isValidationFailed() && selected.getId() == null) {
+            if (!JsfUtil.isValidationFailed()) {
                 setError("");
                 items = null;    // Invalidate list of items to trigger re-query.
                 RequestContext.getCurrentInstance().execute("PF('ClienteFormDialog').hide()");
             }
         } else {
             setError(uiError);
-            JsfUtil.addErrorMessage("El Documento ya se encuentra en la base de datos.");
+//            JsfUtil.addErrorMessage("El Documento ya se encuentra en la base de datos.");
         }
     }
 
@@ -168,6 +168,15 @@ public class ClienteController implements Serializable {
             selected = null; // Remove selection
             items = null;    // Invalidate list of items to trigger re-query.
         }
+    }
+    
+    public boolean existeDocumentoCliente(){
+        boolean existe = getFacade().existeDocumento(selected);
+        if (existe) {
+            selected.setDocumento("");
+            JsfUtil.addErrorMessage("El Documento ya se encuentra en la base de datos.");
+        }
+        return existe;
     }
 
     public List<Cliente> getItems() {

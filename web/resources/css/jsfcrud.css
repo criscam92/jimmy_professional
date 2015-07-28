@@ -129,9 +129,27 @@ form#FacturaCreateForm div.ui-button-text-only span.ui-button-text {
     padding: 0.8em 2em;
 }
 
-.ui-layout-container,
+.ui-layout-container{
+    background-color: #fff;
+}
 div.contenido div.ui-layout-unit-content.ui-widget-content{
-    background-color: #4C9ED9;
+    background-image: url("../resources/src/fongo_login_white.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.container_index{
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+div.contenido_login div.ui-layout-unit-content.ui-widget-content, .container_index{
+    background-image: url("../resources/src/fongo_login.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
 }
 
 .titulo_despacho{
