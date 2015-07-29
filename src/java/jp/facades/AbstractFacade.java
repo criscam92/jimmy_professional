@@ -1,5 +1,7 @@
 package jp.facades;
 
+import java.util.AbstractList;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -92,6 +94,25 @@ public abstract class AbstractFacade<T> {
 //            e.printStackTrace();
         }
         return false;
+    }
+    
+    /**
+     * Obtiene la lista de entidades ordenadas por codigo
+     * @param <U> Clase que hereda de Codificable
+     * @param asc si el valor es true ordena ascendentemente. de lo contrario ordena descendente
+     * @return listado de elementos, si no se encuentran resultados retorna una lista vacia
+     */
+    public <U extends Codificable> List<U> findAll(boolean asc){
+        try {
+            List<U> lista;
+            String sql = "SELECT e FROM " + entityClass.getSimpleName() + " e ORDER BY CAST(e.codigo as INTEGER) ".concat(asc?"ASC":"DESC");
+            Query query = getEntityManager().createQuery(sql);
+            lista = query.getResultList();
+            return lista;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
 
 }

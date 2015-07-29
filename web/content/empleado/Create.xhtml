@@ -13,9 +13,16 @@
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{empleadoController.selected != null}">                        
                         <p:outputLabel styleClass="#{empleadoController.error}" value="#{bundle.CreateEmpleadoLabel_codigo}" for="codigo" />
-                        <p:inputText styleClass="#{empleadoController.error}" id="codigo" value="#{empleadoController.selected.codigo}" title="#{bundle.CreateEmpleadoTitle_codigo}" required="true" requiredMessage="#{bundle.CreateEmpleadoRequiredMessage_codigo}"/>
+                        <p:inputText styleClass="#{empleadoController.error}" id="codigo" value="#{empleadoController.selected.codigo}" title="#{bundle.CreateEmpleadoTitle_codigo}"
+                                     required="true" requiredMessage="#{bundle.CreateEmpleadoRequiredMessage_codigo}" validatorMessage="El código debe ser un número entero positivo">
+                            <f:validateRegex pattern="[0-9]+" />
+                            <p:ajax event="blur" listener="#{empleadoController.existeCodigoEmpleado()}" update=":growl,codigo"/>
+                        </p:inputText>
                         <p:outputLabel styleClass="#{empleadoController.error}" value="Documento" for="documento" />
-                        <p:inputText styleClass="#{empleadoController.error}" id="documento" value="#{empleadoController.selected.documento}" title="Empleado" required="true" requiredMessage="El documento es requerido"/>
+                        <p:inputText styleClass="#{empleadoController.error}" id="documento" value="#{empleadoController.selected.documento}" title="Empleado"
+                                     required="true" requiredMessage="El documento es requerido">
+                            <p:ajax event="blur" listener="#{empleadoController.existeDocumentoEmpleado()}" update=":growl,documento"/>
+                        </p:inputText>
                         <p:outputLabel value="#{bundle.CreateEmpleadoLabel_nombre}" for="nombre" />
                         <p:inputText id="nombre" value="#{empleadoController.selected.nombre}" title="#{bundle.CreateEmpleadoTitle_nombre}" required="true" requiredMessage="#{bundle.CreateEmpleadoRequiredMessage_nombre}"/>
                         <p:outputLabel value="Teléfono" for="telefonos" />

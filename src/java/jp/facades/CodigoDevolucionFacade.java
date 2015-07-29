@@ -1,19 +1,12 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package jp.facades;
 
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import jp.entidades.CodigoDevolucion;
+import jp.entidades.Producto;
 
-/**
- *
- * @author CRISTIAN
- */
 @Stateless
 public class CodigoDevolucionFacade extends AbstractFacade<CodigoDevolucion> {
     @PersistenceContext(unitName = "jimmy_professionalPU")
@@ -26,6 +19,16 @@ public class CodigoDevolucionFacade extends AbstractFacade<CodigoDevolucion> {
 
     public CodigoDevolucionFacade() {
         super(CodigoDevolucion.class);
+    }
+    
+    @Override
+    public List<CodigoDevolucion> findAll() {
+        return super.findAll(true);
+    }
+    
+    @Override
+    public List<CodigoDevolucion> findAll(boolean asc) {
+        return super.findAll(asc);
     }
     
 }

@@ -15,6 +15,7 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import jp.entidades.Concepto;
 import jp.facades.ConceptoFacade;
+import jp.facades.TransactionFacade;
 import jp.util.JsfUtil;
 import jp.util.JsfUtil.PersistAction;
 import org.primefaces.context.RequestContext;
@@ -25,6 +26,8 @@ public class ConceptoController implements Serializable {
 
     @EJB
     private ConceptoFacade ejbFacade;
+    @EJB
+    private TransactionFacade ejbTransactionFacade;
     private List<Concepto> items = null;
     private Concepto selected;
     private final String uiError;
@@ -52,6 +55,10 @@ public class ConceptoController implements Serializable {
         return ejbFacade;
     }
 
+    public TransactionFacade getEjbTransactionFacade() {
+        return ejbTransactionFacade;
+    }
+
     public String getError() {
         return error;
     }
@@ -62,12 +69,14 @@ public class ConceptoController implements Serializable {
 
     public Concepto prepareCreate() {
         selected = new Concepto();
+        Long ultimoCodigo = getEjbTransactionFacade().getLastCodigoByEntity(selected) + 1;        
+        selected.setCodigo(JsfUtil.rellenar(""+ultimoCodigo, "0", 3, false));
         initializeEmbeddableKey();
         return selected;
     }
 
     public void create() {
-        if (!getFacade().getEntityByCodigoOrTipo(selected)) {
+        if (!existeCodigoConcepto()) {
             persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageConcepto", "CreateSuccessM"}));
             if (!JsfUtil.isValidationFailed()) {
                 items = null;    // Invalidate list of items to trigger re-query.
@@ -78,6 +87,15 @@ public class ConceptoController implements Serializable {
             setError(uiError);
             JsfUtil.addErrorMessage("Ya existe el Código: " + selected.getCodigo());
         }
+    }
+    
+    public boolean existeCodigoConcepto(){
+        boolean existe = getFacade().getEntityByCodigoOrTipo(selected);
+        if (existe) {
+            selected.setCodigo("");
+            JsfUtil.addErrorMessage("El Código del Concepto ya se encuentra en la base de datos.");
+        }
+        return existe;
     }
 
     public void update() {

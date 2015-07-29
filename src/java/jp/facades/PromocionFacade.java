@@ -76,5 +76,15 @@ public class PromocionFacade extends AbstractFacade<Promocion> {
         }
         return false;
     }
+    
+    @Override
+    public List<Promocion> findAll() {
+        return super.findAll(true);
+    }
+    
+    @Override
+    public List<Promocion> findAll(boolean asc) {
+        return super.findAll(asc);
+    }
 
 }

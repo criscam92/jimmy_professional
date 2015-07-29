@@ -67,7 +67,7 @@
             </h:form>
             <br/>
             <h:form id="FormFactura">
-                <p:dataTable styleClass="tabla" id="datalist" value="#{facturaController.items}" var="item"
+                <p:dataTable styleClass="tabla" id="datalist" value="#{facturaController.itemsOrdenados}" var="item"
                              selectionMode="single" selection="#{facturaController.selected}" widgetVar="tblFactura"
                              paginator="true" style="text-align: center;"
                              rowKey="#{item.id}"

@@ -18,6 +18,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import jp.facades.TransactionFacade;
 import org.primefaces.context.RequestContext;
 
 @ManagedBean(name = "zonaController")
@@ -25,7 +26,9 @@ import org.primefaces.context.RequestContext;
 public class ZonaController implements Serializable {
 
     @EJB
-    private jp.facades.ZonaFacade ejbFacade;
+    private ZonaFacade ejbFacade;
+    @EJB
+    private TransactionFacade ejbTransactionFacade;
     private List<Zona> items = null;
     private Zona selected;
     private String uiError, error;
@@ -52,14 +55,20 @@ public class ZonaController implements Serializable {
         return ejbFacade;
     }
 
+    public TransactionFacade getEjbTransactionFacade() {
+        return ejbTransactionFacade;
+    }
+
     public Zona prepareCreate() {
         selected = new Zona();
+        Long ultimoCodigo = getEjbTransactionFacade().getLastCodigoByEntity(selected) + 1;        
+        selected.setCodigo(JsfUtil.rellenar(""+ultimoCodigo, "0", 3, false));
         initializeEmbeddableKey();
         return selected;
     }
 
     public void create() {
-        if (!getFacade().getEntityByCodigoOrTipo(selected)) {
+        if (!existeCodigoZona()) {
             persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageZona", "CreateSuccessF"}));
             if (!JsfUtil.isValidationFailed()) {
                 items = null;    // Invalidate list of items to trigger re-query.
@@ -71,6 +80,15 @@ public class ZonaController implements Serializable {
             JsfUtil.addErrorMessage(JsfUtil.getMessageBundle("MessageEmpleadoCodigoExist").replaceAll("%cod%", selected.getCodigo()));
         }
 
+    }
+    
+    public boolean existeCodigoZona(){
+        boolean existe = getFacade().getEntityByCodigoOrTipo(selected);
+        if (existe) {
+            selected.setCodigo("");
+            JsfUtil.addErrorMessage("El Código de la Zona ya se encuentra en la base de datos.");
+        }
+        return existe;
     }
 
     public void update() {

@@ -13,7 +13,11 @@
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{codigoDevolucionController.selected != null}">
                         <p:outputLabel styleClass="#{codigoDevolucionController.error}" value="#{bundle.CreateCodigoDevolucionLabel_codigo}" for="codigo" />
-                        <p:inputText styleClass="#{codigoDevolucionController.error}" id="codigo" value="#{codigoDevolucionController.selected.codigo}" title="#{bundle.CreateCodigoDevolucionTitle_codigo}" required="true" requiredMessage="#{bundle.CreateCodigoDevolucionRequiredMessage_codigo}"/>
+                        <p:inputText styleClass="#{codigoDevolucionController.error}" id="codigo" value="#{codigoDevolucionController.selected.codigo}" validatorMessage="El código debe ser un número entero positivo"
+                                     title="#{bundle.CreateCodigoDevolucionTitle_codigo}" required="true" requiredMessage="#{bundle.CreateCodigoDevolucionRequiredMessage_codigo}">
+                            <f:validateRegex pattern="[0-9]+" />
+                            <p:ajax event="blur" listener="#{codigoDevolucionController.existeCodigoDevolucion()}" update=":growl,codigo"/>
+                        </p:inputText>
                         <p:outputLabel value="#{bundle.CreateCodigoDevolucionLabel_descripcion}" for="descripcion" />
                         <p:inputText id="descripcion" value="#{codigoDevolucionController.selected.descripcion}" title="#{bundle.CreateCodigoDevolucionTitle_descripcion}" required="true" requiredMessage="#{bundle.CreateCodigoDevolucionRequiredMessage_descripcion}"/>
                     </p:panelGrid>

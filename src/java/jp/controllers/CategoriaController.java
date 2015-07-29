@@ -18,6 +18,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import jp.facades.TransactionFacade;
 import org.primefaces.context.RequestContext;
 
 @ManagedBean(name = "categoriaController")
@@ -25,7 +26,9 @@ import org.primefaces.context.RequestContext;
 public class CategoriaController implements Serializable {
 
     @EJB
-    private jp.facades.CategoriaFacade ejbFacade;
+    private CategoriaFacade ejbFacade;
+    @EJB
+    private TransactionFacade ejbTransactionFacade;
     private List<Categoria> items = null;
     private Categoria selected;
     private String uiError, error;
@@ -52,14 +55,20 @@ public class CategoriaController implements Serializable {
         return ejbFacade;
     }
 
+    public TransactionFacade getEjbTransactionFacade() {
+        return ejbTransactionFacade;
+    }
+
     public Categoria prepareCreate() {
         selected = new Categoria();
+        Long ultimoCodigo = getEjbTransactionFacade().getLastCodigoByEntity(selected) + 1;        
+        selected.setCodigo(JsfUtil.rellenar(""+ultimoCodigo, "0", 3, false));
         initializeEmbeddableKey();
         return selected;
     }
 
     public void create() {
-        if (!getFacade().getEntityByCodigoOrTipo(selected)) {
+        if (!existeCodigoCategoria()) {
             persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageCategoria", "CreateSuccessF"}));
             if (!JsfUtil.isValidationFailed()) {
                 items = null;    // Invalidate list of items to trigger re-query.
@@ -70,7 +79,15 @@ public class CategoriaController implements Serializable {
             setError(uiError);
             JsfUtil.addErrorMessage("Ya existe el Código " + selected.getCodigo());
         }
-
+    }
+    
+    public boolean existeCodigoCategoria(){
+        boolean existe = getFacade().getEntityByCodigoOrTipo(selected);
+        if (existe) {
+            selected.setCodigo("");
+            JsfUtil.addErrorMessage("El Código de la Categoria ya se encuentra en la base de datos.");
+        }
+        return existe;
     }
 
     public void update() {

@@ -113,6 +113,8 @@ public class PromocionController implements Serializable {
 
     public Promocion prepareCreate() {
         selected = new Promocion();
+        Long ultimoCodigo = getTransactionFacade().getLastCodigoByEntity(selected) + 1;        
+        selected.setCodigo(JsfUtil.rellenar(""+ultimoCodigo, "0", 3, false));
         setError("");
         promocionProductos = new ArrayList<>();
         setHeader(JsfUtil.getMessageBundle("CreatePromocionTitle"));
@@ -125,7 +127,7 @@ public class PromocionController implements Serializable {
     }
 
     public void create(boolean guardar) {
-        if (!getFacade().getEntityByCodigoOrTipo(selected)) {
+        if (!existeCodigoPromocion()) {
             if (promocionProductos.size() >= 1) {
                 if (getTransactionFacade().createPromocion(selected, promocionProductos)) {
                     if (!JsfUtil.isValidationFailed()) {
@@ -151,6 +153,15 @@ public class PromocionController implements Serializable {
             setError(uiError);
             JsfUtil.addErrorMessage("Ya existe el Código " + selected.getCodigo());
         }
+    }
+    
+    public boolean existeCodigoPromocion(){
+        boolean existe = getFacade().getEntityByCodigoOrTipo(selected);
+        if (existe) {
+            selected.setCodigo("");
+            JsfUtil.addErrorMessage("El Código de la Promoción ya se encuentra en la base de datos.");
+        }
+        return existe;
     }
 
     public void update() {

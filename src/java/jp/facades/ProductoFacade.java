@@ -111,4 +111,15 @@ public class ProductoFacade extends AbstractFacade<Producto> {
         }
         return result;
     }
+
+    @Override
+    public List<Producto> findAll() {
+        return super.findAll(true);
+    }
+    
+    @Override
+    public List<Producto> findAll(boolean asc) {
+        return super.findAll(asc);
+    }
+    
 }

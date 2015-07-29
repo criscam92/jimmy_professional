@@ -4,7 +4,8 @@
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:pe="http://primefaces.org/ui/extensions">
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <ui:composition>
 
@@ -13,8 +14,11 @@
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{categoriaController.selected != null}">
                         <p:outputLabel styleClass="#{categoriaController.error}" value="#{bundle.EditCategoriaLabel_cod}" for="codigo" />
-                        <p:inputText styleClass="#{categoriaController.error}" id="codigo" value="#{categoriaController.selected.codigo}"
-                                     title="#{bundle.EditCategoriaTitle_cod}" required="true" requiredMessage="#{bundle.EditCategoriaRequiredMessage_cod}"/>
+                        <p:inputText styleClass="#{categoriaController.error}" id="codigo" value="#{categoriaController.selected.codigo}" validatorMessage="El código debe ser un número entero positivo"
+                                     title="#{bundle.EditCategoriaTitle_cod}" required="true" requiredMessage="#{bundle.EditCategoriaRequiredMessage_cod}">
+                            <f:validateRegex pattern="[0-9]+" />
+                            <p:ajax event="blur" listener="#{categoriaController.existeCodigoCategoria()}" update=":growl,codigo"/>
+                        </p:inputText>
                         <p:outputLabel value="#{bundle.EditCategoriaLabel_desc}" for="descripcion" />
                         <p:inputText id="descripcion" value="#{categoriaController.selected.descripcion}"
                                      title="#{bundle.EditCategoriaTitle_desc}" required="true" requiredMessage="#{bundle.EditCategoriaRequiredMessage_desc}"/>

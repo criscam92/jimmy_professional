@@ -12,7 +12,10 @@
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{tipoClienteController.selected != null}">
                         <p:outputLabel styleClass="#{tipoClienteController.error}" value="#{bundle.CreateTipoClienteLabel_tipo}" for="tipo" />
-                        <p:inputText styleClass="#{tipoClienteController.error}" id="tipo" value="#{tipoClienteController.selected.tipo}" title="#{bundle.CreateTipoClienteTitle_tipo}" required="true" requiredMessage="#{bundle.CreateTipoClienteRequiredMessage_tipo}"/>
+                        <p:inputText styleClass="#{tipoClienteController.error}" id="tipo" value="#{tipoClienteController.selected.tipo}" title="#{bundle.CreateTipoClienteTitle_tipo}"
+                                     required="true" requiredMessage="#{bundle.CreateTipoClienteRequiredMessage_tipo}">
+                            <p:ajax event="blur" listener="#{tipoClienteController.existeTipoCliente()}" update=":growl,tipo"/>
+                        </p:inputText>
                         <p:outputLabel value="% Descuento" for="descuento" />
                         <p:inputText id="descuento" value="#{tipoClienteController.selected.descuento}" title="Descuento" required="true" requiredMessage="Débe indicar un valor de descuento">
                             <f:validateDoubleRange minimum="0.0" maximum="100.0" />

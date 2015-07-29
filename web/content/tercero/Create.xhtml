@@ -13,7 +13,10 @@
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{terceroController.selected != null}">
                         <p:outputLabel value="#{bundle.CreateTerceroLabel_numdocumento}" for="numdocumento" />
-                        <p:inputText id="numdocumento" value="#{terceroController.selected.numdocumento}" title="#{bundle.CreateTerceroTitle_numdocumento}" required="true" requiredMessage="#{bundle.CreateTerceroRequiredMessage_numdocumento}"/>                        
+                        <p:inputText id="numdocumento" value="#{terceroController.selected.numdocumento}" title="#{bundle.CreateTerceroTitle_numdocumento}"
+                                     required="true" requiredMessage="#{bundle.CreateTerceroRequiredMessage_numdocumento}">
+                            <p:ajax event="blur" listener="#{terceroController.existeDocumentoTercero()}" update=":growl,numdocumento"/>
+                        </p:inputText>
                         <p:outputLabel value="#{bundle.CreateTerceroLabel_nombre}" for="nombre" />
                         <p:inputText id="nombre" value="#{terceroController.selected.nombre}" title="#{bundle.CreateTerceroTitle_nombre}" required="true" requiredMessage="#{bundle.CreateTerceroRequiredMessage_nombre}"/>                        
                         <p:outputLabel value="#{bundle.CreateTerceroLabel_tipodocumento}" for="tipodocumento" />

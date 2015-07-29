@@ -24,6 +24,7 @@ import javax.faces.convert.FacesConverter;
 import jp.entidades.Parametros;
 import jp.facades.ProductoFacade;
 import jp.facades.ParametrosFacade;
+import jp.facades.TransactionFacade;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -38,7 +39,9 @@ import org.primefaces.context.RequestContext;
 public class ProductoController implements Serializable {
 
     @EJB
-    private jp.facades.ProductoFacade ejbFacade;
+    private ProductoFacade ejbFacade;
+    @EJB
+    private TransactionFacade ejbTransactionFacade;
     @EJB
     private ParametrosFacade parametrosFacade;
     private List<Producto> items = null;
@@ -91,8 +94,14 @@ public class ProductoController implements Serializable {
         return ejbFacade;
     }
 
+    public TransactionFacade getEjbTransactionFacade() {
+        return ejbTransactionFacade;
+    }
+
     public Producto prepareCreate() {
         selected = new Producto();
+        Long ultimoCodigo = getEjbTransactionFacade().getLastCodigoByEntity(selected) + 1;        
+        selected.setCodigo(JsfUtil.rellenar(""+ultimoCodigo, "0", 3, false));
         initializeEmbeddableKey();
         return selected;
     }
@@ -171,7 +180,7 @@ public class ProductoController implements Serializable {
     }
 
     public void create() {
-        if (!getFacade().getEntityByCodigoOrTipo(selected)) {
+        if (!existeCodigoCliente()) {
             persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageProducto", "CreateSuccessM"}));
             if (!JsfUtil.isValidationFailed()) {
                 items = null;    // Invalidate list of items to trigger re-query.
@@ -182,6 +191,15 @@ public class ProductoController implements Serializable {
             setError(uiError);
             JsfUtil.addErrorMessage("Ya existe el Código: " + selected.getCodigo());
         }
+    }
+    
+    public boolean existeCodigoCliente(){
+        boolean existe = getFacade().getEntityByCodigoOrTipo(selected);
+        if (existe) {
+            selected.setCodigo("");
+            JsfUtil.addErrorMessage("El Código del Producto ya se encuentra en la base de datos.");
+        }
+        return existe;
     }
 
     public void update() {

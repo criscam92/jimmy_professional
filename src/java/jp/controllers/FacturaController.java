@@ -484,6 +484,13 @@ public class FacturaController implements Serializable {
         return items;
     }
 
+    public List<Factura> getItemsOrdenados() {
+        if (items == null) {
+            items = getFacade().getFacturasOrdenadas();
+        }
+        return items;
+    }
+
     private void persist(PersistAction persistAction, String successMessage) {
         if (selected != null) {
             setEmbeddableKeys();
@@ -988,7 +995,7 @@ public class FacturaController implements Serializable {
             JsfUtil.addErrorMessage("Error anulando el despacho");
         } else {
             items = null;
-            despachosFactura = getDespachoFacturaFacade().getDespachosFacturaByFactura(selected, false);            
+            despachosFactura = getDespachoFacturaFacade().getDespachosFacturaByFactura(selected, false);
         }
     }
 

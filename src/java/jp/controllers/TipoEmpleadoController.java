@@ -58,7 +58,7 @@ public class TipoEmpleadoController implements Serializable {
     }
 
     public void create() {
-        if (!getFacade().getEntityByCodigoOrTipo(selected)) {
+        if (!existeTipoEmpleado()) {
             persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageTipoEmpleado", "CreateSuccessM"}));
             if (!JsfUtil.isValidationFailed()) {
                 selected = null; // Remove selection
@@ -70,6 +70,15 @@ public class TipoEmpleadoController implements Serializable {
             setError(uiError);
             JsfUtil.addErrorMessage("Ya existe el Tipo de Empleado: "+selected.getTipo());
         }
+    }
+    
+    public boolean existeTipoEmpleado(){
+        boolean existe = getFacade().getEntityByCodigoOrTipo(selected);
+        if (existe) {
+            selected.setTipo("");
+            JsfUtil.addErrorMessage("El Tipo de Empleado ya se encuentra en la base de datos.");
+        }
+        return existe;
     }
 
     public void update() {

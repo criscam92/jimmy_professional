@@ -14,9 +14,12 @@
                     <p:panelGrid columns="6" rendered="#{cuentaBancariaController.selected != null}">
                         
                         <p:outputLabel styleClass="#{cuentaBancariaController.error}" value="#{bundle.EditCuentaBancariaLabel_nom}" for="nombre"/>
-                        <p:inputText styleClass="#{cuentaBancariaController.error}" id="nombre" value="#{cuentaBancariaController.selected.nombre}"/>
+                        <p:inputText styleClass="#{cuentaBancariaController.error}" id="nombre" value="#{cuentaBancariaController.selected.nombre}"
+                                     required="true" requiredMessage="El campo Nombre es requerido">
+                            <p:ajax event="blur" listener="#{cuentaBancariaController.existeNombreCuenta()}" update=":growl,nombre"/>
+                        </p:inputText>
                         <p:outputLabel value="#{bundle.EditCuentaBancariaLabel_num}" for="numero"/>
-                        <p:inputText id="numero" value="#{cuentaBancariaController.selected.numeroCuenta}"/>
+                        <p:inputText id="numero" value="#{cuentaBancariaController.selected.numeroCuenta}" required="true" requiredMessage="El campo Numero de Cuenta es requerido."/>
                         <p:outputLabel value="#{bundle.EditTalonarioLabel_tip}" for="tipo" />
                         <p:selectOneMenu id="tipo" value="#{cuentaBancariaController.selected.tipoCuenta}" required="true" requiredMessage="#{bundle.EditTalonarioRequiredMessage_tip}">
                             <f:selectItem  itemLabel="#{bundle.SelectOneMessage}" itemValue="#{null}"/>

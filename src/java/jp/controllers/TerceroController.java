@@ -57,7 +57,7 @@ public class TerceroController implements Serializable {
     }
 
     public void create() {
-        if (!getFacade().existeDocumento(selected)) {
+        if (!existeDocumentoTercero()) {
             persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageTercero", "CreateSuccessM"}));
             if (!JsfUtil.isValidationFailed()) {
                 items = null;    // Invalidate list of items to trigger re-query.
@@ -65,6 +65,15 @@ public class TerceroController implements Serializable {
         } else {
             JsfUtil.addErrorMessage("El Documento ya se encuentra en la base de datos.");
         }
+    }
+    
+    public boolean existeDocumentoTercero(){
+        boolean existe = getFacade().existeDocumento(selected);
+        if (existe) {
+            selected.setNumdocumento("");
+            JsfUtil.addErrorMessage("El Documento ya se encuentra en la base de datos.");
+        }
+        return existe;
     }
 
     public void update() {

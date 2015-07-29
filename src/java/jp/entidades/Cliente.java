@@ -292,7 +292,7 @@ public class Cliente implements Serializable {
 
     @Override
     public String toString() {
-        return documento + " - " + nombre;
+        return this.getDocumento() + " - " + this.getNombre() + "("+(this.getContacto()==null?"Sin contacto":this.getContacto())+")";
     }
 
 }

@@ -14,7 +14,10 @@
                     <p:panelGrid columns="2" rendered="#{usuarioController.selected != null}">
 
                         <p:outputLabel styleClass="#{usuarioController.error}" value="#{bundle.CreateUsuarioLabel_usuario}" for="usuario" />
-                        <p:inputText styleClass="#{usuarioController.error}" id="usuario" value="#{usuarioController.selected.usuario}" title="#{bundle.CreateUsuarioTitle_usuario}" required="true" requiredMessage="#{bundle.CreateUsuarioRequiredMessage_usuario}"/>
+                        <p:inputText styleClass="#{usuarioController.error}" id="usuario" value="#{usuarioController.selected.usuario}" title="#{bundle.CreateUsuarioTitle_usuario}"
+                                     required="true" requiredMessage="#{bundle.CreateUsuarioRequiredMessage_usuario}">
+                            <p:ajax event="blur" listener="#{usuarioController.existeUsuario()}" update=":growl,usuario"/>
+                        </p:inputText>
 
                         <p:outputLabel value="#{bundle.CreateUsuarioLabel_contrasena1}" for="contrasena1"/>
                         <p:password id="contrasena1" value="#{usuarioController.pass}" match="contrasena2" weakLabel="#{bundle.WeakLabel}" feedback="true"

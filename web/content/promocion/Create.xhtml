@@ -17,7 +17,11 @@
                         <p:panel  header="DATOS PROMOCIÓN" id="datosPromocion">
                             <p:panelGrid columns="4" style="height: 108px;">
                                 <p:outputLabel styleClass="#{promocionController.error}" id="labelCodigo" value="#{bundle.EditCodigoDevolucionLabel_codigo}" for="codigo" style="margin-right: 22px;"/>
-                                <p:inputText style="width: 100px" styleClass="#{promocionController.error}" id="codigo" value="#{promocionController.selected.codigo}" title="Codigo" required="true" requiredMessage="El campo codigo es requerido"/>
+                                <p:inputText style="width: 100px" styleClass="#{promocionController.error}" id="codigo" value="#{promocionController.selected.codigo}" title="Codigo"
+                                             required="true" requiredMessage="El campo codigo es requerido" validatorMessage="El código debe ser un número entero positivo">
+                                    <f:validateRegex pattern="[0-9]+" />
+                                    <p:ajax event="blur" listener="#{promocionController.existeCodigoPromocion()}" update=":growl,codigo"/>
+                                </p:inputText>
 
                                 <p:outputLabel value="#{bundle.CreatePromocionLabel_descripcion}" for="descripcion" />
                                 <p:inputText id="descripcion" value="#{promocionController.selected.descripcion}" title="#{bundle.CreatePromocionTitle_descripcion}" required="true" requiredMessage="#{bundle.CreatePromocionRequiredMessage_descripcion}">

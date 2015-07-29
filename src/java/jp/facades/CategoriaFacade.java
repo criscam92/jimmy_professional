@@ -5,10 +5,12 @@
  */
 package jp.facades;
 
+import java.util.List;
 import jp.entidades.Categoria;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import jp.entidades.Producto;
 
 /**
  *
@@ -26,6 +28,16 @@ public class CategoriaFacade extends AbstractFacade<Categoria> {
 
     public CategoriaFacade() {
         super(Categoria.class);
+    }
+    
+    @Override
+    public List<Categoria> findAll() {
+        return super.findAll(true);
+    }
+    
+    @Override
+    public List<Categoria> findAll(boolean asc) {
+        return super.findAll(asc);
     }
     
 }

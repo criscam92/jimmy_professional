@@ -13,7 +13,11 @@
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{zonaController.selected != null}">
                         <p:outputLabel styleClass="#{zonaController.error}" value="#{bundle.EditZonaLabel_cod}" for="codigo" />
-                        <p:inputText styleClass="#{zonaController.error}" id="codigo" value="#{zonaController.selected.codigo}" title="#{bundle.EditZonaTitle_cod}" required="true" requiredMessage="#{bundle.EditZonaRequiredMessage_cod}"/>
+                        <p:inputText styleClass="#{zonaController.error}" id="codigo" value="#{zonaController.selected.codigo}" title="#{bundle.EditZonaTitle_cod}"
+                                     required="true" requiredMessage="#{bundle.EditZonaRequiredMessage_cod}" validatorMessage="El código debe ser un número entero positivo">
+                            <f:validateRegex pattern="[0-9]+" />
+                            <p:ajax event="blur" listener="#{zonaController.existeCodigoZona()}" update=":growl,codigo"/>
+                        </p:inputText>
                         <p:outputLabel value="#{bundle.EditZonaLabel_nom}" for="descripcion" />
                         <p:inputText id="descripcion" value="#{zonaController.selected.nombre}" title="#{bundle.EditZonaTitle_nom}" required="true" requiredMessage="#{bundle.EditZonaRequiredMessage_nom}"/>
                     </p:panelGrid>

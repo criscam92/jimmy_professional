@@ -122,4 +122,31 @@ public class JsfUtil {
             return text;
         }
     }
+    
+    public static String rellenar(String cadenaInicial, String cadenaRelleno, int tamanoFinal, boolean rellenarAlaDerecha) {
+        try {
+            if (cadenaInicial.length() == tamanoFinal) {
+
+            } else if (cadenaInicial.length() > tamanoFinal) {
+                if (rellenarAlaDerecha) {
+                    cadenaInicial = cadenaInicial.substring(0, tamanoFinal);
+                } else {
+                    int indice = cadenaInicial.length() - tamanoFinal;
+                    cadenaInicial = cadenaInicial.substring(indice, cadenaInicial.length());
+                }
+            } else {
+                while (cadenaInicial.length() < tamanoFinal) {
+                    if (rellenarAlaDerecha) {
+                        cadenaInicial = cadenaInicial.concat(cadenaRelleno);
+                    } else {
+                        cadenaInicial = cadenaRelleno.concat(cadenaInicial);
+                    }
+                }
+                cadenaInicial = rellenar(cadenaInicial, cadenaRelleno, tamanoFinal, rellenarAlaDerecha);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return cadenaInicial;
+    }
 }

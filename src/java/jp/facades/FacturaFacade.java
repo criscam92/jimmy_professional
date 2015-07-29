@@ -364,4 +364,16 @@ public class FacturaFacade extends AbstractFacade<Factura> {
         }
         return null;
     }
+
+    public List<Factura> getFacturasOrdenadas() {
+        try {
+            List<Factura> listaFacturas;
+            Query query = getEntityManager().createQuery("SELECT f FROM Factura f ORDER BY CAST(f.ordenPedido as INTEGER)");
+            listaFacturas = query.getResultList();
+            return listaFacturas;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
 }

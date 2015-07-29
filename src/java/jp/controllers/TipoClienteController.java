@@ -58,7 +58,7 @@ public class TipoClienteController implements Serializable {
     }
 
     public void create() {
-        if (!getFacade().getEntityByCodigoOrTipo(selected)) {
+        if (!existeTipoCliente()) {
             persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageTipoCliente", "CreateSuccessM"}));
             if (!JsfUtil.isValidationFailed()) {
                 selected = null;
@@ -71,6 +71,15 @@ public class TipoClienteController implements Serializable {
             JsfUtil.addErrorMessage("Ya existe el Tipo de Cliente: "+selected.getTipo());
         }
 
+    }
+    
+    public boolean existeTipoCliente(){
+        boolean existe = getFacade().getEntityByCodigoOrTipo(selected);
+        if (existe) {
+            selected.setTipo("");
+            JsfUtil.addErrorMessage("El Tipo de Cliente ya se encuentra en la base de datos.");
+        }
+        return existe;
     }
 
     public void update() {

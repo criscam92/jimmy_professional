@@ -13,7 +13,11 @@
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{conceptoController.selected != null}">
                         <p:outputLabel value="#{bundle.CreateProductoLabel_codigo}" for="codigo" styleClass="#{conceptoController.error}"/>
-                        <p:inputText id="codigo" styleClass="#{conceptoController.error}" value="#{conceptoController.selected.codigo}" title="#{bundle.CreateProductoTitle_codigo}" required="true" requiredMessage="#{bundle.CreateConceptoRequiredMessage_codigo}"/>
+                        <p:inputText id="codigo" styleClass="#{conceptoController.error}" value="#{conceptoController.selected.codigo}" title="#{bundle.CreateProductoTitle_codigo}"
+                                     required="true" requiredMessage="#{bundle.CreateConceptoRequiredMessage_codigo}" validatorMessage="El código debe ser un número entero positivo">
+                            <f:validateRegex pattern="[0-9]+" />
+                            <p:ajax event="blur" listener="#{conceptoController.existeCodigoConcepto()}" update=":growl,codigo"/>
+                        </p:inputText>
                         <p:outputLabel value="#{bundle.CreateConceptoLabel_detalle}" for="detalle" />
                         <p:inputText id="detalle" value="#{conceptoController.selected.detalle}" title="#{bundle.ListConceptoTitle_detalle}" required="true" requiredMessage="#{bundle.CreateConceptoRequiredMessage_detalle}"/>
                         <p:outputLabel value="#{bundle.CreateConceptoLabel_tipo}" for="tipo" />

@@ -71,7 +71,7 @@ public class UsuarioController implements Serializable {
     }
 
     public void create() {
-        if (!getFacade().getUsuarioByNombre(selected)) {
+        if (!existeUsuario()) {
             if (verificarClave()) {
                 persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessengerUser", "CreateSuccessM"}));
                 if (!JsfUtil.isValidationFailed()) {
@@ -85,6 +85,15 @@ public class UsuarioController implements Serializable {
             setError(uiError);
             JsfUtil.addErrorMessage(JsfUtil.getMessageBundle("MessengerUserExist").replaceAll("%USUARIO%", selected.getUsuario()));
         }
+    }
+    
+    public boolean existeUsuario(){
+        boolean existe = getFacade().getUsuarioByNombre(selected);
+        if (existe) {
+            selected.setUsuario("");
+            JsfUtil.addErrorMessage("El Usuario ya se encuentra en la base de datos.");
+        }
+        return existe;
     }
 
     public void update() {

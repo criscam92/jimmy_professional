@@ -47,7 +47,7 @@ public class ClienteFacade extends AbstractFacade<Cliente> {
 
     public List<Cliente> getClienteByQuery(String query) {
         try {
-            Query q = getEntityManager().createQuery("SELECT c FROM Cliente c WHERE UPPER(CONCAT(c.documento,' - ',c.nombre)) LIKE UPPER(:param)");
+            Query q = getEntityManager().createQuery("SELECT c FROM Cliente c WHERE UPPER(CONCAT(c.documento,' - ',c.nombre, c.contacto)) LIKE UPPER(:param)");
             q.setParameter("param", "%" + query + "%");
             q.setFirstResult(0);
             q.setMaxResults(10);

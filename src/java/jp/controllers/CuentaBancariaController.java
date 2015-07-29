@@ -61,7 +61,7 @@ public class CuentaBancariaController implements Serializable {
     }
 
     public void create() {
-        if (!getFacade().getEntityByCodigoOrTipo(selected)) {
+        if (!existeNombreCuenta()) {
             persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageCuentaBancaria", "CreateSuccessF"}));
             if (!JsfUtil.isValidationFailed()) {
                 items = null;    // Invalidate list of items to trigger re-query.
@@ -72,7 +72,15 @@ public class CuentaBancariaController implements Serializable {
             setError(uiError);
             JsfUtil.addErrorMessage("Ya existe el Tipo de Cuenta Bancaria " + selected.getNombre());
         }
-
+    }
+    
+    public boolean existeNombreCuenta(){
+        boolean existe = getFacade().getEntityByCodigoOrTipo(selected);
+        if (existe) {
+            selected.setNombre("");
+            JsfUtil.addErrorMessage("El Nombre de Cuenta ya se encuentra en la base de datos.");
+        }
+        return existe;
     }
 
     public void update() {

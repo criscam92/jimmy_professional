@@ -26,8 +26,11 @@ public class TipoSalidaProductoController implements Serializable {
     private TipoSalidaProductoFacade ejbFacade;
     private List<TipoSalidaProducto> items = null;
     private TipoSalidaProducto selected;
+    private String error;
+    private final String uiError;
 
     public TipoSalidaProductoController() {
+        uiError = "ui-state-error";
     }
 
     public TipoSalidaProducto getSelected() {
@@ -36,6 +39,15 @@ public class TipoSalidaProductoController implements Serializable {
 
     public void setSelected(TipoSalidaProducto selected) {
         this.selected = selected;
+    }
+    
+
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
     }
 
     protected void setEmbeddableKeys() {
@@ -50,15 +62,22 @@ public class TipoSalidaProductoController implements Serializable {
 
     public TipoSalidaProducto prepareCreate() {
         selected = new TipoSalidaProducto();
+        setError("");
         initializeEmbeddableKey();
         return selected;
     }
 
     public void create() {
-        persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"TipoSalidaProductoMessage", "CreateSuccessM"}));
-        if (!JsfUtil.isValidationFailed()) {
-            items = null;    // Invalidate list of items to trigger re-query.
+        if (!getFacade().existeDetalle(selected)) {
+            persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"TipoSalidaProductoMessage", "CreateSuccessM"}));
+            if (!JsfUtil.isValidationFailed()) {
+                items = null;    // Invalidate list of items to trigger re-query.
+            }
+        }else{
+            setError(uiError);
+            JsfUtil.addErrorMessage("El Nombre ya se encuentra en la base de datos.");
         }
+
     }
 
     public void update() {

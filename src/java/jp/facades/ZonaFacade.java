@@ -1,19 +1,12 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package jp.facades;
 
+import java.util.List;
 import jp.entidades.Zona;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import jp.entidades.Producto;
 
-/**
- *
- * @author arturo
- */
 @Stateless
 public class ZonaFacade extends AbstractFacade<Zona> {
     @PersistenceContext(unitName = "jimmy_professionalPU")
@@ -26,6 +19,16 @@ public class ZonaFacade extends AbstractFacade<Zona> {
 
     public ZonaFacade() {
         super(Zona.class);
+    }
+    
+    @Override
+    public List<Zona> findAll() {
+        return super.findAll(true);
+    }
+    
+    @Override
+    public List<Zona> findAll(boolean asc) {
+        return super.findAll(asc);
     }
     
 }

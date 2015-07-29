@@ -787,7 +787,7 @@ public class TransactionFacade {
             List<Factura> listTMP = new ArrayList<>();
             for (PagoHelper ph : pagoHelpers) {
                 Factura f = getEntityManager().find(Factura.class, ph.getPago().getFactura().getId());
-                
+
                 if (!listTMP.contains(f)) {
                     listTMP.add(f);
                 }
@@ -841,14 +841,13 @@ public class TransactionFacade {
             Query query1 = getEntityManager().createQuery("SELECT SUM(p.valorTotal) FROM Pago p WHERE p.factura.id = :fac AND p.estado = :est");
             query1.setParameter("fac", factura.getId());
             query1.setParameter("est", EstadoPago.REALIZADO.getValor());
-            
+
             double valor;
             try {
                 valor = (double) query1.getSingleResult();
             } catch (Exception e) {
                 valor = 0.0;
             }
-            
 
             if (factura.getTotalPagar() == valor) {
                 factura.setEstadoPago(EstadoPagoFactura.PAGADA.getValor());
@@ -924,5 +923,22 @@ public class TransactionFacade {
             e.printStackTrace();
         }
         return cantidad;
+    }
+
+    public Long getLastCodigoByEntity(Object entidad) {
+        Long lastCodigo = 0l;
+        String entityName = entidad.getClass().getSimpleName();
+        try {
+            String query = "SELECT e.codigo FROM " + entityName + " e ORDER BY e.id DESC";
+            System.out.println("QUERY-> " + query);
+            Query q = getEntityManager().createQuery(query);
+            q.setMaxResults(1);
+            lastCodigo = Long.valueOf((String) q.getSingleResult());
+            return lastCodigo;
+        } catch (Exception e) {
+            System.out.println("No se encontró el último codigo para " + entityName + ", se pone 001");
+//        e.printStackTrace();
+        }
+        return lastCodigo;
     }
 }

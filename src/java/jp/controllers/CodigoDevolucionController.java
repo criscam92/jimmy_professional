@@ -18,6 +18,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import jp.facades.CodigoDevolucionFacade;
+import jp.facades.TransactionFacade;
 import org.primefaces.context.RequestContext;
 
 @ManagedBean(name = "codigoDevolucionController")
@@ -25,7 +26,9 @@ import org.primefaces.context.RequestContext;
 public class CodigoDevolucionController implements Serializable {
 
     @EJB
-    private jp.facades.CodigoDevolucionFacade ejbFacade;
+    private CodigoDevolucionFacade ejbFacade;
+    @EJB
+    private TransactionFacade ejbTransactionFacade;
     private List<CodigoDevolucion> items = null;
     private CodigoDevolucion selected;
     private String uiError, error;
@@ -52,25 +55,40 @@ public class CodigoDevolucionController implements Serializable {
         return ejbFacade;
     }
 
+    public TransactionFacade getEjbTransactionFacade() {
+        return ejbTransactionFacade;
+    }
+
     public CodigoDevolucion prepareCreate() {
         selected = new CodigoDevolucion();
+        Long ultimoCodigo = getEjbTransactionFacade().getLastCodigoByEntity(selected) + 1;
+        selected.setCodigo(JsfUtil.rellenar("" + ultimoCodigo, "0", 3, false));
         initializeEmbeddableKey();
         return selected;
     }
 
     public void create() {
-        if (!getFacade().getEntityByCodigoOrTipo(selected)) {
+        if (!existeCodigoDevolucion()) {
             persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageCodigoDevolucion", "CreateSuccessM"}));
             if (!JsfUtil.isValidationFailed()) {
                 items = null;    // Invalidate list of items to trigger re-query.
                 setError("");
                 RequestContext.getCurrentInstance().execute("PF('CodigoDevolucionCreateDialog').hide()");
             }
-        }else{
+        } else {
             setError(uiError);
             JsfUtil.addErrorMessage(JsfUtil.getMessageBundle("MessageEmpleadoCodigoExist").replaceAll("%cod%", selected.getCodigo()));
         }
 
+    }
+    
+    public boolean existeCodigoDevolucion(){
+        boolean existe = getFacade().getEntityByCodigoOrTipo(selected);
+        if (existe) {
+            selected.setCodigo("");
+            JsfUtil.addErrorMessage("El Código ya se encuentra en la base de datos.");
+        }
+        return existe;
     }
 
     public void update() {
@@ -81,12 +99,12 @@ public class CodigoDevolucionController implements Serializable {
                 setError("");
                 RequestContext.getCurrentInstance().execute("PF('CodigoDevolucionEditDialog').hide()");
             }
-        }else{
+        } else {
             items = null;
             setError(uiError);
             JsfUtil.addErrorMessage(JsfUtil.getMessageBundle("MessageEmpleadoCodigoExist").replaceAll("%cod%", selected.getCodigo()));
         }
-        
+
     }
 
     public void destroy() {

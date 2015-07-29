@@ -14,7 +14,9 @@
                     <p:panelGrid columns="2" rendered="#{tipoEmpleadoController.selected != null}">
                         <p:outputLabel styleClass="#{tipoEmpleadoController.error}" value="#{bundle.CreateTipoEmpleadoLabel_tipo}" for="tipo" />
                         <p:inputText styleClass="#{tipoEmpleadoController.error}"  id="tipo" value="#{tipoEmpleadoController.selected.tipo}"
-                                     title="#{bundle.CreateTipoEmpleadoTitle_tipo}" required="true" requiredMessage="#{bundle.CreateTipoEmpleadoRequiredMessage_tipo}"/>
+                                     title="#{bundle.CreateTipoEmpleadoTitle_tipo}" required="true" requiredMessage="#{bundle.CreateTipoEmpleadoRequiredMessage_tipo}">
+                            <p:ajax event="blur" listener="#{tipoEmpleadoController.existeTipoEmpleado()}" update=":growl,tipo"/>
+                        </p:inputText>
                         <p:outputLabel value="% Comisión" for="comision" />
                         <pe:inputNumber id="comision" value="#{tipoEmpleadoController.selected.comision}" title="Comisión" 
                                      required="true" requiredMessage="Débe indicar un valor de comisión" symbolPosition="s" emptyValue="zero"/>

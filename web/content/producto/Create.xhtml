@@ -17,7 +17,11 @@
                     <p:panelGrid columns="2" rendered="#{productoController.selected != null}">
                         
                         <p:outputLabel styleClass="#{productoController.error}" value="#{bundle.CreateProductoLabel_codigo}" for="codigo" />
-                        <p:inputText styleClass="#{productoController.error}" id="codigo" value="#{productoController.selected.codigo}" title="#{bundle.CreateProductoTitle_codigo}" required="true" requiredMessage="#{bundle.CreateProductoRequiredMessage_codigo}"/>
+                        <p:inputText styleClass="#{productoController.error}" id="codigo" value="#{productoController.selected.codigo}" title="#{bundle.CreateProductoTitle_codigo}"
+                                     required="true" requiredMessage="#{bundle.CreateProductoRequiredMessage_codigo}" validatorMessage="El código debe ser un número entero positivo">
+                            <f:validateRegex pattern="[0-9]+" />
+                            <p:ajax event="blur" listener="#{productoController.existeCodigoCliente()}" update=":growl,codigo"/>
+                        </p:inputText>
                         
                         <p:outputLabel value="#{bundle.CreateProductoLabel_nombre}" for="nombre" />                        
                         <p:inputText id="nombre" value="#{productoController.selected.nombre}" title="#{bundle.CreateProductoTitle_nombre}" required="true" requiredMessage="#{bundle.CreateProductoRequiredMessage_nombre}"/>

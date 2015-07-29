@@ -6,6 +6,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import jp.entidades.Empleado;
+import jp.entidades.Producto;
 
 @Stateless
 public class EmpleadoFacade extends AbstractFacade<Empleado> {
@@ -54,6 +55,16 @@ public class EmpleadoFacade extends AbstractFacade<Empleado> {
             e.printStackTrace();
         }
         return false;
+    }
+    
+    @Override
+    public List<Empleado> findAll() {
+        return super.findAll(true);
+    }
+    
+    @Override
+    public List<Empleado> findAll(boolean asc) {
+        return super.findAll(asc);
     }
 
 }

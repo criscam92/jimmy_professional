@@ -71,7 +71,7 @@ public class PaisController implements Serializable {
         }
 
     }
-
+    
     public void update() {
         if (!getFacade().getEntityByCodigoOrTipo(selected)) {
             persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessagePais", "UpdateSuccessM"}));

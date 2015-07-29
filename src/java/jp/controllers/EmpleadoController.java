@@ -16,6 +16,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import jp.facades.EmpleadoFacade;
+import jp.facades.TransactionFacade;
 import org.primefaces.context.RequestContext;
 
 @ManagedBean(name = "empleadoController")
@@ -24,6 +25,8 @@ public class EmpleadoController implements Serializable {
 
     @EJB
     private EmpleadoFacade ejbFacade;
+    @EJB
+    private TransactionFacade ejbTransactionFacade;
     private List<Empleado> items = null;
     private Empleado selected;
     private final String uiError;
@@ -59,15 +62,21 @@ public class EmpleadoController implements Serializable {
         return ejbFacade;
     }
 
+    public TransactionFacade getEjbTransactionFacade() {
+        return ejbTransactionFacade;
+    }
+
     public Empleado prepareCreate() {
         selected = new Empleado();
+        Long ultimoCodigo = getEjbTransactionFacade().getLastCodigoByEntity(selected) + 1;        
+        selected.setCodigo(JsfUtil.rellenar(""+ultimoCodigo, "0", 3, false));
         initializeEmbeddableKey();
         return selected;
     }
 
     public void create() {
-        if (!getFacade().getEntityByCodigoOrTipo(selected)) {
-            if(!getFacade().existeDocumento(selected)){
+        if (!existeCodigoEmpleado()) {
+            if(!existeDocumentoEmpleado()){
                 persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageEmpleado", "CreateSuccessM"}));
                 if (!JsfUtil.isValidationFailed()) {
                     selected = null; // Remove selection
@@ -77,12 +86,30 @@ public class EmpleadoController implements Serializable {
                 }
             }else{
                 setError(uiError);
-                JsfUtil.addErrorMessage("El documento ya se encuentra en la base de datos.");
+                JsfUtil.addErrorMessage("El Documento ya se encuentra en la base de datos.");
             }
         } else {
             setError(uiError);
             JsfUtil.addErrorMessage(JsfUtil.getMessageBundle("MessageEmpleadoCodigoExist").replaceAll("%cod%", selected.getCodigo()));
         }
+    }
+    
+    public boolean existeCodigoEmpleado(){
+        boolean existe = getFacade().getEntityByCodigoOrTipo(selected);
+        if (existe) {
+            selected.setCodigo("");
+            JsfUtil.addErrorMessage("El Código del Empleado ya se encuentra en la base de datos.");
+        }
+        return existe;
+    }
+    
+    public boolean existeDocumentoEmpleado(){
+        boolean existe = getFacade().existeDocumento(selected);
+        if (existe) {
+            selected.setDocumento("");
+            JsfUtil.addErrorMessage("El Documento del Empleado ya se encuentra en la base de datos.");
+        }
+        return existe;
     }
 
     public void update() {

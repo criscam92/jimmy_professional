@@ -158,7 +158,7 @@ public class ClienteController implements Serializable {
             }
         } else {
             setError(uiError);
-//            JsfUtil.addErrorMessage("El Documento ya se encuentra en la base de datos.");
+            JsfUtil.addErrorMessage("El Documento ya se encuentra en la base de datos.");
         }
     }
 
