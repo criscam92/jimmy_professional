@@ -18,7 +18,9 @@
                                 <p:outputLabel id="label_id" value="Recibo de Caja:" for="id" style="#{nuevaRelacionFacturaController.error}"/>
                             </p:column>
                             <p:column>
-                                <p:inputText style="#{nuevaRelacionFacturaController.error}" id="id" value="#{nuevaRelacionFacturaController.selected.ordenPago}" title="Recibo de Caja" required="true" requiredMessage="Débe indicar el número del recibo de caja"/>
+                                <p:inputText style="#{nuevaRelacionFacturaController.error}" id="id" value="#{nuevaRelacionFacturaController.selected.ordenPago}" title="Recibo de Caja" required="true" requiredMessage="Débe indicar el número del recibo de caja">
+                                    <p:ajax event="blur" listener="#{nuevaRelacionFacturaController.validateNumeroRecibo}" update=":growl, label_id, id"/>
+                                </p:inputText>
                             </p:column>
                             <p:column>
                                 <p:outputLabel value="Cliente" for="cliente"/>
@@ -27,7 +29,7 @@
                                 <p:autoComplete id="cliente" minQueryLength="3" panelStyle="width: 210px;" value="#{nuevaRelacionFacturaController.clienteTemporal}" requiredMessage="Debes indicar un cliente para el Recibo"
                                                 itemValue="#{cliente}" completeMethod="#{clienteController.llenarCliente}" effect="fade" converter="clienteconverter" emptyMessage="Ingrese un Cliente válido"
                                                 itemLabel="#{cliente.toString()}" var="cliente" required="true" converterMessage="Ingrese un Cliente válido" validatorMessage="Ingrese un Cliente válido">
-                                    <p:ajax event="itemSelect" listener="#{nuevaRelacionFacturaController.onItemSelecCliente}" update=":growl,factura" />
+                                    <p:ajax event="itemSelect" listener="#{nuevaRelacionFacturaController.onItemSelecCliente}" update=":growl,display" />
                                 </p:autoComplete>
                             </p:column>
                             <p:column>
@@ -36,7 +38,7 @@
                             <p:column>
                                 <p:selectOneMenu id="factura" value="#{nuevaRelacionFacturaController.selected.factura}" required="true" requiredMessage="Débe indicar la factura para el recibo"
                                                  converter="facturaConverter" style="width: 155px;">
-                                    <p:ajax update="buttonAgregar,total,pendiente,publicidad,comision,datalist" listener="#{nuevaRelacionFacturaController.changedFactura}"/>
+                                    <p:ajax update="buttonAgregar,total,pendiente,publicidad,comision,datalist,valor_pago" listener="#{nuevaRelacionFacturaController.changedFactura}"/>
                                     <f:selectItem itemLabel="Seleccione una factura" itemValue="#{null}" noSelectionOption="true" itemDisabled="true"/>
                                     <f:selectItems value="#{nuevaRelacionFacturaController.facturasTemporales}" var="fac" itemLabel="#{fac.ordenPedido}" itemValue="#{fac}" />
                                 </p:selectOneMenu>
@@ -73,7 +75,7 @@
                                     <f:selectItems var="tipo" value="#{nuevaRelacionFacturaController.tiposPago}" itemLabel="#{tipo.detalle}" itemValue="#{tipo.valor}" />
                                 </p:selectOneMenu>
                             </p:column>
-                            <p:column>
+                            <p:column>                                
                                 <!-- CHEQUE -->
                                 <p:outputLabel id="label_cheque" style="#{nuevaRelacionFacturaController.mostrarCheque()}" value="No Cheque:" for="cheque" />
                                 <!-- CUENTA -->

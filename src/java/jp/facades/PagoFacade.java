@@ -59,4 +59,22 @@ public class PagoFacade extends AbstractFacade<Pago> {
         return pagos;
     }
 
+    public boolean existePago(String ordenPago) {
+        boolean result = false;
+        try {
+            Query query = getEntityManager().createQuery("SELECT p FROM Pago p WHERE p.ordenPago = :op");
+            query.setParameter("op", ordenPago);
+            query.setMaxResults(1);
+            Pago pago = (Pago) query.getSingleResult();
+
+            if (pago != null) {
+                result = true;
+            }
+
+        } catch (Exception e) {
+            result = false;
+        }
+        return result;
+    }
+
 }

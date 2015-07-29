@@ -91,10 +91,10 @@ public class DespachoFacturaController implements Serializable {
                 productoHelpers.add(ph);
             }
 
-            List<FacturaPromocion> facturaPromociones = getFacturaPromocionFacade().getFacturaPromocionByFactura(factura, null);
+            List<FacturaPromocion> facturaPromociones = getFacturaPromocionFacade().getFacturaPromocionByFactura(factura);
             List<ProductoHelper> productoHelpersTMP = new ArrayList<>();
             for (FacturaPromocion fp : facturaPromociones) {
-                List<PromocionProducto> promocionProductos = getPromocionProductoFacade().getPromocionProductoByProducto(fp.getPromocion(), null);
+                List<PromocionProducto> promocionProductos = getPromocionProductoFacade().getPromocionProductoByProducto(fp.getPromocion());
                 for (PromocionProducto pp : promocionProductos) {
                     ProductoHelper ph = new ProductoHelper(productoHelpers.size() + 1, pp.getProducto(), (fp.getUnidadesVenta() + fp.getUnidadesBonificacion()) * (pp.getCantidad()));
                     productoHelpersTMP.add(ph);
@@ -213,7 +213,6 @@ public class DespachoFacturaController implements Serializable {
         switch (comprobarIngresos()) {
             case 0:
                 if (comprobarProductos()) {
-                    estadosFactura();
                     getTransactionFacade().createDespachoFactura(selected, productoHelpers);
                     if (!JsfUtil.isValidationFailed()) {
                         items = null;
@@ -327,10 +326,6 @@ public class DespachoFacturaController implements Serializable {
         }
 
         return null;
-    }
-
-    private void estadosFactura() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @FacesConverter(forClass = DespachoFactura.class)

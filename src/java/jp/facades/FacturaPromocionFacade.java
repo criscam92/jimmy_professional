@@ -23,12 +23,9 @@ public class FacturaPromocionFacade extends AbstractFacade<FacturaPromocion> {
         super(FacturaPromocion.class);
     }
 
-    public List<FacturaPromocion> getFacturaPromocionByFactura(Factura factura, EntityManager em) {
-        if (em == null) {
-            em = getEntityManager();
-        }
+    public List<FacturaPromocion> getFacturaPromocionByFactura(Factura factura) {
         try {
-            Query query = em.createQuery("SELECT fp FROM FacturaPromocion fp WHERE fp.factura.id = :fac");
+            Query query = getEntityManager().createQuery("SELECT fp FROM FacturaPromocion fp WHERE fp.factura.id = :fac");
             query.setParameter("fac", factura.getId());
             return query.getResultList();
         } catch (Exception e) {

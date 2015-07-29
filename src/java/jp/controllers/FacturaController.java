@@ -987,7 +987,8 @@ public class FacturaController implements Serializable {
         if (!getEjbTransactionFacade().anularDespachoFactura(despachoFactura)) {
             JsfUtil.addErrorMessage("Error anulando el despacho");
         } else {
-            despachosFactura = getDespachoFacturaFacade().getDespachosFacturaByFactura(selected, false);
+            items = null;
+            despachosFactura = getDespachoFacturaFacade().getDespachosFacturaByFactura(selected, false);            
         }
     }
 

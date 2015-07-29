@@ -60,9 +60,9 @@ public class FacturaProductoFacade extends AbstractFacade<FacturaProducto> {
                 cantidadFProd = 0l;
             }
 
-            List<FacturaPromocion> facturaPromociones = getFacturaPromocionFacade().getFacturaPromocionByFactura(factura, null);
+            List<FacturaPromocion> facturaPromociones = getFacturaPromocionFacade().getFacturaPromocionByFactura(factura);
             for (FacturaPromocion fp : facturaPromociones) {
-                List<PromocionProducto> promocionProductos = getPromocionProductoFacade().getPromocionProductoByProducto(fp.getPromocion(), null);
+                List<PromocionProducto> promocionProductos = getPromocionProductoFacade().getPromocionProductoByProducto(fp.getPromocion());
                 for (PromocionProducto pp : promocionProductos) {
                     cantidadFProm += (tipo == 1 ? fp.getUnidadesVenta() : fp.getUnidadesBonificacion()) * pp.getCantidad();
                 }

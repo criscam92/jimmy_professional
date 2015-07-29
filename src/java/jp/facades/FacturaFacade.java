@@ -216,22 +216,17 @@ public class FacturaFacade extends AbstractFacade<Factura> {
             Query q = em.createQuery("SELECT SUM(p.valorTotal) FROM Pago p WHERE p.estado = :estado AND p.factura.id = :f");
             q.setParameter("f", factura.getId());
             q.setParameter("estado", EstadoFactura.REALIZADA.getValor());
-
             Double totalPago = (Double) q.getSingleResult();
-            System.out.println("Pagos a la factura: " + factura + "->" + totalPago);
 
             Query q2 = em.createQuery("SELECT SUM(f.totalPagar) FROM Factura f WHERE f.id = :f");
             q2.setParameter("f", factura.getId());
             Double totalFactura = (Double) q2.getSingleResult();
-            System.out.println("Total Factura: " + factura + "->" + totalFactura);
 
             if (totalPago == null) {
-                System.out.println("Total Pago es nulo");
                 factura.setSaldo(factura.getTotalPagar());
                 factura.setSaldoCancelado(0d);
                 return factura;
             } else {
-                System.out.println("Total Pago NO ES NULO");
                 if (totalPago < totalFactura) {
                     factura.setSaldo(totalFactura - totalPago);
                     factura.setSaldoCancelado(totalPago);
