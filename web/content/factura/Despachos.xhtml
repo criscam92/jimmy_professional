@@ -26,7 +26,7 @@
                         </div>
                         <div id="acciones">
                             <p:commandButton id="detallesButton" icon="ui-icon-plus"   value="Detalles" actionListener="#{facturaController.prepararProductos}" update=":DetallesDespacho" oncomplete="PF('DetallesDespachoDialog').show()" disabled="#{empty facturaController.despachoFactura}"/>
-                            <p:commandButton id="anularButton"   icon="ui-icon-search" value="Anular" actionListener="#{facturaController.anularDespacho}" update=":growl, :Despachos, FormFactura" disabled="#{empty facturaController.despachoFactura ? true : !facturaController.despachoFactura.realizado}">
+                            <p:commandButton id="anularButton"   icon="ui-icon-search" value="Anular" actionListener="#{facturaController.anularDespacho}" update=":growl, :Despachos, :FormFactura" disabled="#{empty facturaController.despachoFactura ? true : !facturaController.despachoFactura.realizado}">
                                 <p:confirm header="Confirmar" message="Esta seguro de anular este despacho?" icon="ui-icon-alert" />
                             </p:commandButton>
                         </div>
