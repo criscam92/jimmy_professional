@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
@@ -22,8 +23,16 @@ public class LoginController implements Serializable {
     private Usuario usuario = new Usuario();
     @EJB
     private UsuarioFacade facade;
-
+    private String redirect;
+    
     public LoginController() {
+    }
+
+    @PostConstruct
+    public void init() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        redirect = context.getExternalContext().getRequestParameterMap().get("redirect");
+        System.out.println(redirect);
     }
 
     public void loggedIn() {
@@ -76,8 +85,13 @@ public class LoginController implements Serializable {
     }
 
     private void redireccionar() {
-        try {
-            FacesContext.getCurrentInstance().getExternalContext().redirect("content/");
+        try {            
+            System.out.println("REDIRECT " + redirect);
+            if (redirect != null) {
+                FacesContext.getCurrentInstance().getExternalContext().redirect(redirect);
+            } else {
+                FacesContext.getCurrentInstance().getExternalContext().redirect("content/");
+            }
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error ingresando al sistema", "Ocurrio un error al redirigirlo al panel central de la aplicación"));
         }
