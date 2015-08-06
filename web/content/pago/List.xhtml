@@ -14,8 +14,8 @@
 
         <ui:define name="body">
             <h:form id="PagoListForm">
-                <p:dataTable styleClass="tabla" id="datalist" value="#{pagoController.items}" var="item"
-                             selectionMode="single" selection="#{pagoController.selected}"
+                <p:dataTable styleClass="tabla" id="datalist" value="#{nuevaRelacionFacturaController.relacionFacturas}" var="item"
+                             selectionMode="single" selection="#{nuevaRelacionFacturaController.relacionFactura}"
                              paginator="true"
                              rowKey="#{item.id}"
                              rows="10"
@@ -29,7 +29,7 @@
 
                     <f:facet name="header">
                         <div id="titulo">
-                            Lista de pagos
+                            Lista de Relacion Factura
                         </div>
                         <div id="acciones">
                             
@@ -40,7 +40,7 @@
                         <f:facet name="header">
                             <h:outputText value="Orden Pago"/>
                         </f:facet>
-                        <h:outputText value="#{item.ordenPago}"/>
+                        <h:outputText value="#{item.fecha}"/>
                     </p:column>
                     <p:column>
                         <f:facet name="header">
@@ -50,21 +50,13 @@
                     </p:column>
                     <p:column>
                         <f:facet name="header">
-                            <h:outputText value="#{bundle.ListPagoTitle_factura}"/>
+                            <h:outputText value="Vendedor"/>
                         </f:facet>
-                        <h:outputText value="#{item.factura.ordenPedido}"/>
-                    </p:column>
-                    <p:column>
-                        <f:facet name="header">
-                            <h:outputText value="#{bundle.ListPagoTitle_tipo}"/>
-                        </f:facet>
-                        <h:outputText value="#{nuevaRelacionFacturaController.getFormaPago(item.formaPago)}"/>
+                        <h:outputText value="#{item.vendedor}"/>
                     </p:column>
                 </p:dataTable>
             </h:form>
 
-            <!--<ui:include src="Edit.xhtml"/>-->
-            <!--<ui:include src="View.xhtml"/>-->
         </ui:define>
     </ui:composition>
 
