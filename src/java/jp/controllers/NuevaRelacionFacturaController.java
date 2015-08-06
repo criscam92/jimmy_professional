@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.bean.ViewScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -72,6 +73,7 @@ public class NuevaRelacionFacturaController implements Serializable {
     private List<TipoPagoHelper> tipoPagoHelpersTMP;
     private List<TipoPagoHelper> pagosAnteriores;
     private List<Factura> facturasTemporales;
+    private List<RelacionFactura> relacionFacturas;
 
     private Pago selected;
     private PagoHelper pagoHelper;
@@ -172,6 +174,17 @@ public class NuevaRelacionFacturaController implements Serializable {
             pagoHelpers = new ArrayList<>();
         }
         return pagoHelpers;
+    }
+
+    public List<RelacionFactura> getRelacionFacturas() {
+        if (relacionFacturas == null) {
+            relacionFacturas = getFacade().findAll();
+        }
+        return relacionFacturas;
+    }
+
+    public void setRelacionFacturas(List<RelacionFactura> relacionFacturas) {
+        this.relacionFacturas = relacionFacturas;
     }
 
     public List<TipoPagoHelper> getTipoPagoHelpersPublicidad() {
@@ -328,6 +341,9 @@ public class NuevaRelacionFacturaController implements Serializable {
 
     public void create(boolean crearNuevo) {
         if (validarCrear(true)) {
+            selected.setFecha(relacionFactura.getFecha());
+            selected.setEstado(EstadoPago.REALIZADO.getValor());
+            selected.setUsuario(usuarioActual.getUsuario());
             boolean isValid = true;
             try {
                 if (pagoHelper != null) {
@@ -820,10 +836,6 @@ public class NuevaRelacionFacturaController implements Serializable {
     public void crearRecibo() {
         if (pagoHelpers.size() > 0) {
             try {
-                selected.setFecha(relacionFactura.getFecha());
-                selected.setEstado(EstadoPago.REALIZADO.getValor());
-                selected.setUsuario(usuarioActual.getUsuario());
-
                 getTransactionFacade().crearPago(pagoHelpers, relacionFactura);
                 if (!JsfUtil.isValidationFailed()) {
                     JsfUtil.addErrorMessage("El pago fue guardado correctamente");
