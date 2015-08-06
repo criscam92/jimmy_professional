@@ -7,10 +7,16 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
-    <ui:composition>
-        <p:dialog id="RealizarVisitaDlg" widgetVar="RealizarVisitaDialog" modal="true" closable="false" resizable="false" appendTo="@(body)" header="#{bundle.MessageTitleVisitaProducto}">
+    <ui:composition template="/content/index.xhtml">
+
+        <ui:define name="title">
+            <h:outputText value="Datos Visita"/>
+        </ui:define>
+
+        <ui:define name="body">
+
             <h:form id="RealizarVisitaForm">
-                <p:panelGrid columns="2">
+                <p:panelGrid columns="2" style="margin: 0px auto;">
                     <p:panel header="Datos Visita" style="width: 540px;">
 
                         <c:if test="#{usuarioActual.usuario.admin}">
@@ -65,7 +71,7 @@
                                     <p:inputText id="disponible" readonly="true" placeholder="Disponible" value="#{visitaController.diponible}" style="text-align: center;width: 60px;"/>
                                 </p:column>                                
                             </p:row>
-                            
+
                         </p:panelGrid>
 
                         <f:facet name="footer">
@@ -75,46 +81,44 @@
                     </p:panel>
                 </p:panelGrid>
 
-                <p:panelGrid columns="1">
-                    <p:dataTable id="datalistTMP" style="width: 847px;" value="#{visitaController.visitaProductos}" var="itemTMP"
-                                 paginator="true"
-                                 rowKey="#{itemTMP.id}"
-                                 rows="3"
-                                 emptyMessage="#{bundle.EmptyTable}"
-                                 paginatorPosition="bottom" 
-                                 paginatorAlwaysVisible="false">
+                <div >
+                    <p:panelGrid columns="1" style="margin: 0px auto;">
+                        <p:dataTable id="datalistTMP" style="width: 847px;" value="#{visitaController.visitaProductos}" var="itemTMP"
+                                     paginator="true"
+                                     rowKey="#{itemTMP.id}"
+                                     rows="3"
+                                     emptyMessage="#{bundle.EmptyTable}"
+                                     paginatorPosition="bottom" 
+                                     paginatorAlwaysVisible="false">
 
-                        <f:facet name="header">
-                            PRODUCTOS
-                        </f:facet>
+                            <f:facet name="header">
+                                PRODUCTOS
+                            </f:facet>
 
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="Producto"/>
-                            </f:facet>
-                            <h:outputText value="#{itemTMP.producto.toString()}"/>
-                        </p:column>
-                        <p:column width="80">
-                            <f:facet name="header">
-                                <h:outputText value="#{bundle.CreateDevolucionProductoTitle_cantidad}"/>
-                            </f:facet>
-                            <h:outputText value="#{itemTMP.cantidad}"/>
-                        </p:column>
-                        <p:column style="text-align: center;" width="80">
-                            <f:facet name="header">
-                                <h:outputText value="Quitar"/>
-                            </f:facet>
-                            <p:commandButton icon="ui-icon-closethick" process="datalistTMP" update="datalistTMP" actionListener="#{visitaController.removeVisitaProducto(itemTMP)}"/>
-                        </p:column>
-                    </p:dataTable>
-                </p:panelGrid>
-                <div class="botonesDialog">
-                    <p:commandButton icon="ui-icon-disk" value="#{bundle.Save}" oncomplete="PF('RealizarVisitaDialog').hide()"
-                                     update=":VisitaListForm:datalist,:growl" action="#{visitaController.updateVisita}"/> 
-                    <p:commandButton icon="ui-icon-close" value="#{bundle.Close}" type="button" onclick="PF('RealizarVisitaDialog').hide()"/>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Producto"/>
+                                </f:facet>
+                                <h:outputText value="#{itemTMP.producto.toString()}"/>
+                            </p:column>
+                            <p:column width="80">
+                                <f:facet name="header">
+                                    <h:outputText value="#{bundle.CreateDevolucionProductoTitle_cantidad}"/>
+                                </f:facet>
+                                <h:outputText value="#{itemTMP.cantidad}"/>
+                            </p:column>
+                            <p:column style="text-align: center;" width="80">
+                                <f:facet name="header">
+                                    <h:outputText value="Quitar"/>
+                                </f:facet>
+                                <p:commandButton icon="ui-icon-closethick" process="datalistTMP" update="datalistTMP" actionListener="#{visitaController.removeVisitaProducto(itemTMP)}"/>
+                            </p:column>
+                        </p:dataTable>
+                        <p:commandButton icon="ui-icon-disk" value="#{bundle.Save}" action="#{visitaController.updateVisita}"/> 
+                    </p:panelGrid>
+                    
                 </div>
             </h:form>
-        </p:dialog>
-
+        </ui:define>
     </ui:composition>
 </html>

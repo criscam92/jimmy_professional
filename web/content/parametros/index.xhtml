@@ -6,9 +6,9 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://xmlns.jcp.org/jsf/core">
     <ui:composition template="/content/index.xhtml">
-        
+
         <f:loadBundle basename="languages.BundleRecargo" var="bun" />
-        
+
         <ui:define name="title">
             <h:outputText value="#{bundle.MessageRecargoTitle}"></h:outputText>
         </ui:define>
@@ -16,7 +16,7 @@
         <ui:define name="body">
             <h:form id="formRecargo" >
                 <h:panelGroup id="display">
-                    
+
                     <p:panel header="Comisiones y Publicidad" styleClass="tabla_centrada">
                         <p:panelGrid columns="4">
 
@@ -71,14 +71,14 @@
 
                         </p:panelGrid>
                     </p:panel>
-                    
-                    
+
+
                     <p:panel header="Descuento por Pronto Pago" styleClass="tabla_centrada">
                         <p:panelGrid columns="6">
 
                             <p:outputLabel value="Días que aplica ProntoPago" for="dias_prontopago"/>
                             <p:inputText id="dias_prontopago" value="#{parametrosController.selected.diasDescuentoProntoPago}" requiredMessage="Débe indicar los dias para los que aplica el descuento de ProntoPago" required="true"/>
-                            
+
                             <p:outputLabel value="Valor mínimo para ProntoPago" for="valor_prontopago"/>
                             <p:inputText id="valor_prontopago" value="#{parametrosController.selected.valorProntoPago}" requiredMessage="Débe indicar el valor mínimo de la factura para que aplique para ProntoPago" required="true"/>
 
@@ -86,61 +86,73 @@
                             <p:inputText id="descuento_prontopago" value="#{parametrosController.selected.porcentajeProntoPago}" validatorMessage="El porcentaje de descuento por ProntoPago debe estar entre 0 y 100">
                                 <f:validateDoubleRange minimum="0" maximum="100"/>
                             </p:inputText>
-                            
+
                         </p:panelGrid>
-                    </p:panel>
-                    
-                    <div class="ui-grid ui-grid-responsive">
-                    <div class="ui-grid-row">
-                    
-                    <div class="ui-grid-col-4">
-                    
-                        <p:panel header="Recargo productos para venta al público" styleClass="tabla_centrada">
-                            <p:panelGrid columns="2">
+                    </p:panel> <br/>
 
-                                <p:outputLabel value="Porcentaje Recargo Venta al Público" for="recargo_venta_publico"/>
-                                <p:inputText id="recargo_venta_publico" value="#{parametrosController.selected.porcentajeVentaPublic}" validatorMessage="El porcentaje de recargo debe estar en 0 y 100">
-                                    <f:validateDoubleRange minimum="0" maximum="100"/>
-                                </p:inputText>
-
-                            </p:panelGrid>
-                        </p:panel>
-                        
-                    </div>
-                    
-                        <div class="ui-grid-col-4">
-                        
                     <p:panel header="Correo electrónico para notificaciones" styleClass="tabla_centrada">
-                        <p:panelGrid columns="2">
+                        <p:panelGrid columns="6">
+
+                            <p:outputLabel value="Nombre" for="nombre"/>
+                            <p:inputText id="nombre" value="#{parametrosController.selected.nombre}" validatorMessage="Debe establecer el Nombre de la empresa"/>
 
                             <p:outputLabel value="Dirección correo electrónico" for="correo_electronico"/>
                             <p:inputText id="correo_electronico" value="#{parametrosController.selected.correo}" validatorMessage="Debe establecer una dirección de correo válida">
                                 <f:validateRegex pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$" />
                             </p:inputText>
 
+                            <p:outputLabel value="Contraseña Correo" for="clave_correo"/>
+                            <p:inputText id="clave_correo" value="#{parametrosController.selected.contrasenhaCorreo}" validatorMessage="Debe establecer Clave de Correo válida"/>
+
+                            <p:outputLabel value="Servidor de Correo" for="servidor_correo"/>
+                            <p:inputText id="servidor_correo" value="#{parametrosController.selected.servidorCorreo}" validatorMessage="Debe establecer un nombre de Servidor válido"/>
+
+                            <p:outputLabel value="Puerto de Correo" for="puerto_correo"/>
+                            <p:inputText id="puerto_correo" value="#{parametrosController.selected.puertoSmtp}" validatorMessage="Debe establecer una puerto de correo válido"/>
+
+                            <p:outputLabel value="URL Base" for="url_base"/>
+                            <p:inputText id="url_base" value="#{parametrosController.selected.urlBase}" validatorMessage="Debe establecer una URL Base válida"/>
+
+                            <p:outputLabel value="SSL" for="ssl"/>
+                            <p:selectBooleanCheckbox id="ssl" value="#{parametrosController.selected.ssl}"/>
+
                         </p:panelGrid>
-                    </p:panel>
-                            
+                    </p:panel><br/>
+
+                    <div class="ui-grid ui-grid-responsive">
+                        <div class="ui-grid-row">
+
+                            <div class="ui-grid-col-4">
+                                <p:panel header="Recargo productos para venta al público" styleClass="tabla_centrada">
+                                    <p:panelGrid columns="2">
+
+                                        <p:outputLabel value="Porcentaje Recargo Venta al Público" for="recargo_venta_publico"/>
+                                        <p:inputText id="recargo_venta_publico" value="#{parametrosController.selected.porcentajeVentaPublic}" validatorMessage="El porcentaje de recargo debe estar en 0 y 100">
+                                            <f:validateDoubleRange minimum="0" maximum="100"/>
+                                        </p:inputText>
+
+                                    </p:panelGrid>
+                                </p:panel>
+                            </div>
+
+                            <div class="ui-grid-col-4">
+                                <p:panel header="Valor Actual Dolar" styleClass="tabla_centrada">
+                                    <p:panelGrid columns="2">
+
+                                        <p:outputLabel value="Valor Dolar" for="valor_dolar"/>
+                                        <p:inputText id="valor_dolar" value="#{parametrosController.selected.precioDolar}" requiredMessage="Débe indicar el valor actual del dolar" required="true"/>
+
+                                    </p:panelGrid>
+                                </p:panel>
+                            </div>
+
                         </div>
-                        
-                        <div class="ui-grid-col-4">
-                    <p:panel header="Valor Actual Dolar" styleClass="tabla_centrada">
-                        <p:panelGrid columns="2">
+                    </div>
 
-                            <p:outputLabel value="Valor Dolar" for="valor_dolar"/>
-                            <p:inputText id="valor_dolar" value="#{parametrosController.selected.precioDolar}" requiredMessage="Débe indicar el valor actual del dolar" required="true"/>
 
-                        </p:panelGrid>
-                    </p:panel>
-                    </div>
-                        
-                    </div>
-                    </div>
-                    
-                    
-                    
+
                     <p:commandButton icon="ui-icon-disk" value="#{bundle.Save}" action="#{parametrosController.crearRecargo()}"
-                                             update="display,formRecargo,:growl"/>
+                                     update="display,formRecargo,:growl"/>
                 </h:panelGroup>
             </h:form>
         </ui:define>

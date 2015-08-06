@@ -602,6 +602,7 @@ public class TransactionFacade {
     }
 
     public boolean updateVisitaProducto(Visita visita, List<VisitaProducto> visitaProductos, List<VisitaProducto> visitaProductosGuardar, List<VisitaProducto> visitaProductosEliminar, List<VisitaProducto> visitaProductosEditar) {
+        System.out.println("\nVisita: "+visita+"\nVisitaProductos: "+visitaProductos.size()+"\nVisitaProductosGuardar: "+visitaProductosGuardar.size()+"\nVisitaProductosEliminar: "+visitaProductosEliminar.size()+"\nVisitaProductosEditar: "+visitaProductosEditar.size());
         userTransaction = sessionContext.getUserTransaction();
         try {
             userTransaction.begin();

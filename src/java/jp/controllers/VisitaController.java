@@ -10,12 +10,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.faces.bean.ViewScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
@@ -31,6 +33,7 @@ import jp.facades.TransactionFacade;
 import jp.facades.VisitaFacade;
 import jp.facades.VisitaProductoFacade;
 import jp.seguridad.UsuarioActual;
+import jp.util.EstadoFactura;
 import jp.util.EstadoVisita;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
@@ -40,7 +43,7 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.primefaces.event.SelectEvent;
 
 @ManagedBean(name = "visitaController")
-@SessionScoped
+@ViewScoped
 public class VisitaController implements Serializable {
 
     @EJB
@@ -67,6 +70,20 @@ public class VisitaController implements Serializable {
     private String header;
 
     public VisitaController() {
+    }
+    
+    @PostConstruct
+    public void init(){
+        Map<String, String> requestMap = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+        FacesContext.getCurrentInstance().getExternalContext().getSession(true);
+        String idVisita;
+        try {
+            idVisita = requestMap.get("id");
+            selected = getFacade().find(Long.valueOf(idVisita));
+            preparaRealizar();
+        } catch (Exception e) {
+            idVisita = "";
+        }
     }
 
     public List<VisitaProducto> getVisitaProductos() {
@@ -277,6 +294,18 @@ public class VisitaController implements Serializable {
     public boolean disableReporteYAnular() {
         return !(selected != null && usuarioActual.getUsuario().isAdmin() && selected.getEstado() == EstadoVisita.REALIZADA.getValor());
     }
+    
+    public int estadoRealizado() {
+        return EstadoVisita.REALIZADA.getValor();
+    }
+
+    public int estadoCancelado() {
+        return EstadoVisita.CANCELADA.getValor();
+    }
+    
+    public int estadoPendiente() {
+        return EstadoVisita.PENDIENTE.getValor();
+    }
 
     public void anularCancelarVisita(boolean anular) {
         if (getTransactionFacade().anularOCancelarVisitaProducto(selected, anular)) {
@@ -379,9 +408,11 @@ public class VisitaController implements Serializable {
             if (!JsfUtil.isValidationFailed()) {
                 clean();
                 JsfUtil.addSuccessMessage("La visita se ha realizado exitosamente");
+//                redirectRealizarVisita("List.xhtml");
+                JsfUtil.redirect("List.xhtml");
             }
         } else {
-            JsfUtil.addErrorMessage("NO SE A PODIDO EDITAR LA VISITA");
+            JsfUtil.addErrorMessage("No se ha podido realizar la Visita");
         }
     }
 
@@ -471,6 +502,12 @@ public class VisitaController implements Serializable {
             cantidad = 1;
             producto = null;
             JsfUtil.addErrorMessage("No hay existencias del producto " + p.toString());
+        }
+    }
+
+    public void redirectRealizarVisita(String url) {
+        if (selected != null) {
+            JsfUtil.redirect(url + "?id="+selected.getId());
         }
     }
 

@@ -1,6 +1,7 @@
 package jp.facades;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -10,6 +11,7 @@ import javax.persistence.Query;
 import jp.entidades.Empleado;
 import jp.entidades.Visita;
 import jp.entidades.VisitaProducto;
+import jp.util.EstadoVisita;
 
 @Stateless
 public class VisitaFacade extends AbstractFacade<Visita> {
@@ -66,4 +68,18 @@ public class VisitaFacade extends AbstractFacade<Visita> {
         return null;
     }
     
+    
+    public List<Visita> getVisitasSiguienteSemana(Date fecha1, Date fecha2){
+        List<Visita> visitas;
+        try {            
+            Query q = getEntityManager().createQuery("SELECT v FROM Visita v WHERE v.estado = :est AND v.fecha BETWEEN :fecha1 AND :fecha2 ORDER BY v.fecha ASC");
+            q.setParameter("est", EstadoVisita.PENDIENTE.getValor());
+            q.setParameter("fecha1", fecha1);
+            q.setParameter("fecha2", fecha2);
+            visitas = q.getResultList();
+        } catch (Exception e) {
+            visitas = new ArrayList<>();
+        }
+        return visitas;
+    }
 }

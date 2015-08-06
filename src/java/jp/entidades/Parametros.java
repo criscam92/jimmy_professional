@@ -59,14 +59,42 @@ public class Parametros implements Serializable {
     @NotNull
     @Column(name = "dias_descuento_pronto_pago", nullable = false)
     private int diasDescuentoProntoPago;
+    @JoinColumn(name = "ciudad", referencedColumnName = "id", nullable = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private Ciudad ciudad;
+    @Basic(optional = false)
+    @NotNull
+    @Column(nullable = false)
+    private boolean ssl;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 100)
+    @Column(nullable = false, length = 100)
+    private String nombre;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 100)
+    @Column(name = "servidor_correo", nullable = false, length = 100)
+    private String servidorCorreo;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "puerto_smtp", nullable = false)
+    private int puertoSmtp;    
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 30)
     @Column(nullable = false, length = 30)
     private String correo;
-    @JoinColumn(name = "ciudad", referencedColumnName = "id", nullable = false)
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    private Ciudad ciudad;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 128)
+    @Column(name = "contrasenha_correo", nullable = false, length = 128)
+    private String contrasenhaCorreo;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 200)
+    @Column(name = "url_base", nullable = false, length = 200)
+    private String urlBase;
 
     public Parametros() {
     }
@@ -169,6 +197,46 @@ public class Parametros implements Serializable {
         this.diasDescuentoProntoPago = diasDescuentoProntoPago;
     }
 
+    public Ciudad getCiudad() {
+        return ciudad;
+    }
+
+    public void setCiudad(Ciudad ciudad) {
+        this.ciudad = ciudad;
+    }
+    
+    public boolean getSsl() {
+        return ssl;
+    }
+
+    public void setSsl(boolean ssl) {
+        this.ssl = ssl;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getServidorCorreo() {
+        return servidorCorreo;
+    }
+
+    public void setServidorCorreo(String servidorCorreo) {
+        this.servidorCorreo = servidorCorreo;
+    }
+
+    public int getPuertoSmtp() {
+        return puertoSmtp;
+    }
+
+    public void setPuertoSmtp(int puertoSmtp) {
+        this.puertoSmtp = puertoSmtp;
+    }
+    
     public String getCorreo() {
         return correo;
     }
@@ -177,12 +245,20 @@ public class Parametros implements Serializable {
         this.correo = correo;
     }
 
-    public Ciudad getCiudad() {
-        return ciudad;
+    public String getContrasenhaCorreo() {
+        return contrasenhaCorreo;
     }
 
-    public void setCiudad(Ciudad ciudad) {
-        this.ciudad = ciudad;
+    public void setContrasenhaCorreo(String contrasenhaCorreo) {
+        this.contrasenhaCorreo = contrasenhaCorreo;
+    }
+
+    public String getUrlBase() {
+        return urlBase;
+    }
+
+    public void setUrlBase(String urlBase) {
+        this.urlBase = urlBase;
     }
 
     @Override

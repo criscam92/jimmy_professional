@@ -29,6 +29,10 @@
         <servlet-name>FacturaServlet</servlet-name>
         <servlet-class>jp.servlet.FacturaServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>CorreoServlet</servlet-name>
+        <servlet-class>jp.servlet.CorreoServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>DolarServlet</servlet-name>
         <url-pattern>/DolarServlet</url-pattern>
@@ -41,11 +45,15 @@
         <servlet-name>Faces Servlet</servlet-name>
         <url-pattern>*.xhtml</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CorreoServlet</servlet-name>
+        <url-pattern>/CorreoServlet</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>
             30
         </session-timeout>
-    </session-config>    
+    </session-config>
     <filter>
         <filter-name>FiltroSeguridad</filter-name>
         <filter-class>jp.seguridad.FiltroSeguridad</filter-class>
@@ -60,5 +68,5 @@
     </filter-mapping>
     <welcome-file-list>
         <welcome-file>index.xhtml</welcome-file>
-    </welcome-file-list>    
+    </welcome-file-list>
 </web-app>
