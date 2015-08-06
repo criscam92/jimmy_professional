@@ -838,7 +838,7 @@ public class NuevaRelacionFacturaController implements Serializable {
             try {
                 getTransactionFacade().crearPago(pagoHelpers, relacionFactura);
                 if (!JsfUtil.isValidationFailed()) {
-                    JsfUtil.addErrorMessage("El pago fue guardado correctamente");
+                    JsfUtil.addSuccessMessage("El pago fue guardado correctamente");
                     pagoHelpers = null;
                 } else {
                     JsfUtil.addErrorMessage("Error guardando el Pago");
