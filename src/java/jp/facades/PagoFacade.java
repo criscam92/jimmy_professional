@@ -39,7 +39,7 @@ public class PagoFacade extends AbstractFacade<Pago> {
         try {
             Query query = getEntityManager().createQuery("SELECT COUNT(p) FROM Pago p WHERE p.factura.id = :fac AND p.estado = :est");
             query.setParameter("fac", factura.getId());
-            query.setParameter("est", EstadoFactura.ANULADO.getValor());
+            query.setParameter("est", EstadoPago.REALIZADO.getValor());
             return (long) query.getSingleResult();
         } catch (Exception e) {
         }

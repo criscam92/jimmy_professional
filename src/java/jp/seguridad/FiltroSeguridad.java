@@ -32,8 +32,7 @@ public class FiltroSeguridad implements Filter {
         }
 
         if (((HttpServletRequest) request).getSession().getAttribute(AUTH_KEY) == null) {
-            ((HttpServletResponse) response).sendRedirect("../");
-//            
+            ((HttpServletResponse) response).sendRedirect("../");           
         } else {
             chain.doFilter(request, response);
         }

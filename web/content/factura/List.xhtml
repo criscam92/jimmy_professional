@@ -77,8 +77,8 @@
                              paginatorPosition="bottom"                             
                              >
 
-                    <p:ajax event="rowSelect"   update="productos createButton deleteButton reporte anularButton viewButton"/>
-                    <p:ajax event="rowUnselect" update="productos createButton deleteButton reporte anularButton viewButton"/>
+                    <p:ajax event="rowSelect"   update="productos createButton deleteButton reporte anularButton viewButton editarButton"/>
+                    <p:ajax event="rowUnselect" update="productos createButton deleteButton reporte anularButton viewButton editarButton"/>
 
                     <f:facet name="header">
                         <div id="titulo">
@@ -86,6 +86,8 @@
                         </div>
                         <div id="acciones">
                             <p:commandButton id="createButton" icon="ui-icon-plus" value="#{bundle.Create}" action="#{facturaController.redirectCreateFactura()}"/>    
+                            <p:commandButton id="editarButton" icon="ui-icon-pencil" value="#{bundle.Edit}" action="#{facturaController.redirectEditFactura()}" disabled="#{facturaController.selected.id == null}"/>
+                            
                             <p:commandButton id="viewButton"   icon="ui-icon-search" value="#{bundle.View}" update=":FacturaViewForm" oncomplete="PF('FacturaViewDialog').show()" disabled="#{facturaController.selected.id == null}"/>
                             <p:commandButton id="deleteButton" value="Despachos" icon="ui-icon-clipboard" oncomplete="PF('DespachosDialog').show()"
                                              update=":growl,datalist,:Despachos" disabled="#{facturaController.selected.id == null}" actionListener="#{facturaController.prepararDespachos}"/>
@@ -94,7 +96,7 @@
                                              icon="ui-icon-check" disabled="#{facturaController.selected.id == null}" action="#{facturaController.redirect()}"/> 
 
                             <p:commandButton ajax="false" id="reporte" value="Reporte" icon="ui-icon-document" actionListener="#{facturaController.generarReporte}" disabled="#{facturaController.selected.id == null}"/>
-                            <p:commandButton id="anularButton" value="Anular" icon="ui-icon-document" actionListener="#{facturaController.anularFactura}" disabled="#{facturaController.selected.id == null ? true : (facturaController.selected.estado == facturaController.estadoRealizado()) ? true : (facturaController.selected.estado == facturaController.estadoAnulado())}" update=":growl,datalist">
+                            <p:commandButton id="anularButton" value="Anular" icon="ui-icon-document" actionListener="#{facturaController.anularFactura}" disabled="#{facturaController.habilitarAnular()}" update=":growl,datalist">
                                 <p:confirm header="Confirmar" message="Esta seguro de anular esta factura?" icon="ui-icon-alert" />
                             </p:commandButton>
                         </div>

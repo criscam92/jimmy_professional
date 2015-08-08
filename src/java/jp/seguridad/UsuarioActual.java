@@ -9,6 +9,7 @@ import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import jp.entidades.Usuario;
 import jp.facades.UsuarioFacade;
+import jp.util.TipoUsuario;
 
 @ManagedBean(name = "usuarioActual")
 @ViewScoped
@@ -16,15 +17,18 @@ import jp.facades.UsuarioFacade;
 public class UsuarioActual implements Serializable {
 
     private Usuario usuario;
-
     @EJB
     private UsuarioFacade usuarioFacade;
 
     @PostConstruct
     public void init() {
-        try {
+        try {            
             Usuario usuarioTMP = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get(FiltroSeguridad.AUTH_KEY);
+            usuario = new Usuario();
             this.usuario = usuarioFacade.find(usuarioTMP.getId());
+            System.out.println("USUARIO: " + usuario.getUsuario());
+            System.out.println("USUARIO TIPO #: " + usuario.getTipo());
+            System.out.println("USUARIO TIPO: " + TipoUsuario.getFromValue(Integer.valueOf(usuario.getTipo() + "")));
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -7,6 +7,17 @@
     margin-bottom: 5px;
 }
 
+.mensaje_info{
+    background-color: #428BCA;
+    color: #FFF;
+    padding: 5px;
+    width: 955px;
+    margin: auto auto 5px;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
 .ui-widget {
     font-size: 12px !important;
 }
@@ -202,15 +213,15 @@ form#formDevolucionProducto ul.ui-tabs-nav{
 }
 
 .num-orden{
-   font-size: 20px;
-   font-weight: bold;
+    font-size: 20px;
+    font-weight: bold;
 }
 
 /** Fixing Font Awesome issue **/
 
 .ui-icon.fa {
-     text-indent:0px;
-     background-image:none;
+    text-indent:0px;
+    background-image:none;
 }
 
 .fa{
@@ -262,7 +273,7 @@ form#formDevolucionProducto ul.ui-tabs-nav{
 }
 
 table.center {
-  margin: 0px auto;
+    margin: 0px auto;
 }
 
 .boton-tercero{

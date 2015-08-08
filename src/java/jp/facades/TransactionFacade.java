@@ -298,6 +298,100 @@ public class TransactionFacade {
         return false;
     }
 
+    public boolean updateFacturaProductoPromocion(Factura factura, List<ProductoPromocionHelper> objectsCrear,
+            List<ProductoPromocionHelper> objectsEditar, List<ProductoPromocionHelper> objectsEliminar) {
+
+        userTransaction = sessionContext.getUserTransaction();
+        try {
+            userTransaction.begin();
+
+            Factura facturaTMP = getEntityManager().find(Factura.class, factura.getId());
+            facturaTMP.setOrdenPedido(factura.getOrdenPedido());
+            facturaTMP.setFecha(factura.getFecha());
+            facturaTMP.setCliente(factura.getCliente());
+            facturaTMP.setEmpleado(factura.getEmpleado());
+            facturaTMP.setTipoPago(factura.getTipoPago());
+            facturaTMP.setObservaciones(factura.getObservaciones());
+            facturaTMP.setTotalBruto(factura.getTotalBruto());
+            facturaTMP.setDescuento(factura.getDescuento());
+            facturaTMP.setTotalPagar(factura.getTotalPagar());
+            facturaTMP.setUsuario(factura.getUsuario());
+            facturaTMP.setEstado(factura.getEstado());
+            facturaTMP.setEstadoDespacho(factura.getEstadoDespacho());
+            facturaTMP.setEstadoPago(factura.getEstadoPago());
+            facturaTMP.setDolar(factura.getDolar());
+            facturaTMP.setDolarActual(factura.getDolarActual());
+            getEntityManager().merge(facturaTMP);
+
+            for (ProductoPromocionHelper pph : objectsCrear) {
+                if (pph.isProducto()) {
+                    FacturaProducto fp = new FacturaProducto();
+                    fp.setFactura(facturaTMP);
+                    fp.setId(null);
+                    fp.setPrecio(facturaTMP.getDolar() ? pph.getPrecioUs() : pph.getPrecio());
+                    fp.setProducto((Producto) pph.getProductoPromocion());
+                    fp.setUnidadesBonificacion(pph.getUnidadesBonificacion());
+                    fp.setUnidadesVenta(pph.getUnidadesVenta());
+                    getEntityManager().merge(fp);
+                } else {
+                    FacturaPromocion fp = new FacturaPromocion();
+                    fp.setFactura(facturaTMP);
+                    fp.setId(null);
+                    fp.setPrecio(facturaTMP.getDolar() ? pph.getPrecioUs() : pph.getPrecio());
+                    fp.setPromocion((Promocion) pph.getProductoPromocion());
+                    fp.setUnidadesBonificacion(pph.getUnidadesBonificacion());
+                    fp.setUnidadesVenta(pph.getUnidadesVenta());
+                    getEntityManager().merge(fp);
+                }
+            }
+
+            for (ProductoPromocionHelper pph : objectsEditar) {
+                if (pph.isProducto()) {
+                    FacturaProducto fp = getEntityManager().find(FacturaProducto.class, pph.getIdObject());
+                    fp.setFactura(facturaTMP);
+                    fp.setPrecio(facturaTMP.getDolar() ? pph.getPrecioUs() : pph.getPrecio());
+                    fp.setProducto((Producto) pph.getProductoPromocion());
+                    fp.setUnidadesBonificacion(pph.getUnidadesBonificacion());
+                    fp.setUnidadesVenta(pph.getUnidadesVenta());
+                    getEntityManager().merge(fp);
+                } else {
+                    FacturaPromocion fp = getEntityManager().find(FacturaPromocion.class, pph.getIdObject());
+                    fp.setFactura(facturaTMP);
+                    fp.setPrecio(facturaTMP.getDolar() ? pph.getPrecioUs() : pph.getPrecio());
+                    fp.setPromocion((Promocion) pph.getProductoPromocion());
+                    fp.setUnidadesBonificacion(pph.getUnidadesBonificacion());
+                    fp.setUnidadesVenta(pph.getUnidadesVenta());
+                    getEntityManager().merge(fp);
+                }
+            }
+
+            for (ProductoPromocionHelper pph : objectsEliminar) {
+                if (pph.isProducto()) {
+                    FacturaProducto fp = getEntityManager().find(FacturaProducto.class, pph.getIdObject());
+                    getEntityManager().remove(fp);
+                } else {
+                    FacturaPromocion fp = getEntityManager().find(FacturaPromocion.class, pph.getIdObject());
+                    getEntityManager().remove(fp);
+                }
+            }
+            
+            userTransaction.commit();
+             return true;
+        } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
+            try {
+                System.out.println("======>");
+                e.printStackTrace();
+                System.out.println("<======");
+                userTransaction.rollback();
+            } catch (IllegalStateException | SecurityException | SystemException es) {
+                System.out.println("======>");
+                es.printStackTrace();
+                System.out.println("<======");
+            }
+        }
+        return false;
+    }
+
     public void createFacturaProductoPromocion(Factura factura, List<ProductoPromocionHelper> objects) {
         userTransaction = sessionContext.getUserTransaction();
         try {
@@ -317,6 +411,8 @@ public class TransactionFacade {
             facturaTMP.setEstado(factura.getEstado());
             facturaTMP.setEstadoDespacho(factura.getEstadoDespacho());
             facturaTMP.setEstadoPago(factura.getEstadoPago());
+            facturaTMP.setDolar(factura.getDolar());
+            facturaTMP.setDolarActual(factura.getDolarActual());
             getEntityManager().merge(facturaTMP);
 
             for (ProductoPromocionHelper pph : objects) {
@@ -324,7 +420,7 @@ public class TransactionFacade {
                     FacturaProducto fp = new FacturaProducto();
                     fp.setFactura(facturaTMP);
                     fp.setId(null);
-                    fp.setPrecio(pph.getPrecio());
+                    fp.setPrecio(facturaTMP.getDolar() ? pph.getPrecioUs() : pph.getPrecio());
                     fp.setProducto((Producto) pph.getProductoPromocion());
                     fp.setUnidadesBonificacion(pph.getUnidadesBonificacion());
                     fp.setUnidadesVenta(pph.getUnidadesVenta());
@@ -333,7 +429,7 @@ public class TransactionFacade {
                     FacturaPromocion fp = new FacturaPromocion();
                     fp.setFactura(facturaTMP);
                     fp.setId(null);
-                    fp.setPrecio(pph.getPrecio());
+                    fp.setPrecio(facturaTMP.getDolar() ? pph.getPrecioUs() : pph.getPrecio());
                     fp.setPromocion((Promocion) pph.getProductoPromocion());
                     fp.setUnidadesBonificacion(pph.getUnidadesBonificacion());
                     fp.setUnidadesVenta(pph.getUnidadesVenta());
@@ -602,7 +698,7 @@ public class TransactionFacade {
     }
 
     public boolean updateVisitaProducto(Visita visita, List<VisitaProducto> visitaProductos, List<VisitaProducto> visitaProductosGuardar, List<VisitaProducto> visitaProductosEliminar, List<VisitaProducto> visitaProductosEditar) {
-        System.out.println("\nVisita: "+visita+"\nVisitaProductos: "+visitaProductos.size()+"\nVisitaProductosGuardar: "+visitaProductosGuardar.size()+"\nVisitaProductosEliminar: "+visitaProductosEliminar.size()+"\nVisitaProductosEditar: "+visitaProductosEditar.size());
+        System.out.println("\nVisita: " + visita + "\nVisitaProductos: " + visitaProductos.size() + "\nVisitaProductosGuardar: " + visitaProductosGuardar.size() + "\nVisitaProductosEliminar: " + visitaProductosEliminar.size() + "\nVisitaProductosEditar: " + visitaProductosEditar.size());
         userTransaction = sessionContext.getUserTransaction();
         try {
             userTransaction.begin();
@@ -798,7 +894,7 @@ public class TransactionFacade {
             for (PagoHelper ph : pagoHelpers) {
                 System.out.println("10000000000000000000");
                 Factura f = getEntityManager().find(Factura.class, ph.getPago().getFactura().getId());
-System.out.println("aaaaaaaaaaaaaaaaaaaa");
+                System.out.println("aaaaaaaaaaaaaaaaaaaa");
                 if (!listTMP.contains(f)) {
                     System.out.println("bbbbbbbbbbbbbbbb");
                     listTMP.add(f);
@@ -820,7 +916,7 @@ System.out.println("aaaaaaaaaaaaaaaaaaaa");
                 p.setFormaPago(ph.getPago().getFormaPago());
                 System.out.println("kkkkkkkkkkkkkkkkkkkkkkk: " + ph.getPago().getNumeroCheque());
                 p.setNumeroCheque(ph.getPago().getNumeroCheque());
-                System.out.println("lllllllllllllllllll: " +  ph.getPago().getObservaciones());
+                System.out.println("lllllllllllllllllll: " + ph.getPago().getObservaciones());
                 p.setObservaciones(ph.getPago().getObservaciones());
                 System.out.println("mmmmmmmmmmmmmmmmmmmmmm: " + ph.getPago().getOrdenPago());
                 p.setOrdenPago(ph.getPago().getOrdenPago());
@@ -862,7 +958,7 @@ System.out.println("aaaaaaaaaaaaaaaaaaaa");
                 }
                 System.out.println("13");
             }
-System.out.println("14");
+            System.out.println("14");
             for (Factura f : listTMP) {
                 System.out.println("15");
                 Factura fTMP = getEntityManager().find(Factura.class, f.getId());

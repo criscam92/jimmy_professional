@@ -55,8 +55,6 @@ public class LoginController implements Serializable {
 
     public void login() {
         try {
-            System.out.println("USUARIO: " + usuario.getUsuario());
-            System.out.println("" + (getFacade() == null ? "IS NULL" : "NOT NULL"));
             Usuario user = getFacade().login(usuario.getUsuario(), usuario.getContrasena());
             if (user != null) {
                 FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(FiltroSeguridad.AUTH_KEY, user);
@@ -65,7 +63,6 @@ public class LoginController implements Serializable {
                 JsfUtil.addWarnMessage("No se encontró el usuario y contraseña");
             }
         } catch (Exception e) {
-            e.printStackTrace();
             JsfUtil.addErrorMessage(e, JsfUtil.getMessageBundle("PersistenceErrorOccured"));
         }
         loggedIn();
