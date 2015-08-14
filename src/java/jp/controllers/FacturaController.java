@@ -108,7 +108,6 @@ public class FacturaController implements Serializable {
     private final String uiError = "ui-state-error";
     private String errorProducto, errorPromocion, errorVenta, errorBonificacion, errorCliente;
     private List<Producto> productosTMP = null;
-    private Cliente cliente;
     private final SimpleDateFormat sdf;
     private boolean hayPagos = false, hayDespachos = false;
     private String ordenPedidoTMP;
@@ -132,7 +131,6 @@ public class FacturaController implements Serializable {
     public FacturaController() {
         sdf = new SimpleDateFormat("yyyy-MM-dd");
         selected = new Factura();
-        cliente = null;
         selected.setDescuento(0.0);
         selectOneButton = 1;
         objects = new ArrayList<>();
@@ -172,14 +170,16 @@ public class FacturaController implements Serializable {
             List<FacturaProducto> listProductos = getFacade().getFacturaProductoByFactura(selected);
             objects = new ArrayList<>();
             for (FacturaProducto fp : listProductos) {
-                objects.add(new ProductoPromocionHelper(objects.size() + 1L, fp.getId(), fp.getUnidadesVenta(), fp.getUnidadesBonificacion(), (fp.getProducto().getValorVenta() * fp.getUnidadesVenta()), (fp.getProducto().getValorVentaUsd() * fp.getUnidadesVenta()), fp.getProducto(), true));
-                objectsEditar.add(new ProductoPromocionHelper(objects.size() + 1L, fp.getId(), fp.getUnidadesVenta(), fp.getUnidadesBonificacion(), (fp.getProducto().getValorVenta() * fp.getUnidadesVenta()), (fp.getProducto().getValorVentaUsd() * fp.getUnidadesVenta()), fp.getProducto(), true));
+                Long id = objects.size() + 1L;
+                objects.add(new ProductoPromocionHelper(id, fp.getId(), fp.getUnidadesVenta(), fp.getUnidadesBonificacion(), (fp.getProducto().getValorVenta() * fp.getUnidadesVenta()), (fp.getProducto().getValorVentaUsd() * fp.getUnidadesVenta()), fp.getProducto(), true));
+                objectsEditar.add(new ProductoPromocionHelper(id, fp.getId(), fp.getUnidadesVenta(), fp.getUnidadesBonificacion(), (fp.getProducto().getValorVenta() * fp.getUnidadesVenta()), (fp.getProducto().getValorVentaUsd() * fp.getUnidadesVenta()), fp.getProducto(), true));
             }
 
             List<FacturaPromocion> listPromociones = getPromocionFacade().getFacturaPromocionByFactura(selected);
             for (FacturaPromocion fp : listPromociones) {
-                objects.add(new ProductoPromocionHelper(objects.size() + 1L, fp.getId(), fp.getUnidadesVenta(), fp.getUnidadesBonificacion(), (fp.getPromocion().getValor() * fp.getUnidadesVenta()), (fp.getPromocion().getValorVentaUsd() * fp.getUnidadesVenta()), fp.getPromocion(), false));
-                objectsEditar.add(new ProductoPromocionHelper(objects.size() + 1L, fp.getId(), fp.getUnidadesVenta(), fp.getUnidadesBonificacion(), (fp.getPromocion().getValor() * fp.getUnidadesVenta()), (fp.getPromocion().getValorVentaUsd() * fp.getUnidadesVenta()), fp.getPromocion(), false));
+                Long id = objects.size() + 1L;
+                objects.add(new ProductoPromocionHelper(id, fp.getId(), fp.getUnidadesVenta(), fp.getUnidadesBonificacion(), (fp.getPromocion().getValor() * fp.getUnidadesVenta()), (fp.getPromocion().getValorVentaUsd() * fp.getUnidadesVenta()), fp.getPromocion(), false));
+                objectsEditar.add(new ProductoPromocionHelper(id, fp.getId(), fp.getUnidadesVenta(), fp.getUnidadesBonificacion(), (fp.getPromocion().getValor() * fp.getUnidadesVenta()), (fp.getPromocion().getValorVentaUsd() * fp.getUnidadesVenta()), fp.getPromocion(), false));
             }
         } else {
 
@@ -199,31 +199,25 @@ public class FacturaController implements Serializable {
             }
 
             try {
-                tipoPago = Integer.parseInt(requestMap.get("tipo"));
+                tipoPago = Integer.valueOf(requestMap.get("tipo"));
             } catch (Exception e) {
                 tipoPago = -1;
             }
 
             try {
-                tipoPago = Integer.parseInt(requestMap.get("tipo"));
-            } catch (Exception e) {
-                tipoPago = -1;
-            }
-
-            try {
-                estado = Integer.parseInt(requestMap.get("estado"));
+                estado = Integer.valueOf(requestMap.get("estado"));
             } catch (Exception e) {
                 estado = -1;
             }
 
             try {
-                estadoDespacho = Integer.parseInt(requestMap.get("estadoDespacho"));
+                estadoDespacho = Integer.valueOf(requestMap.get("estadoDespacho"));
             } catch (Exception e) {
                 estadoDespacho = -1;
             }
 
             try {
-                estadoPago = Integer.parseInt(requestMap.get("estadoPago"));
+                estadoPago = Integer.valueOf(requestMap.get("estadoPago"));
             } catch (Exception e) {
                 estadoPago = -1;
             }
@@ -240,7 +234,7 @@ public class FacturaController implements Serializable {
                 fechaFin = null;
             }
 
-            items = getFacade().filterFactura(empleadoFiltro, cliente, tipoPago, estado, estadoDespacho, estadoPago, fechaIni, fechaFin);
+            items = getFacade().filterFactura(empleadoFiltro, clienteFiltro, tipoPago, estado, estadoDespacho, estadoPago, fechaIni, fechaFin);
         }
     }
 
@@ -688,7 +682,7 @@ public class FacturaController implements Serializable {
                     JsfUtil.addErrorMessage("Debe seleccionar una promocion valida");
                     comprobar = true;
                 } else {
-                    if (getPromocionFacade().comprobarCategoriaPromocion(cliente, promocion)) {
+                    if (getPromocionFacade().comprobarCategoriaPromocion(selected.getCliente(), promocion)) {
                         if (precio <= 0.0) {
                             errorPromocion = uiError;
                             JsfUtil.addErrorMessage("Debe seleccionar una promocion con un precio valido");
@@ -859,7 +853,6 @@ public class FacturaController implements Serializable {
     }
 
     public void addProductoOrPromocion() {
-        System.out.println("VALIDAR UNIDADES: " + validaUnidades());
         if ((producto != null || promocion != null) && validaUnidades() && precio > 0 && selected.getCliente() != null) {
             boolean isProducto = producto != null;
 
@@ -932,7 +925,7 @@ public class FacturaController implements Serializable {
             objectsEditar.remove(pph);
         }
 
-        if (selected != null) {
+        if ((selected != null && selected.getId() != null) && pph.getIdObject() != null) {
             objectsEliminar.add(pph);
         }
 
@@ -1018,7 +1011,12 @@ public class FacturaController implements Serializable {
     }
 
     public List<Promocion> llenarPromocion(String query) {
-        return getFacade().getPromocionByQuery(query, cliente);
+        if (selected.getCliente() != null) {
+            return getFacade().getPromocionByQuery(query, selected.getCliente());
+        } else {
+            JsfUtil.addErrorMessage("Debe seleccionar un cliente para agregar promociones");
+        }
+        return new ArrayList<>();
     }
 
     public void onItemSelectProducto(SelectEvent event) {
@@ -1041,10 +1039,9 @@ public class FacturaController implements Serializable {
 
     public void onItemSelectCliente(SelectEvent event) {
         Cliente c = (Cliente) event.getObject();
-        cliente = c;
-        items = null;
-        objects.clear();
+        items = null;        
         getDescuentobyCliente(c);
+        cleanPromociones();
     }
 
     public void onItemSelectEmpleado(SelectEvent event) {
@@ -1057,6 +1054,9 @@ public class FacturaController implements Serializable {
         } else {
             selected.setOrdenPedido("" + t.getActual());
         }
+
+        selected.setCliente(null);
+        removeAllPromociones();
     }
 
     private void clean() {
@@ -1320,7 +1320,7 @@ public class FacturaController implements Serializable {
         System.out.println("Usuario Actual #: " + usuarioActual.getUsuario().getTipo());
         System.out.println("Usuario Actual: " + TipoUsuario.getFromValue(Integer.valueOf(TipoUsuario.Administrador.getValor() + "")));
         System.out.println("==========================================================");
-        if (selected.getId() != null) {
+        if (selected != null && selected.getId() != null) {
             if (usuarioActual.getUsuario().getTipo() == Long.valueOf(TipoUsuario.Administrador.getValor() + "")) {
                 if (selected.getEstado() == EstadoFactura.ANULADO.getValor()) {
                     return true;
@@ -1333,5 +1333,98 @@ public class FacturaController implements Serializable {
         } else {
             return true;
         }
+    }
+
+    public List<Cliente> llenarCliente(String query) {
+        if (selected != null && selected.getEmpleado() != null) {
+            return getClienteFacade().getClienteByQuery(query, selected.getEmpleado());
+        } else {
+            if (selected.getEmpleado() == null) {
+                JsfUtil.addErrorMessage("Debe seleccionar un empleado antes de ingresar el cliente");
+            }
+        }
+        return new ArrayList<>();
+    }
+
+    public List<Promocion> llenarPromociones(String query) {
+        if (selected != null && selected.getCliente() != null) {
+            return getFacade().getPromocionByQuery(query, selected.getCliente());
+        } else {
+            if (selected.getEmpleado() == null) {
+                JsfUtil.addErrorMessage("Debe seleccionar un cliente antes de ingresar promociones");
+            }
+        }
+        return new ArrayList<>();
+    }
+
+    public void removeAllPromociones() {
+        List<ProductoPromocionHelper> listTMP = new ArrayList<>();
+        for (ProductoPromocionHelper pph : objects) {
+            if (!pph.isProducto()) {
+                listTMP.add(pph);
+            }
+        }
+
+        if (selected != null && selected.getId() != null) {
+            for (ProductoPromocionHelper pph : listTMP) {
+                if (objectsCreate.contains(pph)) {
+                    objectsCreate.remove(pph);
+                }
+
+                if (objectsEditar.contains(pph)) {
+                    objectsEditar.remove(pph);
+                }
+
+                if (pph.getIdObject() != null) {
+                    objectsEliminar.add(pph);
+                }
+                objects.remove(pph);
+            }
+        } else {
+            for (ProductoPromocionHelper pph : listTMP) {
+                objects.remove(pph);
+            }
+        }
+
+        if (!listTMP.isEmpty()) {
+            JsfUtil.addWarnMessage("Se han eliminado las promociones que no pertenecen a la misma categoria del cliente");
+        }
+    }
+
+    public void cleanPromociones() {
+        List<ProductoPromocionHelper> listTMP = new ArrayList<>();
+        for (ProductoPromocionHelper pph : objects) {
+            if (!pph.isProducto()) {
+                if ((((Promocion) pph.getProductoPromocion()).getCategoria() != null && selected.getCliente() != null) && !((Promocion) pph.getProductoPromocion()).getCategoria().getId().equals(selected.getCliente().getCategoria().getId())) {
+                    listTMP.add(pph);
+                }
+            }
+        }
+
+        if (selected != null && selected.getId() != null) {
+            for (ProductoPromocionHelper pph : listTMP) {
+                if (objectsCreate.contains(pph)) {
+                    objectsCreate.remove(pph);
+                }
+
+                if (objectsEditar.contains(pph)) {
+                    objectsEditar.remove(pph);
+                }
+
+                if (pph.getIdObject() != null) {
+                    objectsEliminar.add(pph);
+                }
+                objects.remove(pph);
+            }
+        } else {
+            for (ProductoPromocionHelper pph : listTMP) {
+                objects.remove(pph);
+            }
+        }
+
+        if (!listTMP.isEmpty()) {
+            JsfUtil.addWarnMessage("Se han eliminado las promociones que no pertenecen a la misma categoria del cliente");
+        }
+
     }
 }
