@@ -31,7 +31,7 @@
                                 <p:autoComplete disabled="#{facturaController.emple}" size="23" id="empleado" minQueryLength="3" panelStyle="width: 320px;" value="#{facturaController.selected.empleado}" itemValue="#{empleado}" 
                                                 completeMethod="#{empleadoController.llenarEmpleado}" effect="fade" converter="empleadoconverter"
                                                 itemLabel="#{empleado.toString()}" var="empleado" required="true">
-                                    <p:ajax event="itemSelect" listener="#{facturaController.onItemSelectEmpleado}" update="codigo, :growl, empleado" />
+                                    <p:ajax event="itemSelect" listener="#{facturaController.onItemSelectEmpleado}" update="codigo, :growl, empleado, cliente, listaProductos" />
                                 </p:autoComplete>
 
                             </p:panelGrid>
@@ -47,9 +47,9 @@
 
                             <p:outputLabel styleClass="#{facturaController.errorCliente}" value="#{bundle.CreateVisitaLabel_cliente}" id="labelCliente" for="cliente"/>
                             <p:autoComplete disabled="#{facturaController.clien}" styleClass="#{facturaController.errorCliente}" size="23" id="cliente" minQueryLength="3" panelStyle="width: 320px;" value="#{facturaController.selected.cliente}" itemValue="#{cliente}" 
-                                            completeMethod="#{clienteController.llenarCliente}" effect="fade" converter="clienteconverter"
+                                            completeMethod="#{facturaController.llenarCliente}" effect="fade" converter="clienteconverter"
                                             itemLabel="#{cliente.toString()}" var="cliente" required="true">
-                                <p:ajax event="itemSelect" listener="#{facturaController.onItemSelectCliente}" update="listaProductos" />
+                                <p:ajax event="itemSelect" listener="#{facturaController.onItemSelectCliente}" update=":growl, listaProductos" />
                             </p:autoComplete>
 
                             <p:outputLabel value="#{bundle.MessageCreateTipoPago}" for="tipoPago" />
@@ -151,8 +151,7 @@
                             <f:facet name="header">
                                 <h:outputText value="Quitar"/>
                             </f:facet>
-                            <p:commandButton icon="ui-icon-closethick" update="listaProductos"
-                                             actionListener="#{facturaController.removeFacturaProductoPromocion(itemTMP)}" process="listaProductos" disabled="#{facturaController.qui}"/>
+                            <p:commandButton icon="ui-icon-closethick" update="listaProductos" actionListener="#{facturaController.removeFacturaProductoPromocion(itemTMP)}" process="listaProductos" disabled="#{facturaController.qui}"/>
                         </p:column>
                         <p:columnGroup type="footer">
                             <p:row>
