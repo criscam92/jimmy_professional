@@ -247,7 +247,7 @@ public class FacturaFacade extends AbstractFacade<Factura> {
             if (cliente.getCategoria() == null) {
                 sql += " AND p.categoria IS NULL";
             } else {
-                sql += " AND p.categoria.id = :cat";
+                sql += " AND (p.categoria.id = :cat OR p.categoria IS NULL)";
             }
 
             Query queryPromocion = getEntityManager().createQuery(sql);

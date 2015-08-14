@@ -46,9 +46,23 @@ public class ClienteFacade extends AbstractFacade<Cliente> {
     }
 
     public List<Cliente> getClienteByQuery(String query) {
+        return getClienteByQuery(query, null);
+    }
+
+    public List<Cliente> getClienteByQuery(String query, Empleado empleado) {
         try {
-            Query q = getEntityManager().createQuery("SELECT c FROM Cliente c WHERE UPPER(CONCAT(c.documento,' - ',c.nombre, c.contacto)) LIKE UPPER(:param)");
+            String sql = "SELECT c FROM Cliente c WHERE (UPPER(CONCAT(c.documento,' - ',c.nombre, c.contacto)) LIKE UPPER(:param))";
+            if (empleado != null) {
+                sql += " AND c.empleado.id = :empleado";
+            }
+
+            Query q = getEntityManager().createQuery(sql);
             q.setParameter("param", "%" + query + "%");
+
+            if (empleado != null) {
+                q.setParameter("empleado", empleado.getId());
+            }
+            
             q.setFirstResult(0);
             q.setMaxResults(10);
             return q.getResultList();
@@ -68,20 +82,20 @@ public class ClienteFacade extends AbstractFacade<Cliente> {
         }
         return null;
     }
-    
-    public boolean existeDocumento(Cliente cliente){
+
+    public boolean existeDocumento(Cliente cliente) {
         try {
             String jpql = "SELECT COUNT(c.id) FROM Cliente c WHERE c.documento = :documento";
-            if(cliente.getId()!=null){
+            if (cliente.getId() != null) {
                 jpql += " AND c.id != :id";
             }
             Query query = getEntityManager().createQuery(jpql);
             query.setParameter("documento", cliente.getDocumento());
-            if(cliente.getId()!=null){
+            if (cliente.getId() != null) {
                 query.setParameter("id", cliente.getId());
             }
             Long result = (Long) query.getSingleResult();
-            if(result>0l){
+            if (result > 0l) {
                 return true;
             }
         } catch (Exception e) {
