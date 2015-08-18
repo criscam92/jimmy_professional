@@ -347,6 +347,7 @@ public class NuevaRelacionFacturaController implements Serializable {
             pago.setFecha(selected.getFecha());
             pago.setEstado(EstadoPago.REALIZADO.getValor());
             pago.setUsuario(usuarioActual.getUsuario());
+            getValorPago();
             boolean isValid = true;
             try {
                 if (pagoHelper != null) {
@@ -893,6 +894,14 @@ public class NuevaRelacionFacturaController implements Serializable {
 
             pago.getFactura().setSaldo(pago.getFactura().getTotalPagar() - valor);
         }
+    }
+    
+    private void getValorPago(){
+        double valor = 0.0;
+        for (TipoPagoHelper tph : tipoPagoHelpers) {
+            valor += tph.getValor();
+        }
+        pago.setValorTotal(valor);
     }
 
 }
