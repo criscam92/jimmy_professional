@@ -12,7 +12,6 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
 import javax.faces.bean.ViewScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -72,13 +71,14 @@ public class NuevaRelacionFacturaController implements Serializable {
     private List<TipoPagoHelper> tipoPagoHelpers;
     private List<TipoPagoHelper> tipoPagoHelpersTMP;
     private List<TipoPagoHelper> pagosAnteriores;
+
     private List<Factura> facturasTemporales;
-    private List<RelacionFactura> relacionFacturas;
+    private List<Talonario> talonarios;
+    private List<Pago> pagos = null;
 
     private Pago selected;
     private PagoHelper pagoHelper;
     private PagoHelper pagoHelperTMP;
-    private List<Talonario> talonarios;
     private Cliente clienteTemporal;
     private TipoPagoHelper tipoPagoHelper;
     private RelacionFactura relacionFactura;
@@ -176,15 +176,15 @@ public class NuevaRelacionFacturaController implements Serializable {
         return pagoHelpers;
     }
 
-    public List<RelacionFactura> getRelacionFacturas() {
-        if (relacionFacturas == null) {
-            relacionFacturas = getFacade().findAll();
+    public List<Pago> getPagos() {
+        if (pagos == null) {
+            pagos = getPagoFacade().findAll();
         }
-        return relacionFacturas;
+        return pagos;
     }
 
-    public void setRelacionFacturas(List<RelacionFactura> relacionFacturas) {
-        this.relacionFacturas = relacionFacturas;
+    public void setPagos(List<Pago> pagos) {
+        this.pagos = pagos;
     }
 
     public List<TipoPagoHelper> getTipoPagoHelpersPublicidad() {
@@ -337,6 +337,9 @@ public class NuevaRelacionFacturaController implements Serializable {
             }
         }
         RequestContext.getCurrentInstance().execute("PF('PagoCreateDialog').hide()");
+    }
+
+    public void editar() {
     }
 
     public void create(boolean crearNuevo) {
@@ -553,7 +556,11 @@ public class NuevaRelacionFacturaController implements Serializable {
     }
 
     public String getFormaPago(int tipo) {
-        return TipoPago.getFromValue(tipo).getDetalle();
+        String tipoPago = TipoPago.getFromValue(tipo).getDetalle();
+        if (tipoPago.equals(TipoPago.CONTADO.getDetalle())) {
+            tipoPago = "Efectivo";
+        }
+        return tipoPago;
     }
 
     public boolean requiereCheque() {
@@ -758,6 +765,7 @@ public class NuevaRelacionFacturaController implements Serializable {
             for (TipoPagoHelper tph : tipoPagoHelpersTMP) {
                 valor += tph.getValor();
             }
+
             selected.getFactura().setSaldo(selected.getFactura().getTotalPagar() - valor);
         }
     }
@@ -869,6 +877,16 @@ public class NuevaRelacionFacturaController implements Serializable {
             for (TipoPagoHelper tph : tipoPagoHelpersTMP) {
                 valor += tph.getValor();
             }
+
+            for (PagoHelper ph : pagoHelpers) {
+                if (Objects.equals(ph.getPago().getFactura().getId(), selected.getFactura().getId())) {
+                    if ((pagoHelper != null) && (ph.getId() == pagoHelper.getId())) {
+                    } else {
+                        tipoPagoHelpersTMP.addAll(ph.getTipoPagoHelpers());
+                    }
+                }
+            }
+            
             selected.getFactura().setSaldo(selected.getFactura().getTotalPagar() - valor);
         }
     }
