@@ -72,7 +72,7 @@
                             <p:column>
                                 <p:selectOneMenu style="width: 155px;" id="forma_pago" value="#{nuevaRelacionFacturaController.selected.formaPago}" required="true" requiredMessage="Débe indicar la forma de pago">
                                     <p:ajax update="button_comision,button_publicidad,cheque,label_cheque,label_cuenta,cuenta,tipo_detalle_pago, display_detalle_pago, publicidad, label_publicidad, label_comision, comision, datalist" immediate="true" listener="#{nuevaRelacionFacturaController.changedFormaPago}"/>
-                                    <f:selectItems var="tipo" value="#{nuevaRelacionFacturaController.tiposPago}" itemLabel="#{tipo.detalle}" itemValue="#{tipo.valor}" />
+                                    <f:selectItems var="tipo" value="#{nuevaRelacionFacturaController.tiposPago}" itemLabel="#{nuevaRelacionFacturaController.getFormaPago(tipo.valor)}" itemValue="#{tipo.valor}" />
                                 </p:selectOneMenu>
                             </p:column>
                             <p:column>                                
@@ -92,7 +92,7 @@
                                 </p:selectOneMenu>
                                 <!-- PUBLICIDAD -->
                                 <p:inputText value="#{nuevaRelacionFacturaController.valorPublicidad}" size="15" style="#{nuevaRelacionFacturaController.mostrarContado()}" id="publicidad" readonly="true"/>                             
-                                <p:commandButton process="@this" update=":PublicidadForm, :growl" id="button_publicidad" icon="ui-icon-newwin" style="margin-left: 2px; #{nuevaRelacionFacturaController.mostrarContado()}" actionListener="#{nuevaRelacionFacturaController.prepareList(true)}"/>
+                                <p:commandButton process="publicidad" update=":PublicidadForm, :growl" id="button_publicidad" icon="ui-icon-newwin" style="margin-left: 2px; #{nuevaRelacionFacturaController.mostrarContado()}" actionListener="#{nuevaRelacionFacturaController.prepareList(true)}"/>
                             </p:column>
                             <p:column>
                                 <!-- COMISION -->
@@ -101,7 +101,7 @@
                             <p:column>
                                 <!-- COMISION -->
                                 <p:inputText size="15" value="#{nuevaRelacionFacturaController.valorComision}" style="#{nuevaRelacionFacturaController.mostrarContado()}" readonly="true" id="comision"/> 
-                                <p:commandButton process="@this" update=":ComisionForm, :growl" id="button_comision" icon="ui-icon-newwin" style="margin-left: 2px; #{nuevaRelacionFacturaController.mostrarContado()}" actionListener="#{nuevaRelacionFacturaController.prepareList(false)}"/>
+                                <p:commandButton process="comision" update=":ComisionForm, :growl" id="button_comision" icon="ui-icon-newwin" style="margin-left: 2px; #{nuevaRelacionFacturaController.mostrarContado()}" actionListener="#{nuevaRelacionFacturaController.prepareList(false)}"/>
                             </p:column>
                         </p:row>
                         <p:row>
@@ -173,7 +173,7 @@
                                             <f:facet name="header">
                                                 <h:outputText value="Quitar"/>
                                             </f:facet>
-                                            <p:commandButton icon="ui-icon-closethick" actionListener="#{nuevaRelacionFacturaController.removePagoDetalle(item)}" update="datalist,PagoCreateForm:publicidad,PagoCreateForm:comision,PagoCreateForm:valor_pago,PagoCreateForm:pendiente" process="datalist"/>
+                                            <p:commandButton icon="ui-icon-closethick" actionListener="#{nuevaRelacionFacturaController.removePagoDetalle(item)}" update="datalist,publicidad,comision,valor_pago,pendiente" process="datalist"/>
                                         </p:column>
                                     </p:dataTable>
 
