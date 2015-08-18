@@ -24,17 +24,56 @@
                              paginatorPosition="bottom"
                              >
 
-                    <!--<p:ajax event="rowSelect"   update="createButton viewButton editButton deleteButton"/>-->
-                    <!--<p:ajax event="rowUnselect" update="createButton viewButton editButton deleteButton"/>-->
+                    <p:ajax event="rowSelect"   update="editButton anularButton"/>
+                    <p:ajax event="rowUnselect" update="editButton anularButton"/>
 
                     <f:facet name="header">
                         <div id="titulo">
-                            Lista de Relacion Factura
+                            Lista de Pagos
                         </div>
                         <div id="acciones">
+                            <p:commandButton id="editButton" value="Editar" disabled="#{empty pagoController.selected}" 
+                                             actionListener="#{pagoController.prepareEdit()}" 
+                                             update=":growl, :PagoCreateForm"
+                                             oncomplete="if (args &amp;&amp; !args.validationFailed) PF('PagoCreateDialog').show()"/>
+
+                            <p:commandButton id="anularButton" value="Anular" disabled="#{empty pagoController.selected}">
+                                <p:confirm header="Confirmar" message="Esta seguro de anular este pago?" icon="ui-icon-alert" />
+                            </p:commandButton>     
 
                         </div>
                     </f:facet>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Fecha"/>
+                        </f:facet>
+                        <h:outputText value="#{item.relacionFactura.fecha}">
+                            <f:convertDateTime pattern="dd-MMM-yyyy h:mm a"/>
+                        </h:outputText>
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Observación"/>
+                        </f:facet>
+                        <h:outputText value="#{item.relacionFactura.observaciones}"/>
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Vendedor"/>
+                        </f:facet>
+                        <h:outputText value="#{item.relacionFactura.vendedor}"/>
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Cliente"/>
+                        </f:facet>
+                        <h:outputText value="#{item.factura.cliente}"/>
+                    </p:column>
+
                     <p:column>
                         <f:facet name="header">
                             <h:outputText value="Orden Pago"/>
@@ -43,25 +82,29 @@
                     </p:column>
                     <p:column>
                         <f:facet name="header">
-                            <h:outputText value="Observaciones"/>
-                        </f:facet>
-                        <h:outputText value="#{item.observaciones}"/>
-                    </p:column>
-                    <p:column>
-                        <f:facet name="header">
-                            <h:outputText value="#{bundle.ListPagoTitle_factura}"/>
+                            <h:outputText value="Factura"/>
                         </f:facet>
                         <h:outputText value="#{item.factura.ordenPedido}"/>
                     </p:column>
                     <p:column>
                         <f:facet name="header">
-                            <h:outputText value="#{bundle.ListPagoTitle_tipo}"/>
+                            <h:outputText value="Tipo"/>
                         </f:facet>
                         <h:outputText value="#{nuevaRelacionFacturaController.getFormaPago(item.formaPago)}"/>
                     </p:column>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Valor Pagado"/>
+                        </f:facet>
+                        <h:outputText value="#{item.valorTotal}">
+                            <f:convertNumber type="currency"  currencySymbol="$"/>
+                        </h:outputText>
+                    </p:column>
+
                 </p:dataTable>
             </h:form>
-
+            <ui:include src="EditarPago.xhtml" />
         </ui:define>
     </ui:composition>
 
