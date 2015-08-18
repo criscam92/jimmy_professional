@@ -19,11 +19,11 @@
                     <p:panelGrid columns="2">
                         <p:panelGrid columns="2">
                             <h:outputLabel for="fecha" value="Fecha:" />
-                            <p:calendar id="fecha" locale="es_CO" size="20" value="#{nuevaRelacionFacturaController.relacionFactura.fecha}" 
+                            <p:calendar id="fecha" locale="es_CO" size="20" value="#{nuevaRelacionFacturaController.selected.fecha}" 
                                         showOn="button" pattern="dd/MM/yyyy" required="true"
                                         requiredMessage="Débe indicar la fecha para la relación de facturas"/>
                             <p:outputLabel value="Vendedor:" for="empleado" />
-                            <p:autoComplete id="empleado" size="25" minQueryLength="3" value="#{nuevaRelacionFacturaController.relacionFactura.vendedor}" itemValue="#{empleado}" 
+                            <p:autoComplete id="empleado" size="25" minQueryLength="3" value="#{nuevaRelacionFacturaController.selected.vendedor}" itemValue="#{empleado}" 
                                             completeMethod="#{empleadoController.llenarEmpleado}" effect="fade" converter="empleadoconverter"
                                             itemLabel="#{empleado.toString()}" var="empleado" required="true"
                                             requiredMessage="Débe indicar el vendedor para la relación de facturas">
@@ -32,7 +32,7 @@
                         </p:panelGrid>
                         <p:panelGrid>
 
-                            <p:inputTextarea placeholder="Observaciones:" id="observaciones" cols="41" rows="4" autoResize="true" value="#{nuevaRelacionFacturaController.relacionFactura.observaciones}" />
+                            <p:inputTextarea placeholder="Observaciones:" id="observaciones" cols="41" rows="4" autoResize="true" value="#{nuevaRelacionFacturaController.selected.observaciones}" />
                         </p:panelGrid>
 
                     </p:panelGrid>
@@ -60,7 +60,7 @@
                             <p:commandButton id="createButton" icon="ui-icon-plus" 
                                              value="#{bundle.AddItem}" 
                                              update=":growl, :PagoCreateForm"
-                                             disabled="#{nuevaRelacionFacturaController.relacionFactura.vendedor==null}"
+                                             disabled="#{nuevaRelacionFacturaController.selected.vendedor == null}"
                                              oncomplete="if (args &amp;&amp; !args.validationFailed) PF('PagoCreateDialog').show()"
                                              actionListener="#{nuevaRelacionFacturaController.prepareCreatePago}" />
 
