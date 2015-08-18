@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <ui:composition>
+
+        <p:dialog id="PagoCreateDlg" widgetVar="PagoCreateDialog" closable="false" modal="true" resizable="false" appendTo="@(body)" header="Agregar Recibo">
+            <h:form id="PagoCreateForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid>
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel id="label_id" value="Recibo de Caja:" for="id" style="#{nuevaRelacionFacturaController.error}"/>
+                            </p:column>
+                            <p:column>
+                                <p:inputText style="#{nuevaRelacionFacturaController.error}" id="id" value="#{nuevaRelacionFacturaController.selected.ordenPago}" title="Recibo de Caja" required="true" requiredMessage="Débe indicar el número del recibo de caja">
+                                    <p:ajax event="blur" listener="#{nuevaRelacionFacturaController.validateNumeroRecibo}" update=":growl, label_id, id"/>
+                                </p:inputText>
+                            </p:column>
+                            <p:column>
+                                <p:outputLabel value="Cliente" for="cliente"/>
+                            </p:column>
+                            <p:column>
+                                <p:autoComplete id="cliente" minQueryLength="3" panelStyle="width: 210px;" value="#{nuevaRelacionFacturaController.clienteTemporal}" requiredMessage="Debes indicar un cliente para el Recibo"
+                                                itemValue="#{cliente}" completeMethod="#{clienteController.llenarCliente}" effect="fade" converter="clienteconverter" emptyMessage="Ingrese un Cliente válido"
+                                                itemLabel="#{cliente.toString()}" var="cliente" required="true" converterMessage="Ingrese un Cliente válido" validatorMessage="Ingrese un Cliente válido">
+                                    <p:ajax event="itemSelect" listener="#{nuevaRelacionFacturaController.onItemSelecCliente}" update=":growl,display" />
+                                </p:autoComplete>
+                            </p:column>
+                            <p:column>
+                                <p:outputLabel value="Factura:" for="factura" />
+                            </p:column>
+                            <p:column>
+                                <p:selectOneMenu id="factura" value="#{nuevaRelacionFacturaController.selected.factura}" required="true" requiredMessage="Débe indicar la factura para el recibo"
+                                                 converter="facturaConverter" style="width: 155px;">
+                                    <p:ajax update="buttonAgregar,total,pendiente,publicidad,comision,datalist,valor_pago" listener="#{nuevaRelacionFacturaController.changedFactura}"/>
+                                    <f:selectItem itemLabel="Seleccione una factura" itemValue="#{null}" noSelectionOption="true" itemDisabled="true"/>
+                                    <f:selectItems value="#{nuevaRelacionFacturaController.facturasTemporales}" var="fac" itemLabel="#{fac.ordenPedido}" itemValue="#{fac}" />
+                                </p:selectOneMenu>
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Valor Total Factura:" for="total" />
+                            </p:column>
+                            <p:column>
+                                <p:inputText readonly="true" id="total" value="#{nuevaRelacionFacturaController.selected.factura.totalPagar}" />
+                            </p:column>
+                            <p:column>
+                                <p:outputLabel value="Valor Pendiente Factura:" for="pendiente" />
+                            </p:column>
+                            <p:column>
+                                <p:inputText readonly="true" id="pendiente" value="#{nuevaRelacionFacturaController.selected.factura.saldo}" />
+                            </p:column>
+                            <p:column>
+                                <p:outputLabel value="Valor Pago:" for="valor_pago" />
+                            </p:column>
+                            <p:column>
+                                <p:inputText readonly="true" id="valor_pago" value="#{nuevaRelacionFacturaController.selected.valorTotal}" />
+                            </p:column>
+                        </p:row>
+                        
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Forma de Pago:" for="forma_pago" />
+                            </p:column>
+                            <p:column>
+                                <p:selectOneMenu style="width: 155px;" id="forma_pago" value="#{nuevaRelacionFacturaController.selected.formaPago}" required="true" requiredMessage="Débe indicar la forma de pago">
+                                    <p:ajax update="button_comision,button_publicidad,cheque,label_cheque,label_cuenta,cuenta,tipo_detalle_pago, display_detalle_pago, publicidad, label_publicidad, label_comision, comision, datalist" immediate="true" listener="#{nuevaRelacionFacturaController.changedFormaPago}"/>
+                                    <f:selectItems var="tipo" value="#{nuevaRelacionFacturaController.tiposPago}" itemLabel="#{nuevaRelacionFacturaController.getFormaPago(item.valor)}" itemValue="#{tipo.valor}" />
+                                </p:selectOneMenu>
+                            </p:column>
+                            <p:column>                                
+                                <!-- CHEQUE -->
+                                <p:outputLabel id="label_cheque" style="#{nuevaRelacionFacturaController.mostrarCheque()}" value="No Cheque:" for="cheque" />
+                                <!-- CUENTA -->
+                                <p:outputLabel id="label_cuenta" style="#{nuevaRelacionFacturaController.mostrarCuenta()}" value="No Cuenta:" for="cuenta" />
+                                <!-- PUBLICIDAD -->
+                                <p:outputLabel id="label_publicidad" style="#{nuevaRelacionFacturaController.mostrarContado()}" value="Publicidad:" for="publicidad" />
+                            </p:column>
+                            <p:column>
+                                <!-- CHEQUE -->
+                                <p:inputText style="#{nuevaRelacionFacturaController.mostrarCheque()}" id="cheque" value="#{nuevaRelacionFacturaController.selected.numeroCheque}" required="#{nuevaRelacionFacturaController.requiereCheque()}"/>
+                                <!-- CUENTA -->
+                                <p:selectOneMenu id="cuenta" style="width: 155px; #{nuevaRelacionFacturaController.mostrarCuenta()}" value="#{nuevaRelacionFacturaController.selected.cuenta}" required="#{nuevaRelacionFacturaController.requiereCuenta()}">
+                                    <f:selectItems var="cta" value="#{cuentaBancariaController.items}" itemLabel="#{cta.nombre} - #{cta.numeroCuenta}" itemValue="#{tipo.valor}" />
+                                </p:selectOneMenu>
+                                <!-- PUBLICIDAD -->
+                                <p:inputText value="#{nuevaRelacionFacturaController.valorPublicidad}" size="15" style="#{nuevaRelacionFacturaController.mostrarContado()}" id="publicidad" readonly="true"/>                             
+                                <p:commandButton process="publicidad" update=":PublicidadForm, :growl" id="button_publicidad" icon="ui-icon-newwin" style="margin-left: 2px; #{nuevaRelacionFacturaController.mostrarContado()}" actionListener="#{nuevaRelacionFacturaController.prepareList(true)}"/>
+                            </p:column>
+                            <p:column>
+                                <!-- COMISION -->
+                                <p:outputLabel id="label_comision" style="#{nuevaRelacionFacturaController.mostrarContado()}" value="Comision:" for="comision" />
+                            </p:column>
+                            <p:column>
+                                <!-- COMISION -->
+                                <p:inputText size="15" value="#{nuevaRelacionFacturaController.valorComision}" style="#{nuevaRelacionFacturaController.mostrarContado()}" readonly="true" id="comision"/> 
+                                <p:commandButton process="comision" update=":ComisionForm, :growl" id="button_comision" icon="ui-icon-newwin" style="margin-left: 2px; #{nuevaRelacionFacturaController.mostrarContado()}" actionListener="#{nuevaRelacionFacturaController.prepareList(false)}"/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column colspan="6">
+                                <p:fieldset legend="Detalles del Pago">
+                                    <p:panelGrid id="display_detalle_pago">
+                                        <p:row>
+                                            <p:column>
+                                                <p:outputLabel for="tipo_detalle_pago" value="Detalle del Pago:" />
+                                            </p:column>
+                                            <p:column>
+                                                <p:selectOneMenu style="width: 145px;" id="tipo_detalle_pago" value="#{nuevaRelacionFacturaController.tipoPagoHelper.tipo}">
+                                                    <p:ajax update="display_detalle_pago" immediate="true"/>
+                                                    <f:selectItems var="tip" value="#{nuevaRelacionFacturaController.tiposPagoAbono}" itemLabel="#{tip.detalle}" itemValue="#{tip.valor}" />
+                                                </p:selectOneMenu>
+                                            </p:column>
+                                            <p:column>
+                                                <p:outputLabel id="label_valor_detalle_pago" for="valor_detalle_pago" value="Valor:" />
+                                            </p:column>
+                                            <p:column>
+                                                <p:inputText id="valor_detalle_pago" size="10" value="#{nuevaRelacionFacturaController.tipoPagoHelper.valor}" />
+                                            </p:column>
+                                            <c:if test="#{nuevaRelacionFacturaController.requiereTipoPublicidad()}">
+                                                <p:column>
+                                                    <p:outputLabel id="label_tipo_publicidad" for="tipo_publicidad" value="Tipo Publicidad:" />
+                                                </p:column>
+                                                <p:column>
+                                                    <p:selectOneMenu id="tipo_publicidad" value="#{nuevaRelacionFacturaController.tipoPagoHelper.tipoPublicidad}"
+                                                                     style="width: 145px;" required="#{nuevaRelacionFacturaController.requiereTipoPublicidad()}" >
+                                                        <f:selectItems var="pub" value="#{tipoPublicidadController.items}" itemLabel="#{pub.detalle}" itemValue="#{pub}" />
+                                                    </p:selectOneMenu>
+                                                </p:column>
+                                            </c:if>
+                                            <p:column>
+                                                <p:commandButton id="buttonAgregar" icon="ui-icon-plus" value="Agregar" actionListener="#{nuevaRelacionFacturaController.addPagoDetalle()}" update=":growl,datalist,display_detalle_pago,pendiente,valor_pago,publicidad,comision" process="display_detalle_pago" disabled="#{nuevaRelacionFacturaController.desabilitarButton}"/>
+                                            </p:column>
+                                        </p:row>
+                                    </p:panelGrid>
+
+                                    <p:dataTable styleClass="tabla" id="datalist" value="#{nuevaRelacionFacturaController.tipoPagoHelpers}" var="item"
+                                                 selectionMode="single"
+                                                 paginator="true"
+                                                 rowKey="#{item.id}"
+                                                 rows="3"
+                                                 emptyMessage="#{bundle.EmptyTable}"
+                                                 paginatorPosition="bottom"
+                                                 paginatorAlwaysVisible="false"
+                                                 tableStyle="width: 855px;"
+                                                 >
+                                        <p:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="Pago"/>
+                                            </f:facet>
+                                            <h:outputText value="#{nuevaRelacionFacturaController.getTiposPagoAbono(item.tipo)}"/>
+                                        </p:column>
+                                        <p:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="Valor"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.valor}"/>
+                                        </p:column>
+                                        <p:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="Tipo Publicidad"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.tipoPublicidad.detalle}"/>
+                                        </p:column>
+                                        <p:column style="text-align: center;" width="100">
+                                            <f:facet name="header">
+                                                <h:outputText value="Quitar"/>
+                                            </f:facet>
+                                            <p:commandButton icon="ui-icon-closethick" actionListener="#{nuevaRelacionFacturaController.removePagoDetalle(item)}" update="datalist,PagoCreateForm:publicidad,PagoCreateForm:comision,PagoCreateForm:valor_pago,PagoCreateForm:pendiente" process="datalist"/>
+                                        </p:column>
+                                    </p:dataTable>
+
+                                </p:fieldset>
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
+                    <div class="botonesDialog">
+                        <p:commandButton actionListener="#{nuevaRelacionFacturaController.editar()}" value="Modificar"
+                                         update="display, :growl, :PagoListForm:datalist"/>
+                        <p:commandButton value="#{bundle.Cancel}" type="button" onclick="PF('PagoCreateDialog').hide()"/>
+                    </div>
+                </h:panelGroup>
+            </h:form>
+            <ui:include src="Dialogos.xhtml" />
+        </p:dialog>
+
+    </ui:composition>
+</html>
