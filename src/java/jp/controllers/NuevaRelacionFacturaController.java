@@ -72,16 +72,16 @@ public class NuevaRelacionFacturaController implements Serializable {
     private List<TipoPagoHelper> tipoPagoHelpersTMP;
     private List<TipoPagoHelper> pagosAnteriores;
 
-    private List<Factura> facturasTemporales;
+    private List<Factura> facturasTMP;
     private List<Talonario> talonarios;
     private List<Pago> pagos = null;
 
-    private Pago selected;
+    private Pago pago;
     private PagoHelper pagoHelper;
     private PagoHelper pagoHelperTMP;
-    private Cliente clienteTemporal;
+    private Cliente clienteTMP;
     private TipoPagoHelper tipoPagoHelper;
-    private RelacionFactura relacionFactura;
+    private RelacionFactura selected;
 
     private double valorPublicidad;
     private double valorComision;
@@ -99,7 +99,7 @@ public class NuevaRelacionFacturaController implements Serializable {
 
     @PostConstruct
     public void init() {
-        relacionFactura = prepareCreate();
+        selected = prepareCreate();
         valorComision = 0.0;
         valorPublicidad = 0.0;
     }
@@ -136,15 +136,15 @@ public class NuevaRelacionFacturaController implements Serializable {
         this.valorComision = valorComision;
     }
 
-    public Pago getSelected() {
-        if (selected == null) {
+    public Pago getPago() {
+        if (pago == null) {
             return new Pago();
         }
-        return selected;
+        return pago;
     }
 
-    public void setSelected(Pago selected) {
-        this.selected = selected;
+    public void setPago(Pago pago) {
+        this.pago = pago;
     }
 
     public PagoHelper getPagoHelper() {
@@ -221,37 +221,37 @@ public class NuevaRelacionFacturaController implements Serializable {
         return tipoPagoHelpers;
     }
 
-    public RelacionFactura getRelacionFactura() {
-        return relacionFactura;
+    public RelacionFactura getSelected() {
+        return selected;
     }
 
-    public void setRelacionFactura(RelacionFactura relacionFactura) {
-        this.relacionFactura = relacionFactura;
+    public void setSelected(RelacionFactura selected) {
+        this.selected = selected;
     }
 
-    public Cliente getClienteTemporal() {
-        return clienteTemporal;
+    public Cliente getClienteTMP() {
+        return clienteTMP;
     }
 
-    public void setClienteTemporal(Cliente clienteTemporal) {
-        this.clienteTemporal = clienteTemporal;
+    public void setClienteTMP(Cliente clienteTMP) {
+        this.clienteTMP = clienteTMP;
     }
 
-    public List<Factura> getFacturasTemporales() {
-        if (facturasTemporales == null) {
-            facturasTemporales = new ArrayList<>();
+    public List<Factura> getFacturasTMP() {
+        if (facturasTMP == null) {
+            facturasTMP = new ArrayList<>();
         }
-        return facturasTemporales;
+        return facturasTMP;
     }
 
-    public void setFacturasTemporales(List<Factura> facturasTemporales) {
-        this.facturasTemporales = facturasTemporales;
+    public void setFacturasTMP(List<Factura> facturasTMP) {
+        this.facturasTMP = facturasTMP;
     }
 
     public void onItemSelecCliente(SelectEvent event) {
         if (event.getObject() != null) {
             Cliente c = (Cliente) event.getObject();
-            facturasTemporales = getFacturaFacade().getFacturasPendientesByCliente(c);
+            facturasTMP = getFacturaFacade().getFacturasPendientesByCliente(c);
             clean();
             desabilitarButton = true;
         }
@@ -290,27 +290,27 @@ public class NuevaRelacionFacturaController implements Serializable {
     }
 
     public RelacionFactura prepareCreate() {
-        relacionFactura = new RelacionFactura();
-        relacionFactura.setFecha(Calendar.getInstance().getTime());
-        return relacionFactura;
+        selected = new RelacionFactura();
+        selected.setFecha(Calendar.getInstance().getTime());
+        return selected;
     }
 
     public Pago prepareCreatePago() {
         editar = false;
-        selected = new Pago();
-        clienteTemporal = null;
+        pago = new Pago();
+        clienteTMP = null;
         pagoHelper = null;
         pagoHelperTMP = new PagoHelper();
         limpiar();
         desabilitarButton = true;
-        return selected;
+        return pago;
     }
 
     public void prepareEditPago() {
         editar = true;
         guardarObjetTMP();
-        clienteTemporal = pagoHelper.getPago().getFactura().getCliente();
-        selected = pagoHelper.getPago();
+        clienteTMP = pagoHelper.getPago().getFactura().getCliente();
+        pago = pagoHelper.getPago();
         tipoPagoHelpers = new ArrayList<>();
         tipoPagoHelpers.addAll(pagoHelper.getTipoPagoHelpers());
         tipoPagoHelpersTMP = new ArrayList<>();
@@ -344,16 +344,16 @@ public class NuevaRelacionFacturaController implements Serializable {
 
     public void create(boolean crearNuevo) {
         if (validarCrear(true)) {
-            selected.setFecha(relacionFactura.getFecha());
-            selected.setEstado(EstadoPago.REALIZADO.getValor());
-            selected.setUsuario(usuarioActual.getUsuario());
+            pago.setFecha(selected.getFecha());
+            pago.setEstado(EstadoPago.REALIZADO.getValor());
+            pago.setUsuario(usuarioActual.getUsuario());
             boolean isValid = true;
             try {
                 if (pagoHelper != null) {
                     for (PagoHelper ph : pagoHelpers) {
                         if (ph.getId() == pagoHelper.getId()) {
                             int io = pagoHelpers.indexOf(pagoHelper);
-                            pagoHelpers.get(io).setPago(selected);
+                            pagoHelpers.get(io).setPago(pago);
                             pagoHelpers.get(io).setTipoPagoHelpers(tipoPagoHelpers);
                             break;
                         }
@@ -361,7 +361,7 @@ public class NuevaRelacionFacturaController implements Serializable {
                 } else {
                     PagoHelper ph = new PagoHelper();
                     ph.setId(pagoHelpers.size() + 1);
-                    ph.setPago(selected);
+                    ph.setPago(pago);
                     ph.setTipoPagoHelpers(tipoPagoHelpers);
                     pagoHelpers.add(ph);
                 }
@@ -388,18 +388,18 @@ public class NuevaRelacionFacturaController implements Serializable {
     private boolean validarCrear(boolean validarPagos) {
         boolean isVaild = true;
 
-        if (getPagoFacade().existePago(selected.getOrdenPago())) {
+        if (getPagoFacade().existePago(pago.getOrdenPago())) {
             isVaild = false;
             setError(uiError);
-            JsfUtil.addErrorMessage("El numero de recibo " + selected.getOrdenPago() + " ya esta en uso");
+            JsfUtil.addErrorMessage("El numero de recibo " + pago.getOrdenPago() + " ya esta en uso");
         } else {
             for (PagoHelper ph : pagoHelpers) {
-                if (ph.getPago().getOrdenPago().equals(selected.getOrdenPago())) {
+                if (ph.getPago().getOrdenPago().equals(pago.getOrdenPago())) {
                     if ((pagoHelper != null) && (ph.getPago().getOrdenPago().equals(pagoHelper.getPago().getOrdenPago()))) {
                     } else {
                         isVaild = false;
                         setError(uiError);
-                        JsfUtil.addErrorMessage("El numero de recibo " + selected.getOrdenPago() + " ya esta en uso");
+                        JsfUtil.addErrorMessage("El numero de recibo " + pago.getOrdenPago() + " ya esta en uso");
                         break;
                     }
                 }
@@ -409,7 +409,7 @@ public class NuevaRelacionFacturaController implements Serializable {
         if (isVaild) {
             Long reciboActual;
             try {
-                reciboActual = Long.valueOf(selected.getOrdenPago());
+                reciboActual = Long.valueOf(pago.getOrdenPago());
             } catch (Exception e) {
                 reciboActual = null;
             }
@@ -436,7 +436,7 @@ public class NuevaRelacionFacturaController implements Serializable {
                 if (!numeroPermitido || entrar) {
                     isVaild = false;
                     setError(uiError);
-                    JsfUtil.addErrorMessage("el numero de recibo " + selected.getOrdenPago() + " no esta permitido");
+                    JsfUtil.addErrorMessage("el numero de recibo " + pago.getOrdenPago() + " no esta permitido");
                 }
             } else {
                 isVaild = false;
@@ -508,19 +508,19 @@ public class NuevaRelacionFacturaController implements Serializable {
                 return;
             }
         }
-        relacionFactura.setVendedor(null);
+        selected.setVendedor(null);
     }
 
     public void changedFactura(final AjaxBehaviorEvent event) {
         limpiar();
-        if (selected.getFactura() != null) {
-            Factura factura = facturaFacade.updatePagoPendiente(selected.getFactura());
-            selected.setFactura(factura);
+        if (pago.getFactura() != null) {
+            Factura factura = facturaFacade.updatePagoPendiente(pago.getFactura());
+            pago.setFactura(factura);
             updatePublicidadAndComicion();
             tipoPagoHelpers = null;
             desabilitarButton = false;
         } else {
-            selected.setFactura(new Factura());
+            pago.setFactura(new Factura());
         }
     }
 
@@ -534,7 +534,7 @@ public class NuevaRelacionFacturaController implements Serializable {
     }
 
     public void changedFormaPago(final AjaxBehaviorEvent event) {
-        if (selected.getFactura() != null) {
+        if (pago.getFactura() != null) {
             limpiar();
             updatePublicidadAndComicion();
         }
@@ -545,7 +545,7 @@ public class NuevaRelacionFacturaController implements Serializable {
     }
 
     public TipoPagoAbono[] getTiposPagoAbono() {
-        if (selected != null && selected.getFormaPago() != TipoPago.CONTADO.getValor()) {
+        if (pago != null && pago.getFormaPago() != TipoPago.CONTADO.getValor()) {
             return new TipoPagoAbono[]{TipoPagoAbono.ABONO};
         }
         return TipoPagoAbono.values();
@@ -564,8 +564,8 @@ public class NuevaRelacionFacturaController implements Serializable {
     }
 
     public boolean requiereCheque() {
-        if (selected != null) {
-            return selected.getFormaPago() == TipoPago.CHEQUE.getValor();
+        if (pago != null) {
+            return pago.getFormaPago() == TipoPago.CHEQUE.getValor();
         }
         return false;
     }
@@ -575,14 +575,14 @@ public class NuevaRelacionFacturaController implements Serializable {
     }
 
     public boolean requiereCuenta() {
-        if (selected != null) {
-            return selected.getFormaPago() == TipoPago.CONSIGNACION.getValor();
+        if (pago != null) {
+            return pago.getFormaPago() == TipoPago.CONSIGNACION.getValor();
         }
         return false;
     }
 
     public boolean requiereTipoPublicidad() {
-        return selected != null && selected.getFormaPago() == TipoPago.CONTADO.getValor()
+        return pago != null && pago.getFormaPago() == TipoPago.CONTADO.getValor()
                 && tipoPagoHelper != null
                 && tipoPagoHelper.getTipo() == TipoPagoAbono.PUBLICIDAD.getValor();
     }
@@ -596,8 +596,8 @@ public class NuevaRelacionFacturaController implements Serializable {
     }
 
     public String mostrarContado() {
-        if (selected != null) {
-            return selected.getFormaPago() == TipoPago.CONTADO.getValor() ? "" : "display:none;";
+        if (pago != null) {
+            return pago.getFormaPago() == TipoPago.CONTADO.getValor() ? "" : "display:none;";
         }
         return "";
     }
@@ -670,12 +670,12 @@ public class NuevaRelacionFacturaController implements Serializable {
             }
         } else {
 
-            if (tipoPagoHelper.getValor() > selected.getFactura().getSaldo()) {
+            if (tipoPagoHelper.getValor() > pago.getFactura().getSaldo()) {
                 JsfUtil.addErrorMessage("El valor supera el valor pendiente de la factura");
                 isValid = false;
             }
 
-            if (selected.getFormaPago() == TipoPago.CONTADO.getValor()) {
+            if (pago.getFormaPago() == TipoPago.CONTADO.getValor()) {
                 if (tipoPagoHelper.getTipo() == TipoPagoAbono.PUBLICIDAD.getValor()) {
                     if (tipoPagoHelper.getValor() > valorPublicidad) {
                         JsfUtil.addErrorMessage("El valor supera el valor permitido por publicidad");
@@ -693,27 +693,27 @@ public class NuevaRelacionFacturaController implements Serializable {
     }
 
     private void updatePublicidadAndComicion() {
-        if (selected.getFactura() != null) {
+        if (pago.getFactura() != null) {
             float porcentajePublicidad;
             try {
                 porcentajePublicidad = getParametrosFacade().getParametros().getPorcentajePublicidad();
             } catch (Exception e) {
                 porcentajePublicidad = 0F;
             }
-            double valorP = Math.round(selected.getFactura().getTotalPagar() * (porcentajePublicidad / 100));
+            double valorP = Math.round(pago.getFactura().getTotalPagar() * (porcentajePublicidad / 100));
 
             double porcentajeComision;
             try {
-                porcentajeComision = relacionFactura.getVendedor().getTipoEmpleado().getComision();
+                porcentajeComision = selected.getVendedor().getTipoEmpleado().getComision();
             } catch (Exception e) {
                 porcentajeComision = 0.0;
             }
-            double valorC = Math.round(selected.getFactura().getTotalPagar() * (porcentajeComision / 100));
+            double valorC = Math.round(pago.getFactura().getTotalPagar() * (porcentajeComision / 100));
 
             double vPlucidad = 0.0, vComision = 0.0, aPublicidad = 0.0, aComision = 0.0;
 
             for (PagoHelper ph : pagoHelpers) {
-                if (Objects.equals(ph.getPago().getFactura().getId(), selected.getFactura().getId())) {
+                if (Objects.equals(ph.getPago().getFactura().getId(), pago.getFactura().getId())) {
                     if ((pagoHelper != null) && (ph.getId() == pagoHelper.getId())) {
                     } else {
                         tipoPagoHelpersTMP.addAll(ph.getTipoPagoHelpers());
@@ -729,7 +729,7 @@ public class NuevaRelacionFacturaController implements Serializable {
                 }
             }
 
-            List<Pago> listPagos = getPagoFacade().getPagosByFactura(selected.getFactura());
+            List<Pago> listPagos = getPagoFacade().getPagosByFactura(pago.getFactura());
             getPagosAnteriores(listPagos);
             for (TipoPagoHelper tph : pagosAnteriores) {
                 if (tph.getTipo() == TipoPagoAbono.PUBLICIDAD.getValor()) {
@@ -754,19 +754,19 @@ public class NuevaRelacionFacturaController implements Serializable {
     }
 
     private void clean() {
-        String ordenPago = selected.getOrdenPago();
-        selected = new Pago();
-        selected.setOrdenPago(ordenPago);
+        String ordenPago = pago.getOrdenPago();
+        pago = new Pago();
+        pago.setOrdenPago(ordenPago);
         limpiar();
     }
 
     private void updateValorPendiente(double valor) {
-        if (selected.getFactura() != null) {
+        if (pago.getFactura() != null) {
             for (TipoPagoHelper tph : tipoPagoHelpersTMP) {
                 valor += tph.getValor();
             }
 
-            selected.getFactura().setSaldo(selected.getFactura().getTotalPagar() - valor);
+            pago.getFactura().setSaldo(pago.getFactura().getTotalPagar() - valor);
         }
     }
 
@@ -778,7 +778,7 @@ public class NuevaRelacionFacturaController implements Serializable {
         for (TipoPagoHelper tph : tipoPagoHelpersTMP) {
             valor += tph.getValor();
         }
-        selected.setValorTotal(valor);
+        pago.setValorTotal(valor);
     }
 
     private void getPagosAnteriores(List<Pago> listPagos) {
@@ -832,8 +832,8 @@ public class NuevaRelacionFacturaController implements Serializable {
     }
 
     public void prepareList(boolean isPublicidad) {
-        if (selected.getFactura() != null) {
-            List<Pago> listPagos = getPagoFacade().getPagosByFactura(selected.getFactura());
+        if (pago.getFactura() != null) {
+            List<Pago> listPagos = getPagoFacade().getPagosByFactura(pago.getFactura());
             getPagosAnteriores(listPagos);
             if (isPublicidad) {
                 RequestContext.getCurrentInstance().execute("PF('PublicidadDialog').show()");
@@ -848,7 +848,7 @@ public class NuevaRelacionFacturaController implements Serializable {
     public void crearRecibo() {
         if (pagoHelpers.size() > 0) {
             try {
-                getTransactionFacade().crearPago(pagoHelpers, relacionFactura);
+                getTransactionFacade().crearPago(pagoHelpers, selected);
                 if (!JsfUtil.isValidationFailed()) {
                     JsfUtil.addSuccessMessage("El pago fue guardado correctamente");
                     pagoHelpers = null;
@@ -868,8 +868,8 @@ public class NuevaRelacionFacturaController implements Serializable {
     }
 
     private void updateValorPendienteOnly() {
-        if (selected.getFactura() != null) {
-            List<Pago> listPagos = getPagoFacade().getPagosByFactura(selected.getFactura());
+        if (pago.getFactura() != null) {
+            List<Pago> listPagos = getPagoFacade().getPagosByFactura(pago.getFactura());
 
             double valor = 0.0;
             if (listPagos != null && !listPagos.isEmpty()) {
@@ -879,7 +879,7 @@ public class NuevaRelacionFacturaController implements Serializable {
             }
 
             for (PagoHelper ph : pagoHelpers) {
-                if (Objects.equals(ph.getPago().getFactura().getId(), selected.getFactura().getId())) {
+                if (Objects.equals(ph.getPago().getFactura().getId(), pago.getFactura().getId())) {
                     if ((pagoHelper != null) && (ph.getId() == pagoHelper.getId())) {
                     } else {
                         tipoPagoHelpersTMP.addAll(ph.getTipoPagoHelpers());
@@ -891,7 +891,7 @@ public class NuevaRelacionFacturaController implements Serializable {
                 valor += tph.getValor();
             }
 
-            selected.getFactura().setSaldo(selected.getFactura().getTotalPagar() - valor);
+            pago.getFactura().setSaldo(pago.getFactura().getTotalPagar() - valor);
         }
     }
 
