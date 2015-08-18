@@ -168,11 +168,8 @@ public class FacturaFacade extends AbstractFacade<Factura> {
             }
 
             facturasPendientesTMP = queryFactura.getResultList();
-
             facturasPendientesTMP = getFacturasPendientesPago(facturasPendientesTMP);
-
             return facturasPendientesTMP;
-
         } catch (NoResultException e) {
             return null;
         }
