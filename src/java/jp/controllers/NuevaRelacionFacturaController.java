@@ -872,11 +872,7 @@ public class NuevaRelacionFacturaController implements Serializable {
                 for (Pago pago : listPagos) {
                     valor += pago.getValorTotal();
                 }
-            }
-
-            for (TipoPagoHelper tph : tipoPagoHelpersTMP) {
-                valor += tph.getValor();
-            }
+            }            
 
             for (PagoHelper ph : pagoHelpers) {
                 if (Objects.equals(ph.getPago().getFactura().getId(), selected.getFactura().getId())) {
@@ -885,6 +881,10 @@ public class NuevaRelacionFacturaController implements Serializable {
                         tipoPagoHelpersTMP.addAll(ph.getTipoPagoHelpers());
                     }
                 }
+            }
+            
+            for (TipoPagoHelper tph : tipoPagoHelpersTMP) {
+                valor += tph.getValor();
             }
             
             selected.getFactura().setSaldo(selected.getFactura().getTotalPagar() - valor);
