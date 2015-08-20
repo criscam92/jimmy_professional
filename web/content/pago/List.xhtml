@@ -16,7 +16,7 @@
             <h:form id="PagoListForm">
                 <p:dataTable styleClass="tabla" id="datalist" value="#{pagoController.items}" var="item"
                              selectionMode="single" selection="#{pagoController.selected}"
-                             paginator="true"
+                             paginator="true" widgetVar="tablaPagos"
                              rowKey="#{item.id}"
                              rows="10"
                              rowsPerPageTemplate="10,20,30,40,50"
@@ -24,32 +24,32 @@
                              paginatorPosition="bottom"
                              >
 
-<!--                    <p:ajax event="rowSelect"   update="editButton anularButton"/>
-                    <p:ajax event="rowUnselect" update="editButton anularButton"/>-->
+                    <!--                    <p:ajax event="rowSelect"   update="editButton anularButton"/>
+                                        <p:ajax event="rowUnselect" update="editButton anularButton"/>-->
 
                     <f:facet name="header">
                         <div id="titulo">
                             Lista de Pagos
                         </div>
                         <div id="acciones">
-<!--                            <p:commandButton id="editButton" value="Editar" disabled="{empty pagoController.selected}" 
-                                             actionListener="{pagoController.prepareEdit()}" 
-                                             update=":growl, :PagoCreateForm"
-                                             oncomplete="if (args &amp;&amp; !args.validationFailed) PF('PagoCreateDialog').show()"/>
-
-                            <p:commandButton id="anularButton" value="Anular" disabled="{empty pagoController.selected}">
-                                <p:confirm header="Confirmar" message="Esta seguro de anular este pago?" icon="ui-icon-alert" />
-                            </p:commandButton>     -->
+                            <!--                            <p:commandButton id="editButton" value="Editar" disabled="{empty pagoController.selected}" 
+                                                                         actionListener="{pagoController.prepareEdit()}" 
+                                                                         update=":growl, :PagoCreateForm"
+                                                                         oncomplete="if (args &amp;&amp; !args.validationFailed) PF('PagoCreateDialog').show()"/>
+                            
+                                                        <p:commandButton id="anularButton" value="Anular" disabled="{empty pagoController.selected}">
+                                                            <p:confirm header="Confirmar" message="Esta seguro de anular este pago?" icon="ui-icon-alert" />
+                                                        </p:commandButton>     -->
 
                         </div>
                     </f:facet>
 
-                    <p:column>
+                    <p:column style="text-align: center;">
                         <f:facet name="header">
                             <h:outputText value="Fecha"/>
                         </f:facet>
                         <h:outputText value="#{item.relacionFactura.fecha}">
-                            <f:convertDateTime pattern="dd-MMM-yyyy h:mm a"/>
+                            <f:convertDateTime pattern="dd-MMM-yyyy"/>
                         </h:outputText>
                     </p:column>
 
@@ -60,35 +60,41 @@
                         <h:outputText value="#{item.relacionFactura.observaciones}"/>
                     </p:column>
 
-                    <p:column>
+                    <p:column filterBy="#{item.relacionFactura.vendedor}" filterStyle="width: 80px" filterMatchMode="contains">
                         <f:facet name="header">
                             <h:outputText value="Vendedor"/>
                         </f:facet>
                         <h:outputText value="#{item.relacionFactura.vendedor}"/>
                     </p:column>
 
-                    <p:column>
+                    <p:column filterBy="#{item.factura.cliente}" filterStyle="width: 80px" filterMatchMode="contains">
                         <f:facet name="header">
                             <h:outputText value="Cliente"/>
                         </f:facet>
                         <h:outputText value="#{item.factura.cliente}"/>
                     </p:column>
 
-                    <p:column>
+                    <p:column filterBy="#{item.ordenPago}" filterStyle="width: 80px" filterMatchMode="contains">
                         <f:facet name="header">
                             <h:outputText value="Orden Pago"/>
                         </f:facet>
                         <h:outputText value="#{item.ordenPago}"/>
                     </p:column>
-                    <p:column>
+                    <p:column filterBy="#{item.factura.ordenPedido}" filterStyle="width: 80px" filterMatchMode="contains">
                         <f:facet name="header">
                             <h:outputText value="Factura"/>
                         </f:facet>
                         <h:outputText value="#{item.factura.ordenPedido}"/>
                     </p:column>
-                    <p:column>
+                    <p:column filterMatchMode="exact" filterBy="#{nuevaRelacionFacturaController.getFormaPago(item.formaPago)}">
                         <f:facet name="header">
                             <h:outputText value="Tipo"/>
+                        </f:facet>
+                        <f:facet name="filter">
+                            <p:selectOneMenu onchange="PF('tablaPagos').filter()" >
+                                <f:selectItem itemLabel="#{bundle.All}" itemValue="#{null}" noSelectionOption="true" />
+                                <f:selectItems var="tipo" value="#{nuevaRelacionFacturaController.tiposPago}" itemLabel="#{nuevaRelacionFacturaController.getFormaPago(tipo.valor)}" itemValue="#{nuevaRelacionFacturaController.getFormaPago(tipo.valor)}" />
+                            </p:selectOneMenu>
                         </f:facet>
                         <h:outputText value="#{nuevaRelacionFacturaController.getFormaPago(item.formaPago)}"/>
                     </p:column>
