@@ -19,7 +19,7 @@
                             </p:column>
                             <p:column>
                                 <p:inputText style="#{nuevaRelacionFacturaController.error}" id="id" value="#{nuevaRelacionFacturaController.pago.ordenPago}" title="Recibo de Caja" required="true" requiredMessage="Débe indicar el número del recibo de caja">
-                                    <p:ajax event="blur" listener="#{nuevaRelacionFacturaController.validateNumeroRecibo}" update=":growl, label_id, id"/>
+                                    <p:ajax event="blur" listener="#{nuevaRelacionFacturaController.validarNumeroRecibo()}" update=":growl, label_id, id"/>
                                 </p:inputText>
                             </p:column>
                             <p:column>
@@ -173,7 +173,7 @@
                                             <f:facet name="header">
                                                 <h:outputText value="Quitar"/>
                                             </f:facet>
-                                            <p:commandButton icon="ui-icon-closethick" actionListener="#{nuevaRelacionFacturaController.removePagoDetalle(item)}" update="datalist,:PagoCreateForm:publicidad,:PagoCreateForm:comision,:PagoCreateForm:valor_pago,:PagoCreateForm:pendiente" process="datalist"/>
+                                            <p:commandButton icon="ui-icon-closethick" update="datalist,:PagoCreateForm:publicidad,:PagoCreateForm:comision,:PagoCreateForm:valor_pago,:PagoCreateForm:pendiente" process="datalist" actionListener="#{nuevaRelacionFacturaController.removePagoDetalle(item)}"/>
                                         </p:column>
                                     </p:dataTable>
 

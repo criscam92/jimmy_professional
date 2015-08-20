@@ -24,22 +24,22 @@
                              paginatorPosition="bottom"
                              >
 
-                    <p:ajax event="rowSelect"   update="editButton anularButton"/>
-                    <p:ajax event="rowUnselect" update="editButton anularButton"/>
+<!--                    <p:ajax event="rowSelect"   update="editButton anularButton"/>
+                    <p:ajax event="rowUnselect" update="editButton anularButton"/>-->
 
                     <f:facet name="header">
                         <div id="titulo">
                             Lista de Pagos
                         </div>
                         <div id="acciones">
-                            <p:commandButton id="editButton" value="Editar" disabled="#{empty pagoController.selected}" 
-                                             actionListener="#{pagoController.prepareEdit()}" 
+<!--                            <p:commandButton id="editButton" value="Editar" disabled="{empty pagoController.selected}" 
+                                             actionListener="{pagoController.prepareEdit()}" 
                                              update=":growl, :PagoCreateForm"
                                              oncomplete="if (args &amp;&amp; !args.validationFailed) PF('PagoCreateDialog').show()"/>
 
-                            <p:commandButton id="anularButton" value="Anular" disabled="#{empty pagoController.selected}">
+                            <p:commandButton id="anularButton" value="Anular" disabled="{empty pagoController.selected}">
                                 <p:confirm header="Confirmar" message="Esta seguro de anular este pago?" icon="ui-icon-alert" />
-                            </p:commandButton>     
+                            </p:commandButton>     -->
 
                         </div>
                     </f:facet>
@@ -104,7 +104,7 @@
 
                 </p:dataTable>
             </h:form>
-            <ui:include src="EditarPago.xhtml" />
+            <!--<ui:include src="EditarPago.xhtml" />-->
         </ui:define>
     </ui:composition>
 

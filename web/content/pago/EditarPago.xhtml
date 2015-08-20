@@ -26,7 +26,7 @@
                                 <p:outputLabel value="Cliente" for="cliente"/>
                             </p:column>
                             <p:column>
-                                <p:autoComplete id="cliente" minQueryLength="3" panelStyle="width: 210px;" value="#{nuevaRelacionFacturaController.clienteTemporal}" requiredMessage="Debes indicar un cliente para el Recibo"
+                                <p:autoComplete id="cliente" minQueryLength="3" panelStyle="width: 210px;" value="#{nuevaRelacionFacturaController.clienteTMP}" requiredMessage="Debes indicar un cliente para el Recibo"
                                                 itemValue="#{cliente}" completeMethod="#{clienteController.llenarCliente}" effect="fade" converter="clienteconverter" emptyMessage="Ingrese un Cliente válido"
                                                 itemLabel="#{cliente.toString()}" var="cliente" required="true" converterMessage="Ingrese un Cliente válido" validatorMessage="Ingrese un Cliente válido">
                                     <p:ajax event="itemSelect" listener="#{nuevaRelacionFacturaController.onItemSelecCliente}" update=":growl,display" />
@@ -40,7 +40,7 @@
                                                  converter="facturaConverter" style="width: 155px;">
                                     <p:ajax update="buttonAgregar,total,pendiente,publicidad,comision,datalist,valor_pago" listener="#{nuevaRelacionFacturaController.changedFactura}"/>
                                     <f:selectItem itemLabel="Seleccione una factura" itemValue="#{null}" noSelectionOption="true" itemDisabled="true"/>
-                                    <f:selectItems value="#{nuevaRelacionFacturaController.facturasTemporales}" var="fac" itemLabel="#{fac.ordenPedido}" itemValue="#{fac}" />
+                                    <f:selectItems value="#{nuevaRelacionFacturaController.facturasTMP}" var="fac" itemLabel="#{fac.ordenPedido}" itemValue="#{fac}" />
                                 </p:selectOneMenu>
                             </p:column>
                         </p:row>

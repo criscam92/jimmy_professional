@@ -1,55 +1,27 @@
 package jp.controllers;
 
-import jp.entidades.Pago;
-import jp.util.JsfUtil;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
-import javax.faces.convert.Converter;
-import javax.faces.convert.FacesConverter;
-import javax.faces.event.AjaxBehaviorEvent;
+//==============================================================================
+import java.io.*;
+import java.util.*;
+import javax.ejb.*;
+import javax.faces.bean.*;
+import javax.faces.event.*;
 import javax.inject.Inject;
-import jp.entidades.Cliente;
-import jp.entidades.Empleado;
-import jp.entidades.Factura;
-import jp.entidades.PagoDetalle;
-import jp.entidades.PagoHelper;
-import jp.entidades.PagoPublicidad;
-import jp.entidades.RelacionFactura;
-import jp.entidades.Talonario;
-import jp.entidades.TipoPagoHelper;
-import jp.facades.FacturaFacade;
-import jp.facades.PagoDetalleFacade;
-import jp.facades.PagoFacade;
-import jp.facades.PagoPublicidadFacade;
-import jp.facades.ParametrosFacade;
-import jp.facades.RelacionFacturaFacade;
-import jp.facades.TalonarioFacade;
-import jp.facades.TransactionFacade;
+import jp.entidades.*;
+import jp.facades.*;
 import jp.seguridad.UsuarioActual;
-import jp.util.EstadoPago;
-import jp.util.TipoPago;
-import jp.util.TipoPagoAbono;
-import jp.util.TipoTalonario;
-import org.primefaces.context.RequestContext;
-import org.primefaces.event.SelectEvent;
+import jp.util.*;
+import org.primefaces.context.*;
+import org.primefaces.event.*;
 
+//==============================================================================
 @ManagedBean(name = "nuevaRelacionFacturaController")
 @ViewScoped
 public class NuevaRelacionFacturaController implements Serializable {
 
+    //==========================================================================
     @EJB
-    private RelacionFacturaFacade ejbFacade;
+    private RelacionFacturaFacade relacionFacturaFacade;
     @EJB
     private TalonarioFacade talonarioFacade;
     @EJB
@@ -57,51 +29,159 @@ public class NuevaRelacionFacturaController implements Serializable {
     @EJB
     private PagoFacade pagoFacade;
     @EJB
+    private ParametrosFacade parametrosFacade;
+    @EJB
     private PagoDetalleFacade pagoDetalleFacade;
     @EJB
     private PagoPublicidadFacade pagoPublicidadFacade;
-    @EJB
-    private ParametrosFacade parametrosFacade;
     @EJB
     private TransactionFacade transactionFacade;
     @Inject
     private UsuarioActual usuarioActual;
 
+    private PagoHelper pagoHelper;
+    private PagoHelper pagoHelperTMP;
+    private TipoPagoHelper tipoPagoHelper;
+    private Cliente clienteTMP;
+    private RelacionFactura relacionFactura;
+    private Pago pago;
+
     private List<PagoHelper> pagoHelpers;
     private List<TipoPagoHelper> tipoPagoHelpers;
     private List<TipoPagoHelper> tipoPagoHelpersTMP;
-    private List<TipoPagoHelper> pagosAnteriores;
-
     private List<Factura> facturasTMP;
     private List<Talonario> talonarios;
-    private List<Pago> pagos = null;
 
-    private Pago pago;
-    private PagoHelper pagoHelper;
-    private PagoHelper pagoHelperTMP;
-    private Cliente clienteTMP;
-    private TipoPagoHelper tipoPagoHelper;
-    private RelacionFactura selected;
-
+    private final String uiError = "ui-state-error";
+    private String error;
+    private boolean desabilitarButton;
     private double valorPublicidad;
     private double valorComision;
-
-    private boolean desabilitarButton;
     private boolean editar;
 
-    private final String uiError;
-    private String error;
-    private int count = 0;
-
+    //==========================================================================  
     public NuevaRelacionFacturaController() {
-        uiError = "ui-state-error";
-    }
-
-    @PostConstruct
-    public void init() {
-        selected = prepareCreate();
+        relacionFactura = new RelacionFactura();
+        relacionFactura.setFecha(Calendar.getInstance().getTime());
         valorComision = 0.0;
         valorPublicidad = 0.0;
+    }
+
+    //==========================================================================
+    public RelacionFacturaFacade getRelacionFacturaFacade() {
+        return relacionFacturaFacade;
+    }
+
+    public TalonarioFacade getTalonarioFacade() {
+        return talonarioFacade;
+    }
+
+    public FacturaFacade getFacturaFacade() {
+        return facturaFacade;
+    }
+
+    public PagoFacade getPagoFacade() {
+        return pagoFacade;
+    }
+
+    public ParametrosFacade getParametrosFacade() {
+        return parametrosFacade;
+    }
+
+    public PagoDetalleFacade getPagoDetalleFacade() {
+        return pagoDetalleFacade;
+    }
+
+    public PagoPublicidadFacade getPagoPublicidadFacade() {
+        return pagoPublicidadFacade;
+    }
+
+    public TransactionFacade getTransactionFacade() {
+        return transactionFacade;
+    }
+
+    public UsuarioActual getUsuarioActual() {
+        return usuarioActual;
+    }
+
+    public PagoHelper getPagoHelper() {
+        return pagoHelper == null ? new PagoHelper() : pagoHelper;
+    }
+
+    public void setPagoHelper(PagoHelper pagoHelper) {
+        this.pagoHelper = pagoHelper;
+    }
+
+    public PagoHelper getPagoHelperTMP() {
+        return pagoHelperTMP == null ? new PagoHelper() : pagoHelperTMP;
+    }
+
+    public void setPagoHelperTMP(PagoHelper pagoHelperTMP) {
+        this.pagoHelperTMP = pagoHelperTMP;
+    }
+
+    public TipoPagoHelper getTipoPagoHelper() {
+        return tipoPagoHelper == null ? new TipoPagoHelper() : tipoPagoHelper;
+    }
+
+    public void setTipoPagoHelper(TipoPagoHelper tipoPagoHelper) {
+        this.tipoPagoHelper = tipoPagoHelper;
+    }
+
+    public RelacionFactura getRelacionFactura() {
+        return relacionFactura == null ? new RelacionFactura() : relacionFactura;
+    }
+
+    public void setRelacionFactura(RelacionFactura relacionFactura) {
+        this.relacionFactura = relacionFactura;
+    }
+
+    public Pago getPago() {
+        return pago == null ? new Pago() : pago;
+    }
+
+    public void setPago(Pago pago) {
+        this.pago = pago;
+    }
+
+    public Cliente getClienteTMP() {
+        return clienteTMP;
+    }
+
+    public void setClienteTMP(Cliente clienteTMP) {
+        this.clienteTMP = clienteTMP;
+    }
+
+    public List<PagoHelper> getPagoHelpers() {
+        return pagoHelpers == null ? new ArrayList<PagoHelper>() : pagoHelpers;
+    }
+
+    public void setPagoHelpers(List<PagoHelper> pagoHelpers) {
+        this.pagoHelpers = pagoHelpers;
+    }
+
+    public List<TipoPagoHelper> getTipoPagoHelpers() {
+        return tipoPagoHelpers == null ? new ArrayList<TipoPagoHelper>() : tipoPagoHelpers;
+    }
+
+    public void setTipoPagoHelpers(List<TipoPagoHelper> tipoPagoHelpers) {
+        this.tipoPagoHelpers = tipoPagoHelpers;
+    }
+
+    public List<TipoPagoHelper> getTipoPagoHelpersTMP() {
+        return tipoPagoHelpersTMP == null ? new ArrayList<TipoPagoHelper>() : tipoPagoHelpersTMP;
+    }
+
+    public void setTipoPagoHelpersTMP(List<TipoPagoHelper> tipoPagoHelpersTMP) {
+        this.tipoPagoHelpersTMP = tipoPagoHelpersTMP;
+    }
+
+    public List<Factura> getFacturasTMP() {
+        return facturasTMP;
+    }
+
+    public void setFacturasTMP(List<Factura> facturasTMP) {
+        this.facturasTMP = facturasTMP;
     }
 
     public String getError() {
@@ -136,371 +216,8 @@ public class NuevaRelacionFacturaController implements Serializable {
         this.valorComision = valorComision;
     }
 
-    public Pago getPago() {
-        if (pago == null) {
-            return new Pago();
-        }
-        return pago;
-    }
-
-    public void setPago(Pago pago) {
-        this.pago = pago;
-    }
-
-    public PagoHelper getPagoHelper() {
-        if (pagoHelper == null) {
-            return new PagoHelper();
-        }
-        return pagoHelper;
-    }
-
-    public void setPagoHelper(PagoHelper pagoHelper) {
-        this.pagoHelper = pagoHelper;
-    }
-
-    public TipoPagoHelper getTipoPagoHelper() {
-        if (tipoPagoHelper == null) {
-            return new TipoPagoHelper();
-        }
-        return tipoPagoHelper;
-    }
-
-    public void setTipoPagoHelper(TipoPagoHelper tipoPagoHelper) {
-        this.tipoPagoHelper = tipoPagoHelper;
-    }
-
-    public List<PagoHelper> getPagoHelpers() {
-        if (pagoHelpers == null) {
-            pagoHelpers = new ArrayList<>();
-        }
-        return pagoHelpers;
-    }
-
-    public List<Pago> getPagos() {
-        if (pagos == null) {
-            pagos = getPagoFacade().findAll();
-        }
-        return pagos;
-    }
-
-    public void setPagos(List<Pago> pagos) {
-        this.pagos = pagos;
-    }
-
-    public List<TipoPagoHelper> getTipoPagoHelpersPublicidad() {
-        if (pagosAnteriores == null) {
-            return pagosAnteriores = new ArrayList<>();
-        }
-
-        List<TipoPagoHelper> listTMP = new ArrayList<>();
-        for (TipoPagoHelper tph : pagosAnteriores) {
-            if (tph.getTipo() == TipoPagoAbono.PUBLICIDAD.getValor()) {
-                listTMP.add(tph);
-            }
-        }
-        return listTMP;
-    }
-
-    public List<TipoPagoHelper> getTipoPagoHelpersComision() {
-        if (pagosAnteriores == null) {
-            pagosAnteriores = new ArrayList<>();
-        }
-        List<TipoPagoHelper> listTMP = new ArrayList<>();
-        for (TipoPagoHelper tph : pagosAnteriores) {
-            if (tph.getTipo() == TipoPagoAbono.COMISION.getValor()) {
-                listTMP.add(tph);
-            }
-        }
-        return listTMP;
-    }
-
-    public List<TipoPagoHelper> getTipoPagoHelpers() {
-        if (tipoPagoHelpers == null) {
-            tipoPagoHelpers = new ArrayList<>();
-        }
-        return tipoPagoHelpers;
-    }
-
-    public RelacionFactura getSelected() {
-        return selected;
-    }
-
-    public void setSelected(RelacionFactura selected) {
-        this.selected = selected;
-    }
-
-    public Cliente getClienteTMP() {
-        return clienteTMP;
-    }
-
-    public void setClienteTMP(Cliente clienteTMP) {
-        this.clienteTMP = clienteTMP;
-    }
-
-    public List<Factura> getFacturasTMP() {
-        if (facturasTMP == null) {
-            facturasTMP = new ArrayList<>();
-        }
-        return facturasTMP;
-    }
-
-    public void setFacturasTMP(List<Factura> facturasTMP) {
-        this.facturasTMP = facturasTMP;
-    }
-
-    public void onItemSelecCliente(SelectEvent event) {
-        if (event.getObject() != null) {
-            Cliente c = (Cliente) event.getObject();
-            facturasTMP = getFacturaFacade().getFacturasPendientesByCliente(c);
-            clean();
-            desabilitarButton = true;
-        }
-    }
-
-    public TransactionFacade getTransactionFacade() {
-        return transactionFacade;
-    }
-
-    public PagoPublicidadFacade getPagoPublicidadFacade() {
-        return pagoPublicidadFacade;
-    }
-
-    public PagoDetalleFacade getPagoDetalleFacade() {
-        return pagoDetalleFacade;
-    }
-
-    public PagoFacade getPagoFacade() {
-        return pagoFacade;
-    }
-
-    private RelacionFacturaFacade getFacade() {
-        return ejbFacade;
-    }
-
-    public ParametrosFacade getParametrosFacade() {
-        return parametrosFacade;
-    }
-
-    public TalonarioFacade getTalonarioFacade() {
-        return talonarioFacade;
-    }
-
-    public FacturaFacade getFacturaFacade() {
-        return facturaFacade;
-    }
-
-    public RelacionFactura prepareCreate() {
-        selected = new RelacionFactura();
-        selected.setFecha(Calendar.getInstance().getTime());
-        return selected;
-    }
-
-    public Pago prepareCreatePago() {
-        editar = false;
-        pago = new Pago();
-        clienteTMP = null;
-        pagoHelper = null;
-        pagoHelperTMP = new PagoHelper();
-        limpiar();
-        desabilitarButton = true;
-        return pago;
-    }
-
-    public void prepareEditPago() {
-        editar = true;
-        guardarObjetTMP();
-        clienteTMP = pagoHelper.getPago().getFactura().getCliente();
-        pago = pagoHelper.getPago();
-        tipoPagoHelpers = new ArrayList<>();
-        tipoPagoHelpers.addAll(pagoHelper.getTipoPagoHelpers());
-        tipoPagoHelpersTMP = new ArrayList<>();
-        tipoPagoHelpersTMP.addAll(tipoPagoHelpers);
-        updatePublicidadAndComicion();
-        updateValorPendienteOnly();
-    }
-
-    private void guardarObjetTMP() {
-        pagoHelperTMP = new PagoHelper();
-        pagoHelperTMP.setId(pagoHelper.getId());
-        pagoHelperTMP.setPago(pagoHelper.getPago());
-        pagoHelperTMP.setTipoPagoHelpers(pagoHelper.getTipoPagoHelpers());
-    }
-
-    public void cancelar() {
-        if (editar) {
-            for (PagoHelper ph : pagoHelpers) {
-                if (ph.getId() == pagoHelperTMP.getId()) {
-                    ph.setPago(pagoHelperTMP.getPago());
-                    ph.setTipoPagoHelpers(pagoHelperTMP.getTipoPagoHelpers());
-                    break;
-                }
-            }
-        }
-        RequestContext.getCurrentInstance().execute("PF('PagoCreateDialog').hide()");
-    }
-
-    public void editar() {
-    }
-
-    public void create(boolean crearNuevo) {
-        if (validarCrear(true)) {
-            pago.setFecha(selected.getFecha());
-            pago.setEstado(EstadoPago.REALIZADO.getValor());
-            pago.setUsuario(usuarioActual.getUsuario());
-            getValorPago();
-            boolean isValid = true;
-            try {
-                if (pagoHelper != null) {
-                    for (PagoHelper ph : pagoHelpers) {
-                        if (ph.getId() == pagoHelper.getId()) {
-                            int io = pagoHelpers.indexOf(pagoHelper);
-                            pagoHelpers.get(io).setPago(pago);
-                            pagoHelpers.get(io).setTipoPagoHelpers(tipoPagoHelpers);
-                            break;
-                        }
-                    }
-                } else {
-                    PagoHelper ph = new PagoHelper();
-                    ph.setId(pagoHelpers.size() + 1);
-                    ph.setPago(pago);
-                    ph.setTipoPagoHelpers(tipoPagoHelpers);
-                    pagoHelpers.add(ph);
-                }
-            } catch (Exception e) {
-                isValid = false;
-            }
-
-            if (isValid) {
-                JsfUtil.addSuccessMessage("El recibo fue " + (pagoHelper == null ? "agregado" : "modificado") + " correctamente");
-                if (!crearNuevo) {
-                    RequestContext.getCurrentInstance().execute("PF('PagoCreateDialog').hide()");
-                } else {
-                    prepareCreatePago();
-                }
-            } else {
-                JsfUtil.addErrorMessage("Ocurrio un error agregando el recibo");
-            }
-            updatePublicidadAndComicion();
-        } else {
-            updateValorPendienteOnly();
-        }
-    }
-
-    private boolean validarCrear(boolean validarPagos) {
-        boolean isVaild = true;
-
-        if (getPagoFacade().existePago(pago.getOrdenPago())) {
-            isVaild = false;
-            setError(uiError);
-            JsfUtil.addErrorMessage("El numero de recibo " + pago.getOrdenPago() + " ya esta en uso");
-        } else {
-            for (PagoHelper ph : pagoHelpers) {
-                if (ph.getPago().getOrdenPago().equals(pago.getOrdenPago())) {
-                    if ((pagoHelper != null) && (ph.getPago().getOrdenPago().equals(pagoHelper.getPago().getOrdenPago()))) {
-                    } else {
-                        isVaild = false;
-                        setError(uiError);
-                        JsfUtil.addErrorMessage("El numero de recibo " + pago.getOrdenPago() + " ya esta en uso");
-                        break;
-                    }
-                }
-            }
-        }
-
-        if (isVaild) {
-            Long reciboActual;
-            try {
-                reciboActual = Long.valueOf(pago.getOrdenPago());
-            } catch (Exception e) {
-                reciboActual = null;
-            }
-
-            if (reciboActual != null) {
-                boolean numeroPermitido = false;
-                boolean entrar = true;
-                for (Talonario t : talonarios) {
-                    if ((reciboActual >= t.getInicial()) && (reciboActual <= t.getFinal1())) {
-                        setError("");
-                        if (validarPagos) {
-                            isVaild = validarPagos();
-                            if (isVaild) {
-                                numeroPermitido = true;
-                            }
-                        } else {
-                            numeroPermitido = true;
-                        }
-                        entrar = false;
-                        break;
-                    }
-                }
-
-                if (!numeroPermitido || entrar) {
-                    isVaild = false;
-                    setError(uiError);
-                    JsfUtil.addErrorMessage("el numero de recibo " + pago.getOrdenPago() + " no esta permitido");
-                }
-            } else {
-                isVaild = false;
-                setError(uiError);
-                JsfUtil.addErrorMessage("Debe poner un numero de recibo valido");
-            }
-        }
-
-        return isVaild;
-    }
-
-    private boolean validarPagos() {
-        boolean isValid = true;
-        if (tipoPagoHelpers.size() <= 0) {
-            isValid = false;
-            JsfUtil.addErrorMessage("Debe agregar al menos un pago");
-        }
-        return isValid;
-    }
-
-    @FacesConverter(forClass = RelacionFactura.class)
-    public static class RelacionFacturaControllerConverter implements Converter {
-
-        @Override
-        public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
-            if (value == null || value.length() == 0) {
-                return null;
-            }
-            NuevaRelacionFacturaController controller = (NuevaRelacionFacturaController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "nuevaRelacionPagoController");
-            return controller.getFacade().find(getKey(value));
-        }
-
-        Long getKey(String value) {
-            Long key;
-            key = Long.valueOf(value);
-            return key;
-        }
-
-        String getStringKey(Long value) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(value);
-            return sb.toString();
-        }
-
-        @Override
-        public String getAsString(FacesContext facesContext, UIComponent component, Object object) {
-            if (object == null) {
-                return null;
-            }
-            if (object instanceof RelacionFactura) {
-                RelacionFactura o = (RelacionFactura) object;
-                return getStringKey(o.getId());
-            } else {
-                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "object {0} is of type {1}; expected type: {2}", new Object[]{object, object.getClass().getName(), RelacionFactura.class.getName()});
-                return null;
-            }
-        }
-
-    }
-
+    //==========================================================================    
     public void changedEmpleado(SelectEvent e) {
-        System.out.println("Se seleccionó el empleado...");
         if (e != null && e.getObject() != null) {
             talonarios = getTalonarioFacade().getTalonariosByTipo(TipoTalonario.RECIBO_CAJA, (Empleado) e.getObject());
             if (talonarios == null || talonarios.isEmpty()) {
@@ -509,53 +226,28 @@ public class NuevaRelacionFacturaController implements Serializable {
                 return;
             }
         }
-        selected.setVendedor(null);
+        getRelacionFactura().setVendedor(null);
     }
 
-    public void changedFactura(final AjaxBehaviorEvent event) {
-        limpiar();
-        if (pago.getFactura() != null) {
-            Factura factura = facturaFacade.updatePagoPendiente(pago.getFactura());
-            pago.setFactura(factura);
-            updatePublicidadAndComicion();
-            tipoPagoHelpers = null;
-            desabilitarButton = false;
-        } else {
-            pago.setFactura(new Factura());
-        }
-    }
-
-    private void limpiar() {
-        tipoPagoHelper = new TipoPagoHelper();
-        tipoPagoHelpers = new ArrayList<>();
-        tipoPagoHelpersTMP = new ArrayList<>();
-        pagosAnteriores = new ArrayList<>();
-        valorPublicidad = 0.0;
-        valorComision = 0.0;
-    }
-
-    public void changedFormaPago(final AjaxBehaviorEvent event) {
-        if (pago.getFactura() != null) {
-            limpiar();
-            updatePublicidadAndComicion();
-        }
-    }
-
+    //==========================================================================    
     public TipoPago[] getTiposPago() {
         return new TipoPago[]{TipoPago.CONTADO, TipoPago.CHEQUE, TipoPago.CONSIGNACION};
     }
 
+    //==========================================================================    
     public TipoPagoAbono[] getTiposPagoAbono() {
-        if (pago != null && pago.getFormaPago() != TipoPago.CONTADO.getValor()) {
+        if (pago != null && getPago().getFormaPago() != TipoPago.CONTADO.getValor()) {
             return new TipoPagoAbono[]{TipoPagoAbono.ABONO};
         }
         return TipoPagoAbono.values();
     }
 
+    //==========================================================================    
     public String getTiposPagoAbono(int tipo) {
         return TipoPagoAbono.getFromValue(tipo).getDetalle();
     }
 
+    //==========================================================================    
     public String getFormaPago(int tipo) {
         String tipoPago = TipoPago.getFromValue(tipo).getDetalle();
         if (tipoPago.equals(TipoPago.CONTADO.getDetalle())) {
@@ -564,256 +256,286 @@ public class NuevaRelacionFacturaController implements Serializable {
         return tipoPago;
     }
 
+    //==========================================================================    
     public boolean requiereCheque() {
-        if (pago != null) {
-            return pago.getFormaPago() == TipoPago.CHEQUE.getValor();
-        }
-        return false;
+        return pago != null ? (getPago().getFormaPago() == TipoPago.CHEQUE.getValor()) : false;
     }
 
+    //==========================================================================    
     public String mostrarCheque() {
         return requiereCheque() ? "" : "display:none;";
     }
 
+    //==========================================================================    
     public boolean requiereCuenta() {
         if (pago != null) {
-            return pago.getFormaPago() == TipoPago.CONSIGNACION.getValor();
+            return getPago().getFormaPago() == TipoPago.CONSIGNACION.getValor();
         }
         return false;
     }
 
+    //==========================================================================    
     public boolean requiereTipoPublicidad() {
-        return pago != null && pago.getFormaPago() == TipoPago.CONTADO.getValor()
+        return pago != null && getPago().getFormaPago() == TipoPago.CONTADO.getValor()
                 && tipoPagoHelper != null
-                && tipoPagoHelper.getTipo() == TipoPagoAbono.PUBLICIDAD.getValor();
+                && getTipoPagoHelper().getTipo() == TipoPagoAbono.PUBLICIDAD.getValor();
     }
 
+    //==========================================================================    
     public String mostrarTipoPublicidad() {
         return requiereTipoPublicidad() ? "" : "display:none";
     }
 
+    //==========================================================================    
     public String mostrarCuenta() {
         return requiereCuenta() ? "" : "display:none";
     }
 
+    //==========================================================================    
     public String mostrarContado() {
-        if (pago != null) {
-            return pago.getFormaPago() == TipoPago.CONTADO.getValor() ? "" : "display:none;";
+        return pago != null ? (getPago().getFormaPago() == TipoPago.CONTADO.getValor() ? "" : "display:none;") : "";
+    }
+
+    //==========================================================================    
+    public void onItemSelecCliente(SelectEvent event) {
+        if (event.getObject() != null) {
+            Cliente c = (Cliente) event.getObject();
+            setFacturasTMP(getFacturaFacade().getFacturasPendientesByCliente(c));
+
+            String ordenPago = getPago().getOrdenPago();
+            setPago(new Pago());
+            getPago().setOrdenPago(ordenPago);
+
+            setTipoPagoHelper(new TipoPagoHelper());
+            setTipoPagoHelpers(new ArrayList<TipoPagoHelper>());
+            setTipoPagoHelpersTMP(new ArrayList<TipoPagoHelper>());
+            setValorPublicidad(0.0);
+            setValorComision(0.0);
+
+            setDesabilitarButton(true);
         }
-        return "";
     }
 
-    public void addPagoDetalle() {
-        if (validatePagoDetalle()) {
-            boolean existe = false;
-            for (TipoPagoHelper tph : tipoPagoHelpers) {
-                boolean repetido = false;
-
-                if (tph.getTipo() == tipoPagoHelper.getTipo()) {
-                    if (tph.getTipo() == TipoPagoAbono.PUBLICIDAD.getValor()) {
-                        if (Objects.equals(tph.getTipoPublicidad().getId(), tipoPagoHelper.getTipoPublicidad().getId())) {
-                            repetido = true;
-                        }
-                    } else {
-                        repetido = true;
-                    }
-                }
-
-                if (repetido) {
-                    existe = true;
-                    int io = tipoPagoHelpers.indexOf(tph);
-                    tipoPagoHelpers.get(io).setValor(tipoPagoHelpers.get(io).getValor() + tipoPagoHelper.getValor());
-                    break;
-                }
-            }
-
-            if (!existe) {
-                TipoPagoHelper tph = new TipoPagoHelper();
-                tph.setId(tipoPagoHelpers.size() + 1 + (count++));
-                tph.setTipo(tipoPagoHelper.getTipo());
-                tph.setValor(tipoPagoHelper.getValor());
-                tph.setTipoPublicidad(tipoPagoHelper.getTipoPublicidad());
-                tipoPagoHelpers.add(tph);
-            }
-
-            tipoPagoHelpersTMP.clear();
-            tipoPagoHelpersTMP.addAll(tipoPagoHelpers);
-            tipoPagoHelper = new TipoPagoHelper();
-            updatePublicidadAndComicion();
-        }
-
-    }
-
-    public void removePagoDetalle(TipoPagoHelper tph) {
-        tipoPagoHelpers.remove(tph);
-        tipoPagoHelpersTMP.clear();
-        tipoPagoHelpersTMP.addAll(tipoPagoHelpers);
-        updatePublicidadAndComicion();
-    }
-
-    public void removeRecibo() {
-        int io = pagoHelpers.indexOf(pagoHelper);
-        pagoHelpers.remove(io);
-    }
-
-    private boolean validatePagoDetalle() {
-        boolean isValid = true;
-        if ((tipoPagoHelper.getValor() <= 0.0) || ((tipoPagoHelper.getTipo() == TipoPagoAbono.PUBLICIDAD.getValor()) && (tipoPagoHelper.getTipoPublicidad() == null))) {
-            if (tipoPagoHelper.getValor() <= 0.0) {
-                JsfUtil.addErrorMessage("El campo valor debe ser mayor a 0");
-                isValid = false;
-            }
-            if (tipoPagoHelper.getTipo() == TipoPagoAbono.PUBLICIDAD.getValor()) {
-                if (tipoPagoHelper.getTipoPublicidad() == null) {
-                    JsfUtil.addErrorMessage("Debe seleccionar un tipo de publicidad");
-                    isValid = false;
-                }
-            }
+    //==========================================================================    
+    public void changedFactura(final AjaxBehaviorEvent event) {
+        if (getPago().getFactura() != null) {
+            Factura factura = getFacturaFacade().updatePagoPendiente(getPago().getFactura());
+            getPago().setFactura(factura);
+            setTipoPagoHelpers(new ArrayList<TipoPagoHelper>());
+            setTipoPagoHelpersTMP(new ArrayList<TipoPagoHelper>());
+            addPagosAnteriores();
+            updatesValores();
+            setDesabilitarButton(false);
         } else {
+            getPago().setFactura(new Factura());
+        }
+    }
 
-            if (tipoPagoHelper.getValor() > pago.getFactura().getSaldo()) {
-                JsfUtil.addErrorMessage("El valor supera el valor pendiente de la factura");
-                isValid = false;
+    //==========================================================================    
+    public void cancelar() {
+        RequestContext.getCurrentInstance().execute("PF('PagoCreateDialog').hide()");
+    }
+
+    //==========================================================================    
+    public List<TipoPagoHelper> getTipoPagoHelpersPublicidad() {
+        if (tipoPagoHelpersTMP == null) {
+            return tipoPagoHelpersTMP = new ArrayList<>();
+        }
+
+        List<TipoPagoHelper> listTMP = new ArrayList<>();
+        for (TipoPagoHelper tph : tipoPagoHelpersTMP) {
+            if (tph.getTipo() == TipoPagoAbono.PUBLICIDAD.getValor()) {
+                listTMP.add(tph);
             }
+        }
+        return listTMP;
+    }
 
-            if (pago.getFormaPago() == TipoPago.CONTADO.getValor()) {
-                if (tipoPagoHelper.getTipo() == TipoPagoAbono.PUBLICIDAD.getValor()) {
-                    if (tipoPagoHelper.getValor() > valorPublicidad) {
-                        JsfUtil.addErrorMessage("El valor supera el valor permitido por publicidad");
+    //==========================================================================    
+    public List<TipoPagoHelper> getTipoPagoHelpersComision() {
+        if (tipoPagoHelpersTMP == null) {
+            tipoPagoHelpersTMP = new ArrayList<>();
+        }
+        List<TipoPagoHelper> listTMP = new ArrayList<>();
+        for (TipoPagoHelper tph : tipoPagoHelpersTMP) {
+            if (tph.getTipo() == TipoPagoAbono.COMISION.getValor()) {
+                listTMP.add(tph);
+            }
+        }
+        return listTMP;
+    }
+
+    //==========================================================================  
+    public boolean validarNumeroRecibo() {
+        boolean isValid = true;
+        if (getPagoFacade().existePago(getPago().getOrdenPago())) {
+            isValid = false;
+            setError(uiError);
+            JsfUtil.addErrorMessage("El numero de recibo " + getPago().getOrdenPago() + " ya esta en uso");
+        } else {
+            for (PagoHelper ph : getPagoHelpers()) {
+                if (ph.getPago().getOrdenPago().equals(getPago().getOrdenPago())) {
+                    if ((pagoHelper != null) && (ph.getPago().getOrdenPago().equals(getPagoHelper().getPago().getOrdenPago()))) {
+                    } else {
                         isValid = false;
-                    }
-                } else if (tipoPagoHelper.getTipo() == TipoPagoAbono.COMISION.getValor()) {
-                    if (tipoPagoHelper.getValor() > valorComision) {
-                        JsfUtil.addErrorMessage("El valor supera el valor permitido por comision");
-                        isValid = false;
+                        setError(uiError);
+                        JsfUtil.addErrorMessage("El numero de recibo " + getPago().getOrdenPago() + " ya esta en uso");
+                        break;
                     }
                 }
+            }
+        }
+
+        if (isValid) {
+            Long reciboActual;
+            try {
+                reciboActual = Long.valueOf(getPago().getOrdenPago());
+            } catch (Exception e) {
+                reciboActual = null;
+            }
+
+            if (reciboActual != null) {
+                boolean numValido = false;
+                for (Talonario t : talonarios) {
+                    if ((reciboActual >= t.getInicial()) && (reciboActual <= t.getFinal1())) {
+                        setError("");
+                        numValido = true;
+                        break;
+                    }
+                }
+                if (!numValido) {
+                    isValid = false;
+                    setError(uiError);
+                    JsfUtil.addErrorMessage("el numero de recibo " + pago.getOrdenPago() + " no esta permitido");
+                }
+            } else {
+                isValid = false;
+                setError(uiError);
+                JsfUtil.addErrorMessage("Debe poner un numero de recibo valido");
             }
         }
         return isValid;
     }
 
-    private void updatePublicidadAndComicion() {
-        if (pago.getFactura() != null) {
+    //==========================================================================  
+    public void prepareCreatePago() {
+        editar = false;
+        setPago(new Pago());
+        setClienteTMP(null);
+        setPagoHelper(null);
+        setTipoPagoHelper(new TipoPagoHelper());
+        setPagoHelperTMP(new PagoHelper());
+        setTipoPagoHelpers(new ArrayList<TipoPagoHelper>());
+        setTipoPagoHelpersTMP(new ArrayList<TipoPagoHelper>());
+        setValorComision(0.0);
+        setValorPublicidad(0.0);
+        setFacturasTMP(new ArrayList<Factura>());
+        setDesabilitarButton(true);
+    }
+
+    //==========================================================================  
+    public void changedFormaPago(final AjaxBehaviorEvent event) {
+        if (getPago().getFactura() != null) {
+            setTipoPagoHelpers(new ArrayList<TipoPagoHelper>());
+            setTipoPagoHelpersTMP(new ArrayList<TipoPagoHelper>());
+            addPagosAnteriores();
+            updatesValores();
+        }
+    }
+
+    //==========================================================================
+    private void updatesValores() {
+        if (getPago().getFactura() != null) {
+            System.out.println("Entre");
             float porcentajePublicidad;
             try {
                 porcentajePublicidad = getParametrosFacade().getParametros().getPorcentajePublicidad();
             } catch (Exception e) {
                 porcentajePublicidad = 0F;
             }
-            double valorP = Math.round(pago.getFactura().getTotalPagar() * (porcentajePublicidad / 100));
+            double valorP = Math.round(getPago().getFactura().getTotalPagar() * (porcentajePublicidad / 100));
 
             double porcentajeComision;
             try {
-                porcentajeComision = selected.getVendedor().getTipoEmpleado().getComision();
+                porcentajeComision = getRelacionFactura().getVendedor().getTipoEmpleado().getComision();
             } catch (Exception e) {
                 porcentajeComision = 0.0;
             }
-            double valorC = Math.round(pago.getFactura().getTotalPagar() * (porcentajeComision / 100));
+            double valorC = Math.round(getPago().getFactura().getTotalPagar() * (porcentajeComision / 100));
 
-            double vPlucidad = 0.0, vComision = 0.0, aPublicidad = 0.0, aComision = 0.0;
+            double vPlucidad = 0.0, vComision = 0.0, valorTotal = 0.0;
 
-            for (PagoHelper ph : pagoHelpers) {
-                if (Objects.equals(ph.getPago().getFactura().getId(), pago.getFactura().getId())) {
-                    if ((pagoHelper != null) && (ph.getId() == pagoHelper.getId())) {
+            for (PagoHelper ph : getPagoHelpers()) {
+                if (Objects.equals(ph.getPago().getFactura().getId(), getPago().getFactura().getId())) {
+                    if ((pagoHelper != null) && (ph.getId() == getPagoHelper().getId())) {
                     } else {
-                        tipoPagoHelpersTMP.addAll(ph.getTipoPagoHelpers());
+                        for (TipoPagoHelper tph : ph.getTipoPagoHelpers()) {
+
+                            boolean repetido = false;
+                            for (TipoPagoHelper tph1 : getTipoPagoHelpersTMP()) {
+                                if (tph.getTipo() == tph1.getTipo()) {
+                                    if (tph.getTipo() == TipoPagoAbono.PUBLICIDAD.getValor()) {
+                                        if (Objects.equals(tph.getTipoPublicidad().getId(), tph1.getTipoPublicidad().getId())) {
+                                            tph1.setValor(tph1.getValor() + tph.getValor());
+                                            repetido = true;
+                                        }
+                                    } else {
+                                        tph1.setValor(tph1.getValor() + tph.getValor());
+                                        repetido = true;
+                                    }
+                                }
+                            }
+
+                            if (!repetido) {
+                                TipoPagoHelper tphTMP = new TipoPagoHelper();
+                                tphTMP.setId(tph.getId());
+                                tphTMP.setTipo(tph.getTipo());
+                                tphTMP.setTipoPublicidad(tph.getTipoPublicidad());
+                                tphTMP.setValor(tph.getValor());
+                                getTipoPagoHelpersTMP().add(tphTMP);
+                            }
+
+                        }
                     }
                 }
             }
 
-            for (TipoPagoHelper tph : tipoPagoHelpersTMP) {
+            for (TipoPagoHelper tph : getTipoPagoHelpersTMP()) {
                 if (tph.getTipo() == TipoPagoAbono.PUBLICIDAD.getValor()) {
                     vPlucidad += tph.getValor();
                 } else if (tph.getTipo() == TipoPagoAbono.COMISION.getValor()) {
                     vComision += tph.getValor();
                 }
+                valorTotal += tph.getValor();
             }
 
-            List<Pago> listPagos = getPagoFacade().getPagosByFactura(pago.getFactura());
-            getPagosAnteriores(listPagos);
-            for (TipoPagoHelper tph : pagosAnteriores) {
-                if (tph.getTipo() == TipoPagoAbono.PUBLICIDAD.getValor()) {
-                    aPublicidad += tph.getValor();
-                } else if (tph.getTipo() == TipoPagoAbono.COMISION.getValor()) {
-                    aComision += tph.getValor();
-                }
-            }
-
-            double valor = 0.0;
-            if (listPagos != null && !listPagos.isEmpty()) {
-                for (Pago pago : listPagos) {
-                    valor += pago.getValorTotal();
-                }
-            }
-
-            updateValorTotal(valor);
-            setValorPublicidad(valorP - vPlucidad - aPublicidad);
-            setValorComision(valorC - vComision - aComision);
-            updateValorPendiente(valor);
+            getPago().getFactura().setSaldo(getPago().getFactura().getTotalPagar() - valorTotal);
+            getPago().setValorTotal(valorTotal);
+            setValorPublicidad(valorP - vPlucidad);
+            setValorComision(valorC - vComision);
         }
     }
 
-    private void clean() {
-        String ordenPago = pago.getOrdenPago();
-        pago = new Pago();
-        pago.setOrdenPago(ordenPago);
-        limpiar();
-    }
-
-    private void updateValorPendiente(double valor) {
-        if (pago.getFactura() != null) {
-            for (TipoPagoHelper tph : tipoPagoHelpersTMP) {
-                valor += tph.getValor();
-            }
-
-            pago.getFactura().setSaldo(pago.getFactura().getTotalPagar() - valor);
-        }
-    }
-
-    private void updateValorTotal(double valor) {
-//        for (TipoPagoHelper tph : tipoPagoHelpers) {
-//            valor += tph.getValor();
-//        }
-
-        for (TipoPagoHelper tph : tipoPagoHelpersTMP) {
-            valor += tph.getValor();
-        }
-        pago.setValorTotal(valor);
-    }
-
-    private void getPagosAnteriores(List<Pago> listPagos) {
-        pagosAnteriores = new ArrayList<>();
-        for (Pago pago : listPagos) {
-            List<PagoDetalle> listPagoDetalle = getPagoDetalleFacade().getPagoDetallesByPago(pago);
+    //==========================================================================  
+    private void addPagosAnteriores() {
+        int count = 1;
+        List<Pago> listPagos = getPagoFacade().getPagosByFactura(getPago().getFactura());
+        for (Pago p : listPagos) {
+            List<PagoDetalle> listPagoDetalle = getPagoDetalleFacade().getPagoDetallesByPago(p);
             for (PagoDetalle pd : listPagoDetalle) {
                 PagoPublicidad pp = null;
                 if (pd.getTipo() == TipoPagoAbono.PUBLICIDAD.getValor()) {
                     pp = getPagoPublicidadFacade().getPagoPublicidadByPagoDetalle(pd);
                 }
-                validarPago(pd, pp);
+                validarPago(pd, pp, count);
             }
-        }
-
-        for (TipoPagoHelper tph : tipoPagoHelpersTMP) {
-            PagoDetalle pd = new PagoDetalle();
-            pd.setTipo(tph.getTipo());
-            pd.setValor(tph.getValor());
-
-            if (pd.getTipo() == TipoPagoAbono.PUBLICIDAD.getValor()) {
-                PagoPublicidad pp = new PagoPublicidad();
-                pp.setTipo(tph.getTipoPublicidad());
-                validarPago(pd, pp);
-            } else {
-                validarPago(pd, null);
-            }
-
         }
     }
 
-    private void validarPago(PagoDetalle pagoDetalle, PagoPublicidad pagoPublicidad) {
+    //==========================================================================  
+    private void validarPago(PagoDetalle pagoDetalle, PagoPublicidad pagoPublicidad, int count) {
         boolean repetido = false;
-        for (TipoPagoHelper tph : pagosAnteriores) {
+        for (TipoPagoHelper tph : getTipoPagoHelpersTMP()) {
             if ((tph.getTipo() == TipoPagoAbono.PUBLICIDAD.getValor()) && pagoPublicidad != null) {
                 if (tph.getTipoPublicidad().getId().equals(pagoPublicidad.getTipo().getId())) {
                     tph.setValor(tph.getValor() + pagoDetalle.getValor());
@@ -828,14 +550,13 @@ public class NuevaRelacionFacturaController implements Serializable {
         }
 
         if (!repetido) {
-            pagosAnteriores.add(new TipoPagoHelper(count++, pagoDetalle.getTipo(), pagoDetalle.getValor(), (pagoPublicidad == null ? null : pagoPublicidad.getTipo())));
+            getTipoPagoHelpersTMP().add(new TipoPagoHelper(count++, pagoDetalle.getTipo(), pagoDetalle.getValor(), (pagoPublicidad == null ? null : pagoPublicidad.getTipo())));
         }
     }
 
+    //==========================================================================  
     public void prepareList(boolean isPublicidad) {
-        if (pago.getFactura() != null) {
-            List<Pago> listPagos = getPagoFacade().getPagosByFactura(pago.getFactura());
-            getPagosAnteriores(listPagos);
+        if (getPago().getFactura() != null) {
             if (isPublicidad) {
                 RequestContext.getCurrentInstance().execute("PF('PublicidadDialog').show()");
             } else {
@@ -846,10 +567,223 @@ public class NuevaRelacionFacturaController implements Serializable {
         }
     }
 
+    //==========================================================================   
+    public void addPagoDetalle() {
+        if (validarPagoDetalle()) {
+            boolean existe = false;
+            for (TipoPagoHelper tph : getTipoPagoHelpers()) {
+                boolean repetido = false;
+
+                if (tph.getTipo() == getTipoPagoHelper().getTipo()) {
+                    if (tph.getTipo() == TipoPagoAbono.PUBLICIDAD.getValor()) {
+                        if (Objects.equals(tph.getTipoPublicidad().getId(), getTipoPagoHelper().getTipoPublicidad().getId())) {
+                            repetido = true;
+                        }
+                    } else {
+                        repetido = true;
+                    }
+                }
+
+                if (repetido) {
+                    existe = true;
+                    int io = getTipoPagoHelpers().indexOf(tph);
+                    getTipoPagoHelpers().get(io).setValor(getTipoPagoHelpers().get(io).getValor() + getTipoPagoHelper().getValor());
+                    break;
+                }
+            }
+
+            if (!existe) {
+                TipoPagoHelper tph = new TipoPagoHelper();
+                tph.setId(getTipoPagoHelpers().size() + 1);
+                tph.setTipo(getTipoPagoHelper().getTipo());
+                tph.setValor(getTipoPagoHelper().getValor());
+                tph.setTipoPublicidad(getTipoPagoHelper().getTipoPublicidad());
+                getTipoPagoHelpers().add(tph);
+            }
+
+            setTipoPagoHelpersTMP(new ArrayList<TipoPagoHelper>());
+            updateListTMP(getTipoPagoHelpers());
+            setTipoPagoHelper(new TipoPagoHelper());
+            addPagosAnteriores();
+            updatesValores();
+        }
+
+    }
+
+    //==========================================================================   
+    private boolean validarPagoDetalle() {
+        boolean isValid = true;
+        if ((getTipoPagoHelper().getValor() <= 0.0) || ((getTipoPagoHelper().getTipo() == TipoPagoAbono.PUBLICIDAD.getValor()) && (getTipoPagoHelper().getTipoPublicidad() == null))) {
+            if (getTipoPagoHelper().getValor() <= 0.0) {
+                JsfUtil.addErrorMessage("El campo valor debe ser mayor a 0");
+                isValid = false;
+            }
+            if (getTipoPagoHelper().getTipo() == TipoPagoAbono.PUBLICIDAD.getValor()) {
+                if (getTipoPagoHelper().getTipoPublicidad() == null) {
+                    JsfUtil.addErrorMessage("Debe seleccionar un tipo de publicidad");
+                    isValid = false;
+                }
+            }
+        } else {
+
+            if (getTipoPagoHelper().getValor() > getPago().getFactura().getSaldo()) {
+                JsfUtil.addErrorMessage("El valor supera el valor pendiente de la factura");
+                isValid = false;
+            }
+
+            if (getPago().getFormaPago() == TipoPago.CONTADO.getValor()) {
+                if (getTipoPagoHelper().getTipo() == TipoPagoAbono.PUBLICIDAD.getValor()) {
+                    if (getTipoPagoHelper().getValor() > getValorPublicidad()) {
+                        JsfUtil.addErrorMessage("El valor supera el valor permitido por publicidad");
+                        isValid = false;
+                    }
+                } else if (getTipoPagoHelper().getTipo() == TipoPagoAbono.COMISION.getValor()) {
+                    if (getTipoPagoHelper().getValor() > getValorComision()) {
+                        JsfUtil.addErrorMessage("El valor supera el valor permitido por comision");
+                        isValid = false;
+                    }
+                }
+            }
+        }
+        return isValid;
+    }
+
+    //==========================================================================   
+    public void removePagoDetalle(TipoPagoHelper tph) {
+        getTipoPagoHelpers().remove(tph);
+        getTipoPagoHelpersTMP().clear();
+        addPagosAnteriores();
+        updateListTMP(getTipoPagoHelpers());
+        updatesValores();
+    }
+
+    //==========================================================================   
+    public void create(boolean crearNuevo) {
+        if (validarNumeroRecibo()) {
+            if (!getTipoPagoHelpers().isEmpty()) {
+
+                getPago().setFecha(getRelacionFactura().getFecha());
+                getPago().setEstado(EstadoPago.REALIZADO.getValor());
+                getPago().setUsuario(getUsuarioActual().getUsuario());
+                getPago().setValorTotal(getValorReal());
+                boolean isValid = true;
+                try {
+                    if (editar) {
+                        for (PagoHelper ph : getPagoHelpers()) {
+                            if (ph.getId() == getPagoHelper().getId()) {
+                                int io = getPagoHelpers().indexOf(getPagoHelper());
+                                getPagoHelpers().get(io).setPago(getPago());
+                                getPagoHelpers().get(io).setTipoPagoHelpers(getTipoPagoHelpers());
+                                break;
+                            }
+                        }
+                    } else {
+                        if (pagoHelpers == null) {
+                            pagoHelpers = new ArrayList<>();
+                        }
+                        PagoHelper ph = new PagoHelper();
+                        ph.setId(getPagoHelpers().size() + 1);
+                        ph.setPago(getPago());
+                        ph.setTipoPagoHelpers(getTipoPagoHelpers());
+                        getPagoHelpers().add(ph);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    isValid = false;
+                }
+
+                if (isValid) {
+                    JsfUtil.addSuccessMessage("El recibo fue " + (!editar ? "agregado" : "modificado") + " correctamente");
+                    if (!crearNuevo) {
+                        RequestContext.getCurrentInstance().execute("PF('PagoCreateDialog').hide()");
+                    } else {
+                        prepareCreatePago();
+                    }
+                } else {
+                    JsfUtil.addErrorMessage("Ocurrio un error agregando el recibo");
+                }
+
+            } else {
+                JsfUtil.addErrorMessage("Debe agregar al menos un pago");
+            }
+        }
+    }
+
+    //==========================================================================   
+    private double getValorReal() {
+        double valor = 0.0;
+        for (TipoPagoHelper tph : getTipoPagoHelpers()) {
+            valor += tph.getValor();
+        }
+        return valor;
+    }
+
+    //==========================================================================
+    public void removeRecibo() {
+        int io = getPagoHelpers().indexOf(getPagoHelper());
+        getPagoHelpers().remove(io);
+    }
+
+    //==========================================================================    
+    public void prepareEditPago() {
+        editar = true;
+        guardarObjetTMP();
+        setClienteTMP(getPagoHelper().getPago().getFactura().getCliente());
+        setPago(getPagoHelper().getPago());
+        setTipoPagoHelpers(new ArrayList<TipoPagoHelper>());
+        getTipoPagoHelpers().addAll(getPagoHelper().getTipoPagoHelpers());
+        setTipoPagoHelpersTMP(new ArrayList<TipoPagoHelper>());
+
+        addPagosAnteriores();
+
+        updateListTMP(getTipoPagoHelpers());
+
+        updatesValores();
+        setDesabilitarButton(false);
+    }
+
+    //==========================================================================    
+    private void guardarObjetTMP() {
+        setPagoHelperTMP(new PagoHelper());
+        getPagoHelperTMP().setId(getPagoHelper().getId());
+        getPagoHelperTMP().setPago(getPagoHelper().getPago());
+        getPagoHelperTMP().setTipoPagoHelpers(getPagoHelper().getTipoPagoHelpers());
+    }
+
+    //==========================================================================
+    private void updateListTMP(List<TipoPagoHelper> tipoPagoHelpers) {
+        for (TipoPagoHelper tph : tipoPagoHelpers) {
+            boolean repetido = false;
+            for (TipoPagoHelper tph1 : getTipoPagoHelpersTMP()) {
+                if (tph.getTipo() == tph1.getTipo()) {
+                    if (tph.getTipo() == TipoPagoAbono.PUBLICIDAD.getValor()) {
+                        if (Objects.equals(tph.getTipoPublicidad().getId(), tph1.getTipoPublicidad().getId())) {
+                            tph1.setValor(tph1.getValor() + tph.getValor());
+                            repetido = true;
+                        }
+                    } else {
+                        tph1.setValor(tph1.getValor() + tph.getValor());
+                        repetido = true;
+                    }
+                }
+            }
+
+            if (!repetido) {
+                TipoPagoHelper tphTMP = new TipoPagoHelper();
+                tphTMP.setId(tph.getId());
+                tphTMP.setTipo(tph.getTipo());
+                tphTMP.setTipoPublicidad(tph.getTipoPublicidad());
+                tphTMP.setValor(tph.getValor());
+                getTipoPagoHelpersTMP().add(tphTMP);
+            }
+        }
+    }
+    
+    //==========================================================================
     public void crearRecibo() {
         if (pagoHelpers.size() > 0) {
             try {
-                getTransactionFacade().crearPago(pagoHelpers, selected);
+                getTransactionFacade().crearPago(pagoHelpers, relacionFactura);
                 if (!JsfUtil.isValidationFailed()) {
                     JsfUtil.addSuccessMessage("El pago fue guardado correctamente");
                     pagoHelpers = null;
@@ -863,45 +797,4 @@ public class NuevaRelacionFacturaController implements Serializable {
             JsfUtil.addErrorMessage("Debe agregar al menos un recibo");
         }
     }
-
-    public void validateNumeroRecibo(AjaxBehaviorEvent event) {
-        validarCrear(false);
-    }
-
-    private void updateValorPendienteOnly() {
-        if (pago.getFactura() != null) {
-            List<Pago> listPagos = getPagoFacade().getPagosByFactura(pago.getFactura());
-
-            double valor = 0.0;
-            if (listPagos != null && !listPagos.isEmpty()) {
-                for (Pago pago : listPagos) {
-                    valor += pago.getValorTotal();
-                }
-            }
-
-            for (PagoHelper ph : pagoHelpers) {
-                if (Objects.equals(ph.getPago().getFactura().getId(), pago.getFactura().getId())) {
-                    if ((pagoHelper != null) && (ph.getId() == pagoHelper.getId())) {
-                    } else {
-                        tipoPagoHelpersTMP.addAll(ph.getTipoPagoHelpers());
-                    }
-                }
-            }
-
-            for (TipoPagoHelper tph : tipoPagoHelpersTMP) {
-                valor += tph.getValor();
-            }
-
-            pago.getFactura().setSaldo(pago.getFactura().getTotalPagar() - valor);
-        }
-    }
-    
-    private void getValorPago(){
-        double valor = 0.0;
-        for (TipoPagoHelper tph : tipoPagoHelpers) {
-            valor += tph.getValor();
-        }
-        pago.setValorTotal(valor);
-    }
-
 }
