@@ -43,21 +43,26 @@
 
                         </div>
                     </f:facet>
+                    <p:column filterBy="#{item.ordenPago}" filterStyle="width: 80px" filterMatchMode="contains" style="text-align: center;">
+                        <f:facet name="header">
+                            <h:outputText value="Orden Pago"/>
+                        </f:facet>
+                        <h:outputText value="#{item.ordenPago}" styleClass="num-orden"/>
+                    </p:column>
+                    <p:column filterBy="#{item.factura.ordenPedido}" filterStyle="width: 80px" filterMatchMode="contains" style="text-align: center;">
+                        <f:facet name="header">
+                            <h:outputText value="Factura"/>
+                        </f:facet>
+                        <h:outputText value="#{item.factura.ordenPedido}" styleClass="num-orden"/>
+                    </p:column>
 
-                    <p:column style="text-align: center;">
+                    <p:column style="text-align: center;" sortBy="#{item.relacionFactura.fecha}">
                         <f:facet name="header">
                             <h:outputText value="Fecha"/>
                         </f:facet>
                         <h:outputText value="#{item.relacionFactura.fecha}">
                             <f:convertDateTime pattern="dd-MMM-yyyy"/>
                         </h:outputText>
-                    </p:column>
-
-                    <p:column>
-                        <f:facet name="header">
-                            <h:outputText value="Observación"/>
-                        </f:facet>
-                        <h:outputText value="#{item.relacionFactura.observaciones}"/>
                     </p:column>
 
                     <p:column filterBy="#{item.relacionFactura.vendedor}" filterStyle="width: 80px" filterMatchMode="contains">
@@ -74,18 +79,6 @@
                         <h:outputText value="#{item.factura.cliente}"/>
                     </p:column>
 
-                    <p:column filterBy="#{item.ordenPago}" filterStyle="width: 80px" filterMatchMode="contains">
-                        <f:facet name="header">
-                            <h:outputText value="Orden Pago"/>
-                        </f:facet>
-                        <h:outputText value="#{item.ordenPago}"/>
-                    </p:column>
-                    <p:column filterBy="#{item.factura.ordenPedido}" filterStyle="width: 80px" filterMatchMode="contains">
-                        <f:facet name="header">
-                            <h:outputText value="Factura"/>
-                        </f:facet>
-                        <h:outputText value="#{item.factura.ordenPedido}"/>
-                    </p:column>
                     <p:column filterMatchMode="exact" filterBy="#{nuevaRelacionFacturaController.getFormaPago(item.formaPago)}">
                         <f:facet name="header">
                             <h:outputText value="Tipo"/>
@@ -107,7 +100,14 @@
                             <f:convertNumber type="currency"  currencySymbol="$"/>
                         </h:outputText>
                     </p:column>
-
+                    
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Observación"/>
+                        </f:facet>
+                        <h:outputText value="#{item.relacionFactura.observaciones}"/>
+                    </p:column>
+                    
                 </p:dataTable>
             </h:form>
             <!--<ui:include src="EditarPago.xhtml" />-->
