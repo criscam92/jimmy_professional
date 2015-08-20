@@ -55,9 +55,9 @@ div.ui-menubar ul.ui-menu-list li.menuPrincipal ul.ui-menu-child{
     padding: 20px;
 }
 
-.contenido div.ui-layout-unit-content{
+/*.contenido div.ui-layout-unit-content{
     padding: 10px 20px 20px 20px;
-}
+}*/
 
 div.tabla div.ui-datatable-header {
     min-height: 27px;
@@ -143,12 +143,12 @@ form#FacturaCreateForm div.ui-button-text-only span.ui-button-text {
 .ui-layout-container{
     background-color: #fff;
 }
-div.contenido div.ui-layout-unit-content.ui-widget-content{
+/*div.contenido div.ui-layout-unit-content.ui-widget-content{
     background-image: url("../resources/src/fongo_login_white.png");
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
-}
+}*/
 
 .container_index{
     width: 100%;
@@ -156,11 +156,11 @@ div.contenido div.ui-layout-unit-content.ui-widget-content{
     display: block;
 }
 
-div.contenido_login div.ui-layout-unit-content.ui-widget-content, .container_index{
+div.contenido_login div.ui-layout-unit-content.ui-widget-content, .container_index, div.contenido{
     background-image: url("../resources/src/fongo_login.png");
     background-repeat: no-repeat;
     background-size: cover;
-    background-position: center;
+    background-position: 0% 6%;
 }
 
 .titulo_despacho{

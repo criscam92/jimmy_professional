@@ -408,7 +408,7 @@ public class DevolucionController implements Serializable {
                 dph.setId(devolucionProductosHelper.size() + 9000000000L);
                 dph.setDevolucionProducto(devolucionProductoTMP);
                 dph.setIngresar(ingresar);
-                
+
                 devolucionProductosHelper.add(dph);
             }
             cleanDevolucionProducto();
@@ -485,6 +485,7 @@ public class DevolucionController implements Serializable {
     //Tab
     public void onTabChange() {
         if (index == 1) {
+            System.out.println("\nFecha: "+selected.getFecha()+"\nCliente: "+selected.getCliente()+"\nValorTotal: "+selected.getValorTotal()+"\nDevolucionesProducto: "+devolucionProductos.size());
             if (selected.getFecha() == null || selected.getCliente() == null || (selected.getValorTotal() <= 0)
                     && (devolucionProductos == null || devolucionProductos.isEmpty())) {
                 cambioManoAMano = true;

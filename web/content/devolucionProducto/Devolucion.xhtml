@@ -4,7 +4,8 @@
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:pe="http://primefaces.org/ui/extensions">
     <ui:composition>
 
         <p:panel header="#{bundle.DevolucionDetail}" style="width: 900px; margin: auto;">
@@ -31,7 +32,7 @@
                     </p:selectOneMenu>
 
                     <p:outputLabel value="#{bundle.MessageValorTotalDev}" for="valorTotal"/>
-                    <p:inputText id="valorTotal" value="#{devolucionController.selected.valorTotal}" style="width: 146px;"
+                    <pe:inputNumber id="valorTotal" value="#{devolucionController.selected.valorTotal}" style="width: 146px;"
                                  required="true" requiredMessage="#{bundle.MessageRequiredDevValorTot}"/>
 
                 </p:panelGrid>
@@ -76,8 +77,6 @@
                 <p:panelGrid columns="2">
                     <p:outputLabel value="#{bundle.CreateDevolucionProductoLabel_detalle}" for="detalle" />
                     <p:inputTextarea id="detalle" value="#{devolucionController.devolucionProducto.detalle}" title="#{bundle.CreateDevolucionProductoTitle_detalle}" style="width: 146px; height: 46px;"/>
-                    
-                    
                 </p:panelGrid>                                   
 
             </p:panelGrid>
