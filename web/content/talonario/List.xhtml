@@ -43,10 +43,7 @@
                         </f:facet>
                         <h:outputText value="#{talonarioController.getTipoTalonario(item.tipo)}"/>
                     </p:column>
-                    <p:column>
-                        <f:facet name="header">
-                            <h:outputText value="#{bundle.EditTalonarioTitle_emp}"/>
-                        </f:facet>
+                    <p:column filterBy="#{item.empleado.toString()}" filterMatchMode="contains" headerText="#{bundle.EditTalonarioTitle_emp}" filterStyle="width: 120px">
                         <h:outputText value="#{item.empleado.toString()}"/>
                     </p:column>
                     <p:column>
