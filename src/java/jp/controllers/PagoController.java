@@ -13,8 +13,13 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import jp.entidades.Factura;
+import jp.entidades.Talonario;
 import jp.facades.FacturaFacade;
 import jp.facades.PagoFacade;
+import jp.facades.TransactionFacade;
+import jp.util.EstadoPago;
+import jp.util.JsfUtil;
 import jp.util.TipoPago;
 
 @ManagedBean(name = "pagoController")
@@ -22,17 +27,38 @@ import jp.util.TipoPago;
 public class PagoController implements Serializable {
 
     @EJB
-    private jp.facades.PagoFacade ejbFacade;    
+    private PagoFacade ejbFacade;
     @EJB
     private FacturaFacade facturaFacade;
-    
+    @EJB
+    private TransactionFacade transactionFacade;
+
     private List<Pago> items = null;
     private Pago selected;
+    private List<Talonario> talonarios;
     
     private String numeroFactura;
     private Double valorPendiente;
+    private final String uiError = "ui-state-error";
+    private String error;
 
     public PagoController() {
+    }
+
+    public PagoFacade getEjbFacade() {
+        return ejbFacade;
+    }
+
+    public void setEjbFacade(PagoFacade ejbFacade) {
+        this.ejbFacade = ejbFacade;
+    }
+
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
     }
 
     public Pago getSelected() {
@@ -46,12 +72,20 @@ public class PagoController implements Serializable {
     private PagoFacade getFacade() {
         return ejbFacade;
     }
-    
-    private FacturaFacade getFacturaFacade(){
+
+    private FacturaFacade getFacturaFacade() {
         return facturaFacade;
     }
-    
-    public void prepareEdit(){
+
+    public TransactionFacade getTransactionFacade() {
+        return transactionFacade;
+    }
+
+    public void setTransactionFacade(TransactionFacade transactionFacade) {
+        this.transactionFacade = transactionFacade;
+    }
+
+    public void prepareEdit() {
     }
 
     public void update() {
@@ -59,9 +93,9 @@ public class PagoController implements Serializable {
 
     public void anular() {
     }
-    
-    public TipoPago[] getTiposPago(){
-        return new TipoPago[]{TipoPago.CONTADO,TipoPago.CHEQUE};
+
+    public TipoPago[] getTiposPago() {
+        return new TipoPago[]{TipoPago.CONTADO, TipoPago.CHEQUE};
     }
 
     public List<Pago> getItems() {
@@ -125,7 +159,70 @@ public class PagoController implements Serializable {
                 return null;
             }
         }
+    }
 
+    public void anularPago() {
+        if (selected != null) {
+            if (getTransactionFacade().anularPago(selected)) {
+                JsfUtil.addSuccessMessage("El pago fue anulado correctamente");
+                items = null;
+            } else {
+                JsfUtil.addErrorMessage("Ocurrio un error durante la anulacion del pago " + selected.getOrdenPago());
+            }
+        } else {
+            JsfUtil.addErrorMessage("Debe seleccionar el pago a anular");
+        }
+    }
+
+    public Factura updateSaldoFactura(Factura factura) {
+        return getFacturaFacade().updatePagoPendiente(factura);
+    }
+
+    public String getEstadoPago(int estado) {
+        return EstadoPago.getFromValue(estado).getDetalle();
+    }
+
+    public boolean disabled() {
+        return !((selected != null && selected.getId() != null) && (selected.getEstado() == EstadoPago.REALIZADO.getValor()));
+    }
+
+    public boolean validarNumeroRecibo() {
+        boolean isValid = true;
+        if (getFacade().existePago(selected.getOrdenPago())) {
+            isValid = false;
+            setError(uiError);
+            JsfUtil.addErrorMessage("El numero de recibo " + selected.getOrdenPago() + " ya esta en uso");
+        }
+
+        if (isValid) {
+            Long reciboActual;
+            try {
+                reciboActual = Long.valueOf(selected.getOrdenPago());
+            } catch (Exception e) {
+                reciboActual = null;
+            }
+
+            if (reciboActual != null) {
+                boolean numValido = false;
+                for (Talonario t : talonarios) {
+                    if ((reciboActual >= t.getInicial()) && (reciboActual <= t.getFinal1())) {
+                        setError("");
+                        numValido = true;
+                        break;
+                    }
+                }
+                if (!numValido) {
+                    isValid = false;
+                    setError(uiError);
+                    JsfUtil.addErrorMessage("el numero de recibo " + selected.getOrdenPago() + " no esta permitido");
+                }
+            } else {
+                isValid = false;
+                setError(uiError);
+                JsfUtil.addErrorMessage("Debe poner un numero de recibo valido");
+            }
+        }
+        return isValid;
     }
 
 }

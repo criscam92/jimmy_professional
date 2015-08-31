@@ -16,11 +16,11 @@
                     <p:panelGrid>
                         <p:row>
                             <p:column>
-                                <p:outputLabel id="label_id" value="Recibo de Caja:" for="id" style="#{nuevaRelacionFacturaController.error}"/>
+                                <p:outputLabel id="label_id" value="Recibo de Caja:" for="id" style="#{pagoController.error}"/>
                             </p:column>
                             <p:column>
-                                <p:inputText style="#{nuevaRelacionFacturaController.error}" id="id" value="#{nuevaRelacionFacturaController.selected.ordenPago}" title="Recibo de Caja" required="true" requiredMessage="Débe indicar el número del recibo de caja">
-                                    <p:ajax event="blur" listener="#{nuevaRelacionFacturaController.validateNumeroRecibo}" update=":growl, label_id, id"/>
+                                <p:inputText style="#{pagoController.error}" id="id" value="#{pagoController.selected.ordenPago}" title="Recibo de Caja" required="true" requiredMessage="Débe indicar el número del recibo de caja">
+                                    <p:ajax event="blur" listener="#{pagoController.validarNumeroRecibo()}" update=":growl, label_id, id"/>
                                 </p:inputText>
                             </p:column>
                             <p:column>
@@ -66,7 +66,7 @@
                                 <p:inputText readonly="true" id="valor_pago" value="#{nuevaRelacionFacturaController.selected.valorTotal}" />
                             </p:column>
                         </p:row>
-                        
+
                         <p:row>
                             <p:column>
                                 <p:outputLabel value="Forma de Pago:" for="forma_pago" />

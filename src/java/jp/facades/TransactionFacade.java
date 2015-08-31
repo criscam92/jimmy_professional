@@ -374,9 +374,9 @@ public class TransactionFacade {
                     getEntityManager().remove(fp);
                 }
             }
-            
+
             userTransaction.commit();
-             return true;
+            return true;
         } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
             try {
                 System.out.println("======>");
@@ -872,97 +872,55 @@ public class TransactionFacade {
     }
 
     public void crearPago(List<PagoHelper> pagoHelpers, RelacionFactura relacionFactura) {
-        System.out.println("111111111111");
         userTransaction = sessionContext.getUserTransaction();
         try {
-            System.out.println("222222222222222");
             userTransaction.begin();
-            System.out.println("3333333333333333333");
             RelacionFactura rf = new RelacionFactura();
-            System.out.println("4444444444444444");
             rf.setFecha(relacionFactura.getFecha());
-            System.out.println("5555555555555555555");
             rf.setObservaciones(relacionFactura.getObservaciones());
-            System.out.println("6666666666666666666");
             rf.setVendedor(relacionFactura.getVendedor());
-            System.out.println("77777777777777777777");
             getEntityManager().persist(rf);
-            System.out.println("8888888888888888888");
 
             List<Factura> listTMP = new ArrayList<>();
-            System.out.println("9999999999999999999");
             for (PagoHelper ph : pagoHelpers) {
-                System.out.println("10000000000000000000");
                 Factura f = getEntityManager().find(Factura.class, ph.getPago().getFactura().getId());
-                System.out.println("aaaaaaaaaaaaaaaaaaaa");
                 if (!listTMP.contains(f)) {
-                    System.out.println("bbbbbbbbbbbbbbbb");
                     listTMP.add(f);
-                    System.out.println("ccccccccccccccccccc");
                 }
-                System.out.println("ddddddddddddd");
+
                 Pago p = new Pago();
-                System.out.println("eeeeeeeeeeeeeeeeeeeeeeee: " + ph.getPago().getCuenta());
                 p.setCuenta(ph.getPago().getCuenta());
-                System.out.println("ffffffffffffffffff: " + ph.getPago().getFactura().getDolar());
                 p.setDolar(ph.getPago().getFactura().getDolar());
-                System.out.println("ggggggggggggggggggggg: " + ph.getPago().getEstado());
                 p.setEstado(ph.getPago().getEstado());
-                System.out.println("hhhhhhhhhhhhhhhhhhhhhhhh: " + f.getId());
                 p.setFactura(f);
-                System.out.println("iiiiiiiiiiiiiiiiiiii: " + ph.getPago().getFecha());
                 p.setFecha(ph.getPago().getFecha());
-                System.out.println("jjjjjjjjjjjjjjjjjj: " + ph.getPago().getFormaPago());
                 p.setFormaPago(ph.getPago().getFormaPago());
-                System.out.println("kkkkkkkkkkkkkkkkkkkkkkk: " + ph.getPago().getNumeroCheque());
                 p.setNumeroCheque(ph.getPago().getNumeroCheque());
-                System.out.println("lllllllllllllllllll: " + ph.getPago().getObservaciones());
                 p.setObservaciones(ph.getPago().getObservaciones());
-                System.out.println("mmmmmmmmmmmmmmmmmmmmmm: " + ph.getPago().getOrdenPago());
                 p.setOrdenPago(ph.getPago().getOrdenPago());
-                System.out.println("nnnnnnnnnnnnnnnnnnnnnnnn: " + rf.getId());
                 p.setRelacionFactura(rf);
-                System.out.println("ññññññññññññññññññññññ: " + ph.getPago().getUsuario());
                 p.setUsuario(ph.getPago().getUsuario());
-                System.out.println("oooooooooooooooooooo: " + ph.getPago().getValorTotal());
                 p.setValorTotal(ph.getPago().getValorTotal());
-                System.out.println("oooooooooooooooo");
                 getEntityManager().persist(p);
-                System.out.println("ppppppppppppppppppppppppp");
 
                 for (TipoPagoHelper tph : ph.getTipoPagoHelpers()) {
-                    System.out.println("1");
                     PagoDetalle pd = new PagoDetalle();
-                    System.out.println("2");
                     pd.setPago(p);
-                    System.out.println("3");
                     pd.setTipo(tph.getTipo());
-                    System.out.println("4");
                     pd.setValor(tph.getValor());
-                    System.out.println("5");
                     getEntityManager().persist(pd);
-                    System.out.println("6");
 
                     if (tph.getTipoPublicidad() != null) {
-                        System.out.println("7");
                         PagoPublicidad pp = new PagoPublicidad();
-                        System.out.println("8");
                         pp.setPagoDetalle(pd);
-                        System.out.println("9");
                         pp.setTipo(tph.getTipoPublicidad());
-                        System.out.println("10");
                         getEntityManager().persist(pp);
-                        System.out.println("11");
                     }
-                    System.out.println("12");
                 }
-                System.out.println("13");
             }
-            System.out.println("14");
+
             for (Factura f : listTMP) {
-                System.out.println("15");
                 Factura fTMP = getEntityManager().find(Factura.class, f.getId());
-                System.out.println("16");
                 updateEstadosFactura(fTMP);
                 getEntityManager().merge(f);
             }
@@ -1080,5 +1038,49 @@ public class TransactionFacade {
 //        e.printStackTrace();
         }
         return lastCodigo;
+    }
+
+    public boolean anularPago(Pago pago) {
+        userTransaction = sessionContext.getUserTransaction();
+        try {
+            userTransaction.begin();
+
+            Query query1 = getEntityManager().createQuery("SELECT pd FROM PagoDetalle pd WHERE pd.pago.id = :pago");
+            query1.setParameter("pago", pago.getId());
+            List<PagoDetalle> pagoDetalles = query1.getResultList();
+            System.out.println("PAGOS DETALLE: " + pagoDetalles.size());
+            
+            List<PagoPublicidad> pagosPublicidad = new ArrayList<>();
+            Query query2 = getEntityManager().createQuery("SELECT pp FROM PagoPublicidad pp WHERE pp.pagoDetalle.id = :pd");
+            for (PagoDetalle pd : pagoDetalles) {
+                query2.setParameter("pd", pd.getId());
+                pagosPublicidad.addAll(query2.getResultList());
+            }
+            System.out.println("PAGOS PUBLICIDAD: " + pagosPublicidad.size());
+
+            for (PagoPublicidad pp : pagosPublicidad) {
+                PagoPublicidad ppTMP = getEntityManager().find(PagoPublicidad.class, pp.getId());
+                getEntityManager().remove(ppTMP);
+            }
+
+            for (PagoDetalle pd : pagoDetalles) {
+                PagoDetalle pdTMP = getEntityManager().find(PagoDetalle.class, pd.getId());
+                getEntityManager().remove(pdTMP);
+            }
+            
+            Pago pagoTMP = getEntityManager().find(Pago.class, pago.getId());
+            pagoTMP.setEstado(EstadoPago.ANULADO.getValor());
+            getEntityManager().merge(pagoTMP);
+            
+            userTransaction.commit();
+            return true;
+        } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
+            e.printStackTrace();
+            try {
+                userTransaction.rollback();
+            } catch (IllegalStateException | SecurityException | SystemException ex) {
+            }
+        }
+        return false;
     }
 }
