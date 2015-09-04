@@ -1046,7 +1046,7 @@ public class TransactionFacade {
             userTransaction.begin();
 
             Factura facturaTMP = getEntityManager().find(Factura.class, pago.getFactura().getId());
-            
+
             Query query1 = getEntityManager().createQuery("SELECT pd FROM PagoDetalle pd WHERE pd.pago.id = :pago");
             query1.setParameter("pago", pago.getId());
             List<PagoDetalle> pagoDetalles = query1.getResultList();
@@ -1074,7 +1074,7 @@ public class TransactionFacade {
 
             updateEstadosFactura(facturaTMP);
             getEntityManager().merge(facturaTMP);
-            
+
             userTransaction.commit();
             return true;
         } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
@@ -1124,27 +1124,31 @@ public class TransactionFacade {
                 }
             }
 
+            Query query = getEntityManager().createQuery("SELECT pp FROM PagoPublicidad pp WHERE pp.pagoDetalle.id = :pd");
+
             for (TipoPagoHelper tph : tipoPagosEditar) {
                 PagoDetalle pd = getEntityManager().find(PagoDetalle.class, tph.getIdObject());
                 pd.setTipo(tph.getTipo());
                 pd.setValor(tph.getValor());
                 getEntityManager().merge(pd);
 
-                Query query = getEntityManager().createQuery("SELECT pp FROM PagoPublicidad pp WHERE pp.pagoDetalle.id = :pd");
-                query.setParameter("pd", pd.getId());
-                PagoPublicidad pp = (PagoPublicidad) query.getSingleResult();
-                pp.setTipo(tph.getTipoPublicidad());
-                getEntityManager().merge(pp);
+                if (tph.getTipoPublicidad() != null) {
+                    query.setParameter("pd", pd.getId());
+                    PagoPublicidad pp = (PagoPublicidad) query.getSingleResult();
+                    pp.setTipo(tph.getTipoPublicidad());
+                    getEntityManager().merge(pp);
+                }
             }
 
             for (TipoPagoHelper tph : tipoPagosEliminar) {
                 PagoDetalle pd = getEntityManager().find(PagoDetalle.class, tph.getIdObject());
 
-                Query query = getEntityManager().createQuery("SELECT pp FROM PagoPublicidad pp WHERE pp.pagoDetalle.id = :pd");
-                query.setParameter("pd", pd.getId());
-                PagoPublicidad pp = (PagoPublicidad) query.getSingleResult();
+                if (tph.getTipoPublicidad() != null) {
+                    query.setParameter("pd", pd.getId());
+                    PagoPublicidad pp = (PagoPublicidad) query.getSingleResult();
+                    getEntityManager().remove(pp);
+                }
 
-                getEntityManager().remove(pp);
                 getEntityManager().remove(pd);
             }
 

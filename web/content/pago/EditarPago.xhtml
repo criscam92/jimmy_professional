@@ -186,7 +186,7 @@
                     <div class="botonesDialog">
                         <p:commandButton actionListener="#{pagoController.update()}" value="Modificar"
                                          update="display, :growl, :PagoListForm:datalist"/>
-                        <p:commandButton value="#{bundle.Cancel}" type="button" onclick="PF('PagoCreateDialog').hide()"/>
+                        <p:commandButton value="#{bundle.Cancel}" process="@this" actionListener="#{pagoController.cancelar()}" update="display, :growl, :PagoListForm:datalist"/>
                     </div>
                 </h:panelGroup>
             </h:form>

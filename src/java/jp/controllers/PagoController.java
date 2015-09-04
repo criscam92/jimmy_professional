@@ -13,6 +13,7 @@ import javax.faces.event.AjaxBehaviorEvent;
 import jp.entidades.*;
 import jp.facades.*;
 import jp.util.*;
+import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 //==============================================================================
 
@@ -40,7 +41,6 @@ public class PagoController implements Serializable {
     private List<Talonario> talonarios;
     private TipoPagoHelper tipoPagoHelper;
     private List<TipoPagoHelper> tipoPagoHelpers;
-    private List<TipoPagoHelper> tipoPagoHelpersTMP2;
     private List<TipoPagoHelper> tipoPagoHelpersTMP;
     private List<TipoPagoHelper> tipoPagoHelpersCrear;
     private List<TipoPagoHelper> tipoPagoHelpersEditar;
@@ -301,6 +301,9 @@ public class PagoController implements Serializable {
     }
 
     public void prepareEdit() {
+
+        selected = getFacade().find(selected.getId());
+
         ordenPagoTMP = selected.getOrdenPago();
         count = 0;
 
@@ -308,11 +311,9 @@ public class PagoController implements Serializable {
         setFacturasTMP(getFacturaFacade().getFacturasPendientesByCliente(getClienteTMP()));
 
         tipoPagoHelpersTMP = new ArrayList<>();
-        tipoPagoHelpersTMP2 = new ArrayList<>();
         tipoPagoHelpers = new ArrayList<>();
         tipoPagoHelper = new TipoPagoHelper();
         cargarTipoPagoHelpers();
-        tipoPagoHelpersTMP2.addAll(tipoPagoHelpers);
         tipoPagoHelpersCrear = new ArrayList<>();
         tipoPagoHelpersEditar = new ArrayList<>();
         tipoPagoHelpersEliminar = new ArrayList<>();
@@ -488,9 +489,12 @@ public class PagoController implements Serializable {
                 tipoPagoHelpersCrear.add(tph);
             }
 
-            setTipoPagoHelpersTMP(new ArrayList<TipoPagoHelper>());
-//            updateListTMP(getTipoPagoHelpers());
             setTipoPagoHelper(new TipoPagoHelper());
+            tipoPagoHelpersTMP = new ArrayList<>();
+            for (TipoPagoHelper tph : tipoPagoHelpersCrear) {
+                tipoPagoHelpersTMP.add(new TipoPagoHelper(tph.getId(), null, tph.getTipo(), tph.getValor(), tph.getTipoPublicidad()));
+            }
+
             addPagosAnteriores();
             updatesValores();
         }
@@ -536,9 +540,11 @@ public class PagoController implements Serializable {
 
     public void removePagoDetalle(TipoPagoHelper tph) {
         if (tipoPagoHelpersCrear.contains(tph)) {
+            tipoPagoHelpersCrear.contains(tph);
         }
 
         if (tipoPagoHelpersEditar.contains(tph)) {
+            tipoPagoHelpersEditar.remove(tph);
         }
 
         if (tph.getIdObject() != null) {
@@ -567,12 +573,19 @@ public class PagoController implements Serializable {
 
     //==========================================================================  
     private void validarPago(PagoDetalle pagoDetalle, PagoPublicidad pagoPublicidad) {
+        boolean add = true;
+        for (TipoPagoHelper tph : tipoPagoHelpersEliminar) {
+            if (tph.getIdObject().equals(pagoDetalle.getId())) {
+                add = false;
+                break;
+            }
+        }
 
-        if (tipoPagoHelpers != null && !tipoPagoHelpers.isEmpty()) {
-            boolean add = true;
-            for (TipoPagoHelper tph : tipoPagoHelpersEliminar) {
+        if (add) {
+            for (TipoPagoHelper tph : tipoPagoHelpersEditar) {
                 if (tph.getIdObject().equals(pagoDetalle.getId())) {
                     add = false;
+                    getTipoPagoHelpersTMP().add(new TipoPagoHelper(tph.getId(), tph.getIdObject(), tph.getTipo(), tph.getValor(), (tph.getTipoPublicidad() == null ? null : tph.getTipoPublicidad())));
                     break;
                 }
             }
@@ -580,19 +593,6 @@ public class PagoController implements Serializable {
             if (add) {
                 addPago(pagoPublicidad, pagoDetalle);
             }
-        } else {
-            boolean add = true;
-            for (TipoPagoHelper tphTMP : tipoPagoHelpersTMP2) {
-                if (tphTMP.getIdObject().equals(pagoDetalle.getId())) {
-                    add = false;
-                    break;
-                }
-            }
-
-            if (add) {
-                addPago(pagoPublicidad, pagoDetalle);
-            }
-
         }
 
     }
@@ -603,12 +603,14 @@ public class PagoController implements Serializable {
         for (TipoPagoHelper tph : getTipoPagoHelpersTMP()) {
             if ((tph.getTipo() == TipoPagoAbono.PUBLICIDAD.getValor()) && pagoPublicidad != null) {
                 if (tph.getTipoPublicidad().getId().equals(pagoPublicidad.getTipo().getId())) {
+//                    System.out.println("HOLA");
                     tph.setValor(tph.getValor() + pagoDetalle.getValor());
                     repetido = true;
                 }
             } else {
                 if (pagoDetalle.getTipo() == tph.getTipo()) {
                     tph.setValor(tph.getValor() + pagoDetalle.getValor());
+//                    System.out.println("HOLA 2");
                     repetido = true;
                 }
             }
@@ -646,6 +648,7 @@ public class PagoController implements Serializable {
                     vComision += tph.getValor();
                 }
                 valorTotal += tph.getValor();
+                System.out.println("VALOR: " + tph.getValor());
             }
 
             selected.getFactura().setSaldo(selected.getFactura().getTotalPagar() - valorTotal);
@@ -662,6 +665,7 @@ public class PagoController implements Serializable {
                 if (getTransactionFacade().updatePago(selected, tipoPagoHelpersCrear, tipoPagoHelpersEditar, tipoPagoHelpersEliminar)) {
                     items = null;
                     JsfUtil.addSuccessMessage("El pago fue actualizado correctamente");
+                    RequestContext.getCurrentInstance().execute("PF('PagoCreateDialog').hide()");
                 } else {
                     JsfUtil.addErrorMessage("Ocurrio un error actualizando el pago");
                 }
@@ -680,4 +684,11 @@ public class PagoController implements Serializable {
         }
         return valor;
     }
+
+    public void cancelar() {
+        items = null;
+        selected = new Pago();
+        RequestContext.getCurrentInstance().execute("PF('PagoCreateDialog').hide()");
+    }
+
 }
