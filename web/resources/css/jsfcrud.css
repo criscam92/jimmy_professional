@@ -143,12 +143,12 @@ form#FacturaCreateForm div.ui-button-text-only span.ui-button-text {
 .ui-layout-container{
     background-color: #fff;
 }
-/*div.contenido div.ui-layout-unit-content.ui-widget-content{
+div.contenido div.ui-layout-unit-content.ui-widget-content{
     background-image: url("../resources/src/fongo_login_white.png");
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
-}*/
+}
 
 .container_index{
     width: 100%;
