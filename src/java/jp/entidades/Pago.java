@@ -22,6 +22,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import jp.entidades.auxiliar.Codificable;
 
 @Entity
 @Table(name = "pago")
@@ -36,7 +37,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Pago.findByValorTotal", query = "SELECT p FROM Pago p WHERE p.valorTotal = :valorTotal"),
     @NamedQuery(name = "Pago.findByDolar", query = "SELECT p FROM Pago p WHERE p.dolar = :dolar"),
     @NamedQuery(name = "Pago.findByEstado", query = "SELECT p FROM Pago p WHERE p.estado = :estado")})
-public class Pago implements Serializable {
+public class Pago implements Serializable, Codificable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -250,6 +251,21 @@ public class Pago implements Serializable {
     @Override
     public String toString() {
         return getOrdenPago();
+    }
+
+    @Override
+    public String getCodigo() {
+        return null;
+    }
+
+    @Override
+    public String getTipo() {
+        return null;
+    }
+
+    @Override
+    public String getNombre() {
+        return null;
     }
 
 }

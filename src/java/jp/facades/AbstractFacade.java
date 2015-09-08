@@ -8,6 +8,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import jp.entidades.Pago;
 import jp.entidades.auxiliar.Codificable;
 
 public abstract class AbstractFacade<T> {
@@ -114,5 +115,18 @@ public abstract class AbstractFacade<T> {
             return new ArrayList<>();
         }
     }
-
+    
+    public <U extends Codificable> List<U> findPagoAll(boolean asc){
+        try {
+            List<U> lista;
+            String sql = "SELECT e FROM " + entityClass.getSimpleName() + " e ORDER BY CAST(e.ordenPago as INTEGER) ".concat(asc?"ASC":"DESC");
+            Query query = getEntityManager().createQuery(sql);
+            lista = query.getResultList();
+            return lista;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+    
 }

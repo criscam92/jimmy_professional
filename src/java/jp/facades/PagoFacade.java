@@ -94,5 +94,15 @@ public class PagoFacade extends AbstractFacade<Pago> {
         }
         return rf;
     }
+    
+    @Override
+    public List<Pago> findAll() {
+        return super.findPagoAll(true);
+    }
+    
+    @Override
+    public List<Pago> findPagoAll(boolean asc) {
+        return super.findPagoAll(asc);
+    }
 
 }

@@ -1427,4 +1427,8 @@ public class FacturaController implements Serializable {
         }
 
     }
+    
+    public int getEstadoAnulado() {
+        return EstadoFactura.ANULADO.getValor();
+    }
 }

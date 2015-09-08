@@ -75,7 +75,8 @@
                              rows="10"
                              rowsPerPageTemplate="10,20,30,40,50"
                              emptyMessage="#{bundle.EmptyTable}"
-                             paginatorPosition="bottom"                             
+                             paginatorPosition="bottom"
+                             rowStyleClass="#{item.estado == facturaController.estadoAnulado ? 'anulado' : 'realizado'}"
                              >
 
                     <p:ajax event="rowSelect"   update="productos createButton deleteButton reporte anularButton viewButton editarButton"/>
