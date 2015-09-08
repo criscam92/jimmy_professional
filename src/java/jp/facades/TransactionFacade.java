@@ -30,6 +30,7 @@ import jp.entidades.FacturaProducto;
 import jp.entidades.FacturaPromocion;
 import jp.entidades.Ingreso;
 import jp.entidades.IngresoProducto;
+import jp.entidades.ListaPrecio;
 import jp.entidades.Pago;
 import jp.entidades.PagoDetalle;
 import jp.entidades.PagoDevolucion;
@@ -38,6 +39,7 @@ import jp.entidades.PagoPublicidad;
 import jp.entidades.Promocion;
 import jp.entidades.PromocionProducto;
 import jp.entidades.Parametros;
+import jp.entidades.PrecioProducto;
 import jp.entidades.Producto;
 import jp.entidades.ProductoHelper;
 import jp.entidades.ProductoPromocionHelper;
@@ -1162,6 +1164,43 @@ public class TransactionFacade {
             try {
                 userTransaction.rollback();
             } catch (IllegalStateException | SecurityException | SystemException ex) {
+            }
+        }
+        return false;
+    }
+    
+    public boolean createPrecioProducto(ListaPrecio listaPrecio, List<PrecioProducto> precioProductos) {
+        System.out.println("\n1:listaPrecio-> "+listaPrecio+"\n2:precioProducto-> "+precioProductos.size());
+        userTransaction = sessionContext.getUserTransaction();
+        try {
+            userTransaction.begin();
+
+            ListaPrecio lp = new ListaPrecio();
+            lp.setCodigo(listaPrecio.getCodigo());
+            lp.setNombre(listaPrecio.getNombre());
+
+            getEntityManager().merge(lp);
+
+            for (PrecioProducto pp : precioProductos) {
+                pp.setId(null);
+                pp.setPrecio(pp.getPrecio());
+                pp.setProducto(pp.getProducto());
+                pp.setListaPrecio(lp);
+                getEntityManager().merge(pp);
+            }
+
+            userTransaction.commit();
+            return true;
+        } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
+            try {
+                System.out.println("======>");
+                e.printStackTrace();
+                System.out.println("<======");
+                userTransaction.rollback();
+            } catch (IllegalStateException | SecurityException | SystemException es) {
+                System.out.println("======>");
+                es.printStackTrace();
+                System.out.println("<======");
             }
         }
         return false;

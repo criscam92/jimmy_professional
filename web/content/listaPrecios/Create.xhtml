@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition>
+
+        <p:dialog id="ListaPrecioCreateDlg" widgetVar="ListaPrecioCreateDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.CreateListaPrecio}" width="700">
+            <h:form id="ListaPrecioCreateForm">
+                <h:panelGroup id="display">
+                    <p:panel header="Datos de la lista">
+                        <p:panelGrid columns="4" rendered="#{listaPrecioController.selected != null}" style="margin: auto;">
+                            <p:outputLabel value="#{bundle.CreateCodigoDevolucionLabel_codigo}" for="codigo" />
+                            <p:inputText id="codigo" value="#{listaPrecioController.selected.codigo}" title="#{bundle.CreateCodigoDevolucionTitle_codigo}"
+                                         required="true" requiredMessage="#{bundle.CreateProductoRequiredMessage_codigo}"/>
+                            <p:outputLabel value="#{bundle.CreateEmpleadoLabel_nombre}" for="nombre" />
+                            <p:inputText id="nombre" value="#{listaPrecioController.selected.nombre}" title="#{bundle.CreateEmpleadoTitle_nombre}"
+                                         required="true" requiredMessage="#{bundle.EditCuentaBancariaRequiredMessage_nom}"/>                        
+                        </p:panelGrid>
+                    </p:panel><br/>
+
+                    <p:panel header="Productos" id="panelPrecioProducto">
+                        <p:panelGrid columns="5" style="margin: auto;" id="formPrecioProducto">
+                            <p:outputLabel value="#{bundle.PrecioProductosTitle}" for="precioProducto" />                        
+                            <p:autoComplete id="precioProducto" value="#{listaPrecioController.producto}" var="pro"
+                                            itemLabel="#{pro.nombre}" itemValue="#{pro}" converter="productoconverter" forceSelection="true"
+                                            completeMethod="#{promocionController.llenarProducto}">
+                                <p:column>
+                                    <h:outputText value="#{pro.codigo}" style="width:15%"/>
+                                </p:column>
+                                <p:column>
+                                    <h:outputText value="#{pro.nombre}" />
+                                </p:column>
+                                <p:column>
+                                    <h:outputText value="#{pro.valorVenta}" />
+                                </p:column>
+                            </p:autoComplete>
+                            <p:outputLabel for="precio" value="#{bundle.MessageCreatePrecio}"/>
+                            <pe:inputNumber id="precio" value="#{listaPrecioController.precio}"/>
+                            <p:commandButton value="#{bundle.AddItem}" actionListener="#{listaPrecioController.addPrecioProducto()}" icon="ui-icon-plus" update="listaProductos,formPrecioProducto"/>
+                        </p:panelGrid>
+
+                        <p:dataTable styleClass="tabla" emptyMessage="#{bundle.EmptyTable}" id="listaProductos" var="itemTMP"
+                                     paginator="true" value="#{listaPrecioController.listaPrecioProductos}"
+                                     selectionMode="single" selection="#{listaPrecioController.precioProducto}"
+                                     rowKey="#{itemTMP.id}"
+                                     rows="5"
+                                     rowsPerPageTemplate="10,20,30,40,50"
+                                     paginatorPosition="bottom">
+                            <p:column>
+                                <f:facet name="header">
+                                    Producto
+                                </f:facet>
+                                <h:outputText value="#{itemTMP.producto}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    Precio Base
+                                </f:facet>
+                                <h:outputText value="#{itemTMP.producto.valorVenta}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    Precio Nuevo
+                                </f:facet>
+                                <h:outputText value="#{itemTMP.precio}"/>
+                            </p:column>
+                            <p:column width="50">
+                                <f:facet name="header">
+                                    Quitar
+                                </f:facet>
+                                <p:commandButton actionListener="#{listaPrecioController.removePrecioProducto(itemTMP)}" icon="ui-icon-close" update="listaProductos"/>
+                            </p:column>
+
+                        </p:dataTable>
+                    </p:panel>
+                    <div class="botonesDialog">
+                        <p:commandButton actionListener="#{listaPrecioController.create()}" value="#{bundle.Save}" icon="ui-icon-disk"
+                                         update="display,:ListaPrecioListForm:datalist,:growl" oncomplete="handleSubmit(args,'ListaPrecioCreateDialog');"/>
+                        <p:commandButton value="#{bundle.Cancel}" onclick="PF('ListaPrecioCreateDialog').hide()" icon="ui-icon-close" type="button"/>
+                    </div>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/content/index.xhtml">
+
+
+        <ui:define name="title">
+            <h:outputText value="#{bundle.MessageListaPrecioTitle}"/>
+        </ui:define>
+
+        <ui:define name="body">
+            <h:form id="ListaPrecioListForm">
+                <p:dataTable id="datalist" value="#{listaPrecioController.items}" var="item"
+                             selectionMode="single" selection="#{listaPrecioController.selected}"
+                             paginator="true"
+                             rowKey="#{item.id}"
+                             rows="10" widgetVar="tablaListaPrecios"
+                             rowsPerPageTemplate="10,20,30,40,50"
+                             styleClass="tabla"
+                             emptyMessage="#{bundle.EmptyTable}"
+                             paginatorPosition="bottom"
+                             >
+
+                    <f:facet name="header">
+                        <div id="titulo">
+                            Ingresos
+                        </div>
+                        <div id="acciones">
+                            <p:commandButton id="createButton" icon="ui-icon-plus"   value="#{bundle.Create}" actionListener="#{listaPrecioController.prepareCreate}" update=":ListaPrecioCreateForm" oncomplete="PF('ListaPrecioCreateDialog').show()"/>
+                            <p:commandButton id="viewButton"   icon="ui-icon-search" value="#{bundle.View}" update=":ListaPrecioViewForm" oncomplete="PF('ListaPrecioViewDialog').show()" disabled="#{empty listaPrecioController.selected}"/>
+                            <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":ListaPrecioEditForm" oncomplete="PF('ListaPrecioEditDialog').show()" disabled="#{empty listaPrecioController.selected}"/>
+                            <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{listaPrecioController.destroy}" update=":growl,datalist" disabled="#{empty listaPrecioController.selected}"/>
+                        </div>
+                    </f:facet>
+
+                    <p:ajax event="rowSelect"   update="createButton viewButton editButton deleteButton"/>
+                    <p:ajax event="rowUnselect" update="createButton viewButton editButton deleteButton"/>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.CreateDevolucionTitle_codigo}"/>
+                        </f:facet>
+                        <h:outputText value="#{item.codigo}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.CreateEmpleadoTitle_nombre}"/>
+                        </f:facet>
+                        <h:outputText value="#{item.nombre}"/>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+
+            <ui:include src="Create.xhtml"/>
+            <ui:include src="Edit.xhtml"/>
+            <ui:include src="View.xhtml"/>
+        </ui:define>
+    </ui:composition>
+
+</html>
