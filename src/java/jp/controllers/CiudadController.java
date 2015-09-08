@@ -18,7 +18,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import jp.facades.CiudadFacade;
-import org.primefaces.context.RequestContext;
 
 @ManagedBean(name = "ciudadController")
 @SessionScoped

@@ -22,6 +22,7 @@
                              rowsPerPageTemplate="10,20,30,40,50"
                              emptyMessage="#{bundle.EmptyTable}"
                              paginatorPosition="bottom"
+                             rowStyleClass="#{item.estado == pagoController.estadoAnulado ? 'anulado' : 'realizado'}"
                              >
 
                     <p:ajax event="rowSelect"   update="anularButton editButton"/>
@@ -116,9 +117,15 @@
                         <h:outputText value="#{item.relacionFactura.observaciones}"/>
                     </p:column>
 
-                    <p:column>
+                    <p:column filterMatchMode="exact" filterBy="#{pagoController.getEstadoPago(item.estado)}">
                         <f:facet name="header">
                             <h:outputText value="Estado"/>
+                        </f:facet>
+                        <f:facet name="filter">
+                            <p:selectOneMenu onchange="PF('tablaPagos').filter()" >
+                                <f:selectItem itemLabel="#{bundle.All}" itemValue="#{null}" noSelectionOption="true" />
+                                <f:selectItems var="estado" value="#{pagoController.estadosPago}" itemLabel="#{estado.detalle}" itemValue="#{pagoController.getEstadoPago(estado.valor)}" />
+                            </p:selectOneMenu>
                         </f:facet>
                         <h:outputText value="#{pagoController.getEstadoPago(item.estado)}"/>
                     </p:column>

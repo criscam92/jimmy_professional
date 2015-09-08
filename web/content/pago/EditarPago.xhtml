@@ -175,7 +175,7 @@
                                             <f:facet name="header">
                                                 <h:outputText value="Quitar"/>
                                             </f:facet>
-                                            <p:commandButton icon="ui-icon-closethick" actionListener="#{pagoController.removePagoDetalle(item)}" update="datalist,PagoCreateForm:publicidad,PagoCreateForm:comision,PagoCreateForm:valor_pago,PagoCreateForm:pendiente" process="datalist"/>
+                                            <p:commandButton icon="ui-icon-closethick" actionListener="#{pagoController.removePagoDetalle(item)}" update="datalist,:PagoCreateForm:publicidad,:PagoCreateForm:comision,:PagoCreateForm:valor_pago,:PagoCreateForm:pendiente" process="datalist"/>
                                         </p:column>
                                     </p:dataTable>
 

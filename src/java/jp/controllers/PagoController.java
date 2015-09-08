@@ -403,6 +403,10 @@ public class PagoController implements Serializable {
     public TipoPago[] getTiposPago() {
         return new TipoPago[]{TipoPago.CONTADO, TipoPago.CHEQUE, TipoPago.CONSIGNACION};
     }
+    
+    public EstadoPago[] getEstadosPago() {
+        return new EstadoPago[]{EstadoPago.ANULADO, EstadoPago.REALIZADO};
+    }
 
     //==========================================================================    
     public String getFormaPago(int tipo) {
@@ -689,6 +693,10 @@ public class PagoController implements Serializable {
         items = null;
         selected = new Pago();
         RequestContext.getCurrentInstance().execute("PF('PagoCreateDialog').hide()");
+    }
+    
+    public int getEstadoAnulado() {
+        return EstadoPago.ANULADO.getValor();
     }
 
 }
