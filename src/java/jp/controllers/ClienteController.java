@@ -125,6 +125,7 @@ public class ClienteController implements Serializable {
     }
 
     public void prepareEdit() {
+        selected = getFacade().find(selected.getId());
         header = JsfUtil.getMessageBundle("EditClienteTitle");
         if (selected.getTarifaEspecial() == null) {
             recargo = false;
