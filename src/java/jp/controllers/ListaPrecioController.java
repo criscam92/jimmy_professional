@@ -17,6 +17,7 @@ import javax.faces.convert.FacesConverter;
 import jp.entidades.ListaPrecio;
 import jp.entidades.PrecioProducto;
 import jp.entidades.Producto;
+import jp.entidades.Promocion;
 import jp.facades.ListaPrecioFacade;
 import jp.facades.TransactionFacade;
 import jp.util.JsfUtil;
@@ -213,7 +214,11 @@ public class ListaPrecioController implements Serializable {
         return getFacade().findAll();
     }
 
-    @FacesConverter(forClass = ListaPrecio.class)
+    public List<ListaPrecio> llenarListaPrecios(String query) {
+        return getFacade().getListaPreciosByQuery(query);
+    }
+
+    @FacesConverter(forClass = ListaPrecio.class, value = "listaprecioconverter")
     public static class ListaPrecioControllerConverter implements Converter {
 
         @Override
@@ -226,13 +231,13 @@ public class ListaPrecioController implements Serializable {
             return controller.getFacade().find(getKey(value));
         }
 
-        java.lang.Integer getKey(String value) {
-            java.lang.Integer key;
+        Integer getKey(String value) {
+            Integer key;
             key = Integer.valueOf(value);
             return key;
         }
 
-        String getStringKey(java.lang.Integer value) {
+        String getStringKey(Integer value) {
             StringBuilder sb = new StringBuilder();
             sb.append(value);
             return sb.toString();
@@ -263,7 +268,7 @@ public class ListaPrecioController implements Serializable {
             precioProducto.setPrecioUSD(precioNuevoUSD);
             listaPrecioProductos.add(precioProducto);
             limpiarPrecioProducto();
-        } else{ 
+        } else {
             JsfUtil.addErrorMessage("Debe seleccionar un producto con sus nuevos precios");
         }
     }

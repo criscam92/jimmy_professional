@@ -29,7 +29,7 @@
                                 </p:inputText>
 
                                 <p:outputLabel value="#{bundle.CreatePromocionLabel_valor}" for="valor" />
-                                <pe:inputNumber id="valor" value="#{promocionController.selected.valor}" title="#{bundle.CreatePromocionTitle_valor}"
+                                <pe:inputNumber styleClass="tamanoInputNumber" id="valor" value="#{promocionController.selected.valor}" title="#{bundle.CreatePromocionTitle_valor}"
                                                 required="true" requiredMessage="#{bundle.CreatePromocionRequiredMessage_valor}" symbolPosition="s" emptyValue="zero"/>
 
                                 <p:outputLabel value="#{bundle.CreateClienteLabel_cat}" for="categoria" />
@@ -41,7 +41,7 @@
                                 </p:selectOneMenu>
 
                                 <p:outputLabel value="Valor(US)" for="valorVentaUsd" />
-                                <pe:inputNumber style="width: 100px" id="valorVentaUsd" value="#{promocionController.selected.valorVentaUsd}" title="#{bundle.CreateProductoTitle_valorVentaUsd}" 
+                                <pe:inputNumber styleClass="tamanoInputNumber" id="valorVentaUsd" value="#{promocionController.selected.valorVentaUsd}" title="#{bundle.CreateProductoTitle_valorVentaUsd}" 
                                                 required="true" requiredMessage="EL CAMPO VALOR Valor Venta (US) ES OBLIGATORIO" symbolPosition="s" emptyValue="zero"/>
 
                             </p:panelGrid>

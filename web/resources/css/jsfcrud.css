@@ -292,3 +292,7 @@ table.center {
 .inputPrecios input{
     width: 92px;
 }
+
+.tamanoInputNumber input{
+    width: 100px;
+}

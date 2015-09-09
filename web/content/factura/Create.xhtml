@@ -99,8 +99,7 @@
                                 </p:column>
                                 <p:column>
                                     <p:autoComplete style="visibility: #{facturaController.ocultarListaPrecios}" id="listaPrecios" minQueryLength="3" value="#{facturaController.listaPrecio}" itemValue="#{listPrecio}" onclick="select()" 
-                                                    completeMethod="#{promocionController.llenarProducto}" effect="fade" converter="productoconverter" itemLabel="#{listPrecio.toString()}" var="listPrecio" required="true">
-                                        <p:ajax event="itemSelect" listener="#{facturaController.onItemSelectProducto}" update="precio" />
+                                                    completeMethod="#{listaPrecioController.llenarListaPrecios}" effect="fade" converter="listaprecioconverter" itemLabel="#{listPrecio.toString()}" var="listPrecio" required="true">
                                     </p:autoComplete>
                                 </p:column>
                             </p:row>
