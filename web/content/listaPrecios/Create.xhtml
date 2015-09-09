@@ -9,14 +9,18 @@
 
     <ui:composition>
 
-        <p:dialog id="ListaPrecioCreateDlg" widgetVar="ListaPrecioCreateDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.CreateListaPrecio}" width="700">
+        <p:dialog id="ListaPrecioCreateDlg" widgetVar="ListaPrecioCreateDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.CreateListaPrecio}" width="1024">
             <h:form id="ListaPrecioCreateForm">
                 <h:panelGroup id="display">
                     <p:panel header="Datos de la lista">
                         <p:panelGrid columns="4" rendered="#{listaPrecioController.selected != null}" style="margin: auto;">
-                            <p:outputLabel value="#{bundle.CreateCodigoDevolucionLabel_codigo}" for="codigo" />
+                            <p:outputLabel value="#{bundle.CreateCodigoDevolucionLabel_codigo}" for="codigo" styleClass="#{listaPrecioController.error}"/>
                             <p:inputText id="codigo" value="#{listaPrecioController.selected.codigo}" title="#{bundle.CreateCodigoDevolucionTitle_codigo}"
-                                         required="true" requiredMessage="#{bundle.CreateProductoRequiredMessage_codigo}"/>
+                                         required="true" requiredMessage="#{bundle.CreateProductoRequiredMessage_codigo}" styleClass="#{listaPrecioController.error}"
+                                         validatorMessage="El código debe ser un número entero positivo">
+                                <f:validateRegex pattern="[0-9]+" />
+                                <p:ajax event="blur" listener="#{listaPrecioController.existeCodigoListaPrecio()}" update=":growl,codigo"/>
+                            </p:inputText>
                             <p:outputLabel value="#{bundle.CreateEmpleadoLabel_nombre}" for="nombre" />
                             <p:inputText id="nombre" value="#{listaPrecioController.selected.nombre}" title="#{bundle.CreateEmpleadoTitle_nombre}"
                                          required="true" requiredMessage="#{bundle.EditCuentaBancariaRequiredMessage_nom}"/>                        
@@ -24,25 +28,45 @@
                     </p:panel><br/>
 
                     <p:panel header="Productos" id="panelPrecioProducto">
-                        <p:panelGrid columns="5" style="margin: auto;" id="formPrecioProducto">
-                            <p:outputLabel value="#{bundle.PrecioProductosTitle}" for="precioProducto" />                        
-                            <p:autoComplete id="precioProducto" value="#{listaPrecioController.producto}" var="pro"
-                                            itemLabel="#{pro.nombre}" itemValue="#{pro}" converter="productoconverter" forceSelection="true"
-                                            completeMethod="#{promocionController.llenarProducto}">
-                                <p:column>
-                                    <h:outputText value="#{pro.codigo}" style="width:15%"/>
-                                </p:column>
-                                <p:column>
-                                    <h:outputText value="#{pro.nombre}" />
-                                </p:column>
-                                <p:column>
-                                    <h:outputText value="#{pro.valorVenta}" />
-                                </p:column>
-                            </p:autoComplete>
-                            <p:outputLabel for="precio" value="#{bundle.MessageCreatePrecio}"/>
-                            <pe:inputNumber id="precio" value="#{listaPrecioController.precio}"/>
-                            <p:commandButton value="#{bundle.AddItem}" actionListener="#{listaPrecioController.addPrecioProducto()}" icon="ui-icon-plus" update="listaProductos,formPrecioProducto"/>
+                        <p:panelGrid columns="3" id="formPrecioProducto">
+                            <p:panelGrid columns="2">
+                                <p:outputLabel value="#{bundle.PrecioProductosTitle}" for="precioProducto" />                        
+                                <p:autoComplete id="precioProducto" value="#{listaPrecioController.producto}" var="pro"
+                                                itemLabel="#{pro.toString()}" itemValue="#{pro}" converter="productoconverter" forceSelection="true"
+                                                completeMethod="#{promocionController.llenarProducto}">
+                                    <p:column>
+                                        <h:outputText value="#{pro.codigo}" style="width:15%"/>
+                                    </p:column>
+                                    <p:column>
+                                        <h:outputText value="#{pro.nombre}" />
+                                    </p:column>
+                                    <p:column>
+                                        <h:outputText value="#{pro.valorVenta}" />
+                                    </p:column>
+                                    <p:ajax event="itemSelect" update="precioBase,precioBaseUSD,:growl" />
+                                </p:autoComplete>
+                            </p:panelGrid>
+
+                            <p:panelGrid columns="4">
+                                <p:outputLabel for="precioBase" value="#{bundle.MessageCreatePrecioBase}"/>
+                                <p:inputText id="precioBase" value="#{listaPrecioController.producto.valorVenta}" disabled="true" size="12"/>
+                                <p:outputLabel for="precioBaseUSD" value="#{bundle.MessageCreatePrecioBaseUSD}"/>
+                                <p:inputText id="precioBaseUSD" value="#{listaPrecioController.producto.valorVentaUsd}" disabled="true" size="12"/>
+                                <p:outputLabel for="precioNuevo" value="#{bundle.MessageCreatePrecioNuevo}"/>
+                                <pe:inputNumber id="precioNuevo" value="#{listaPrecioController.precioNuevo}" styleClass="inputPrecios"/>
+                                <p:outputLabel for="precioNuevoUSD" value="#{bundle.MessageCreatePrecioNuevoUSD}"/>
+                                <pe:inputNumber id="precioNuevoUSD" value="#{listaPrecioController.precioNuevoUSD}" styleClass="inputPrecios"/>
+                            </p:panelGrid>
+
+                            <p:panelGrid columns="1">
+                                <p:commandButton value="#{bundle.AddItem}" actionListener="#{listaPrecioController.addPrecioProducto()}" 
+                                                 icon="ui-icon-plus" update="listaProductos,formPrecioProducto"/>
+                            </p:panelGrid>
+
                         </p:panelGrid>
+
+
+
 
                         <p:dataTable styleClass="tabla" emptyMessage="#{bundle.EmptyTable}" id="listaProductos" var="itemTMP"
                                      paginator="true" value="#{listaPrecioController.listaPrecioProductos}"
@@ -69,6 +93,18 @@
                                 </f:facet>
                                 <h:outputText value="#{itemTMP.precio}"/>
                             </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    Precio Base (USD)
+                                </f:facet>
+                                <h:outputText value="#{itemTMP.producto.valorVentaUsd}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    Precio Nuevo (USD)
+                                </f:facet>
+                                <h:outputText value="#{itemTMP.precioUSD}"/>
+                            </p:column>
                             <p:column width="50">
                                 <f:facet name="header">
                                     Quitar
@@ -80,7 +116,7 @@
                     </p:panel>
                     <div class="botonesDialog">
                         <p:commandButton actionListener="#{listaPrecioController.create()}" value="#{bundle.Save}" icon="ui-icon-disk"
-                                         update="display,:ListaPrecioListForm:datalist,:growl" oncomplete="handleSubmit(args,'ListaPrecioCreateDialog');"/>
+                                         update="display,:ListaPrecioListForm:datalist,:growl"/>
                         <p:commandButton value="#{bundle.Cancel}" onclick="PF('ListaPrecioCreateDialog').hide()" icon="ui-icon-close" type="button"/>
                     </div>
                 </h:panelGroup>

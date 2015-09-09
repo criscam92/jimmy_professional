@@ -288,3 +288,7 @@ table.center {
 .boton-tercero .fa{
     font-size: 14px !important;
 }
+
+.inputPrecios input{
+    width: 92px;
+}

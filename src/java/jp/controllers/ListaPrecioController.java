@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.faces.bean.ViewScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
@@ -21,9 +21,10 @@ import jp.facades.ListaPrecioFacade;
 import jp.facades.TransactionFacade;
 import jp.util.JsfUtil;
 import jp.util.JsfUtil.PersistAction;
+import org.primefaces.context.RequestContext;
 
 @ManagedBean(name = "listaPrecioController")
-@SessionScoped
+@ViewScoped
 public class ListaPrecioController implements Serializable {
 
     @EJB
@@ -35,10 +36,14 @@ public class ListaPrecioController implements Serializable {
     private PrecioProducto precioProducto;
     private List<PrecioProducto> listaPrecioProductos;
     private Producto producto;
-    private Double precio;
+    private Double precioNuevo;
+    private Double precioNuevoUSD;
+    private final String uiError;
+    private String error;
 
     public ListaPrecioController() {
         listaPrecioProductos = new ArrayList<>();
+        uiError = "ui-state-error";
     }
 
     public ListaPrecio getSelected() {
@@ -73,12 +78,28 @@ public class ListaPrecioController implements Serializable {
         this.producto = productos;
     }
 
-    public Double getPrecio() {
-        return precio;
+    public Double getPrecioNuevo() {
+        return precioNuevo;
     }
 
-    public void setPrecio(Double precio) {
-        this.precio = precio;
+    public void setPrecioNuevo(Double precio) {
+        this.precioNuevo = precio;
+    }
+
+    public Double getPrecioNuevoUSD() {
+        return precioNuevoUSD;
+    }
+
+    public void setPrecioNuevoUSD(Double precioNuevoUSD) {
+        this.precioNuevoUSD = precioNuevoUSD;
+    }
+
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
     }
 
     protected void setEmbeddableKeys() {
@@ -102,28 +123,50 @@ public class ListaPrecioController implements Serializable {
     }
 
     public void create() {
-        if (getTransactionFacade().createPrecioProducto(selected, listaPrecioProductos)) {
-//            persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageListaPrecio", "CreateSuccessF"}));
-//            if (!JsfUtil.isValidationFailed()) {
-                JsfUtil.getMessageBundle(new String[]{"MessageListaPrecio", "CreateSuccessF"});
-                items = null;    // Invalidate list of items to trigger re-query.
-//            }
+        if (!existeCodigoListaPrecio()) {
+            if (listaPrecioProductos.size() >= 1) {
+                if (getTransactionFacade().createPrecioProducto(selected, listaPrecioProductos)) {
+                    if (!JsfUtil.isValidationFailed()) {
+                        JsfUtil.addSuccessMessage(JsfUtil.getMessageBundle(new String[]{"MessageListaPrecio", "CreateSuccessF"}));
+                        items = null;    // Invalidate list of items to trigger re-query.
+                        selected = new ListaPrecio();
+                        listaPrecioProductos.clear();
+                        limpiarPrecioProducto();
+                        setError("");
+                        RequestContext.getCurrentInstance().execute("PF('ListaPrecioCreateDialog').hide()");
+                    }
+                } else {
+                    JsfUtil.addErrorMessage("No se ha podido Crear la Lista de Productos");
+                }
+            } else {
+                JsfUtil.addErrorMessage("La Lista de Precios debe tener como mínimo un producto");
+            }
+        } else {
+            setError(uiError);
+            JsfUtil.addErrorMessage("El Código de la Lista de Precios ya existe.");
         }
-        else {
-            JsfUtil.addErrorMessage("No se ha podido Crear la Lista de Productos");
-        }
-
     }
-    
+
+    public boolean existeCodigoListaPrecio() {
+        boolean existe = getFacade().getEntityByCodigoOrTipo(selected);
+        if (existe) {
+            selected.setCodigo("");
+            JsfUtil.addErrorMessage("El Código de la Lista de Precios ya existe.");
+        }
+        return existe;
+    }
+
     public void update() {
         persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessageListaPrecio", "UpdateSuccessF"}));
     }
 
     public void destroy() {
-        persist(PersistAction.DELETE, JsfUtil.getMessageBundle(new String[]{"MessageListaPrecio", "DeleteSuccessF"}));
-        if (!JsfUtil.isValidationFailed()) {
-            selected = null; // Remove selection
-            items = null;    // Invalidate list of items to trigger re-query.
+        if (getTransactionFacade().deleteListaPrecio(selected)) {
+            JsfUtil.addSuccessMessage(JsfUtil.getMessageBundle(new String[]{"MessageListaPrecio", "DeleteSuccessF"}));
+            if (!JsfUtil.isValidationFailed()) {
+                selected = null; // Remove selection
+                items = null;    // Invalidate list of items to trigger re-query.
+            }
         }
     }
 
@@ -212,13 +255,16 @@ public class ListaPrecioController implements Serializable {
     }
 
     public void addPrecioProducto() {
-        if (producto != null) {
+        if (producto != null && precioNuevo != null && precioNuevoUSD != null) {
             precioProducto = new PrecioProducto();
             precioProducto.setId(listaPrecioProductos.size() + 1);
             precioProducto.setProducto(producto);
-            precioProducto.setPrecio(precio);
+            precioProducto.setPrecio(precioNuevo);
+            precioProducto.setPrecioUSD(precioNuevoUSD);
             listaPrecioProductos.add(precioProducto);
             limpiarPrecioProducto();
+        } else{ 
+            JsfUtil.addErrorMessage("Debe seleccionar un producto con sus nuevos precios");
         }
     }
 
@@ -228,7 +274,8 @@ public class ListaPrecioController implements Serializable {
 
     private void limpiarPrecioProducto() {
         producto = null;
-        precio = null;
+        precioNuevo = null;
+        precioNuevoUSD = null;
     }
 
 }

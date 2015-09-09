@@ -1,5 +1,6 @@
 package jp.facades;
 
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -19,4 +20,13 @@ public class ListaPrecioFacade extends AbstractFacade<ListaPrecio> {
         super(ListaPrecio.class);
     }
     
+    @Override
+    public List<ListaPrecio> findAll() {
+        return super.findAll(true);
+    }
+    
+    @Override
+    public List<ListaPrecio> findAll(boolean asc) {
+        return super.findAll(asc);
+    }
 }

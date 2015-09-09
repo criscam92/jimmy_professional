@@ -17,13 +17,14 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import jp.entidades.auxiliar.Codificable;
 
 @Entity
 @Table(name = "lista_precio", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"codigo"})})
 @NamedQueries({
     @NamedQuery(name = "ListaPrecio.findAll", query = "SELECT l FROM ListaPrecio l")})
-public class ListaPrecio implements Serializable {
+public class ListaPrecio implements Serializable, Codificable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -56,6 +57,7 @@ public class ListaPrecio implements Serializable {
         this.nombre = nombre;
     }
 
+    @Override
     public Integer getId() {
         return id;
     }
@@ -64,6 +66,7 @@ public class ListaPrecio implements Serializable {
         this.id = id;
     }
 
+    @Override
     public String getCodigo() {
         return codigo;
     }
@@ -72,6 +75,7 @@ public class ListaPrecio implements Serializable {
         this.codigo = codigo;
     }
 
+    @Override
     public String getNombre() {
         return nombre;
     }
@@ -111,6 +115,11 @@ public class ListaPrecio implements Serializable {
     @Override
     public String toString() {
         return this.getCodigo()+" - " + this.getNombre();
+    }
+
+    @Override
+    public String getTipo() {
+        return null;
     }
     
 }

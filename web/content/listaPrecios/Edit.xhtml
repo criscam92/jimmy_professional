@@ -3,27 +3,23 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:p="http://primefaces.org/ui">
 
     <ui:composition>
 
-        <p:dialog id="ListaPrecioEditDlg" widgetVar="ListaPrecioEditDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.EditListaPrecioTitle}">
+        <p:dialog id="ListaPrecioEditDlg" widgetVar="ListaPrecioEditDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.EditListaPrecio}">
             <h:form id="ListaPrecioEditForm">
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{listaPrecioController.selected != null}">
-                        <p:outputLabel value="#{bundle.EditListaPrecioLabel_id}" for="id" />
-                        <p:inputText id="id" value="#{listaPrecioController.selected.id}" title="#{bundle.EditListaPrecioTitle_id}" 
-                                     required="true" requiredMessage="#{bundle.EditListaPrecioRequiredMessage_id}"/>
-                        <p:outputLabel value="#{bundle.EditListaPrecioLabel_codigo}" for="codigo" />
-                        <p:inputText id="codigo" value="#{listaPrecioController.selected.codigo}" title="#{bundle.EditListaPrecioTitle_codigo}" 
-                                     required="true" requiredMessage="#{bundle.EditListaPrecioRequiredMessage_codigo}"/>
-                        <p:outputLabel value="#{bundle.EditListaPrecioLabel_nombre}" for="nombre" />
-                        <p:inputText id="nombre" value="#{listaPrecioController.selected.nombre}" title="#{bundle.EditListaPrecioTitle_nombre}" 
-                                     required="true" requiredMessage="#{bundle.EditListaPrecioRequiredMessage_nombre}"/>
+                        <p:outputLabel value="#{bundle.CreateCodigoDevolucionLabel_codigo}" for="codigo" />
+                        <p:inputText id="codigo" value="#{listaPrecioController.selected.codigo}" title="#{bundle.CreateCodigoDevolucionTitle_codigo}" 
+                                     required="true" requiredMessage="#{bundle.CreateProductoRequiredMessage_codigo}"/>
+                        <p:outputLabel value="#{bundle.CreateEmpleadoLabel_nombre}" for="nombre" />
+                        <p:inputText id="nombre" value="#{listaPrecioController.selected.nombre}" title="#{bundle.CreateEmpleadoTitle_nombre}" 
+                                     required="true" requiredMessage="#{bundle.EditCuentaBancariaRequiredMessage_nom}"/>
                     </p:panelGrid>
                     <p:commandButton actionListener="#{listaPrecioController.update}" value="#{bundle.Save}" update="display,:ListaPrecioListForm:datalist,:growl" oncomplete="handleSubmit(args, 'ListaPrecioEditDialog');"/>
-                    <p:commandButton value="#{bundle.Cancel}" onclick="ListaPrecioEditDialog.hide()"/>
+                    <p:commandButton value="#{bundle.Cancel}" onclick="PF('ListaPrecioEditDialog').hide()" type="button"/>
                 </h:panelGroup>
             </h:form>
         </p:dialog>

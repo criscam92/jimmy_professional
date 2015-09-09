@@ -1170,7 +1170,6 @@ public class TransactionFacade {
     }
     
     public boolean createPrecioProducto(ListaPrecio listaPrecio, List<PrecioProducto> precioProductos) {
-        System.out.println("\n1:listaPrecio-> "+listaPrecio+"\n2:precioProducto-> "+precioProductos.size());
         userTransaction = sessionContext.getUserTransaction();
         try {
             userTransaction.begin();
@@ -1179,15 +1178,46 @@ public class TransactionFacade {
             lp.setCodigo(listaPrecio.getCodigo());
             lp.setNombre(listaPrecio.getNombre());
 
-            getEntityManager().merge(lp);
+            getEntityManager().persist(lp);
 
             for (PrecioProducto pp : precioProductos) {
                 pp.setId(null);
                 pp.setPrecio(pp.getPrecio());
+                pp.setPrecioUSD(pp.getPrecioUSD());
                 pp.setProducto(pp.getProducto());
                 pp.setListaPrecio(lp);
                 getEntityManager().merge(pp);
             }
+
+            userTransaction.commit();
+            return true;
+        } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
+            try {
+                System.out.println("======>");
+                e.printStackTrace();
+                System.out.println("<======");
+                userTransaction.rollback();
+            } catch (IllegalStateException | SecurityException | SystemException es) {
+                System.out.println("======>");
+                es.printStackTrace();
+                System.out.println("<======");
+            }
+        }
+        return false;
+    }
+    
+    public boolean deleteListaPrecio(ListaPrecio listaPrecio) {
+        userTransaction = sessionContext.getUserTransaction();
+        try {
+            userTransaction.begin();
+
+            Query query1 = getEntityManager().createQuery("DELETE FROM PrecioProducto pp WHERE pp.listaPrecio.id = :lp");
+            query1.setParameter("lp", listaPrecio.getId());
+            query1.executeUpdate();
+
+            Query query2 = getEntityManager().createQuery("DELETE FROM ListaPrecio lp WHERE lp.id = :lp");
+            query2.setParameter("lp", listaPrecio.getId());
+            query2.executeUpdate();
 
             userTransaction.commit();
             return true;

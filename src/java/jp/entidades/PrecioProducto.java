@@ -30,6 +30,10 @@ public class PrecioProducto implements Serializable {
     @NotNull
     @Column(nullable = false)
     private double precio;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "precio_usd", nullable = false)
+    private double precioUSD;
     @JoinColumn(name = "lista_precio", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private ListaPrecio listaPrecio;
@@ -63,6 +67,14 @@ public class PrecioProducto implements Serializable {
 
     public void setPrecio(double precio) {
         this.precio = precio;
+    }
+
+    public double getPrecioUSD() {
+        return precioUSD;
+    }
+
+    public void setPrecioUSD(double precioUSD) {
+        this.precioUSD = precioUSD;
     }
 
     public ListaPrecio getListaPrecio() {
