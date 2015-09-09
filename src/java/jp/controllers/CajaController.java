@@ -1,6 +1,5 @@
 package jp.controllers;
 
-import jp.entidades.Pais;
 import jp.util.JsfUtil;
 import jp.util.JsfUtil.PersistAction;
 import java.io.Serializable;
@@ -13,7 +12,6 @@ import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
