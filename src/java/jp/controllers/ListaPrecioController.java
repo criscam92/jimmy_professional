@@ -17,7 +17,6 @@ import javax.faces.convert.FacesConverter;
 import jp.entidades.ListaPrecio;
 import jp.entidades.PrecioProducto;
 import jp.entidades.Producto;
-import jp.entidades.Promocion;
 import jp.facades.ListaPrecioFacade;
 import jp.facades.TransactionFacade;
 import jp.util.JsfUtil;
@@ -41,10 +40,15 @@ public class ListaPrecioController implements Serializable {
     private Double precioNuevoUSD;
     private final String uiError;
     private String error;
+    private List<PrecioProducto> precioProductos = null;
+    private final List<PrecioProducto> precioProductosEliminar;
+    private final List<PrecioProducto> precioProductosGuardar;
 
     public ListaPrecioController() {
-        listaPrecioProductos = new ArrayList<>();
         uiError = "ui-state-error";
+        listaPrecioProductos = new ArrayList<>();
+        precioProductosEliminar = new ArrayList<>();
+        precioProductosGuardar = new ArrayList<>();
     }
 
     public ListaPrecio getSelected() {
@@ -103,6 +107,14 @@ public class ListaPrecioController implements Serializable {
         this.error = error;
     }
 
+    public List<PrecioProducto> getPrecioProductos() {
+        return precioProductos;
+    }
+
+    public void setPrecioProductos(List<PrecioProducto> precioProductos) {
+        this.precioProductos = precioProductos;
+    }
+
     protected void setEmbeddableKeys() {
     }
 
@@ -158,7 +170,27 @@ public class ListaPrecioController implements Serializable {
     }
 
     public void update() {
-        persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessageListaPrecio", "UpdateSuccessF"}));
+//        persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessageListaPrecio", "UpdateSuccessF"}));
+        if (precioProductos.size() >= 1) {
+            if (getTransactionFacade().updateListaPrecio(selected, precioProductosGuardar, precioProductosEliminar)) {
+                if (!JsfUtil.isValidationFailed()) {
+                    JsfUtil.addSuccessMessage(JsfUtil.getMessageBundle(new String[]{"MessageListaPrecio", "UpdateSuccessF"}));
+                    selected = null;
+                    producto = null;
+                    precioNuevo = null;
+                    precioNuevoUSD = null;
+                    precioProductos.clear();
+                    precioProductosEliminar.clear();
+                    precioProductosGuardar.clear();
+                    setError("");
+                    RequestContext.getCurrentInstance().execute("PF('ListaPrecioEditDialog').hide()");
+                }
+            } else {
+                JsfUtil.addErrorMessage("No se ha podido actualizar la Lista de Productos");
+            }
+        } else {
+            JsfUtil.addErrorMessage("La lista debe tener como minimo un producto");
+        }
     }
 
     public void destroy() {
@@ -214,10 +246,6 @@ public class ListaPrecioController implements Serializable {
         return getFacade().findAll();
     }
 
-    public List<ListaPrecio> llenarListaPrecios(String query) {
-        return getFacade().getListaPreciosByQuery(query);
-    }
-
     @FacesConverter(forClass = ListaPrecio.class, value = "listaprecioconverter")
     public static class ListaPrecioControllerConverter implements Converter {
 
@@ -231,13 +259,13 @@ public class ListaPrecioController implements Serializable {
             return controller.getFacade().find(getKey(value));
         }
 
-        Integer getKey(String value) {
-            Integer key;
+        java.lang.Integer getKey(String value) {
+            java.lang.Integer key;
             key = Integer.valueOf(value);
             return key;
         }
 
-        String getStringKey(Integer value) {
+        String getStringKey(java.lang.Integer value) {
             StringBuilder sb = new StringBuilder();
             sb.append(value);
             return sb.toString();
@@ -259,19 +287,19 @@ public class ListaPrecioController implements Serializable {
 
     }
 
-    public void addPrecioProducto() {
-        if (producto != null && precioNuevo != null && precioNuevoUSD != null) {
-            precioProducto = new PrecioProducto();
-            precioProducto.setId(listaPrecioProductos.size() + 1);
-            precioProducto.setProducto(producto);
-            precioProducto.setPrecio(precioNuevo);
-            precioProducto.setPrecioUSD(precioNuevoUSD);
-            listaPrecioProductos.add(precioProducto);
-            limpiarPrecioProducto();
-        } else {
-            JsfUtil.addErrorMessage("Debe seleccionar un producto con sus nuevos precios");
-        }
-    }
+//    public void addPrecioProducto() {
+//        if (producto != null && precioNuevo != null && precioNuevoUSD != null) {
+//            precioProducto = new PrecioProducto();
+//            precioProducto.setId(listaPrecioProductos.size() + 1);
+//            precioProducto.setProducto(producto);
+//            precioProducto.setPrecio(precioNuevo);
+//            precioProducto.setPrecioUSD(precioNuevoUSD);
+//            listaPrecioProductos.add(precioProducto);
+//            limpiarPrecioProducto();
+//        } else {
+//            JsfUtil.addErrorMessage("Debe seleccionar un producto con sus nuevos precios");
+//        }
+//    }
 
     public void removePrecioProducto(PrecioProducto pp) {
         listaPrecioProductos.remove(pp);
@@ -283,4 +311,38 @@ public class ListaPrecioController implements Serializable {
         precioNuevoUSD = null;
     }
 
+    public void removePrecioProductoEdit(PrecioProducto precioProducto) {
+        if (precioProductosGuardar.contains(precioProducto)) {
+            precioProductosGuardar.remove(precioProducto);
+        }
+        if (precioProducto.getExiste()) {
+            precioProductosEliminar.add(precioProducto);
+        }
+        precioProductos.remove(precioProducto);
+    }
+
+    public void prepareEdit() {
+        precioProductos = getFacade().getProductosByListaPrecio(selected);
+        for (PrecioProducto pp : precioProductos) {
+            pp.setExiste(true);
+        }
+    }
+    
+    public void addPrecioProducto(boolean editar) {
+        if (producto != null && precioNuevo != null && precioNuevoUSD != null) {
+            precioProducto = new PrecioProducto();
+            precioProducto.setId(precioProductos.size() + 1);
+            precioProducto.setProducto(producto);
+            precioProducto.setPrecio(precioNuevo);
+            precioProducto.setPrecioUSD(precioNuevoUSD);
+            precioProducto.setExiste(false);
+            precioProductos.add(precioProducto);
+            if (editar) {
+                precioProductosGuardar.add(precioProducto);
+            }            
+            limpiarPrecioProducto();
+        } else {
+            JsfUtil.addErrorMessage("Debe seleccionar un producto con sus nuevos precios");
+        }
+    }
 }

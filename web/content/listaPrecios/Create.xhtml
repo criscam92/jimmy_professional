@@ -9,7 +9,7 @@
 
     <ui:composition>
 
-        <p:dialog id="ListaPrecioCreateDlg" widgetVar="ListaPrecioCreateDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.CreateListaPrecio}" width="1024">
+        <p:dialog id="ListaPrecioCreateDlg" widgetVar="ListaPrecioCreateDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.CreateListaPrecio}" width="980">
             <h:form id="ListaPrecioCreateForm">
                 <h:panelGroup id="display">
                     <p:panel header="Datos de la lista">
@@ -28,7 +28,7 @@
                     </p:panel><br/>
 
                     <p:panel header="Productos" id="panelPrecioProducto">
-                        <p:panelGrid columns="3" id="formPrecioProducto">
+                        <p:panelGrid columns="3" id="formPrecioProducto" style="margin: auto;">
                             <p:panelGrid columns="2">
                                 <p:outputLabel value="#{bundle.PrecioProductosTitle}" for="precioProducto" />                        
                                 <p:autoComplete id="precioProducto" value="#{listaPrecioController.producto}" var="pro"
@@ -49,9 +49,9 @@
 
                             <p:panelGrid columns="4">
                                 <p:outputLabel for="precioBase" value="#{bundle.MessageCreatePrecioBase}"/>
-                                <p:inputText id="precioBase" value="#{listaPrecioController.producto.valorVenta}" disabled="true" size="12"/>
+                                <pe:inputNumber id="precioBase" value="#{listaPrecioController.producto.valorVenta}" disabled="true" styleClass="inputPrecios"/>
                                 <p:outputLabel for="precioBaseUSD" value="#{bundle.MessageCreatePrecioBaseUSD}"/>
-                                <p:inputText id="precioBaseUSD" value="#{listaPrecioController.producto.valorVentaUsd}" disabled="true" size="12"/>
+                                <pe:inputNumber id="precioBaseUSD" value="#{listaPrecioController.producto.valorVentaUsd}" disabled="true" styleClass="inputPrecios"/>
                                 <p:outputLabel for="precioNuevo" value="#{bundle.MessageCreatePrecioNuevo}"/>
                                 <pe:inputNumber id="precioNuevo" value="#{listaPrecioController.precioNuevo}" styleClass="inputPrecios"/>
                                 <p:outputLabel for="precioNuevoUSD" value="#{bundle.MessageCreatePrecioNuevoUSD}"/>
@@ -59,15 +59,12 @@
                             </p:panelGrid>
 
                             <p:panelGrid columns="1">
-                                <p:commandButton value="#{bundle.AddItem}" actionListener="#{listaPrecioController.addPrecioProducto()}" 
+                                <p:commandButton value="#{bundle.AddItem}" actionListener="#{listaPrecioController.addPrecioProducto(false)}" 
                                                  icon="ui-icon-plus" update="listaProductos,formPrecioProducto"/>
                             </p:panelGrid>
 
                         </p:panelGrid>
-
-
-
-
+                        
                         <p:dataTable styleClass="tabla" emptyMessage="#{bundle.EmptyTable}" id="listaProductos" var="itemTMP"
                                      paginator="true" value="#{listaPrecioController.listaPrecioProductos}"
                                      selectionMode="single" selection="#{listaPrecioController.precioProducto}"

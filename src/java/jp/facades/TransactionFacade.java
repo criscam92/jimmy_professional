@@ -1235,4 +1235,38 @@ public class TransactionFacade {
         }
         return false;
     }
+    
+    public boolean updateListaPrecio(ListaPrecio listaPrecio, List<PrecioProducto> precioProductosGuardar, List<PrecioProducto> precioProductosEliminar) {
+        userTransaction = sessionContext.getUserTransaction();
+        try {
+            userTransaction.begin();
+            getEntityManager().merge(listaPrecio);
+
+            for (PrecioProducto pp : precioProductosEliminar) {
+                PrecioProducto ipTMP = getEntityManager().find(PrecioProducto.class, pp.getId());
+                getEntityManager().remove(ipTMP);
+            }
+
+            for (PrecioProducto pp : precioProductosGuardar) {
+                pp.setId(null);
+                pp.setListaPrecio(listaPrecio);
+                getEntityManager().merge(pp);
+            }
+
+            userTransaction.commit();
+            return true;
+        } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
+            try {
+                System.out.println("======>");
+                e.printStackTrace();
+                System.out.println("<======");
+                userTransaction.rollback();
+            } catch (IllegalStateException | SecurityException | SystemException es) {
+                System.out.println("======>");
+                es.printStackTrace();
+                System.out.println("<======");
+            }
+        }
+        return false;
+    }
 }

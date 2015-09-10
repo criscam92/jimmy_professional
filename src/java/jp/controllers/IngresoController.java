@@ -136,7 +136,7 @@ public class IngresoController implements Serializable {
                     }
                 }
             } else {
-                JsfUtil.addErrorMessage("NO SE A PODIDO GUARDAR EL INGRESO");
+                JsfUtil.addErrorMessage("No se ha podido guardar el Ingreso");
             }
 
         } else {
@@ -159,11 +159,11 @@ public class IngresoController implements Serializable {
                     ingresoProductosEditar.clear();
                 }
             } else {
-                JsfUtil.addErrorMessage("NO SE A PODIDO actualizar EL INGRESO");
+                JsfUtil.addErrorMessage("No se ha podido actualizar el Ingreso");
             }
 
         } else {
-            JsfUtil.addErrorMessage("EL INGRESO debe tener como minimo un producto");
+            JsfUtil.addErrorMessage("El ingreso debe tener como minimo un producto");
         }
     }
 

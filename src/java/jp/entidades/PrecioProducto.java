@@ -13,6 +13,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 @Entity
@@ -40,6 +41,8 @@ public class PrecioProducto implements Serializable {
     @JoinColumn(name = "producto", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Producto producto;
+    @Transient
+    private Boolean existe;
 
     public PrecioProducto() {
     }
@@ -91,6 +94,14 @@ public class PrecioProducto implements Serializable {
 
     public void setProducto(Producto producto) {
         this.producto = producto;
+    }
+    
+    public Boolean getExiste() {
+        return existe;
+    }
+    
+    public void setExiste(Boolean existe) {
+        this.existe = existe;
     }
 
     @Override

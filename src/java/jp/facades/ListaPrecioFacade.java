@@ -3,9 +3,11 @@ package jp.facades;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import jp.entidades.ListaPrecio;
+import jp.entidades.PrecioProducto;
 
 @Stateless
 public class ListaPrecioFacade extends AbstractFacade<ListaPrecio> {
@@ -41,6 +43,16 @@ public class ListaPrecioFacade extends AbstractFacade<ListaPrecio> {
             return q.getResultList();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        return null;
+    }
+    
+    public List<PrecioProducto> getProductosByListaPrecio(ListaPrecio lp) {
+        try {
+            Query query = getEntityManager().createQuery("SELECT pp FROM PrecioProducto pp WHERE pp.listaPrecio.id = :listaProduc");
+            query.setParameter("listaProduc", lp.getId());
+            return query.getResultList();
+        } catch (NoResultException e) {
         }
         return null;
     }
