@@ -19,7 +19,10 @@ import jp.entidades.DespachoFactura;
 import jp.entidades.Empleado;
 import jp.entidades.Factura;
 import jp.entidades.FacturaProducto;
+import jp.entidades.ListaPrecio;
 import jp.entidades.Pago;
+import jp.entidades.PrecioProducto;
+import jp.entidades.Producto;
 import jp.entidades.Promocion;
 import jp.util.EstadoDespachoFactura;
 import jp.util.EstadoFactura;
@@ -223,12 +226,10 @@ public class FacturaFacade extends AbstractFacade<Factura> {
                 factura.setSaldo(factura.getTotalPagar());
                 factura.setSaldoCancelado(0d);
                 return factura;
-            } else {
-                if (totalPago < totalFactura) {
-                    factura.setSaldo(totalFactura - totalPago);
-                    factura.setSaldoCancelado(totalPago);
-                    return factura;
-                }
+            } else if (totalPago < totalFactura) {
+                factura.setSaldo(totalFactura - totalPago);
+                factura.setSaldoCancelado(totalPago);
+                return factura;
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -372,5 +373,17 @@ public class FacturaFacade extends AbstractFacade<Factura> {
             e.printStackTrace();
             return new ArrayList<>();
         }
+    }
+
+    public PrecioProducto getPrecioProductoByListaPrecioAndProducto(ListaPrecio listaPrecio, Producto producto) {
+        try {
+            Query query = getEntityManager().createQuery("SELECT p FROM PrecioProducto p WHERE p.listaPrecio.id = :lp AND p.producto.id = :pro");
+            query.setParameter("lp", listaPrecio.getId());
+            query.setParameter("pro", producto.getId());
+            return (PrecioProducto) query.getSingleResult();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

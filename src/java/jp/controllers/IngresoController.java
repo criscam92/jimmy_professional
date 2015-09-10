@@ -184,34 +184,6 @@ public class IngresoController implements Serializable {
         }
         return items;
     }
-
-//    private void persist(PersistAction persistAction, String successMessage) {
-//        if (selected != null) {
-//            setEmbeddableKeys();
-//            try {
-//                if (persistAction != PersistAction.DELETE) {
-//                    getFacade().edit(selected);
-//                } else {
-//                    getFacade().remove(selected);
-//                }
-//                JsfUtil.addSuccessMessage(successMessage);
-//            } catch (EJBException ex) {
-//                String msg = "";
-//                Throwable cause = ex.getCause();
-//                if (cause != null) {
-//                    msg = cause.getLocalizedMessage();
-//                }
-//                if (msg.length() > 0) {
-//                    JsfUtil.addErrorMessage(msg);
-//                } else {
-//                    JsfUtil.addErrorMessage(ex, ResourceBundle.getBundle("languages/Bundle").getString("PersistenceErrorOccured"));
-//                }
-//            } catch (Exception ex) {
-//                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
-//                JsfUtil.addErrorMessage(ex, ResourceBundle.getBundle("languages/Bundle").getString("PersistenceErrorOccured"));
-//            }
-//        }
-//    }
     
     public List<Ingreso> getItemsAvailableSelectMany() {
         return getFacade().findAll();
@@ -234,13 +206,13 @@ public class IngresoController implements Serializable {
             return controller.getFacade().find(getKey(value));
         }
 
-        java.lang.Long getKey(String value) {
-            java.lang.Long key;
+        Long getKey(String value) {
+            Long key;
             key = Long.valueOf(value);
             return key;
         }
 
-        String getStringKey(java.lang.Long value) {
+        String getStringKey(Long value) {
             StringBuilder sb = new StringBuilder();
             sb.append(value);
             return sb.toString();
