@@ -386,4 +386,6 @@ public class FacturaFacade extends AbstractFacade<Factura> {
         }
         return null;
     }
+    
+  
 }

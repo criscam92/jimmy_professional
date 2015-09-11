@@ -71,7 +71,7 @@ import org.primefaces.event.SelectEvent;
 @ManagedBean(name = "facturaController")
 @ViewScoped
 public class FacturaController implements Serializable {
-
+    
     @EJB
     private FacturaFacade ejbFacade;
     @EJB
@@ -100,7 +100,7 @@ public class FacturaController implements Serializable {
     private ListaPrecioFacade listaPrecioFacade;
     @Inject
     private UsuarioActual usuarioActual;
-
+    
     private List<Factura> items = null;
     private List<ProductoPromocionHelper> objects;
     private final List<ProductoPromocionHelper> objectsCreate;
@@ -134,10 +134,10 @@ public class FacturaController implements Serializable {
     //====================
 
     boolean emple, clien, tPago, mon, agre, qui;
-
+    
     private DespachoFactura despachoFactura;
     private List<DespachoFactura> despachosFactura = null;
-
+    
     public FacturaController() {
         sdf = new SimpleDateFormat("yyyy-MM-dd");
         selected = new Factura();
@@ -149,35 +149,35 @@ public class FacturaController implements Serializable {
         objectsEliminar = new ArrayList<>();
         ocultarListaPrecios = "hidden";
     }
-
+    
     @PostConstruct
     public void init() {
-
+        
         Map<String, String> requestMap = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
         FacesContext.getCurrentInstance().getExternalContext().getSession(true);
-
+        
         String ordenPedido = requestMap.get("id");
         ordenPedidoTMP = ordenPedido;
-
+        
         if (ordenPedido != null && !ordenPedido.trim().isEmpty()) {//
             selected = getFacade().getFacturaByOrdenPedido(ordenPedido);
-
+            
             if (selected.getId() != null) {
                 long despachos = getDespachoFacturaFacade().countDespachoFacturaByFactura(selected);
                 System.out.println("Despachos: " + despachos);
                 if (despachos > 0) {
                     hayDespachos = true;
                 }
-
+                
                 long pagos = getPagoFacade().countPagosFacturaByFactura(selected);
                 System.out.println("Pagos: " + pagos);
                 if (pagos > 0) {
                     hayPagos = true;
                 }
             }
-
+            
             bloquearCampos();
-
+            
             List<FacturaProducto> listProductos = getFacade().getFacturaProductoByFactura(selected);
             objects = new ArrayList<>();
             for (FacturaProducto fp : listProductos) {
@@ -185,7 +185,7 @@ public class FacturaController implements Serializable {
                 objects.add(new ProductoPromocionHelper(id, fp.getId(), fp.getUnidadesVenta(), fp.getUnidadesBonificacion(), (fp.getProducto().getValorVenta() * fp.getUnidadesVenta()), (fp.getProducto().getValorVentaUsd() * fp.getUnidadesVenta()), fp.getProducto(), true));
                 objectsEditar.add(new ProductoPromocionHelper(id, fp.getId(), fp.getUnidadesVenta(), fp.getUnidadesBonificacion(), (fp.getProducto().getValorVenta() * fp.getUnidadesVenta()), (fp.getProducto().getValorVentaUsd() * fp.getUnidadesVenta()), fp.getProducto(), true));
             }
-
+            
             List<FacturaPromocion> listPromociones = getPromocionFacade().getFacturaPromocionByFactura(selected);
             for (FacturaPromocion fp : listPromociones) {
                 Long id = objects.size() + 1L;
@@ -193,142 +193,142 @@ public class FacturaController implements Serializable {
                 objectsEditar.add(new ProductoPromocionHelper(id, fp.getId(), fp.getUnidadesVenta(), fp.getUnidadesBonificacion(), (fp.getPromocion().getValor() * fp.getUnidadesVenta()), (fp.getPromocion().getValorVentaUsd() * fp.getUnidadesVenta()), fp.getPromocion(), false));
             }
         } else {
-
+            
             String date1 = requestMap.get("date1");
             String date2 = requestMap.get("date2");
-
+            
             try {
                 empleadoFiltro = getEmpleFacade().find(Long.valueOf(requestMap.get("empleado")));
             } catch (Exception e) {
                 empleadoFiltro = null;
             }
-
+            
             try {
                 clienteFiltro = getClienteFacade().find(Long.valueOf(requestMap.get("cliente")));
             } catch (Exception e) {
                 clienteFiltro = null;
             }
-
+            
             try {
                 tipoPago = Integer.valueOf(requestMap.get("tipo"));
             } catch (Exception e) {
                 tipoPago = -1;
             }
-
+            
             try {
                 estado = Integer.valueOf(requestMap.get("estado"));
             } catch (Exception e) {
                 estado = -1;
             }
-
+            
             try {
                 estadoDespacho = Integer.valueOf(requestMap.get("estadoDespacho"));
             } catch (Exception e) {
                 estadoDespacho = -1;
             }
-
+            
             try {
                 estadoPago = Integer.valueOf(requestMap.get("estadoPago"));
             } catch (Exception e) {
                 estadoPago = -1;
             }
-
+            
             try {
                 fechaIni = sdf.parse(date1);
             } catch (Exception e) {
                 fechaIni = null;
             }
-
+            
             try {
                 fechaFin = sdf.parse(date2);
             } catch (Exception e) {
                 fechaFin = null;
             }
-
+            
             items = getFacade().filterFactura(empleadoFiltro, clienteFiltro, tipoPago, estado, estadoDespacho, estadoPago, fechaIni, fechaFin);
         }
     }
-
+    
     public boolean isEnableProductos() {
         return enableProductos;
     }
-
+    
     public void setEnableProductos(boolean enableProductos) {
         this.enableProductos = enableProductos;
     }
-
+    
     public ListaPrecioFacade getListaPrecioFacade() {
         return listaPrecioFacade;
     }
-
+    
     public ListaPrecio getListaPrecio() {
         return listaPrecio;
     }
-
+    
     public void setListaPrecio(ListaPrecio listaPrecio) {
         this.listaPrecio = listaPrecio;
     }
-
+    
     public String getOcultarListaPrecios() {
         return ocultarListaPrecios;
     }
-
+    
     public void setOcultarListaPrecios(String ocultarListaPrecios) {
         this.ocultarListaPrecios = ocultarListaPrecios;
     }
-
+    
     public int getTipoList() {
         return tipoList;
     }
-
+    
     public void setTipoList(int tipoList) {
         this.tipoList = tipoList;
     }
-
+    
     public boolean isEmple() {
         return emple;
     }
-
+    
     public void setEmple(boolean emple) {
         this.emple = emple;
     }
-
+    
     public boolean istPago() {
         return tPago;
     }
-
+    
     public void settPago(boolean tPago) {
         this.tPago = tPago;
     }
-
+    
     public boolean isMon() {
         return mon;
     }
-
+    
     public void setMon(boolean mon) {
         this.mon = mon;
     }
-
+    
     public boolean isAgre() {
         return agre;
     }
-
+    
     public void setAgre(boolean agre) {
         this.agre = agre;
     }
-
+    
     public boolean isQui() {
         return qui;
     }
-
+    
     public void setQui(boolean qui) {
         this.qui = qui;
     }
-
+    
     public boolean isClien() {
         return clien;
     }
-
+    
     public void setClien(boolean clien) {
         this.clien = clien;
     }
@@ -337,55 +337,55 @@ public class FacturaController implements Serializable {
     public Date getFechaIni() {
         return fechaIni;
     }
-
+    
     public void setFechaIni(Date fechaIni) {
         this.fechaIni = fechaIni;
     }
-
+    
     public int getTipoPago() {
         return tipoPago;
     }
-
+    
     public void setTipoPago(int tipoPago) {
         this.tipoPago = tipoPago;
     }
-
+    
     public int getEstado() {
         return estado;
     }
-
+    
     public void setEstado(int estado) {
         this.estado = estado;
     }
-
+    
     public int getEstadoDespacho() {
         return estadoDespacho;
     }
-
+    
     public void setEstadoDespacho(int estadoDespacho) {
         this.estadoDespacho = estadoDespacho;
     }
-
+    
     public int getEstadoPago() {
         return estadoPago;
     }
-
+    
     public void setEstadoPago(int estadoPago) {
         this.estadoPago = estadoPago;
     }
-
+    
     public Empleado getEmpleadoFiltro() {
         return empleadoFiltro;
     }
-
+    
     public void setEmpleadoFiltro(Empleado empleadoFiltro) {
         this.empleadoFiltro = empleadoFiltro;
     }
-
+    
     public Cliente getClienteFiltro() {
         return clienteFiltro;
     }
-
+    
     public void setClienteFiltro(Cliente clienteFiltro) {
         this.clienteFiltro = clienteFiltro;
     }
@@ -394,175 +394,175 @@ public class FacturaController implements Serializable {
     public Date getFechaFin() {
         return fechaFin;
     }
-
+    
     public void setFechaFin(Date fechaFin) {
         this.fechaFin = fechaFin;
     }
-
+    
     public PagoFacade getPagoFacade() {
         return pagoFacade;
     }
-
+    
     public EmpleadoFacade getEmpleFacade() {
         return empleFacade;
     }
-
+    
     public ClienteFacade getClienteFacade() {
         return clienteFacade;
     }
-
+    
     public PromocionFacade getPromocionFacade() {
         return promocionFacade;
     }
-
+    
     public List<Producto> getProductosTMP() {
         return productosTMP;
     }
-
+    
     public String getErrorProducto() {
         return errorProducto;
     }
-
+    
     public String getErrorPromocion() {
         return errorPromocion;
     }
-
+    
     public String getErrorVenta() {
         return errorVenta;
     }
-
+    
     public String getErrorBonificacion() {
         return errorBonificacion;
     }
-
+    
     public String getErrorCliente() {
         return errorCliente;
     }
-
+    
     public TalonarioFacade getTalonarioFacade() {
         return talonarioFacade;
     }
-
+    
     public DespachoFacturaFacade getDespachoFacturaFacade() {
         return despachoFacturaFacade;
     }
-
+    
     public int getUnidadesVenta() {
         return unidadesVenta;
     }
-
+    
     public void setUnidadesVenta(int unidadesVenta) {
         this.unidadesVenta = unidadesVenta;
     }
-
+    
     public int getUnidadesBonificacion() {
         return unidadesBonificacion;
     }
-
+    
     public void setUnidadesBonificacion(int unidadesBonificacion) {
         this.unidadesBonificacion = unidadesBonificacion;
     }
-
+    
     public double getPrecio() {
         return precio;
     }
-
+    
     public void setPrecio(double precio) {
         this.precio = precio;
     }
-
+    
     public int getMoneda() {
         return moneda;
     }
-
+    
     public void setMoneda(int moneda) {
         this.moneda = moneda;
     }
-
+    
     public int getSelectOneButton() {
         return selectOneButton;
     }
-
+    
     public void setSelectOneButton(int selectOneButton) {
         this.selectOneButton = selectOneButton;
     }
-
+    
     public Factura getSelected() {
         return selected;
     }
-
+    
     public void setSelected(Factura selected) {
         this.selected = selected;
     }
-
+    
     public DespachoFactura getDespachoFactura() {
         return despachoFactura;
     }
-
+    
     public void setDespachoFactura(DespachoFactura despachoFactura) {
         this.despachoFactura = despachoFactura;
     }
-
+    
     public List<DespachoFactura> getDespachosFactura() {
         return despachosFactura;
     }
-
+    
     public List<ProductoPromocionHelper> getObjects() {
         return objects;
     }
-
+    
     public void setObjects(List<ProductoPromocionHelper> objects) {
         this.objects = objects;
     }
-
+    
     protected void setEmbeddableKeys() {
     }
-
+    
     protected void initializeEmbeddableKey() {
     }
-
+    
     private FacturaFacade getFacade() {
         return ejbFacade;
     }
-
+    
     public FacturaProductoFacade getEjbFacturaProductoFacade() {
         return ejbFacturaProductoFacade;
     }
-
+    
     public ParametrosFacade getEjbRecargoFacade() {
         return ejbParametrosFacade;
     }
-
+    
     public TransactionFacade getEjbTransactionFacade() {
         return ejbTransactionFacade;
     }
-
+    
     public DespachoFacturaProductoFacade getDespachoFacturaProductoFacade() {
         return despachoFacturaProductoFacade;
     }
-
+    
     public Producto getProducto() {
         return producto;
     }
-
+    
     public void setProducto(Producto producto) {
         this.producto = producto;
     }
-
+    
     public Promocion getPromocion() {
         return promocion;
     }
-
+    
     public void setPromocion(Promocion promocion) {
         this.promocion = promocion;
     }
-
+    
     public Factura prepareCreate() {
         selected = new Factura();
         initializeEmbeddableKey();
         return selected;
     }
-
+    
     private void updateFactura() {
         if (moneda == 1) {
             selected.setDolar(true);
@@ -576,12 +576,12 @@ public class FacturaController implements Serializable {
             JsfUtil.addErrorMessage("Ocurrio un error durante la modificacion de la factura");
         }
     }
-
+    
     public String create(boolean despachar) {
         if (objects.size() > 0) {
-
+            
             String opTMP = selected.getOrdenPedido();
-
+            
             if (selected.getId() != null) {
                 if (!selected.getOrdenPedido().equals(ordenPedidoTMP)) {
                     if (getFacade().getFacturaByOrdenPedido(opTMP) == null) {
@@ -628,11 +628,11 @@ public class FacturaController implements Serializable {
         }
         return "";
     }
-
+    
     public void update() {
         persist(PersistAction.UPDATE, ResourceBundle.getBundle("languages/Bundle").getString("FacturaUpdated"));
     }
-
+    
     public void destroy() {
         persist(PersistAction.DELETE, ResourceBundle.getBundle("languages/Bundle").getString("FacturaDeleted"));
         if (!JsfUtil.isValidationFailed()) {
@@ -640,21 +640,21 @@ public class FacturaController implements Serializable {
             items = null;    // Invalidate list of items to trigger re-query.
         }
     }
-
+    
     public List<Factura> getItems() {
         if (items == null) {
             items = getFacade().findAll();
         }
         return items;
     }
-
+    
     public List<Factura> getItemsOrdenados() {
         if (items == null) {
             items = getFacade().getFacturasOrdenadas();
         }
         return items;
     }
-
+    
     private void persist(PersistAction persistAction, String successMessage) {
         if (selected != null) {
             setEmbeddableKeys();
@@ -682,15 +682,15 @@ public class FacturaController implements Serializable {
             }
         }
     }
-
+    
     public List<Factura> getItemsAvailableSelectMany() {
         return getFacade().findAll();
     }
-
+    
     public List<Factura> getItemsAvailableSelectOne() {
         return getFacade().findAll();
     }
-
+    
     private void cleanProductoOrPromocion() {
         producto = null;
         promocion = null;
@@ -702,9 +702,9 @@ public class FacturaController implements Serializable {
         errorVenta = "";
         errorBonificacion = "";
     }
-
+    
     private void getMensajesError() {
-
+        
         if (selected.getCliente() != null) {
             errorCliente = "";
             boolean comprobar = false;
@@ -735,7 +735,7 @@ public class FacturaController implements Serializable {
                 errorPromocion = uiError;
                 JsfUtil.addErrorMessage("La promocion " + promocion + " no pertenece a la misma categoria del cliente");
             }
-
+            
             if (comprobar) {
 //                if (unidadesVenta < 1) {
 //                    errorVenta = uiError;
@@ -756,10 +756,10 @@ public class FacturaController implements Serializable {
             JsfUtil.addErrorMessage("Debe seleccionar un cliente valido para poder agregar productos o promociones");
         }
     }
-
+    
     private boolean actulizarTalonario(String opTMP) {
         List<Talonario> talonarios = getTalonarioFacade().getTalonariosByTipo(TipoTalonario.REMISION, selected.getEmpleado());
-
+        
         if (talonarios != null && !talonarios.isEmpty()) {
             Long ordenPedido = Long.valueOf(opTMP);
             Talonario talonarioTMP = new Talonario();
@@ -769,7 +769,7 @@ public class FacturaController implements Serializable {
                     break;
                 }
             }
-
+            
             if (talonarioTMP.getId() == null) {
                 JsfUtil.addErrorMessage("No existe un talonario valido para el No. de pedido " + opTMP);
                 return false;
@@ -779,7 +779,7 @@ public class FacturaController implements Serializable {
         }
         return false;
     }
-
+    
     private boolean validaUnidades() {
         if (unidadesVenta == 0 && unidadesBonificacion > 0) {
             return true;
@@ -789,7 +789,7 @@ public class FacturaController implements Serializable {
             return unidadesVenta > 0 && unidadesBonificacion > 0;
         }
     }
-
+    
     private void asinarEstados() {
         boolean soloBonificacion = true;
         for (ProductoPromocionHelper pph : objects) {
@@ -798,7 +798,7 @@ public class FacturaController implements Serializable {
                 break;
             }
         }
-
+        
         selected.setEstado(EstadoFactura.PENDIENTE.getValor());
         selected.setEstadoDespacho(EstadoDespachoFactura.SIN_DESPACHAR.getValor());
         if ((soloBonificacion) || (selected.getTipoPago() == TipoPago.CONTADO.getValor())) {
@@ -807,10 +807,10 @@ public class FacturaController implements Serializable {
             selected.setEstadoPago(EstadoPagoFactura.SIN_PAGO.getValor());
         }
     }
-
+    
     @FacesConverter(forClass = Factura.class, value = "facturaConverter")
     public static class FacturaControllerConverter implements Converter {
-
+        
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
             try {
@@ -829,7 +829,7 @@ public class FacturaController implements Serializable {
             }
             return null;
         }
-
+        
         java.lang.Long getKey(String value) {
             try {
                 java.lang.Long key;
@@ -839,13 +839,13 @@ public class FacturaController implements Serializable {
             }
             return null;
         }
-
+        
         String getStringKey(java.lang.Long value) {
             StringBuilder sb = new StringBuilder();
             sb.append(value);
             return sb.toString();
         }
-
+        
         @Override
         public String getAsString(FacesContext facesContext, UIComponent component, Object object) {
             if (object == null) {
@@ -860,57 +860,57 @@ public class FacturaController implements Serializable {
             }
         }
     }
-
+    
     public TipoPago[] getTiposPagos() {
         return TipoPago.getFromValue(new Integer[]{0, 1});
     }
-
+    
     public TipoList[] getTiposList() {
         return TipoList.values();
     }
-
+    
     public Map<String, Integer> getMonedas() {
         return Moneda.getMonedas();
     }
-
+    
     public EstadoFactura[] getEstadosFactura() {
         return EstadoFactura.getFromValue(new Integer[]{0, 1, 2});
     }
-
+    
     public EstadoDespachoFactura[] getEstadosDespachoFactura() {
         return EstadoDespachoFactura.getFromValue(new Integer[]{0, 1, 2});
     }
-
+    
     public EstadoPagoFactura[] getEstadosPagoFactura() {
         return EstadoPagoFactura.getFromValue(new Integer[]{0, 1, 2});
     }
-
+    
     public String redirectCreateFactura() {
         selected = new Factura();
         objects = new ArrayList<>();
         return "Create.xhtml?faces-redirect=true";
     }
-
+    
     public String redirectEditFactura() {
         return "Create.xhtml?id=" + selected.getOrdenPedido() + "&faces-redirect=true";
     }
-
+    
     public void addProductoOrPromocion() {
-
+        
         if ((producto != null || promocion != null) && validaUnidades() && precio > 0 && selected.getCliente() != null) {
-
+            
             boolean isProducto = producto != null;
-
+            
             boolean existe = false;
             for (ProductoPromocionHelper pph : objects) {
-
+                
                 boolean repetido = false;
                 if (isProducto && pph.isProducto()) {
                     repetido = ((Producto) pph.getProductoPromocion()).getId().equals(producto.getId());
                 } else if (!isProducto && !pph.isProducto()) {
                     repetido = ((Promocion) pph.getProductoPromocion()).getId().equals(promocion.getId());
                 }
-
+                
                 if (repetido) {
                     existe = true;
                     boolean existeCreate = false;
@@ -922,13 +922,13 @@ public class FacturaController implements Serializable {
                         objectsCreate.get(io).setUnidadesBonificacion(unidadesBonificacion + pph.getUnidadesBonificacion());
                         objectsCreate.get(io).setUnidadesVenta(unidadesVenta + pph.getUnidadesVenta());
                     }
-
+                    
                     int io = objects.indexOf(pph);
                     objects.get(io).setPrecio(((isProducto ? valor : promocion.getValor()) * unidadesVenta) + pph.getPrecio());
                     objects.get(io).setPrecioUs(((isProducto ? valorusd : promocion.getValorVentaUsd()) * unidadesVenta) + pph.getPrecioUs());
                     objects.get(io).setUnidadesBonificacion(unidadesBonificacion + pph.getUnidadesBonificacion());
                     objects.get(io).setUnidadesVenta(unidadesVenta + pph.getUnidadesVenta());
-
+                    
                     if (!existeCreate) {
                         if (objects.get(io).getIdObject() != null) {
                             objectsEditar.add(new ProductoPromocionHelper(objects.get(io).getId(), objects.get(io).getIdObject(),
@@ -936,47 +936,47 @@ public class FacturaController implements Serializable {
                                     objects.get(io).getPrecioUs(), objects.get(io).getProductoPromocion(), objects.get(io).isProducto()));
                         }
                     }
-
+                    
                     break;
                 }
             }
-
+            
             if (!existe) {
-
+                
                 ProductoPromocionHelper pph = new ProductoPromocionHelper(objects.size() + 1L, null, unidadesVenta, unidadesBonificacion,
                         ((isProducto ? valor : promocion.getValor()) * unidadesVenta),
                         ((isProducto ? valorusd : promocion.getValorVentaUsd()) * unidadesVenta),
                         isProducto ? producto : promocion, isProducto);
-
+                
                 if (selected.getId() != null) {
                     objectsCreate.add(pph);
                 }
-
+                
                 objects.add(pph);
             }
-
+            
             cleanProductoOrPromocion();
         } else {
             getMensajesError();
         }
     }
-
+    
     public void removeFacturaProductoPromocion(ProductoPromocionHelper pph) {
         if (objectsCreate.contains(pph)) {
             objectsCreate.remove(pph);
         }
-
+        
         if (objectsEditar.contains(pph)) {
             objectsEditar.remove(pph);
         }
-
+        
         if ((selected != null && selected.getId() != null) && pph.getIdObject() != null) {
             objectsEliminar.add(pph);
         }
-
+        
         objects.remove(pph);
     }
-
+    
     public int getTotalUnidadVentas() {
         int sum = 0;
         for (ProductoPromocionHelper fp : objects) {
@@ -984,7 +984,7 @@ public class FacturaController implements Serializable {
         }
         return sum;
     }
-
+    
     public int getTotalUnidadBonificaciones() {
         int sum = 0;
         for (ProductoPromocionHelper fp : objects) {
@@ -992,7 +992,7 @@ public class FacturaController implements Serializable {
         }
         return sum;
     }
-
+    
     public double getTotalPrecioBruto() {
         int sum = 0;
         for (ProductoPromocionHelper fp : objects) {
@@ -1007,14 +1007,14 @@ public class FacturaController implements Serializable {
         }
         return sum;
     }
-
+    
     public double getTotalAPagar() {
         double sum = 0;
         double descuento = 0;
         if (selected.getDescuento() != null) {
             descuento = selected.getDescuento();
         }
-
+        
         for (ProductoPromocionHelper fp : objects) {
             if (moneda == 0) {
                 sum += fp.getPrecio();
@@ -1022,14 +1022,14 @@ public class FacturaController implements Serializable {
                 sum += fp.getPrecioUs();
             }
         }
-
+        
         descuento = sum * descuento / 100;
         if (selected != null) {
             selected.setTotalPagar(sum + descuento);
         }
         return sum + descuento;
     }
-
+    
     public void getDescuentobyCliente(Cliente c) {
         if (c.getTarifaEspecial() != null) {
             selected.setDescuento(c.getTarifaEspecial().doubleValue());
@@ -1038,15 +1038,15 @@ public class FacturaController implements Serializable {
             selected.setDescuento(descuento.doubleValue());
         }
     }
-
+    
     public String getTipoPagofactura(int tipo) {
         return TipoPago.getFromValue(tipo).getDetalle();
     }
-
+    
     public Long getCantidadVentasOrBonificacionesByFactura(Factura f, int tipo) {
         return getEjbFacturaProductoFacade().getCantidadVentaOrBonificacionByFactura(f, tipo);
     }
-
+    
     public void redireccionarFormulario() {
         try {
             FacesContext.getCurrentInstance().getExternalContext().redirect("List.xhtml");
@@ -1054,7 +1054,7 @@ public class FacturaController implements Serializable {
             e.printStackTrace();
         }
     }
-
+    
     public List<Promocion> llenarPromocion(String query) {
         if (selected.getCliente() != null) {
             return getFacade().getPromocionByQuery(query, selected.getCliente());
@@ -1063,15 +1063,15 @@ public class FacturaController implements Serializable {
         }
         return new ArrayList<>();
     }
-
+    
     public void onItemSelectProducto(SelectEvent event) {
         Producto p = (Producto) event.getObject();
         PrecioProducto pp = null;
-
+        
         if (tipoList == 1 && listaPrecio != null) {
             pp = getFacade().getPrecioProductoByListaPrecioAndProducto(listaPrecio, p);
         }
-
+        
         if (pp != null) {
             valor = pp.getPrecio();
             valorusd = pp.getPrecioUSD();
@@ -1079,17 +1079,17 @@ public class FacturaController implements Serializable {
             valor = p.getValorVenta();
             valorusd = p.getValorVentaUsd();
         }
-
+        
         if (moneda == 0) {
             precio = valor;
         } else {
             precio = valorusd;
         }
-
+        
         producto.setValorVenta(valor);
         producto.setValorVentaUsd(valorusd);
     }
-
+    
     public void onItemSelectPromocion(SelectEvent event) {
         Promocion p = (Promocion) event.getObject();
         if (moneda == 0) {
@@ -1098,75 +1098,75 @@ public class FacturaController implements Serializable {
             precio = p.getValorVentaUsd();
         }
     }
-
+    
     public void onItemSelectCliente(SelectEvent event) {
         Cliente c = (Cliente) event.getObject();
         items = null;
         getDescuentobyCliente(c);
         cleanPromociones();
     }
-
+    
     public void onItemSelectEmpleado(SelectEvent event) {
         Empleado e = (Empleado) event.getObject();
         Talonario t = getTalonarioFacade().getActiveTalonario(TipoTalonario.REMISION, e);
-
+        
         if (t == null) {
             selected.setEmpleado(null);
             JsfUtil.addErrorMessage("No existen talonarios para el empleado " + e.toString());
         } else {
             selected.setOrdenPedido("" + t.getActual());
         }
-
+        
         selected.setCliente(null);
         removeAllPromociones();
     }
-
+    
     private void clean() {
         items = null;
         selected = null;
         objects.clear();
         cleanProductoOrPromocion();
     }
-
+    
     public void changeView(AjaxBehaviorEvent event) {
         cleanProductoOrPromocion();
     }
-
+    
     public String redirect() {
         return "Despacho.xhtml?fac=" + selected.getOrdenPedido() + "&faces-redirect=true";
     }
-
+    
     public int countProductoByDespacho(Producto producto) {
         return getDespachoFacturaProductoFacade().countDespachoFacturaProductoByDespachoFacturaAndProducto(despachoFactura, producto);
     }
-
+    
     public void prepararProductos() {
         productosTMP = null;
         productosTMP = getDespachoFacturaProductoFacade().getListProductosByDespachoFactura(despachoFactura);
     }
-
+    
     public void generarReporte(ActionEvent actionEvent) {
         Factura factura = getFacade().getFacturaById(selected.getId());
-
+        
         if (factura != null) {
             File reporte1 = new File(JsfUtil.getRutaReporte("factura.jasper"));
             File reporte2 = new File(JsfUtil.getRutaReporte("subReporteProductos.jasper"));
             File reporte3 = new File(JsfUtil.getRutaReporte("subReportePromocion.jasper"));
             File reporte4 = new File(JsfUtil.getRutaReporte("subReportePromocionProducto.jasper"));
-
+            
             if (reporte1.exists() && reporte2.exists() && reporte3.exists() && reporte4.exists()) {
                 List<Factura> facturas = new ArrayList<>();
                 facturas.add(factura);
-
+                
                 JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(facturas);
-
+                
                 HashMap map = new HashMap();
                 map.put("venta", "" + getCantidadVentasOrBonificacionesByFactura(factura, 1));
                 map.put("bonificacion", "" + getCantidadVentasOrBonificacionesByFactura(factura, 2));
-
+                
                 try {
                     JasperPrint jasperPrint = JasperFillManager.fillReport(reporte1.getPath(), map, dataSource);
-
+                    
                     HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
                     response.addHeader("Content-disposition", "attachment; filename=Factura.pdf");
                     ServletOutputStream sos = response.getOutputStream();
@@ -1176,10 +1176,10 @@ public class FacturaController implements Serializable {
                     JsfUtil.addErrorMessage("Ha ocurrido un error durante la generacion"
                             + " del reporte, Por favor intente de nuevo, si el error persiste"
                             + " comuniquese con el administrador del sistema");
-
+                    
                     e.printStackTrace();
                 }
-
+                
             } else {
                 if (reporte1.exists()) {
                     JsfUtil.addErrorMessage("No existe el archivo " + reporte1.getName());
@@ -1194,33 +1194,33 @@ public class FacturaController implements Serializable {
                     JsfUtil.addErrorMessage("No existe el archivo " + reporte4.getName());
                 }
             }
-
+            
         } else {
             JsfUtil.addErrorMessage("Seleccione la Factura que desea imprimir");
         }
-
+        
     }
-
+    
     public void eventMoneda() {
         cleanProductoOrPromocion();
     }
-
+    
     public String getEstado(int estado) {
         return EstadoFactura.getFromValue(estado).getDetalle();
     }
-
+    
     public String getEstadoDespacho(int estado) {
         return EstadoDespachoFactura.getFromValue(estado).getDetalle();
     }
-
+    
     public String getEstadoPago(int estado) {
         return EstadoPagoFactura.getFromValue(estado).getDetalle();
     }
-
+    
     public void prepararDespachos() {
         despachosFactura = getDespachoFacturaFacade().getDespachosFacturaByFactura(selected, false);
     }
-
+    
     public void anularDespacho() {
         if (!getEjbTransactionFacade().anularDespachoFactura(despachoFactura)) {
             JsfUtil.addErrorMessage("Error anulando el despacho");
@@ -1229,19 +1229,19 @@ public class FacturaController implements Serializable {
             despachosFactura = getDespachoFacturaFacade().getDespachosFacturaByFactura(selected, false);
         }
     }
-
+    
     public void anularFactura() {
         if (selected != null) {
             long despachos = getDespachoFacturaFacade().countDespachoFacturaByFactura(selected);
             if (despachos > 0) {
                 JsfUtil.addErrorMessage("La factura " + selected.getOrdenPedido() + " no se puede anular porque tiene despachos asociados");
             }
-
+            
             long pagos = getPagoFacade().countPagosFacturaByFactura(selected);
             if (pagos > 0) {
                 JsfUtil.addErrorMessage("La factura " + selected.getOrdenPedido() + " no se puede anular porque tiene pagos asociados");
             }
-
+            
             if (despachos <= 0 && pagos <= 0) {
                 if (getFacade().anularFactura(selected)) {
                     items = null;
@@ -1254,15 +1254,15 @@ public class FacturaController implements Serializable {
             JsfUtil.addErrorMessage("Seleccione la factura que desea anular");
         }
     }
-
+    
     public int estadoRealizado() {
         return EstadoFactura.REALIZADA.getValor();
     }
-
+    
     public int estadoAnulado() {
         return EstadoFactura.ANULADO.getValor();
     }
-
+    
     public void redirec() throws IOException {
         String url = "List.xhtml?";
         if (empleadoFiltro != null) {
@@ -1288,11 +1288,11 @@ public class FacturaController implements Serializable {
         }
         FacesContext.getCurrentInstance().getExternalContext().redirect(url);
     }
-
+    
     public void cleanFilter() throws IOException {
         FacesContext.getCurrentInstance().getExternalContext().redirect("List.xhtml");
     }
-
+    
     public Date getFechaActual() {
         if (fechaIni != null) {
             return fechaIni;
@@ -1300,15 +1300,15 @@ public class FacturaController implements Serializable {
             return null;
         }
     }
-
+    
     public String tipo(int tipo) {
         return TipoPago.getFromValue(tipo).getDetalle();
     }
-
+    
     public String estadoFactura(int estado) {
         return EstadoFactura.getFromValue(estado).getDetalle();
     }
-
+    
     public String getInfo() {
         String info;
         if (hayPagos && hayDespachos) {
@@ -1322,14 +1322,14 @@ public class FacturaController implements Serializable {
         }
         return info;
     }
-
+    
     public boolean mostrarInfo() {
         return !hayPagos && !hayDespachos;
     }
-
+    
     public void bloquearCampos() {
         if (selected.getId() != null) {
-
+            
             if (hayPagos && hayDespachos) {
                 mostrarTrue();
             } else if (hayPagos && !hayDespachos) {
@@ -1355,7 +1355,7 @@ public class FacturaController implements Serializable {
             mostrarTrue();
         }
     }
-
+    
     private void mostrarTrue() {
         emple = true;
         clien = true;
@@ -1364,15 +1364,15 @@ public class FacturaController implements Serializable {
         agre = true;
         qui = true;
     }
-
+    
     public String getValueButton() {
         return (selected.getId() != null) ? "Modificar" : "Guardar";
     }
-
+    
     public String displayButton() {
         return (selected.getId() != null) ? "display: none" : "";
     }
-
+    
     public boolean habilitarAnular() {
         if (selected != null && selected.getId() != null) {
             if (usuarioActual.getUsuario().getTipo() == Long.valueOf(TipoUsuario.Administrador.getValor() + "")) {
@@ -1388,7 +1388,7 @@ public class FacturaController implements Serializable {
             return true;
         }
     }
-
+    
     public List<Cliente> llenarCliente(String query) {
         if (selected != null && selected.getEmpleado() != null) {
             return getClienteFacade().getClienteByQuery(query, selected.getEmpleado());
@@ -1397,7 +1397,7 @@ public class FacturaController implements Serializable {
         }
         return new ArrayList<>();
     }
-
+    
     public List<Promocion> llenarPromociones(String query) {
         if (selected != null && selected.getCliente() != null) {
             return getFacade().getPromocionByQuery(query, selected.getCliente());
@@ -1406,7 +1406,7 @@ public class FacturaController implements Serializable {
         }
         return new ArrayList<>();
     }
-
+    
     public void removeAllPromociones() {
         List<ProductoPromocionHelper> listTMP = new ArrayList<>();
         for (ProductoPromocionHelper pph : objects) {
@@ -1414,17 +1414,17 @@ public class FacturaController implements Serializable {
                 listTMP.add(pph);
             }
         }
-
+        
         if (selected != null && selected.getId() != null) {
             for (ProductoPromocionHelper pph : listTMP) {
                 if (objectsCreate.contains(pph)) {
                     objectsCreate.remove(pph);
                 }
-
+                
                 if (objectsEditar.contains(pph)) {
                     objectsEditar.remove(pph);
                 }
-
+                
                 if (pph.getIdObject() != null) {
                     objectsEliminar.add(pph);
                 }
@@ -1435,12 +1435,12 @@ public class FacturaController implements Serializable {
                 objects.remove(pph);
             }
         }
-
+        
         if (!listTMP.isEmpty()) {
             JsfUtil.addWarnMessage("Se han eliminado las promociones que no pertenecen a la misma categoria del cliente");
         }
     }
-
+    
     public void cleanPromociones() {
         List<ProductoPromocionHelper> listTMP = new ArrayList<>();
         for (ProductoPromocionHelper pph : objects) {
@@ -1450,17 +1450,17 @@ public class FacturaController implements Serializable {
                 }
             }
         }
-
+        
         if (selected != null && selected.getId() != null) {
             for (ProductoPromocionHelper pph : listTMP) {
                 if (objectsCreate.contains(pph)) {
                     objectsCreate.remove(pph);
                 }
-
+                
                 if (objectsEditar.contains(pph)) {
                     objectsEditar.remove(pph);
                 }
-
+                
                 if (pph.getIdObject() != null) {
                     objectsEliminar.add(pph);
                 }
@@ -1471,16 +1471,16 @@ public class FacturaController implements Serializable {
                 objects.remove(pph);
             }
         }
-
+        
         if (!listTMP.isEmpty()) {
             JsfUtil.addWarnMessage("Se han eliminado las promociones que no pertenecen a la misma categoria del cliente");
         }
     }
-
+    
     public int getEstadoAnulado() {
         return EstadoFactura.ANULADO.getValor();
     }
-
+    
     public void changeTipoList(final AjaxBehaviorEvent event) {
         if (tipoList == 0) {
             ocultarListaPrecios = "hidden";
@@ -1492,9 +1492,14 @@ public class FacturaController implements Serializable {
         }
         cleanProductoOrPromocion();
     }
-
+    
     public void changedListPrecios(SelectEvent e) {
         cleanProductoOrPromocion();
         enableProductos = !(e != null && e.getObject() != null);
     }
+    
+    public List<ListaPrecio> llenarListaPrecios(String query) {
+        return getListaPrecioFacade().getListaPreciosByQuery(query);
+    }
+    
 }
