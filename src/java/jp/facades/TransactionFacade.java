@@ -323,6 +323,7 @@ public class TransactionFacade {
             facturaTMP.setEstadoPago(factura.getEstadoPago());
             facturaTMP.setDolar(factura.getDolar());
             facturaTMP.setDolarActual(factura.getDolarActual());
+            facturaTMP.setListaPrecio(factura.getListaPrecio());
             getEntityManager().merge(facturaTMP);
 
             for (ProductoPromocionHelper pph : objectsCrear) {
@@ -415,6 +416,7 @@ public class TransactionFacade {
             facturaTMP.setEstadoPago(factura.getEstadoPago());
             facturaTMP.setDolar(factura.getDolar());
             facturaTMP.setDolarActual(factura.getDolarActual());
+            facturaTMP.setListaPrecio(factura.getListaPrecio());
             getEntityManager().merge(facturaTMP);
 
             for (ProductoPromocionHelper pph : objects) {

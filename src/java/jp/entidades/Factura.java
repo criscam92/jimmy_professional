@@ -97,6 +97,9 @@ public class Factura implements Serializable {
     @JoinColumn(name = "empleado", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Empleado empleado;
+    @JoinColumn(name = "lista_precio", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private ListaPrecio listaPrecio;
     @JoinColumn(name = "usuario", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Usuario usuario;
@@ -252,6 +255,14 @@ public class Factura implements Serializable {
 
     public void setEmpleado(Empleado empleado) {
         this.empleado = empleado;
+    }
+
+    public ListaPrecio getListaPrecio() {
+        return listaPrecio;
+    }
+
+    public void setListaPrecio(ListaPrecio listaPrecio) {
+        this.listaPrecio = listaPrecio;
     }
 
     public Usuario getUsuario() {

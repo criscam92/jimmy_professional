@@ -17,6 +17,7 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlTransient;
 import jp.entidades.auxiliar.Codificable;
 
 @Entity
@@ -25,6 +26,7 @@ import jp.entidades.auxiliar.Codificable;
 @NamedQueries({
     @NamedQuery(name = "ListaPrecio.findAll", query = "SELECT l FROM ListaPrecio l")})
 public class ListaPrecio implements Serializable, Codificable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,6 +43,8 @@ public class ListaPrecio implements Serializable, Codificable {
     @Size(min = 1, max = 100)
     @Column(nullable = false, length = 100)
     private String nombre;
+    @OneToMany(mappedBy = "listaPrecio", fetch = FetchType.LAZY)
+    private List<Factura> facturaList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "listaPrecio", fetch = FetchType.LAZY)
     private List<PrecioProducto> precioProductoList;
 
@@ -84,6 +88,15 @@ public class ListaPrecio implements Serializable, Codificable {
         this.nombre = nombre;
     }
 
+    @XmlTransient
+    public List<Factura> getFacturaList() {
+        return facturaList;
+    }
+
+    public void setFacturaList(List<Factura> facturaList) {
+        this.facturaList = facturaList;
+    }
+
     public List<PrecioProducto> getPrecioProductoList() {
         return precioProductoList;
     }
@@ -114,12 +127,12 @@ public class ListaPrecio implements Serializable, Codificable {
 
     @Override
     public String toString() {
-        return this.getCodigo()+" - " + this.getNombre();
+        return this.getCodigo() + " - " + this.getNombre();
     }
 
     @Override
     public String getTipo() {
         return null;
     }
-    
+
 }
