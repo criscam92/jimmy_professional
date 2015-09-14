@@ -39,6 +39,7 @@ public class ListaPrecioController implements Serializable {
     private ListaPrecio selected;
     private PrecioProducto precioProducto;
     private List<PrecioProducto> listaPrecioProductos;
+    private List<PrecioProducto> listaPrecioProductosGuardar;
     private Producto producto;
     private Double precioNuevo;
     private Double precioNuevoUSD;
@@ -53,6 +54,7 @@ public class ListaPrecioController implements Serializable {
         uiError = "ui-state-error";
         precioProductos = new ArrayList<>();
         listaPrecioProductos = new ArrayList<>();
+        listaPrecioProductosGuardar = new ArrayList<>();
         precioProductosEliminar = new ArrayList<>();
         precioProductosGuardar = new ArrayList<>();
     }
@@ -93,6 +95,14 @@ public class ListaPrecioController implements Serializable {
 
     public void setListaPrecioProductos(List<PrecioProducto> precioProductos) {
         this.listaPrecioProductos = precioProductos;
+    }
+
+    public List<PrecioProducto> getListaPrecioProductosGuardar() {
+        return listaPrecioProductosGuardar;
+    }
+
+    public void setListaPrecioProductosGuardar(List<PrecioProducto> listaPrecioProductosGuardar) {
+        this.listaPrecioProductosGuardar = listaPrecioProductosGuardar;
     }
 
     public Producto getProducto() {
@@ -163,36 +173,39 @@ public class ListaPrecioController implements Serializable {
 
     public ListaPrecio prepareCreate() {
         selected = new ListaPrecio();
+        listaPrecioProductos = new ArrayList<>();
+        listaPrecioProductosGuardar = new ArrayList<>();
         initializeEmbeddableKey();
         return selected;
     }
 
     public void create() {
-        if (!existeCodigoListaPrecio()) {
-            if (listaPrecioProductos.size() >= 1) {
-                int total = 0;
-                for (PrecioProducto lp : listaPrecioProductos) {
-                    if (lp.getPrecio() != null || lp.getPrecioUSD() != null) {
-                        total++;
-                    }
-                }
-                System.out.println("Total-> "+total);
-//                if (getTransactionFacade().createPrecioProducto(selected, listaPrecioProductos)) {
-//                    if (!JsfUtil.isValidationFailed()) {
-//                        JsfUtil.addSuccessMessage(JsfUtil.getMessageBundle(new String[]{"MessageListaPrecio", "CreateSuccessF"}));
-//                        items = null;    // Invalidate list of items to trigger re-query.
-//                        selected = new ListaPrecio();
-//                        listaPrecioProductos.clear();
-//                        limpiarPrecioProducto();
-//                        setError("");
-//                        RequestContext.getCurrentInstance().execute("PF('ListaPrecioCreateDialog').hide()");
-//                    }
-//                } 
-//                else {
-//                    JsfUtil.addErrorMessage("No se ha podido Crear la Lista de Productos");
-//                }
+        boolean vacio = true;
+        for (PrecioProducto lp : listaPrecioProductos) {
+            if (lp.getPrecio() != null || lp.getPrecioUSD() != null) {
+                vacio = false;
+                listaPrecioProductosGuardar.add(lp);
             }
-            else {
+        }
+        if (!existeCodigoListaPrecio()) {
+            if (!vacio) {
+
+                if (getTransactionFacade().createPrecioProducto(selected, listaPrecioProductosGuardar)) {
+                    if (!JsfUtil.isValidationFailed()) {
+                        JsfUtil.addSuccessMessage(JsfUtil.getMessageBundle(new String[]{"MessageListaPrecio", "CreateSuccessF"}));
+                        items = null;    // Invalidate list of items to trigger re-query.
+                        selected = new ListaPrecio();
+                        listaPrecioProductos.clear();
+                        listaPrecioProductosGuardar.clear();
+//                        limpiarPrecioProducto();
+                        setError("");
+                        RequestContext.getCurrentInstance().execute("PF('ListaPrecioCreateDialog').hide()");
+                    }
+                } 
+                else {
+                    JsfUtil.addErrorMessage("No se ha podido Crear la Lista de Productos");
+                }
+            } else {
                 JsfUtil.addErrorMessage("La Lista de Precios debe tener como mínimo un producto");
             }
         } else {
@@ -351,7 +364,6 @@ public class ListaPrecioController implements Serializable {
 //        precioNuevo = null;
 //        precioNuevoUSD = null;
 //    }
-
 //    public void removePrecioProductoEdit(PrecioProducto precioProducto) {
 //        if (precioProductosGuardar.contains(precioProducto)) {
 //            precioProductosGuardar.remove(precioProducto);
