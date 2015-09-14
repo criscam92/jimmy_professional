@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.faces.bean.ManagedBean;
@@ -18,6 +19,7 @@ import jp.entidades.ListaPrecio;
 import jp.entidades.PrecioProducto;
 import jp.entidades.Producto;
 import jp.facades.ListaPrecioFacade;
+import jp.facades.ProductoFacade;
 import jp.facades.TransactionFacade;
 import jp.util.JsfUtil;
 import jp.util.JsfUtil.PersistAction;
@@ -30,11 +32,14 @@ public class ListaPrecioController implements Serializable {
     @EJB
     private ListaPrecioFacade ejbFacade;
     @EJB
+    private ProductoFacade productoFacade;
+    @EJB
     private TransactionFacade transactionFacade;
     private List<ListaPrecio> items = null;
     private ListaPrecio selected;
     private PrecioProducto precioProducto;
     private List<PrecioProducto> listaPrecioProductos;
+    private List<PrecioProducto> listaPrecioProductosGuardar;
     private Producto producto;
     private Double precioNuevo;
     private Double precioNuevoUSD;
@@ -43,12 +48,20 @@ public class ListaPrecioController implements Serializable {
     private List<PrecioProducto> precioProductos = null;
     private final List<PrecioProducto> precioProductosEliminar;
     private final List<PrecioProducto> precioProductosGuardar;
+    private List<Producto> productos;
 
     public ListaPrecioController() {
         uiError = "ui-state-error";
+        precioProductos = new ArrayList<>();
         listaPrecioProductos = new ArrayList<>();
+        listaPrecioProductosGuardar = new ArrayList<>();
         precioProductosEliminar = new ArrayList<>();
         precioProductosGuardar = new ArrayList<>();
+    }
+
+    @PostConstruct
+    private void init() {
+        cargarProductos();
     }
 
     public ListaPrecio getSelected() {
@@ -68,11 +81,28 @@ public class ListaPrecioController implements Serializable {
     }
 
     public List<PrecioProducto> getListaPrecioProductos() {
-        return listaPrecioProductos;
+        if (productos == null || listaPrecioProductos == null) {
+            return new ArrayList<>();
+        } else {
+            if (productos != null) {
+                for (Producto p : productos) {
+                    listaPrecioProductos.add(new PrecioProducto(null, null, null, p));
+                }
+            }
+            return listaPrecioProductos;
+        }
     }
 
     public void setListaPrecioProductos(List<PrecioProducto> precioProductos) {
         this.listaPrecioProductos = precioProductos;
+    }
+
+    public List<PrecioProducto> getListaPrecioProductosGuardar() {
+        return listaPrecioProductosGuardar;
+    }
+
+    public void setListaPrecioProductosGuardar(List<PrecioProducto> listaPrecioProductosGuardar) {
+        this.listaPrecioProductosGuardar = listaPrecioProductosGuardar;
     }
 
     public Producto getProducto() {
@@ -115,6 +145,14 @@ public class ListaPrecioController implements Serializable {
         this.precioProductos = precioProductos;
     }
 
+    public List<Producto> getProductos() {
+        return productos;
+    }
+
+    public void setProductos(List<Producto> productos) {
+        this.productos = productos;
+    }
+
     protected void setEmbeddableKeys() {
     }
 
@@ -125,30 +163,46 @@ public class ListaPrecioController implements Serializable {
         return ejbFacade;
     }
 
+    public ProductoFacade getProductoFacade() {
+        return productoFacade;
+    }
+
     public TransactionFacade getTransactionFacade() {
         return transactionFacade;
     }
 
     public ListaPrecio prepareCreate() {
         selected = new ListaPrecio();
+        listaPrecioProductos = new ArrayList<>();
+        listaPrecioProductosGuardar = new ArrayList<>();
         initializeEmbeddableKey();
         return selected;
     }
 
     public void create() {
+        boolean vacio = true;
+        for (PrecioProducto lp : listaPrecioProductos) {
+            if (lp.getPrecio() != null || lp.getPrecioUSD() != null) {
+                vacio = false;
+                listaPrecioProductosGuardar.add(lp);
+            }
+        }
         if (!existeCodigoListaPrecio()) {
-            if (listaPrecioProductos.size() >= 1) {
-                if (getTransactionFacade().createPrecioProducto(selected, listaPrecioProductos)) {
+            if (!vacio) {
+
+                if (getTransactionFacade().createPrecioProducto(selected, listaPrecioProductosGuardar)) {
                     if (!JsfUtil.isValidationFailed()) {
                         JsfUtil.addSuccessMessage(JsfUtil.getMessageBundle(new String[]{"MessageListaPrecio", "CreateSuccessF"}));
                         items = null;    // Invalidate list of items to trigger re-query.
                         selected = new ListaPrecio();
                         listaPrecioProductos.clear();
-                        limpiarPrecioProducto();
+                        listaPrecioProductosGuardar.clear();
+//                        limpiarPrecioProducto();
                         setError("");
                         RequestContext.getCurrentInstance().execute("PF('ListaPrecioCreateDialog').hide()");
                     }
-                } else {
+                } 
+                else {
                     JsfUtil.addErrorMessage("No se ha podido Crear la Lista de Productos");
                 }
             } else {
@@ -294,55 +348,54 @@ public class ListaPrecioController implements Serializable {
 //            precioProducto.setProducto(producto);
 //            precioProducto.setPrecio(precioNuevo);
 //            precioProducto.setPrecioUSD(precioNuevoUSD);
+//            precioProducto.setExiste(true);
 //            listaPrecioProductos.add(precioProducto);
 //            limpiarPrecioProducto();
 //        } else {
 //            JsfUtil.addErrorMessage("Debe seleccionar un producto con sus nuevos precios");
 //        }
 //    }
-
-    public void removePrecioProducto(PrecioProducto pp) {
-        listaPrecioProductos.remove(pp);
-    }
-
-    private void limpiarPrecioProducto() {
-        producto = null;
-        precioNuevo = null;
-        precioNuevoUSD = null;
-    }
-
-    public void removePrecioProductoEdit(PrecioProducto precioProducto) {
-        if (precioProductosGuardar.contains(precioProducto)) {
-            precioProductosGuardar.remove(precioProducto);
-        }
-        if (precioProducto.getExiste()) {
-            precioProductosEliminar.add(precioProducto);
-        }
-        precioProductos.remove(precioProducto);
-    }
-
+//    public void removePrecioProducto(PrecioProducto pp) {
+//        listaPrecioProductos.remove(pp);
+//    }
+//
+//    private void limpiarPrecioProducto() {
+//        producto = null;
+//        precioNuevo = null;
+//        precioNuevoUSD = null;
+//    }
+//    public void removePrecioProductoEdit(PrecioProducto precioProducto) {
+//        if (precioProductosGuardar.contains(precioProducto)) {
+//            precioProductosGuardar.remove(precioProducto);
+//        }
+//        if (precioProducto.getExiste()) {
+//            precioProductosEliminar.add(precioProducto);
+//        }
+//        precioProductos.remove(precioProducto);
+//    }
     public void prepareEdit() {
         precioProductos = getFacade().getProductosByListaPrecio(selected);
         for (PrecioProducto pp : precioProductos) {
             pp.setExiste(true);
         }
     }
-    
-    public void addPrecioProducto(boolean editar) {
-        if (producto != null && precioNuevo != null && precioNuevoUSD != null) {
-            precioProducto = new PrecioProducto();
-            precioProducto.setId(precioProductos.size() + 1);
-            precioProducto.setProducto(producto);
-            precioProducto.setPrecio(precioNuevo);
-            precioProducto.setPrecioUSD(precioNuevoUSD);
-            precioProducto.setExiste(false);
-            precioProductos.add(precioProducto);
-            if (editar) {
-                precioProductosGuardar.add(precioProducto);
-            }            
-            limpiarPrecioProducto();
-        } else {
-            JsfUtil.addErrorMessage("Debe seleccionar un producto con sus nuevos precios");
-        }
+
+//    public void addPrecioProductoEdit() {
+//        if (producto != null && precioNuevo != null && precioNuevoUSD != null) {
+//            precioProducto = new PrecioProducto();
+//            precioProducto.setId(precioProductos.size() + 1);
+//            precioProducto.setProducto(producto);
+//            precioProducto.setPrecio(precioNuevo);
+//            precioProducto.setPrecioUSD(precioNuevoUSD);
+//            precioProducto.setExiste(false);
+//            precioProductos.add(precioProducto);
+//            precioProductosGuardar.add(precioProducto);
+//            limpiarPrecioProducto();
+//        } else {
+//            JsfUtil.addErrorMessage("Debe seleccionar un producto con sus nuevos precios");
+//        }
+//    }
+    private void cargarProductos() {
+        productos = getProductoFacade().findAll(true);
     }
 }

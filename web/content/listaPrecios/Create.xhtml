@@ -28,85 +28,51 @@
                     </p:panel><br/>
 
                     <p:panel header="Productos" id="panelPrecioProducto">
-                        <p:panelGrid columns="3" id="formPrecioProducto" style="margin: auto;">
-                            <p:panelGrid columns="2">
-                                <p:outputLabel value="#{bundle.PrecioProductosTitle}" for="precioProducto" />                        
-                                <p:autoComplete id="precioProducto" value="#{listaPrecioController.producto}" var="pro"
-                                                itemLabel="#{pro.toString()}" itemValue="#{pro}" converter="productoconverter" forceSelection="true"
-                                                completeMethod="#{promocionController.llenarProducto}">
-                                    <p:column>
-                                        <h:outputText value="#{pro.codigo}" style="width:15%"/>
-                                    </p:column>
-                                    <p:column>
-                                        <h:outputText value="#{pro.nombre}" />
-                                    </p:column>
-                                    <p:column>
-                                        <h:outputText value="#{pro.valorVenta}" />
-                                    </p:column>
-                                    <p:ajax event="itemSelect" update="precioBase,precioBaseUSD,:growl" />
-                                </p:autoComplete>
-                            </p:panelGrid>
-
-                            <p:panelGrid columns="4">
-                                <p:outputLabel for="precioBase" value="#{bundle.MessageCreatePrecioBase}"/>
-                                <pe:inputNumber id="precioBase" value="#{listaPrecioController.producto.valorVenta}" disabled="true" styleClass="inputPrecios"/>
-                                <p:outputLabel for="precioBaseUSD" value="#{bundle.MessageCreatePrecioBaseUSD}"/>
-                                <pe:inputNumber id="precioBaseUSD" value="#{listaPrecioController.producto.valorVentaUsd}" disabled="true" styleClass="inputPrecios"/>
-                                <p:outputLabel for="precioNuevo" value="#{bundle.MessageCreatePrecioNuevo}"/>
-                                <pe:inputNumber id="precioNuevo" value="#{listaPrecioController.precioNuevo}" styleClass="inputPrecios"/>
-                                <p:outputLabel for="precioNuevoUSD" value="#{bundle.MessageCreatePrecioNuevoUSD}"/>
-                                <pe:inputNumber id="precioNuevoUSD" value="#{listaPrecioController.precioNuevoUSD}" styleClass="inputPrecios"/>
-                            </p:panelGrid>
-
-                            <p:panelGrid columns="1">
-                                <p:commandButton value="#{bundle.AddItem}" actionListener="#{listaPrecioController.addPrecioProducto(false)}" 
-                                                 icon="ui-icon-plus" update="listaProductos,formPrecioProducto"/>
-                            </p:panelGrid>
-
-                        </p:panelGrid>
-                        
                         <p:dataTable styleClass="tabla" emptyMessage="#{bundle.EmptyTable}" id="listaProductos" var="itemTMP"
                                      paginator="true" value="#{listaPrecioController.listaPrecioProductos}"
-                                     selectionMode="single" selection="#{listaPrecioController.precioProducto}"
                                      rowKey="#{itemTMP.id}"
-                                     rows="5"
+                                     rows="5" style="text-align: center;"
                                      rowsPerPageTemplate="10,20,30,40,50"
                                      paginatorPosition="bottom">
+                            <p:column filterBy="#{itemTMP.producto.codigo}" filterMatchMode="exact">
+                                <f:facet name="header">
+                                    Código
+                                </f:facet>
+                                <h:outputText value="#{itemTMP.producto.codigo}"/>
+                            </p:column>
                             <p:column>
                                 <f:facet name="header">
                                     Producto
                                 </f:facet>
-                                <h:outputText value="#{itemTMP.producto}"/>
+                                <h:outputText value="#{itemTMP.producto.descripcion}"/>
                             </p:column>
                             <p:column>
                                 <f:facet name="header">
                                     Precio Base
                                 </f:facet>
-                                <h:outputText value="#{itemTMP.producto.valorVenta}"/>
+                                <h:outputText value="#{itemTMP.producto.valorVenta}">
+                                    <f:convertNumber type="currency" currencySymbol="$ " maxFractionDigits="0" />
+                                </h:outputText>
                             </p:column>
                             <p:column>
                                 <f:facet name="header">
-                                    Precio Nuevo
+                                    Nuevo Precio
                                 </f:facet>
-                                <h:outputText value="#{itemTMP.precio}"/>
+                                <pe:inputNumber value="#{itemTMP.precio}" styleClass="inputPrecios"/>
                             </p:column>
                             <p:column>
                                 <f:facet name="header">
                                     Precio Base (USD)
                                 </f:facet>
-                                <h:outputText value="#{itemTMP.producto.valorVentaUsd}"/>
+                                <h:outputText value="#{itemTMP.producto.valorVentaUsd}">
+                                    <f:convertNumber type="currency" currencySymbol="$ " maxFractionDigits="0" />
+                                </h:outputText>
                             </p:column>
                             <p:column>
                                 <f:facet name="header">
-                                    Precio Nuevo (USD)
+                                    Nuevo Precio (USD)
                                 </f:facet>
-                                <h:outputText value="#{itemTMP.precioUSD}"/>
-                            </p:column>
-                            <p:column width="50">
-                                <f:facet name="header">
-                                    Quitar
-                                </f:facet>
-                                <p:commandButton actionListener="#{listaPrecioController.removePrecioProducto(itemTMP)}" icon="ui-icon-close" update="listaProductos"/>
+                                <pe:inputNumber value="#{itemTMP.precioUSD}" styleClass="inputPrecios"/>
                             </p:column>
 
                         </p:dataTable>

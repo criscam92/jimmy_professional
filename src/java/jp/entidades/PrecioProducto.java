@@ -27,14 +27,12 @@ public class PrecioProducto implements Serializable {
     @Basic(optional = false)
     @Column(nullable = false)
     private Integer id;
-    @Basic(optional = false)
-    @NotNull
-    @Column(nullable = false)
-    private double precio;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "precio_usd", nullable = false)
-    private double precioUSD;
+    @Basic(optional = true)
+    @Column(nullable = true)
+    private Double precio;
+    @Basic(optional = true)
+    @Column(name = "precio_usd", nullable = true)
+    private Double precioUSD;
     @JoinColumn(name = "lista_precio", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private ListaPrecio listaPrecio;
@@ -51,9 +49,11 @@ public class PrecioProducto implements Serializable {
         this.id = id;
     }
 
-    public PrecioProducto(Integer id, double precio) {
+    public PrecioProducto(Integer id, Double precio, Double precioUSD, Producto producto) {
         this.id = id;
         this.precio = precio;
+        this.precioUSD = precioUSD;
+        this.producto = producto;
     }
 
     public Integer getId() {
@@ -64,19 +64,19 @@ public class PrecioProducto implements Serializable {
         this.id = id;
     }
 
-    public double getPrecio() {
+    public Double getPrecio() {
         return precio;
     }
 
-    public void setPrecio(double precio) {
+    public void setPrecio(Double precio) {
         this.precio = precio;
     }
 
-    public double getPrecioUSD() {
+    public Double getPrecioUSD() {
         return precioUSD;
     }
 
-    public void setPrecioUSD(double precioUSD) {
+    public void setPrecioUSD(Double precioUSD) {
         this.precioUSD = precioUSD;
     }
 
