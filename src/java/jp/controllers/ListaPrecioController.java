@@ -46,6 +46,7 @@ public class ListaPrecioController implements Serializable {
 
     public ListaPrecioController() {
         uiError = "ui-state-error";
+        precioProductos = new ArrayList<>();
         listaPrecioProductos = new ArrayList<>();
         precioProductosEliminar = new ArrayList<>();
         precioProductosGuardar = new ArrayList<>();
@@ -287,19 +288,20 @@ public class ListaPrecioController implements Serializable {
 
     }
 
-//    public void addPrecioProducto() {
-//        if (producto != null && precioNuevo != null && precioNuevoUSD != null) {
-//            precioProducto = new PrecioProducto();
-//            precioProducto.setId(listaPrecioProductos.size() + 1);
-//            precioProducto.setProducto(producto);
-//            precioProducto.setPrecio(precioNuevo);
-//            precioProducto.setPrecioUSD(precioNuevoUSD);
-//            listaPrecioProductos.add(precioProducto);
-//            limpiarPrecioProducto();
-//        } else {
-//            JsfUtil.addErrorMessage("Debe seleccionar un producto con sus nuevos precios");
-//        }
-//    }
+    public void addPrecioProducto() {
+        if (producto != null && precioNuevo != null && precioNuevoUSD != null) {
+            precioProducto = new PrecioProducto();
+            precioProducto.setId(listaPrecioProductos.size() + 1);
+            precioProducto.setProducto(producto);
+            precioProducto.setPrecio(precioNuevo);
+            precioProducto.setPrecioUSD(precioNuevoUSD);
+            precioProducto.setExiste(true);
+            listaPrecioProductos.add(precioProducto);
+            limpiarPrecioProducto();
+        } else {
+            JsfUtil.addErrorMessage("Debe seleccionar un producto con sus nuevos precios");
+        }
+    }
 
     public void removePrecioProducto(PrecioProducto pp) {
         listaPrecioProductos.remove(pp);
@@ -328,7 +330,7 @@ public class ListaPrecioController implements Serializable {
         }
     }
     
-    public void addPrecioProducto(boolean editar) {
+    public void addPrecioProductoEdit() {
         if (producto != null && precioNuevo != null && precioNuevoUSD != null) {
             precioProducto = new PrecioProducto();
             precioProducto.setId(precioProductos.size() + 1);
@@ -337,9 +339,7 @@ public class ListaPrecioController implements Serializable {
             precioProducto.setPrecioUSD(precioNuevoUSD);
             precioProducto.setExiste(false);
             precioProductos.add(precioProducto);
-            if (editar) {
-                precioProductosGuardar.add(precioProducto);
-            }            
+            precioProductosGuardar.add(precioProducto);
             limpiarPrecioProducto();
         } else {
             JsfUtil.addErrorMessage("Debe seleccionar un producto con sus nuevos precios");
