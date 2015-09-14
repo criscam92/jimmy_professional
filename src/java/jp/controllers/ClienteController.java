@@ -5,9 +5,11 @@ import jp.util.JsfUtil;
 import jp.util.JsfUtil.PersistAction;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.faces.bean.ManagedBean;
@@ -21,7 +23,16 @@ import javax.faces.event.AjaxBehaviorEvent;
 import jp.facades.ClienteFacade;
 import jp.facades.ParametrosFacade;
 import jp.seguridad.UsuarioActual;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.primefaces.context.RequestContext;
+import org.primefaces.event.ToggleEvent;
+import org.primefaces.model.Visibility;
 
 @ManagedBean(name = "clienteController")
 @SessionScoped
@@ -42,6 +53,20 @@ public class ClienteController implements Serializable {
     private int valorSelect;
     private String visibility;
     private String header;
+    private List<Boolean> list;
+
+    @PostConstruct
+    public void init() {
+        list = Arrays.asList(true, true, true, true, true, true, true, true, true, true, true);
+    }
+
+    public List<Boolean> getList() {
+        return list;
+    }
+
+    public void setList(List<Boolean> list) {
+        this.list = list;
+    }
 
     public ClienteController() {
         uiError = "ui-state-error";
@@ -170,8 +195,8 @@ public class ClienteController implements Serializable {
             items = null;    // Invalidate list of items to trigger re-query.
         }
     }
-    
-    public boolean existeDocumentoCliente(){
+
+    public boolean existeDocumentoCliente() {
         boolean existe = getFacade().existeDocumento(selected);
         if (existe) {
             selected.setDocumento("");
@@ -307,5 +332,44 @@ public class ClienteController implements Serializable {
 
     public String setValorString(String st) {
         return (st == null || st.trim().isEmpty()) == true ? "-----" : st;
+    }
+
+    public void onToggle(ToggleEvent e) {
+        list.set((Integer) e.getData(), e.getVisibility() == Visibility.VISIBLE);
+    }
+
+    public void postProcessXLS(Object document) {
+        HSSFWorkbook wb = (HSSFWorkbook) document;
+
+        HSSFSheet sheet = wb.getSheetAt(0);
+
+        int rows = sheet.getLastRowNum();
+
+        int numberOfCells = sheet.getRow(0).getPhysicalNumberOfCells();
+
+        sheet.shiftRows(0, rows, 1);
+
+        HSSFCellStyle cellStyle = wb.createCellStyle();
+        cellStyle.setFillForegroundColor(HSSFColor.GREY_25_PERCENT.index);
+        cellStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+        cellStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+        cellStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+
+        HSSFCell header = sheet.createRow(0).createCell(0);
+        header.setCellStyle(cellStyle);
+        header.setCellValue("Listado de clientes");
+
+        for (int i = 0; i < sheet.getPhysicalNumberOfRows(); i++) {
+            HSSFRow row = sheet.getRow(i);
+            row.setHeightInPoints(25);
+        }
+
+        for (short i = 0; i < numberOfCells; i++) {
+            sheet.autoSizeColumn(i);
+        }
+
+        CellRangeAddress range = new CellRangeAddress(0, 0, 0, numberOfCells - 1);
+        sheet.addMergedRegion(range);
+
     }
 }

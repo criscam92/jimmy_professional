@@ -31,48 +31,55 @@
                             Clientes
                         </div>
                         <div id="acciones">
+
                             <p:commandButton id="createButton" icon="ui-icon-plus"   value="#{bundle.Create}" actionListener="#{clienteController.prepareCreate}" update=":ClienteFormDlg,:ClienteForm" oncomplete="PF('ClienteFormDialog').show()"/>
                             <p:commandButton id="viewButton"   icon="ui-icon-search" value="#{bundle.View}" update=":ClienteViewForm" oncomplete="PF('ClienteViewDialog').show()" disabled="#{empty clienteController.selected}"/>
                             <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}"   actionListener="#{clienteController.prepareEdit}" update=":ClienteFormDlg,:ClienteForm" oncomplete="PF('ClienteFormDialog').show()" disabled="#{empty clienteController.selected}"/>
                             <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{clienteController.destroy}" update=":growl,datalist" disabled="#{empty clienteController.selected}">
                                 <p:confirm header="Confirmar" message="Esta seguro de eliminar este cliente?" icon="ui-icon-alert" />
                             </p:commandButton>
+
                             <p:commandLink styleClass="exporter" title="Exportar a Excel" ajax="false" disabled="#{clienteController.items == null}">
                                 <i class="fa fa-file-excel-o"></i>
-                                <p:dataExporter type="xls" target="datalist" fileName="clientes" />
+                                <p:dataExporter type="xls" target="datalist" fileName="Lista_clientes"  postProcessor="#{clienteController.postProcessXLS}"/>
                             </p:commandLink>
                             <p:commandLink styleClass="exporter" title="Exportar a PDF" ajax="false" disabled="#{clienteController.items == null}">
                                 <i class="fa fa-file-pdf-o"></i>
                                 <p:dataExporter type="pdf" target="datalist" fileName="clientes" />
                             </p:commandLink>
+                            
+                            <p:commandButton id="toggler" type="button" icon="ui-icon-calculator"/>
+                            <p:columnToggler datasource="datalist" trigger="toggler" id="listColumns">
+                                <p:ajax event="toggle" listener="#{clienteController.onToggle}" />
+                            </p:columnToggler>
                         </div>
                     </f:facet>
 
                     <p:ajax event="rowSelect"   update=":ClienteListForm"/>
                     <p:ajax event="rowUnselect" update=":ClienteListForm"/>
 
-                    <p:column filterStyle="width: 70px" filterBy="#{item.documento}" headerText="#{bundle.CreateClienteTitle_documento}" filterMatchMode="contains" style="text-align: center;">
+                    <p:column visible="#{clienteController.list[0]}" exportable="#{clienteController.list[0]}" filterStyle="width: 70px" filterBy="#{item.documento}" headerText="#{bundle.CreateClienteTitle_documento}" filterMatchMode="contains" style="text-align: center;">
                         <h:outputText value="#{item.documento}"/>
                     </p:column>
-                    <p:column>
+                    <p:column visible="#{clienteController.list[1]}" exportable="#{clienteController.list[1]}" filterBy="#{item.nombre}" filterMatchMode="contains" filterStyle="width: 70px">
                         <f:facet name="header">
                             <h:outputText value="#{bundle.ListClienteTitle_nombre}"/>
                         </f:facet>
                         <h:outputText value="#{item.nombre}"/>
                     </p:column>
-                    <p:column>
+                    <p:column visible="#{clienteController.list[2]}" exportable="#{clienteController.list[2]}">
                         <f:facet name="header">
                             <h:outputText value="#{bundle.ListClienteTitle_direccion}"/>
                         </f:facet>
                         <h:outputText value="#{item.direccion}"/>
                     </p:column>
-                    <p:column>
+                    <p:column visible="#{clienteController.list[3]}" exportable="#{clienteController.list[3]}">
                         <f:facet name="header">
                             <h:outputText value="#{bundle.ListClienteTitle_barrio}"/>
                         </f:facet>
                         <h:outputText value="#{item.barrio}"/>
                     </p:column>
-                    <p:column filterBy="#{item.zona}" headerText="#{bundle.MessageCreateTitleZona}" filterMatchMode="exact">
+                    <p:column visible="#{clienteController.list[4]}" exportable="#{clienteController.list[4]}" filterBy="#{item.zona}" headerText="#{bundle.MessageCreateTitleZona}" filterMatchMode="exact">
                         <f:facet name="filter">
                             <p:selectOneMenu onchange="PF('tablaClientes').filter()" style="width: 90px;">
                                 <f:selectItem itemLabel="#{bundle.All}" itemValue="#{null}" noSelectionOption="true" />
@@ -81,42 +88,36 @@
                         </f:facet>
                         <h:outputText value="#{item.zona}"/>
                     </p:column>
-                    <p:column filterBy="#{item.ciudad.toString()}" filterMatchMode="contains" headerText="#{bundle.ListClienteTitle_ciudad}" filterStyle="width: 80px">
+                    <p:column visible="#{clienteController.list[5]}" exportable="#{clienteController.list[5]}" filterBy="#{item.ciudad.toString()}" filterMatchMode="contains" headerText="#{bundle.ListClienteTitle_ciudad}" filterStyle="width: 80px">
                         <h:outputText value="#{item.ciudad.toString()}"/>
                     </p:column>
-                    <p:column width="70">
+                    <p:column visible="#{clienteController.list[6]}" width="70" exportable="#{clienteController.list[6]}">
                         <f:facet name="header">
                             <h:outputText value="#{bundle.ListClienteTitle_telefonos}"/>
                         </f:facet>
                         <h:outputText value="#{item.telefonos}"/>
                     </p:column>
-                    <p:column width="80">
+                    <p:column visible="#{clienteController.list[7]}" width="80" exportable="#{clienteController.list[7]}">
                         <f:facet name="header">
                             <h:outputText value="#{bundle.ListClienteTitle_cupoCredito}"/>
                         </f:facet>
                         <h:outputText value="#{item.cupoCredito}">
                             <f:convertNumber pattern="$ #,##0.00" currencySymbol="$" />
                         </h:outputText>
-                    </p:column>
-                    <p:column width="40">
-                        <f:facet name="header">
-                            <h:outputText value="#{bundle.ListClienteTitle_tarifaEspecial}"/>
-                        </f:facet>
-                        <h:outputText value="#{item.tarifaEspecial}"/>
-                    </p:column>                    
-                    <p:column filterBy="#{item.empleado}" filterMatchMode="contains" headerText="#{bundle.ListClienteTitle_empleado}" filterStyle="width: 70px">
+                    </p:column>                  
+                    <p:column visible="#{clienteController.list[8]}" exportable="#{clienteController.list[8]}" filterBy="#{item.empleado}" filterMatchMode="contains" filterStyle="width: 70px" headerText="#{bundle.ListClienteTitle_empleado}">
                         <h:outputText value="#{item.empleado.toString()}"/>
                     </p:column>
-                    <p:column filterBy="#{item.tipo}" headerText="Tipo" filterMatchMode="exact">
+                    <p:column visible="#{clienteController.list[9]}" exportable="#{clienteController.list[9]}" filterBy="#{item.tipo}" headerText="Tipo" filterMatchMode="exact">
                         <f:facet name="filter">
-                            <p:selectOneMenu onchange="PF('tablaClientes').filter()" >
+                            <p:selectOneMenu onchange="PF('tablaClientes').filter()" style="width: 90px;">
                                 <f:selectItem itemLabel="#{bundle.All}" itemValue="#{null}" noSelectionOption="true" />
                                 <f:selectItems value="#{tipoClienteController.itemsAvailableSelectOne}" />
                             </p:selectOneMenu>
                         </f:facet>
                         <h:outputText value="#{item.tipo.toString()}"/>
                     </p:column>
-                    <p:column filterBy="#{item.categoria}" headerText="#{bundle.CreateClienteTitle_cat}" filterMatchMode="exact">
+                    <p:column visible="#{clienteController.list[10]}" exportable="#{clienteController.list[10]}" filterBy="#{item.categoria}" headerText="#{bundle.CreateClienteTitle_cat}" filterMatchMode="exact">
                         <f:facet name="filter">
                             <p:selectOneMenu onchange="PF('tablaClientes').filter()" style="width: 90px;">
                                 <f:selectItem itemLabel="#{bundle.All}" itemValue="#{null}" noSelectionOption="true" />

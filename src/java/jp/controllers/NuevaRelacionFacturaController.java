@@ -36,6 +36,8 @@ public class NuevaRelacionFacturaController implements Serializable {
     private PagoPublicidadFacade pagoPublicidadFacade;
     @EJB
     private TransactionFacade transactionFacade;
+    @EJB
+    private ClienteFacade clienteFacade;
     @Inject
     private UsuarioActual usuarioActual;
 
@@ -98,6 +100,10 @@ public class NuevaRelacionFacturaController implements Serializable {
 
     public TransactionFacade getTransactionFacade() {
         return transactionFacade;
+    }
+
+    public ClienteFacade getClienteFacade() {
+        return clienteFacade;
     }
 
     public UsuarioActual getUsuarioActual() {
@@ -541,11 +547,9 @@ public class NuevaRelacionFacturaController implements Serializable {
                     tph.setValor(tph.getValor() + pagoDetalle.getValor());
                     repetido = true;
                 }
-            } else {
-                if (pagoDetalle.getTipo() == tph.getTipo()) {
-                    tph.setValor(tph.getValor() + pagoDetalle.getValor());
-                    repetido = true;
-                }
+            } else if (pagoDetalle.getTipo() == tph.getTipo()) {
+                tph.setValor(tph.getValor() + pagoDetalle.getValor());
+                repetido = true;
             }
         }
 
@@ -796,5 +800,9 @@ public class NuevaRelacionFacturaController implements Serializable {
         } else {
             JsfUtil.addErrorMessage("Debe agregar al menos un recibo");
         }
+    }
+
+    public List<Cliente> llenarCliente(String query) {
+        return getClienteFacade().getClienteByQuery(query, relacionFactura.getVendedor());
     }
 }

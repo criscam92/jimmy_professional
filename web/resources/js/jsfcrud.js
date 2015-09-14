@@ -26,3 +26,14 @@ function isNumber(evt) {
     }
     return true;
 }
+
+function updateToggles(widget) {
+    $(widget.jqId + ' .ui-chkbox .ui-chkbox-box').each(function () {
+        var chkbox = $(this);
+        if (chkbox.hasClass('ui-state-active')) {
+            widget.check(chkbox);
+        } else {
+            widget.uncheck(chkbox);
+        }
+    });
+}

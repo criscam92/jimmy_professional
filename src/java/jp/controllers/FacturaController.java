@@ -100,7 +100,6 @@ public class FacturaController implements Serializable {
     private ListaPrecioFacade listaPrecioFacade;
     @Inject
     private UsuarioActual usuarioActual;
-
     private List<Factura> items = null;
     private List<ProductoPromocionHelper> objects;
     private final List<ProductoPromocionHelper> objectsCreate;
