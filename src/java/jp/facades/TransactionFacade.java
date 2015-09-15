@@ -1044,6 +1044,21 @@ public class TransactionFacade {
         }
         return lastCodigo;
     }
+    
+    public Long getLastCodigoPago() {
+        Long orden_pago = 0l;
+        try {
+            Query q = getEntityManager().createQuery("SELECT e.ordenPago FROM Pago e ORDER BY CAST(e.ordenPago as INTEGER) DESC");
+            q.setMaxResults(1);
+            String orden = (String) q.getSingleResult();
+            orden_pago = Long.valueOf((String) q.getSingleResult());
+            return orden_pago;
+        } catch (Exception e) {
+            System.out.println("No se encontró el último codigo para Pago, se pone 001");
+//        e.printStackTrace();
+        }
+        return orden_pago;
+    }
 
     public boolean anularPago(Pago pago) {
         userTransaction = sessionContext.getUserTransaction();

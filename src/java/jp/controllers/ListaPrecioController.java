@@ -50,7 +50,6 @@ public class ListaPrecioController implements Serializable {
     private final List<PrecioProducto> precioProductosEliminar;
     private final List<PrecioProducto> precioProductosGuardar;
     private List<Producto> productos;
-//    private List<Producto> productosEditar = Collections;
 
     public ListaPrecioController() {
         uiError = "ui-state-error";
@@ -85,17 +84,13 @@ public class ListaPrecioController implements Serializable {
     public List<PrecioProducto> getListaPrecioProductos() {
         if (productos == null || listaPrecioProductos == null) {
             cargarProductos();
-//            return new ArrayList<>();
         }
-//        else {
         if (productos != null) {
             for (Producto p : productos) {
                 listaPrecioProductos.add(new PrecioProducto(null, null, null, p));
             }
         }
         return listaPrecioProductos;
-//        }
-//        return new ArrayList<>();
     }
 
     public void setListaPrecioProductos(List<PrecioProducto> precioProductos) {
@@ -178,7 +173,9 @@ public class ListaPrecioController implements Serializable {
 
     public ListaPrecio prepareCreate() {
         selected = new ListaPrecio();
-        productos = new ArrayList<>();
+//        productos = new ArrayList<>();
+        Long ultimoCodigo = getTransactionFacade().getLastCodigoByEntity(selected) + 1;        
+        selected.setCodigo(JsfUtil.rellenar(""+ultimoCodigo, "0", 3, false));
         initializeEmbeddableKey();
         return selected;
     }
@@ -202,7 +199,6 @@ public class ListaPrecioController implements Serializable {
                         listaPrecioProductos.clear();
                         listaPrecioProductosGuardar.clear();
                         productos = null;
-//                        limpiarPrecioProducto();
                         setError("");
                         RequestContext.getCurrentInstance().execute("PF('ListaPrecioCreateDialog').hide()");
                     }
@@ -235,7 +231,7 @@ public class ListaPrecioController implements Serializable {
             }
         }
         if (precioProductos.size() >= 1 && !vacio) {
-            
+
             if (getTransactionFacade().updateListaPrecio(selected, precioProductos)) {
                 if (!JsfUtil.isValidationFailed()) {
                     JsfUtil.addSuccessMessage(JsfUtil.getMessageBundle(new String[]{"MessageListaPrecio", "UpdateSuccessF"}));
@@ -350,45 +346,9 @@ public class ListaPrecioController implements Serializable {
         }
 
     }
-
-//    public void addPrecioProducto() {
-//        if (producto != null && precioNuevo != null && precioNuevoUSD != null) {
-//            precioProducto = new PrecioProducto();
-//            precioProducto.setId(listaPrecioProductos.size() + 1);
-//            precioProducto.setProducto(producto);
-//            precioProducto.setPrecio(precioNuevo);
-//            precioProducto.setPrecioUSD(precioNuevoUSD);
-//            precioProducto.setExiste(true);
-//            listaPrecioProductos.add(precioProducto);
-//            limpiarPrecioProducto();
-//        } else {
-//            JsfUtil.addErrorMessage("Debe seleccionar un producto con sus nuevos precios");
-//        }
-//    }
-//    public void removePrecioProducto(PrecioProducto pp) {
-//        listaPrecioProductos.remove(pp);
-//    }
-//
-//    private void limpiarPrecioProducto() {
-//        producto = null;
-//        precioNuevo = null;
-//        precioNuevoUSD = null;
-//    }
-//    public void removePrecioProductoEdit(PrecioProducto precioProducto) {
-//        if (precioProductosGuardar.contains(precioProducto)) {
-//            precioProductosGuardar.remove(precioProducto);
-//        }
-//        if (precioProducto.getExiste()) {
-//            precioProductosEliminar.add(precioProducto);
-//        }
-//        precioProductos.remove(precioProducto);
-//    }
     public void prepareEdit() {
         Iterator<Producto> productoIt = productos.iterator();
         precioProductos = getFacade().getProductosByListaPrecio(selected);
-//        for (PrecioProducto pp : precioProductos) {
-//            pp.setExiste(true);
-//        }
 
         while (productoIt.hasNext()) {
             Producto p = productoIt.next();
@@ -402,25 +362,9 @@ public class ListaPrecioController implements Serializable {
         for (Producto p : productos) {
             precioProductos.add(new PrecioProducto(null, null, null, p));
         }
-//        precioProductos.addAll(getFacade().getProductosByListaPrecio(selected));
 
     }
-
-//    public void addPrecioProductoEdit() {
-//        if (producto != null && precioNuevo != null && precioNuevoUSD != null) {
-//            precioProducto = new PrecioProducto();
-//            precioProducto.setId(precioProductos.size() + 1);
-//            precioProducto.setProducto(producto);
-//            precioProducto.setPrecio(precioNuevo);
-//            precioProducto.setPrecioUSD(precioNuevoUSD);
-//            precioProducto.setExiste(false);
-//            precioProductos.add(precioProducto);
-//            precioProductosGuardar.add(precioProducto);
-//            limpiarPrecioProducto();
-//        } else {
-//            JsfUtil.addErrorMessage("Debe seleccionar un producto con sus nuevos precios");
-//        }
-//    }
+    
     private void cargarProductos() {
         productos = getProductoFacade().findAll(true);
     }

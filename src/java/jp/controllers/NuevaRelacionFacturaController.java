@@ -427,6 +427,8 @@ public class NuevaRelacionFacturaController implements Serializable {
     public void prepareCreatePago() {
         editar = false;
         setPago(new Pago());
+        Long orden_pedido = getTransactionFacade().getLastCodigoPago() + 1;
+        pago.setOrdenPago(""+orden_pedido);
         setClienteTMP(null);
         setPagoHelper(null);
         setTipoPagoHelper(new TipoPagoHelper());

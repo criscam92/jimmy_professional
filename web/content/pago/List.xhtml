@@ -39,7 +39,15 @@
 
                             <p:commandButton id="anularButton" icon="ui-icon-cancel" value="Anular" disabled="#{pagoController.disabled()}" actionListener="#{pagoController.anularPago()}" update=":growl,datalist">
                                 <p:confirm header="Confirmar" message="Esta seguro de anular este pago?" icon="ui-icon-alert" />
-                            </p:commandButton>     
+                            </p:commandButton>
+                            <p:commandLink styleClass="exporter" title="Exportar a Excel" ajax="false" disabled="#{pagoController.items == null}">
+                                <i class="fa fa-file-excel-o"></i>
+                                <p:dataExporter type="xls" target="datalist" fileName="Listado_pagos"/>
+                            </p:commandLink>
+                            <p:commandLink styleClass="exporter" title="Exportar a PDF" ajax="false" disabled="#{pagoController.items == null}">
+                                <i class="fa fa-file-pdf-o"></i>
+                                <p:dataExporter type="pdf" target="datalist" fileName="Listado_pagos" />
+                            </p:commandLink>
 
                         </div>
                     </f:facet>
