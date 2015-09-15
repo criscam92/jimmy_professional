@@ -117,7 +117,6 @@ public class FacturaController implements Serializable {
     private final SimpleDateFormat sdf;
     private boolean hayPagos = false, hayDespachos = false;
     private String ordenPedidoTMP;
-    private int tipoList;
     private String ocultarListaPrecios;
     private boolean enableProductos = false;
 
@@ -176,7 +175,6 @@ public class FacturaController implements Serializable {
             }
 
             if (selected.getListaPrecio() != null) {
-                tipoList = 1;
                 listaPrecio = selected.getListaPrecio();
             }
 
@@ -280,14 +278,6 @@ public class FacturaController implements Serializable {
 
     public void setOcultarListaPrecios(String ocultarListaPrecios) {
         this.ocultarListaPrecios = ocultarListaPrecios;
-    }
-
-    public int getTipoList() {
-        return tipoList;
-    }
-
-    public void setTipoList(int tipoList) {
-        this.tipoList = tipoList;
     }
 
     public boolean isEmple() {
@@ -815,7 +805,7 @@ public class FacturaController implements Serializable {
 
     private double[] getValoresProducto(FacturaProducto fp) {
         double valorNormal, valorUSD;
-        if (tipoList == 1 && listaPrecio != null) {
+        if (listaPrecio != null) {
             PrecioProducto pp = getFacade().getPrecioProductoByListaPrecioAndProducto(listaPrecio, fp.getProducto());
             if (pp != null) {
                 valorNormal = pp.getPrecio();
@@ -886,10 +876,6 @@ public class FacturaController implements Serializable {
 
     public TipoPago[] getTiposPagos() {
         return TipoPago.getFromValue(new Integer[]{0, 1});
-    }
-
-    public TipoList[] getTiposList() {
-        return TipoList.values();
     }
 
     public Map<String, Integer> getMonedas() {
@@ -1091,7 +1077,7 @@ public class FacturaController implements Serializable {
         Producto p = (Producto) event.getObject();
         PrecioProducto pp = null;
 
-        if (tipoList == 1 && listaPrecio != null) {
+        if (listaPrecio != null) {
             pp = getFacade().getPrecioProductoByListaPrecioAndProducto(listaPrecio, p);
         }
 
@@ -1505,14 +1491,16 @@ public class FacturaController implements Serializable {
         return EstadoFactura.ANULADO.getValor();
     }
 
-    public void changeTipoList(final AjaxBehaviorEvent event) {
-        if (tipoList == 0) {
+    public void changeTipoList() {
+        if (listaPrecio != null) {
+            System.out.println("Hola");
+            ocultarListaPrecios = "visible";
+            enableProductos = true;
+        } else {
+            System.out.println("Hola 2");
             ocultarListaPrecios = "hidden";
             enableProductos = false;
             listaPrecio = null;
-        } else {
-            ocultarListaPrecios = "visible";
-            enableProductos = true;
         }
         cleanProductoOrPromocion();
     }

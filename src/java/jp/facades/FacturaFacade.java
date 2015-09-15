@@ -290,7 +290,7 @@ public class FacturaFacade extends AbstractFacade<Factura> {
     }
 
     public List<Factura> filterFactura(Empleado empleado, Cliente cliente, int tipoPago, int estado, int estadoDespacho, int estadoPago, Date fechaIni, Date fechaFin) {
-        if (empleado != null || cliente != null || tipoPago != -1 || estado != -1 || (fechaIni != null && fechaFin != null)) {
+        if (empleado != null || cliente != null || tipoPago != -1 || estado != -1 || estadoDespacho != -1 || estadoPago != -1 || (fechaIni != null && fechaFin != null)) {
             String sql = "SELECT f FROM Factura f";
             Map<String, Object> parametros = new HashMap<>();
             if (empleado != null) {
@@ -352,13 +352,19 @@ public class FacturaFacade extends AbstractFacade<Factura> {
             if (!fechaIsNull) {
                 sql = sql.substring(0, sql.length() - 4);
             }
-            Query q = getEntityManager().createQuery(sql);
-            for (Map.Entry<String, Object> entrySet : parametros.entrySet()) {
-                String key = entrySet.getKey();
-                Object value = entrySet.getValue();
-                q.setParameter(key, value);
+            
+            try {
+                Query q = getEntityManager().createQuery(sql);
+                for (Map.Entry<String, Object> entrySet : parametros.entrySet()) {
+                    String key = entrySet.getKey();
+                    Object value = entrySet.getValue();
+                    q.setParameter(key, value);
+                }
+                return q.getResultList();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            return q.getResultList();
+
         }
         return null;
     }
@@ -386,6 +392,5 @@ public class FacturaFacade extends AbstractFacade<Factura> {
         }
         return null;
     }
-    
-  
+
 }

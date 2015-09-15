@@ -90,19 +90,11 @@
                                     <p:outputLabel value="Opciones:" for="precios"/>
                                 </p:column>
                                 <p:column>
-                                    <p:selectOneMenu style="width: 155px;" id="precios" value="#{facturaController.tipoList}">
-                                        <f:selectItems value="#{facturaController.tiposList}" var="tipoList" itemLabel="#{tipoList.detalle}" itemValue="#{tipoList.valor}"/>
-                                        <p:ajax event="change" update="listaPrecios, labelListaPrecios, producto, venta, bonificacion, btnAgregar" listener="#{facturaController.changeTipoList}" />
+                                    <p:selectOneMenu style="width: 155px;" id="precios" value="#{facturaController.listaPrecio}" converter="listaprecioconverter">
+                                        <p:ajax listener="#{facturaController.changeTipoList}" update="producto, precio, venta, bonificacion, btnAgregar" />
+                                        <f:selectItem itemLabel="#{bundle.PrecioBase}" itemValue="" noSelectionOption="true"/>
+                                        <f:selectItems value="#{listaPrecioController.getItemsAvailableSelectMany()}"/>
                                     </p:selectOneMenu>
-                                </p:column>
-                                <p:column>
-                                    <p:outputLabel id="labelListaPrecios" style="visibility: #{facturaController.ocultarListaPrecios};"  value="Lista precios: " for="listaPrecios"/>
-                                </p:column>
-                                <p:column>
-                                    <p:autoComplete style="visibility: #{facturaController.ocultarListaPrecios}" id="listaPrecios" minQueryLength="3" value="#{facturaController.listaPrecio}" itemValue="#{listPrecio}" onclick="select()" 
-                                                    completeMethod="#{facturaController.llenarListaPrecios}" effect="fade" converter="listaprecioconverter" itemLabel="#{listPrecio.toString()}" var="listPrecio" required="#{facturaController.enableProductos}">
-                                        <p:ajax event="itemSelect" update="listaPrecios, labelListaPrecios, producto, venta, bonificacion, btnAgregar" listener="#{facturaController.changedListPrecios}" />
-                                    </p:autoComplete>
                                 </p:column>
                             </p:row>
                         </c:if>
@@ -110,10 +102,10 @@
                         <p:row>
                             <c:if test="#{facturaController.selectOneButton == 1}">
                                 <p:column>
-                                    <p:outputLabel styleClass="#{facturaController.errorProducto}" value="#{bundle.EditPromocionProductoLabel_producto}"/>
+                                    <p:outputLabel for="producto" styleClass="#{facturaController.errorProducto}" value="#{bundle.EditPromocionProductoLabel_producto}"/>
                                 </p:column>
                                 <p:column>
-                                    <p:autoComplete disabled="#{facturaController.enableProductos}" styleClass="#{facturaController.errorProducto}" id="producto" minQueryLength="3" value="#{facturaController.producto}" itemValue="#{pro}" onclick="select()" 
+                                    <p:autoComplete styleClass="#{facturaController.errorProducto}" id="producto" minQueryLength="3" value="#{facturaController.producto}" itemValue="#{pro}" onclick="select()" 
                                                     completeMethod="#{promocionController.llenarProducto}" effect="fade" converter="productoconverter" itemLabel="#{pro.toString()}" var="pro">
                                         <p:ajax event="itemSelect" listener="#{facturaController.onItemSelectProducto}" update="precio" />
                                     </p:autoComplete>
@@ -141,9 +133,9 @@
 
                             <p:column>
                                 <p:outputLabel styleClass="#{facturaController.errorVenta}" style="margin-right: 15px;" value="#{bundle.MessageCreateVenta}" for="venta"/>
-                                <p:inputText disabled="#{facturaController.enableProductos}" style="width: 50px; margin-right: 15px;" styleClass="#{facturaController.errorVenta}" value="#{facturaController.unidadesVenta}" id="venta" onkeypress="return isNumber(event)" onclick="select()"/>
+                                <p:inputText style="width: 50px; margin-right: 15px;" styleClass="#{facturaController.errorVenta}" value="#{facturaController.unidadesVenta}" id="venta" onkeypress="return isNumber(event)" onclick="select()"/>
                                 <p:outputLabel styleClass="#{facturaController.errorBonificacion}" style="margin-right: 15px;" value="#{bundle.MessageCreateBonificacion}" for="bonificacion"/>
-                                <p:inputText disabled="#{facturaController.enableProductos}" style="width: 50px;" styleClass="#{facturaController.errorBonificacion}" value="#{facturaController.unidadesBonificacion}" id="bonificacion"  onkeypress="return isNumber(event)" onclick="select()"/>
+                                <p:inputText style="width: 50px;" styleClass="#{facturaController.errorBonificacion}" value="#{facturaController.unidadesBonificacion}" id="bonificacion"  onkeypress="return isNumber(event)" onclick="select()"/>
                             </p:column>
 
                             <p:column>
