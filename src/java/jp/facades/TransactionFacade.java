@@ -2,6 +2,7 @@ package jp.facades;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.List;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
@@ -1170,7 +1171,7 @@ public class TransactionFacade {
         }
         return false;
     }
-    
+
     public boolean createPrecioProducto(ListaPrecio listaPrecio, List<PrecioProducto> precioProductos) {
         userTransaction = sessionContext.getUserTransaction();
         try {
@@ -1207,7 +1208,7 @@ public class TransactionFacade {
         }
         return false;
     }
-    
+
     public boolean deleteListaPrecio(ListaPrecio listaPrecio) {
         userTransaction = sessionContext.getUserTransaction();
         try {
@@ -1237,20 +1238,22 @@ public class TransactionFacade {
         }
         return false;
     }
-    
-    public boolean updateListaPrecio(ListaPrecio listaPrecio, List<PrecioProducto> precioProductosGuardar, List<PrecioProducto> precioProductosEliminar) {
+
+    public boolean updateListaPrecio(ListaPrecio listaPrecio, List<PrecioProducto> precioProductos) {
         userTransaction = sessionContext.getUserTransaction();
         try {
             userTransaction.begin();
+
             getEntityManager().merge(listaPrecio);
 
-            for (PrecioProducto pp : precioProductosEliminar) {
-                PrecioProducto ipTMP = getEntityManager().find(PrecioProducto.class, pp.getId());
-                getEntityManager().remove(ipTMP);
-            }
-
-            for (PrecioProducto pp : precioProductosGuardar) {
-                pp.setId(null);
+            for (PrecioProducto pp : precioProductos) {
+                if (pp.getPrecio() == null && pp.getPrecioUSD() == null) {
+                    if (pp.getId() != null) {
+                        PrecioProducto precioProductoTMP = em.find(PrecioProducto.class, pp.getId());
+                        em.remove(precioProductoTMP);
+                    }
+                    continue;//falta persistir cuando se quita el elemento de lista
+                }
                 pp.setListaPrecio(listaPrecio);
                 getEntityManager().merge(pp);
             }

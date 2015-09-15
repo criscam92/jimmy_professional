@@ -2,6 +2,7 @@ package jp.controllers;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -49,6 +50,7 @@ public class ListaPrecioController implements Serializable {
     private final List<PrecioProducto> precioProductosEliminar;
     private final List<PrecioProducto> precioProductosGuardar;
     private List<Producto> productos;
+//    private List<Producto> productosEditar = Collections;
 
     public ListaPrecioController() {
         uiError = "ui-state-error";
@@ -82,15 +84,18 @@ public class ListaPrecioController implements Serializable {
 
     public List<PrecioProducto> getListaPrecioProductos() {
         if (productos == null || listaPrecioProductos == null) {
-            return new ArrayList<>();
-        } else {
-            if (productos != null) {
-                for (Producto p : productos) {
-                    listaPrecioProductos.add(new PrecioProducto(null, null, null, p));
-                }
-            }
-            return listaPrecioProductos;
+            cargarProductos();
+//            return new ArrayList<>();
         }
+//        else {
+        if (productos != null) {
+            for (Producto p : productos) {
+                listaPrecioProductos.add(new PrecioProducto(null, null, null, p));
+            }
+        }
+        return listaPrecioProductos;
+//        }
+//        return new ArrayList<>();
     }
 
     public void setListaPrecioProductos(List<PrecioProducto> precioProductos) {
@@ -173,8 +178,7 @@ public class ListaPrecioController implements Serializable {
 
     public ListaPrecio prepareCreate() {
         selected = new ListaPrecio();
-        listaPrecioProductos = new ArrayList<>();
-        listaPrecioProductosGuardar = new ArrayList<>();
+        productos = new ArrayList<>();
         initializeEmbeddableKey();
         return selected;
     }
@@ -197,12 +201,12 @@ public class ListaPrecioController implements Serializable {
                         selected = new ListaPrecio();
                         listaPrecioProductos.clear();
                         listaPrecioProductosGuardar.clear();
+                        productos = null;
 //                        limpiarPrecioProducto();
                         setError("");
                         RequestContext.getCurrentInstance().execute("PF('ListaPrecioCreateDialog').hide()");
                     }
-                } 
-                else {
+                } else {
                     JsfUtil.addErrorMessage("No se ha podido Crear la Lista de Productos");
                 }
             } else {
@@ -224,9 +228,15 @@ public class ListaPrecioController implements Serializable {
     }
 
     public void update() {
-//        persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessageListaPrecio", "UpdateSuccessF"}));
-        if (precioProductos.size() >= 1) {
-            if (getTransactionFacade().updateListaPrecio(selected, precioProductosGuardar, precioProductosEliminar)) {
+        boolean vacio = true;
+        for (PrecioProducto lp : precioProductos) {
+            if (lp.getPrecio() != null || lp.getPrecioUSD() != null) {
+                vacio = false;
+            }
+        }
+        if (precioProductos.size() >= 1 && !vacio) {
+            
+            if (getTransactionFacade().updateListaPrecio(selected, precioProductos)) {
                 if (!JsfUtil.isValidationFailed()) {
                     JsfUtil.addSuccessMessage(JsfUtil.getMessageBundle(new String[]{"MessageListaPrecio", "UpdateSuccessF"}));
                     selected = null;
@@ -374,10 +384,26 @@ public class ListaPrecioController implements Serializable {
 //        precioProductos.remove(precioProducto);
 //    }
     public void prepareEdit() {
+        Iterator<Producto> productoIt = productos.iterator();
         precioProductos = getFacade().getProductosByListaPrecio(selected);
-        for (PrecioProducto pp : precioProductos) {
-            pp.setExiste(true);
+//        for (PrecioProducto pp : precioProductos) {
+//            pp.setExiste(true);
+//        }
+
+        while (productoIt.hasNext()) {
+            Producto p = productoIt.next();
+            for (PrecioProducto precioProductoTMP : precioProductos) {
+                if (p.equals(precioProductoTMP.getProducto())) {
+                    productoIt.remove();
+                }
+            }
         }
+
+        for (Producto p : productos) {
+            precioProductos.add(new PrecioProducto(null, null, null, p));
+        }
+//        precioProductos.addAll(getFacade().getProductosByListaPrecio(selected));
+
     }
 
 //    public void addPrecioProductoEdit() {
