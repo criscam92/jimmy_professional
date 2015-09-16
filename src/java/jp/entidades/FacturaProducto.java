@@ -26,6 +26,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "FacturaProducto.findByUnidadesBonificacion", query = "SELECT f FROM FacturaProducto f WHERE f.unidadesBonificacion = :unidadesBonificacion"),
     @NamedQuery(name = "FacturaProducto.findByPrecio", query = "SELECT f FROM FacturaProducto f WHERE f.precio = :precio")})
 public class FacturaProducto implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,6 +44,8 @@ public class FacturaProducto implements Serializable {
     @NotNull
     @Column(nullable = false)
     private double precio;
+    @Column(name = "precio_editado", nullable = false)
+    private boolean precioEditado;
     @JoinColumn(name = "factura", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Factura factura;
@@ -57,11 +60,12 @@ public class FacturaProducto implements Serializable {
         this.id = id;
     }
 
-    public FacturaProducto(Long id, int unidadesVenta, int unidadesBonificacion, double precio) {
+    public FacturaProducto(Long id, int unidadesVenta, int unidadesBonificacion, double precio, boolean precioEditado) {
         this.id = id;
         this.unidadesVenta = unidadesVenta;
         this.unidadesBonificacion = unidadesBonificacion;
         this.precio = precio;
+        this.precioEditado = precioEditado;
     }
 
     public Long getId() {
@@ -94,6 +98,14 @@ public class FacturaProducto implements Serializable {
 
     public void setPrecio(double precio) {
         this.precio = precio;
+    }
+
+    public boolean isPrecioEditado() {
+        return precioEditado;
+    }
+
+    public void setPrecioEditado(boolean precioEditado) {
+        this.precioEditado = precioEditado;
     }
 
     public Factura getFactura() {
@@ -136,5 +148,5 @@ public class FacturaProducto implements Serializable {
     public String toString() {
         return "entidades.FacturaProducto[ id=" + id + " ]";
     }
-    
+
 }

@@ -64,7 +64,7 @@
                             <p:selectOneMenu disabled="#{facturaController.mon}" style="width: 170px;" id="moneda" value="#{facturaController.moneda}" 
                                              required="true" requiredMessage="Debe seleccionar la moneda">
                                 <f:selectItems value="#{facturaController.monedas}"/>
-                                <p:ajax listener="#{facturaController.eventMoneda}" update="opciones, listaProductos" />
+                                <p:ajax listener="#{facturaController.eventMoneda}" update="opciones, listaProductos, :growl" />
                             </p:selectOneMenu>
 
                         </p:panelGrid>
@@ -87,11 +87,11 @@
                         <c:if test="#{facturaController.selectOneButton == 1}">
                             <p:row>
                                 <p:column>
-                                    <p:outputLabel value="Opciones:" for="precios"/>
+                                    <p:outputLabel value="Precios:" for="precios"/>
                                 </p:column>
                                 <p:column>
                                     <p:selectOneMenu style="width: 155px;" id="precios" value="#{facturaController.listaPrecio}" converter="listaprecioconverter">
-                                        <p:ajax listener="#{facturaController.changeTipoList}" update="producto, precio, venta, bonificacion, btnAgregar" />
+                                        <p:ajax listener="#{facturaController.changeTipoList}" update="producto, precio, venta, bonificacion, btnAgregar, listaProductos, :growl" />
                                         <f:selectItem itemLabel="#{bundle.PrecioBase}" itemValue="" noSelectionOption="true"/>
                                         <f:selectItems value="#{listaPrecioController.getItemsAvailableSelectMany()}"/>
                                     </p:selectOneMenu>
@@ -128,7 +128,7 @@
                                 <p:outputLabel value="#{bundle.MessageCreatePrecio}" for="precio"/>
                             </p:column>
                             <p:column>
-                                <p:inputText value="#{facturaController.selectOneButton == 1 ? (facturaController.moneda == 0 ? facturaController.producto.valorVenta :  facturaController.producto.valorVentaUsd) : (facturaController.moneda == 0 ? facturaController.promocion.valor :  facturaController.promocion.valorVentaUsd)}" id="precio" readonly="true"/>
+                                <p:inputText value="#{facturaController.precio}" id="precio"/>
                             </p:column>
 
                             <p:column>
@@ -140,7 +140,7 @@
 
                             <p:column>
                                 <p:commandButton value="#{bundle.AddItem}" icon="ui-icon-plus" actionListener="#{facturaController.addProductoOrPromocion}"
-                                                 update="listaProductos,opciones,:growl,cliente,labelCliente" process="opciones" disabled="#{facturaController.agre ? false : facturaController.enableProductos}" id="btnAgregar"/>
+                                                 update="listaProductos,opciones,:growl,cliente,labelCliente" process="opciones" disabled="#{facturaController.agre}" id="btnAgregar"/>
                             </p:column>
 
                         </p:row>

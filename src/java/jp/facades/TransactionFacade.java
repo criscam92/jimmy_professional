@@ -336,6 +336,7 @@ public class TransactionFacade {
                     fp.setProducto((Producto) pph.getProductoPromocion());
                     fp.setUnidadesBonificacion(pph.getUnidadesBonificacion());
                     fp.setUnidadesVenta(pph.getUnidadesVenta());
+                    fp.setPrecioEditado(pph.isPrecioEditado());
                     getEntityManager().merge(fp);
                 } else {
                     FacturaPromocion fp = new FacturaPromocion();
@@ -345,6 +346,7 @@ public class TransactionFacade {
                     fp.setPromocion((Promocion) pph.getProductoPromocion());
                     fp.setUnidadesBonificacion(pph.getUnidadesBonificacion());
                     fp.setUnidadesVenta(pph.getUnidadesVenta());
+                    fp.setPrecioEditado(pph.isPrecioEditado());
                     getEntityManager().merge(fp);
                 }
             }
@@ -357,6 +359,7 @@ public class TransactionFacade {
                     fp.setProducto((Producto) pph.getProductoPromocion());
                     fp.setUnidadesBonificacion(pph.getUnidadesBonificacion());
                     fp.setUnidadesVenta(pph.getUnidadesVenta());
+                    fp.setPrecioEditado(pph.isPrecioEditado());
                     getEntityManager().merge(fp);
                 } else {
                     FacturaPromocion fp = getEntityManager().find(FacturaPromocion.class, pph.getIdObject());
@@ -365,6 +368,7 @@ public class TransactionFacade {
                     fp.setPromocion((Promocion) pph.getProductoPromocion());
                     fp.setUnidadesBonificacion(pph.getUnidadesBonificacion());
                     fp.setUnidadesVenta(pph.getUnidadesVenta());
+                    fp.setPrecioEditado(pph.isPrecioEditado());
                     getEntityManager().merge(fp);
                 }
             }
@@ -429,6 +433,8 @@ public class TransactionFacade {
                     fp.setProducto((Producto) pph.getProductoPromocion());
                     fp.setUnidadesBonificacion(pph.getUnidadesBonificacion());
                     fp.setUnidadesVenta(pph.getUnidadesVenta());
+                    System.out.println("PRODUCTO: " + pph.isPrecioEditado());
+                    fp.setPrecioEditado(pph.isPrecioEditado());
                     getEntityManager().merge(fp);
                 } else {
                     FacturaPromocion fp = new FacturaPromocion();
@@ -438,6 +444,8 @@ public class TransactionFacade {
                     fp.setPromocion((Promocion) pph.getProductoPromocion());
                     fp.setUnidadesBonificacion(pph.getUnidadesBonificacion());
                     fp.setUnidadesVenta(pph.getUnidadesVenta());
+                    System.out.println("PROMOCION: " + pph.isPrecioEditado());
+                    fp.setPrecioEditado(pph.isPrecioEditado());
                     getEntityManager().merge(fp);
                 }
             }

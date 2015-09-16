@@ -388,7 +388,7 @@ public class FacturaFacade extends AbstractFacade<Factura> {
             query.setParameter("pro", producto.getId());
             return (PrecioProducto) query.getSingleResult();
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
         return null;
     }

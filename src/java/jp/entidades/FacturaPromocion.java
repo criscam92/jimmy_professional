@@ -18,6 +18,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "factura_promocion", catalog = "jimmy_professional", schema = "public")
 @XmlRootElement
 public class FacturaPromocion implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,6 +37,8 @@ public class FacturaPromocion implements Serializable {
     @NotNull
     @Column(nullable = false)
     private double precio;
+    @Column(name = "precio_editado", nullable = false)
+    private boolean precioEditado;
     @JoinColumn(name = "factura", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Factura factura;
@@ -50,11 +53,12 @@ public class FacturaPromocion implements Serializable {
         this.id = id;
     }
 
-    public FacturaPromocion(Long id, int unidadesVenta, int unidadesBonifciacion, double precio) {
+    public FacturaPromocion(Long id, int unidadesVenta, int unidadesBonifciacion, double precio, boolean precioEditado) {
         this.id = id;
         this.unidadesVenta = unidadesVenta;
         this.unidadesBonificacion = unidadesBonifciacion;
         this.precio = precio;
+        this.precioEditado = precioEditado;
     }
 
     public Long getId() {
@@ -89,6 +93,14 @@ public class FacturaPromocion implements Serializable {
         this.precio = precio;
     }
 
+    public boolean isPrecioEditado() {
+        return precioEditado;
+    }
+
+    public void setPrecioEditado(boolean precioEditado) {
+        this.precioEditado = precioEditado;
+    }
+
     public Factura getFactura() {
         return factura;
     }
@@ -119,15 +131,12 @@ public class FacturaPromocion implements Serializable {
             return false;
         }
         FacturaPromocion other = (FacturaPromocion) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return !((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)));
     }
 
     @Override
     public String toString() {
         return "entidades.FacturaPromocion[ id=" + id + " ]";
     }
-    
+
 }
