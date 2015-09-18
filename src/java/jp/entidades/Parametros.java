@@ -14,7 +14,7 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @Entity
-@Table(catalog = "jimmy_professional", schema = "public")
+@Table()
 @XmlRootElement
 public class Parametros implements Serializable {
     private static final long serialVersionUID = 1L;

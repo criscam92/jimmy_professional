@@ -17,7 +17,7 @@ import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @Entity
-@Table(name = "factura_producto", catalog = "jimmy_professional", schema = "public")
+@Table(name = "factura_producto")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "FacturaProducto.findAll", query = "SELECT f FROM FacturaProducto f"),

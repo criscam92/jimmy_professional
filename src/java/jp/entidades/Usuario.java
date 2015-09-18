@@ -23,8 +23,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import jp.util.TipoUsuario;
 
 @Entity
-@Table(catalog = "jimmy_professional", schema = "public", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"usuario"})})
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"usuario"})})
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Usuario.findAll", query = "SELECT u FROM Usuario u"),

@@ -21,7 +21,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import jp.entidades.auxiliar.Codificable;
 
 @Entity
-@Table(name = "cuenta_bancaria", catalog = "jimmy_professional", schema = "public", uniqueConstraints = {
+@Table(name = "cuenta_bancaria", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"nombre"})})
 @XmlRootElement
 @NamedQueries({

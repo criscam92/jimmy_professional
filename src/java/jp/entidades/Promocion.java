@@ -23,8 +23,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import jp.entidades.auxiliar.Codificable;
 
 @Entity
-@Table(catalog = "jimmy_professional", schema = "public", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"codigo"})})
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"codigo"})})
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Promocion.findAll", query = "SELECT p FROM Promocion p"),
