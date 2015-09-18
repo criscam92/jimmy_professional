@@ -104,6 +104,8 @@ public class FacturaController implements Serializable {
     private final List<ProductoPromocionHelper> objectsCreate;
     private final List<ProductoPromocionHelper> objectsEditar;
     private final List<ProductoPromocionHelper> objectsEliminar;
+    private List<Talonario> talonariosTMP = new ArrayList<>();
+
     private Factura selected;
     private double precio, valor, valorusd;
     private int moneda, selectOneButton, unidadesVenta, unidadesBonificacion;
@@ -111,7 +113,7 @@ public class FacturaController implements Serializable {
     private ListaPrecio listaPrecio;
     private Promocion promocion;
     private final String uiError = "ui-state-error";
-    private String errorProducto, errorPromocion, errorVenta, errorBonificacion, errorCliente;
+    private String errorProducto, errorPromocion, errorVenta, errorBonificacion, errorCliente, errorOrdenPago;
     private List<Producto> productosTMP = null;
     private final SimpleDateFormat sdf;
     private boolean hayPagos = false, hayDespachos = false;
@@ -424,6 +426,14 @@ public class FacturaController implements Serializable {
         return talonarioFacade;
     }
 
+    public String getErrorOrdenPago() {
+        return errorOrdenPago;
+    }
+
+    public void setErrorOrdenPago(String errorOrdenPago) {
+        this.errorOrdenPago = errorOrdenPago;
+    }
+
     public DespachoFacturaFacade getDespachoFacturaFacade() {
         return despachoFacturaFacade;
     }
@@ -565,44 +575,41 @@ public class FacturaController implements Serializable {
 
             if (selected.getId() != null) {
                 if (!selected.getOrdenPedido().equals(ordenPedidoTMP)) {
-                    if (getFacade().getFacturaByOrdenPedido(opTMP) == null) {
-                        if (actulizarTalonario(opTMP)) {
-                            updateFactura();
-                        }
-                    } else {
-                        JsfUtil.addErrorMessage("El pedido " + selected.getOrdenPedido() + " ya existe");
+                    if (validarOrdenPago()) {
+                        updateFactura();
                     }
                 } else {
                     updateFactura();
                 }
-            } else if (getFacade().getFacturaByOrdenPedido(opTMP) == null) {
-                if (actulizarTalonario(opTMP)) {
-                    selected.setUsuario(usuarioActual.getUsuario());
-                    asinarEstados();
-                    if (moneda == 1) {
-                        selected.setDolar(true);
-                        selected.setDolarActual(parametrosFacade.getParametros().getPrecioDolar());
-                    } else {
-                        selected.setDolar(false);
-                    }
-                    try {
-                        getEjbTransactionFacade().createFacturaProductoPromocion(selected, objects);
-                        if (!JsfUtil.isValidationFailed()) {
-                            clean();
-                            if (despachar) {
-                                return "Despacho.xhtml?fac=" + opTMP + "&faces-redirect=true";
-                            } else {
-                                redireccionarFormulario();
-                            }
-                        } else {
-                            JsfUtil.addErrorMessage("Error guardando la ");
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+            } else if (validarOrdenPago()) {
+                if (!actulizarTalonario(opTMP, selected.getEmpleado())) {
+                    JsfUtil.addErrorMessage("Error actualizando el talonario");
                 }
-            } else {
-                JsfUtil.addErrorMessage("El pedido " + selected.getOrdenPedido() + " ya existe");
+
+                selected.setUsuario(usuarioActual.getUsuario());
+                asinarEstados();
+                if (moneda == 1) {
+                    selected.setDolar(true);
+                    selected.setDolarActual(parametrosFacade.getParametros().getPrecioDolar());
+                } else {
+                    selected.setDolar(false);
+                }
+                try {
+                    getEjbTransactionFacade().createFacturaProductoPromocion(selected, objects);
+                    if (!JsfUtil.isValidationFailed()) {
+                        clean();
+                        if (despachar) {
+                            return "Despacho.xhtml?fac=" + opTMP + "&faces-redirect=true";
+                        } else {
+                            redireccionarFormulario();
+                        }
+                    } else {
+                        JsfUtil.addErrorMessage("Error guardando la factura");
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
             }
         } else {
             JsfUtil.addErrorMessage("La factura debe tener como minimo un producto");
@@ -738,8 +745,8 @@ public class FacturaController implements Serializable {
         }
     }
 
-    private boolean actulizarTalonario(String opTMP) {
-        List<Talonario> talonarios = getTalonarioFacade().getTalonariosByTipo(TipoTalonario.REMISION, selected.getEmpleado());
+    private boolean actulizarTalonario(String opTMP, Empleado empleado) {
+        List<Talonario> talonarios = getTalonarioFacade().getTalonariosByTipo(TipoTalonario.REMISION, empleado);
 
         if (talonarios != null && !talonarios.isEmpty()) {
             Long ordenPedido = Long.valueOf(opTMP);
@@ -751,10 +758,7 @@ public class FacturaController implements Serializable {
                 }
             }
 
-            if (talonarioTMP.getId() == null) {
-                JsfUtil.addErrorMessage("No existe un talonario valido para el No. de pedido " + opTMP);
-                return false;
-            } else {
+            if (talonarioTMP.getId() != null) {
                 return getTalonarioFacade().update(talonarioTMP, ordenPedido);
             }
         }
@@ -1191,15 +1195,20 @@ public class FacturaController implements Serializable {
         cleanPromociones();
     }
 
-    public void onItemSelectEmpleado(SelectEvent event) {
-        Empleado e = (Empleado) event.getObject();
-        Talonario t = getTalonarioFacade().getActiveTalonario(TipoTalonario.REMISION, e);
+    public void onItemSelectEmpleado(SelectEvent e) {
+        if (e != null && e.getObject() != null) {
+            Empleado empleado = (Empleado) e.getObject();
+            talonariosTMP = getTalonarioFacade().getTalonariosByTipo(TipoTalonario.RECIBO_CAJA, empleado);
 
-        if (t == null) {
-            selected.setEmpleado(null);
-            JsfUtil.addErrorMessage("No existen talonarios para el empleado " + e.toString());
-        } else {
-            selected.setOrdenPedido("" + t.getActual());
+            if (talonariosTMP == null || talonariosTMP.isEmpty()) {
+                selected.setEmpleado(null);
+                JsfUtil.addErrorMessage("No existen talonarios para el empleado " + empleado.toString());
+            } else {
+                Talonario t = getTalonarioFacade().getActiveTalonario(TipoTalonario.RECIBO_CAJA, empleado);
+                if (t != null) {
+                    selected.setOrdenPedido("" + t.getActual());
+                }
+            }
         }
 
         selected.setCliente(null);
@@ -1613,6 +1622,47 @@ public class FacturaController implements Serializable {
         if (!listTMP.isEmpty()) {
             JsfUtil.addWarnMessage("Se han eliminado los productos agregadas a esta factura");
         }
+    }
+
+    public boolean validarOrdenPago() {
+        boolean isValid = true;
+        Factura f = getFacade().getFacturaByOrdenPedido(getSelected().getOrdenPedido());
+
+        if (f != null) {
+            isValid = false;
+            setErrorOrdenPago(uiError);
+            JsfUtil.addErrorMessage("El numero de orden " + getSelected().getOrdenPedido() + " ya esta en uso");
+        }
+
+        if (isValid) {
+            Long ordenPago;
+            try {
+                ordenPago = Long.valueOf(getSelected().getOrdenPedido());
+            } catch (Exception e) {
+                ordenPago = null;
+            }
+
+            if (ordenPago != null) {
+                boolean numValido = false;
+                for (Talonario t : talonariosTMP) {
+                    if ((ordenPago >= t.getInicial()) && (ordenPago <= t.getFinal1())) {
+                        setErrorOrdenPago("");
+                        numValido = true;
+                        break;
+                    }
+                }
+                if (!numValido) {
+                    isValid = false;
+                    setErrorOrdenPago(uiError);
+                    JsfUtil.addErrorMessage("El numero de orden " + getSelected().getOrdenPedido() + " no esta permitido");
+                }
+            } else {
+                isValid = false;
+                setErrorOrdenPago(uiError);
+                JsfUtil.addErrorMessage("Debe poner un numero de recibo valido");
+            }
+        }
+        return isValid;
     }
 
 }

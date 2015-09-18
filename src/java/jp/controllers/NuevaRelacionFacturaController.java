@@ -227,20 +227,15 @@ public class NuevaRelacionFacturaController implements Serializable {
     public void changedEmpleado(SelectEvent e) {
         if (e != null && e.getObject() != null) {
             Empleado empleado = (Empleado) e.getObject();
-            talonarios = getTalonarioFacade().getTalonariosByTipo(TipoTalonario.RECIBO_CAJA, (Empleado) e.getObject());
-            Talonario t = getTalonarioFacade().getActiveTalonario(TipoTalonario.RECIBO_CAJA, empleado);
+            talonarios = getTalonarioFacade().getTalonariosByTipo(TipoTalonario.RECIBO_CAJA, empleado);
 
-            if (t == null) {
-                JsfUtil.addErrorMessage("No existen talonarios para el empleado " + e.toString());
-            } else {
-                
-                orden_pago = "" + t.getActual();
-                System.out.println("OrdenPago Actual--> " + orden_pago);
-            }
             if (talonarios == null || talonarios.isEmpty()) {
                 JsfUtil.addWarnMessage("El empleado seleccionado no cuenta con un talonario de pagos actualmente");
             } else {
-                return;
+                Talonario t = getTalonarioFacade().getActiveTalonario(TipoTalonario.RECIBO_CAJA, empleado);
+                if (t != null) {
+                    orden_pago = "" + t.getActual();
+                }
             }
         }
         getRelacionFactura().setVendedor(null);
@@ -676,6 +671,10 @@ public class NuevaRelacionFacturaController implements Serializable {
     //==========================================================================   
     public void create(boolean crearNuevo) {
         if (validarNumeroRecibo()) {
+            if (!actulizarTalonario(getPago().getOrdenPago(), getPago().getRelacionFactura().getVendedor())) {     
+                JsfUtil.addErrorMessage("Error actualizando el talonario");
+            }
+
             if (!getTipoPagoHelpers().isEmpty()) {
 
                 getPago().setFecha(getRelacionFactura().getFecha());
@@ -816,5 +815,25 @@ public class NuevaRelacionFacturaController implements Serializable {
 
     public List<Cliente> llenarCliente(String query) {
         return getClienteFacade().getClienteByQuery(query, relacionFactura.getVendedor());
+    }
+
+    private boolean actulizarTalonario(String opTMP, Empleado empleado) {
+        List<Talonario> talonariosTMP = getTalonarioFacade().getTalonariosByTipo(TipoTalonario.REMISION, empleado);
+
+        if (talonariosTMP != null && !talonariosTMP.isEmpty()) {
+            Long ordenPedido = Long.valueOf(opTMP);
+            Talonario talonarioTMP = new Talonario();
+            for (Talonario talonario : talonariosTMP) {
+                if (ordenPedido >= talonario.getInicial() && ordenPedido <= talonario.getFinal1()) {
+                    talonarioTMP = talonario;
+                    break;
+                }
+            }
+
+            if (talonarioTMP.getId() != null) {
+                return getTalonarioFacade().update(talonarioTMP, ordenPedido);
+            }
+        }
+        return false;
     }
 }

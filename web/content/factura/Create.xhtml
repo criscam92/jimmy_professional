@@ -43,8 +43,11 @@
                         </p:panelGrid>
                         <p:panelGrid columns="2">
 
-                            <p:outputLabel value="#{bundle.MessageCodigoPedido}" for="codigo"/>
-                            <p:inputText style="width: 162px;" id="codigo" value="#{facturaController.selected.ordenPedido}" required="true" requiredMessage="El campo orden pedido es obligatorio"  onkeypress="return isNumber(event)"/>
+                            <p:outputLabel styleClass="#{facturaController.errorOrdenPago}" value="#{bundle.MessageCodigoPedido}" for="codigo" id="label_codigo"/>
+                            <p:inputText styleClass="#{facturaController.errorOrdenPago}" style="width: 162px;" id="codigo" value="#{facturaController.selected.ordenPedido}" required="true" 
+                                         requiredMessage="El campo orden pedido es obligatorio"  onkeypress="return isNumber(event)">                                
+                                <p:ajax event="blur" listener="#{facturaController.validarOrdenPago()}" update=":growl, label_codigo, codigo"/>                                
+                            </p:inputText>
 
                             <p:outputLabel styleClass="#{facturaController.errorCliente}" value="#{bundle.CreateVisitaLabel_cliente}" id="labelCliente" for="cliente"/>
                             <p:autoComplete disabled="#{facturaController.clien}" styleClass="#{facturaController.errorCliente}" size="23" id="cliente" minQueryLength="3" panelStyle="width: 320px;" value="#{facturaController.selected.cliente}" itemValue="#{cliente}" 

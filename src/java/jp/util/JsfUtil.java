@@ -1,6 +1,5 @@
 package jp.util;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.ResourceBundle;
 import javax.faces.application.FacesMessage;
