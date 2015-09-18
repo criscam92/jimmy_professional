@@ -25,8 +25,8 @@
                              emptyMessage="#{bundle.EmptyTable}"
                              >
 
-                    <p:ajax event="rowSelect"   update="createButton editButton deleteButton"/>
-                    <p:ajax event="rowUnselect" update="createButton editButton deleteButton"/>
+                    <p:ajax event="rowSelect"   update="createButton editButton deleteButton transferButton"/>
+                    <p:ajax event="rowUnselect" update="createButton editButton deleteButton transferButton"/>
 
                     <f:facet name="header">
                         <div id="titulo">
@@ -35,6 +35,7 @@
                         <div id="acciones">
                             <p:commandButton id="createButton" icon="ui-icon-plus"   value="#{bundle.Create}" actionListener="#{empleadoController.prepareCreate}" update=":EmpleadoCreateForm" oncomplete="PF('EmpleadoCreateDialog').show()"/>
                             <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":EmpleadoEditForm" oncomplete="PF('EmpleadoEditDialog').show()" disabled="#{empty empleadoController.selected}"/>
+                            <p:commandButton id="transferButton" icon="ui-icon-transfer-e-w" value="Cambiar Clientes" actionListener="#{empleadoController.llenarClientesByEmpleado()}" update=":TransferClienteForm" oncomplete="PF('TranferClienteDialog').show()" disabled="#{empty empleadoController.selected}"/>
                             <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{empleadoController.destroy}" update=":growl,datalist" disabled="#{empty empleadoController.selected}"/>
                         </div>
                     </f:facet>
@@ -91,6 +92,27 @@
                     </p:column>
                 </p:dataTable>
             </h:form>
+
+            <p:dialog id="TranferClienteDlg" widgetVar="TranferClienteDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.TitleDialogTransferCliente}">
+                <h:form id="TransferClienteForm">
+                    <p:panelGrid columns="4" style="margin: auto;">
+                        <p:outputLabel value="Origen:" for="origen" style="font-weight: bold;"/>
+                        <p:outputLabel value="#{empleadoController.selected.nombre}" id="origen"/>
+                        <p:outputLabel value="Destino:" for="destino" style="font-weight: bold;"/>
+                        <p:autoComplete size="15" id="destino" minQueryLength="3" panelStyle="width: 250px;" value="#{empleadoController.empleadoDestino}" itemValue="#{empleado}" 
+                                        completeMethod="#{empleadoController.llenarEmpleado}" effect="fade" converter="empleadoconverter"
+                                        itemLabel="#{empleado.toString()}" var="empleado" required="true">
+                            <p:ajax event="itemSelect" listener="#{empleadoController.onItemSelectEmpleado}" update="listaClientes,:growl,destino" />
+                        </p:autoComplete>
+                    </p:panelGrid>
+                    <p:pickList id="listaClientes" value="#{empleadoController.clientesByEmpleado}" var="empleado" converter="clienteconverter"
+                                itemLabel="#{empleado}" itemValue="#{empleado}" addLabel="Añadir" addAllLabel="Añadir Todos" removeLabel="Quitar" removeAllLabel="Quitar Todos">
+                        <p:ajax event="transfer" listener="#{empleadoController.handleTransfer}" update=":growl"/>
+                    </p:pickList>
+                    <p:commandButton id="TransferButton" value="#{bundle.Save}" icon="ui-icon-disk" actionListener="#{empleadoController.actualizarListasEmpleados()}"
+                                     update=":EmpleadoListForm,:growl" style="margin-top:5px" />
+                </h:form>
+            </p:dialog>
 
             <ui:include src="Create.xhtml"/>
             <ui:include src="Edit.xhtml"/>

@@ -22,10 +22,12 @@ import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import jp.entidades.CambioDevolucion;
+import jp.entidades.Cliente;
 import jp.entidades.DespachoFactura;
 import jp.entidades.DespachoFacturaProducto;
 import jp.entidades.Devolucion;
 import jp.entidades.DevolucionProducto;
+import jp.entidades.Empleado;
 import jp.entidades.Factura;
 import jp.entidades.FacturaProducto;
 import jp.entidades.FacturaPromocion;
@@ -1052,7 +1054,7 @@ public class TransactionFacade {
         }
         return lastCodigo;
     }
-    
+
     public Long getLastCodigoPago() {
         Long orden_pago = 0l;
         try {
@@ -1281,6 +1283,38 @@ public class TransactionFacade {
                 getEntityManager().merge(pp);
             }
 
+            userTransaction.commit();
+            return true;
+        } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
+            try {
+                System.out.println("======>");
+                e.printStackTrace();
+                System.out.println("<======");
+                userTransaction.rollback();
+            } catch (IllegalStateException | SecurityException | SystemException es) {
+                System.out.println("======>");
+                es.printStackTrace();
+                System.out.println("<======");
+            }
+        }
+        return false;
+    }
+
+    public boolean actualizarListasEmpleados(Empleado empleadoOrigen, Empleado empleadoDestino, List<Cliente> clientesOrigen, List<Cliente> clientesDestino) {
+        userTransaction = sessionContext.getUserTransaction();
+        try {
+            userTransaction.begin();
+
+            for (Cliente c : clientesOrigen) {
+                c.setEmpleado(empleadoOrigen);
+                getEntityManager().merge(c);
+            }
+
+            for (Cliente c : clientesDestino) {
+                c.setEmpleado(empleadoDestino);
+                getEntityManager().merge(c);
+            }
+            
             userTransaction.commit();
             return true;
         } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {

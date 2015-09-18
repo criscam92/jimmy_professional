@@ -4,40 +4,86 @@ import jp.entidades.Empleado;
 import jp.util.JsfUtil;
 import jp.util.JsfUtil.PersistAction;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.faces.bean.ViewScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import jp.entidades.Cliente;
+import jp.facades.ClienteFacade;
 import jp.facades.EmpleadoFacade;
 import jp.facades.TransactionFacade;
 import org.primefaces.context.RequestContext;
+import org.primefaces.event.SelectEvent;
+import org.primefaces.event.TransferEvent;
+import org.primefaces.model.DualListModel;
 
 @ManagedBean(name = "empleadoController")
-@SessionScoped
+@ViewScoped
 public class EmpleadoController implements Serializable {
 
     @EJB
     private EmpleadoFacade ejbFacade;
     @EJB
+    private ClienteFacade clienteFacade;
+    @EJB
     private TransactionFacade ejbTransactionFacade;
     private List<Empleado> items = null;
     private Empleado selected;
+    private Empleado empleadoDestino;
     private final String uiError;
     private String error;
+    private DualListModel listaClientesEmpleadoOrigen;
+    private List<Cliente> clientesSource;
+    private List<Cliente> clientesTarget;
 
     public EmpleadoController() {
         uiError = "ui-state-error";
+        listaClientesEmpleadoOrigen = new DualListModel();
+    }
+
+    private void cargarListas(Empleado empleadoOrigen, Empleado empleadoDestino) {
+        if (selected != null) {
+            clientesSource = getClienteFacade().getClientesByEmpleado(empleadoOrigen);
+            clientesTarget = null;
+            if (empleadoDestino == null) {
+                clientesTarget = new ArrayList<>();
+            } else {
+                clientesTarget = getClienteFacade().getClientesByEmpleado(empleadoDestino);
+            }
+            listaClientesEmpleadoOrigen = new DualListModel<>(clientesSource, clientesTarget);
+        } else {
+            listaClientesEmpleadoOrigen = new DualListModel();
+        }
+    }
+
+    public void llenarClientesByEmpleado() {
+        empleadoDestino = null;
+        cargarListas(selected, null);
     }
 
     public Empleado getSelected() {
         return selected;
+    }
+
+    public void setSelected(Empleado selected) {
+        this.selected = selected;
+    }
+
+    public Empleado getEmpleadoDestino() {
+        return empleadoDestino;
+    }
+
+    public void setEmpleadoDestino(Empleado empleadoDestino) {
+        this.empleadoDestino = empleadoDestino;
     }
 
     public String getError() {
@@ -46,10 +92,6 @@ public class EmpleadoController implements Serializable {
 
     public void setError(String error) {
         this.error = error;
-    }
-
-    public void setSelected(Empleado selected) {
-        this.selected = selected;
     }
 
     protected void setEmbeddableKeys() {
@@ -62,21 +104,33 @@ public class EmpleadoController implements Serializable {
         return ejbFacade;
     }
 
+    public ClienteFacade getClienteFacade() {
+        return clienteFacade;
+    }
+
     public TransactionFacade getEjbTransactionFacade() {
         return ejbTransactionFacade;
     }
 
+    public DualListModel getClientesByEmpleado() {
+        return listaClientesEmpleadoOrigen;
+    }
+
+    public void setClientesByEmpleado(DualListModel clientesByEmpleado) {
+        this.listaClientesEmpleadoOrigen = clientesByEmpleado;
+    }
+
     public Empleado prepareCreate() {
         selected = new Empleado();
-        Long ultimoCodigo = getEjbTransactionFacade().getLastCodigoByEntity(selected) + 1;        
-        selected.setCodigo(JsfUtil.rellenar(""+ultimoCodigo, "0", 3, false));
+        Long ultimoCodigo = getEjbTransactionFacade().getLastCodigoByEntity(selected) + 1;
+        selected.setCodigo(JsfUtil.rellenar("" + ultimoCodigo, "0", 3, false));
         initializeEmbeddableKey();
         return selected;
     }
 
     public void create() {
         if (!existeCodigoEmpleado()) {
-            if(!existeDocumentoEmpleado()){
+            if (!existeDocumentoEmpleado()) {
                 persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageEmpleado", "CreateSuccessM"}));
                 if (!JsfUtil.isValidationFailed()) {
                     selected = null; // Remove selection
@@ -84,7 +138,7 @@ public class EmpleadoController implements Serializable {
                     setError("");
                     RequestContext.getCurrentInstance().execute("PF('EmpleadoCreateDialog').hide()");
                 }
-            }else{
+            } else {
                 setError(uiError);
                 JsfUtil.addErrorMessage("El Documento ya se encuentra en la base de datos.");
             }
@@ -93,8 +147,8 @@ public class EmpleadoController implements Serializable {
             JsfUtil.addErrorMessage(JsfUtil.getMessageBundle("MessageEmpleadoCodigoExist").replaceAll("%cod%", selected.getCodigo()));
         }
     }
-    
-    public boolean existeCodigoEmpleado(){
+
+    public boolean existeCodigoEmpleado() {
         boolean existe = getFacade().getEntityByCodigoOrTipo(selected);
         if (existe) {
             selected.setCodigo("");
@@ -102,8 +156,8 @@ public class EmpleadoController implements Serializable {
         }
         return existe;
     }
-    
-    public boolean existeDocumentoEmpleado(){
+
+    public boolean existeDocumentoEmpleado() {
         boolean existe = getFacade().existeDocumento(selected);
         if (existe) {
             selected.setDocumento("");
@@ -114,14 +168,14 @@ public class EmpleadoController implements Serializable {
 
     public void update() {
         if (!getFacade().getEntityByCodigoOrTipo(selected)) {
-            if(!getFacade().existeDocumento(selected)){
+            if (!getFacade().existeDocumento(selected)) {
                 persist(PersistAction.UPDATE, JsfUtil.getMessageBundle(new String[]{"MessageEmpleado", "UpdateSuccessM"}));
                 setError("");
                 RequestContext.getCurrentInstance().execute("PF('EmpleadoEditDialog').hide()");
-            }else{
+            } else {
                 setError(uiError);
                 JsfUtil.addErrorMessage("El documento ya se encuentra en la base de datos.");
-            } 
+            }
         } else {
             setError(uiError);
             JsfUtil.addErrorMessage(JsfUtil.getMessageBundle("MessageEmpleadoCodigoExist").replaceAll("%cod%", selected.getCodigo()));
@@ -222,6 +276,46 @@ public class EmpleadoController implements Serializable {
 
     public List<Empleado> llenarEmpleado(String query) {
         return getFacade().getEmpleadoByQuery(query);
+    }
+
+    public void onItemSelectEmpleado(SelectEvent event) {
+        Empleado e = (Empleado) event.getObject();
+        if (Objects.equals(e.getId(), selected.getId())) {
+            JsfUtil.addWarnMessage("Seleccione un empleado diferente al del Origen");
+            empleadoDestino = null;
+            return;
+        } else {
+            cargarListas(selected, e);
+        }
+    }
+
+    public void actualizarListasEmpleados() {
+        boolean update = getEjbTransactionFacade().actualizarListasEmpleados(selected, empleadoDestino, clientesSource, clientesTarget);
+        if (update) {
+            RequestContext.getCurrentInstance().execute("PF('TranferClienteDialog').hide()");
+            JsfUtil.addSuccessMessage("Se actualizaron las listas de Clientes");
+        } else {
+            JsfUtil.addErrorMessage("No se pudieron actualizar las listas de Clientes");
+        }
+    }
+
+    public void handleTransfer(TransferEvent event) {
+        List<Cliente> clientes = (List<Cliente>) event.getItems();
+        
+        if (empleadoDestino == null) {
+            JsfUtil.addWarnMessage("Seleccione primero un Empleado Destino");
+            return;
+        }
+        
+        for (Cliente cliente : clientes) {
+            if (event.isAdd()) {
+                clientesSource.remove(cliente);
+                clientesTarget.add(cliente);
+            } else {
+                clientesSource.add(cliente);
+                clientesTarget.remove(cliente);
+            }
+        }
     }
 
 }

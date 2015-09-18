@@ -235,6 +235,7 @@ public class NuevaRelacionFacturaController implements Serializable {
                 Talonario t = getTalonarioFacade().getActiveTalonario(TipoTalonario.RECIBO_CAJA, empleado);
                 if (t != null) {
                     orden_pago = "" + t.getActual();
+                    return;
                 }
             }
         }
