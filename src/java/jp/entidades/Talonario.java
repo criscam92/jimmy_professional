@@ -20,7 +20,7 @@ import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @Entity
-@Table(catalog = "jimmy_professional", schema = "public")
+@Table()
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Talonario.findAll", query = "SELECT t FROM Talonario t"),

@@ -15,7 +15,7 @@ import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @Entity
-@Table(name = "factura_promocion", catalog = "jimmy_professional", schema = "public")
+@Table(name = "factura_promocion")
 @XmlRootElement
 public class FacturaPromocion implements Serializable {
 

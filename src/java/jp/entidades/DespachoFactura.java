@@ -23,7 +23,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 @Entity
-@Table(name = "despacho_factura", catalog = "jimmy_professional", schema = "public")
+@Table(name = "despacho_factura")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "DespachoFactura.findAll", query = "SELECT d FROM DespachoFactura d"),

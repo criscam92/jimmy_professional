@@ -16,7 +16,7 @@ import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @Entity
-@Table(name = "pago_publicidad", catalog = "jimmy_professional", schema = "public")
+@Table(name = "pago_publicidad")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "PagoPublicidad.findAll", query = "SELECT p FROM PagoPublicidad p"),

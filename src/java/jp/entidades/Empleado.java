@@ -24,8 +24,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import jp.entidades.auxiliar.Codificable;
 
 @Entity
-@Table(catalog = "jimmy_professional", schema = "public", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"codigo"})})
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"codigo"})})
 @XmlRootElement
 public class Empleado implements Serializable, Codificable {
 

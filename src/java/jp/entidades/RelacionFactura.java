@@ -19,7 +19,7 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @Entity
-@Table(catalog = "jimmy_professional", schema = "public", name = "relacion_factura")
+@Table(name = "relacion_factura")
 @XmlRootElement
 public class RelacionFactura implements Serializable {
     private static final long serialVersionUID = 1L;
