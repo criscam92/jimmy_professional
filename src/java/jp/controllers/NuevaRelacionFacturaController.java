@@ -672,7 +672,7 @@ public class NuevaRelacionFacturaController implements Serializable {
     //==========================================================================   
     public void create(boolean crearNuevo) {
         if (validarNumeroRecibo()) {
-            if (!crearNuevo) {
+            if (crearNuevo) {
                 if (!actulizarTalonario(getPago().getOrdenPago(), getPago().getRelacionFactura().getVendedor())) {
                     JsfUtil.addErrorMessage("Error actualizando el talonario");
                 }
