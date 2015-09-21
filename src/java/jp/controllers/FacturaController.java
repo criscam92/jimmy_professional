@@ -1198,13 +1198,13 @@ public class FacturaController implements Serializable {
     public void onItemSelectEmpleado(SelectEvent e) {
         if (e != null && e.getObject() != null) {
             Empleado empleado = (Empleado) e.getObject();
-            talonariosTMP = getTalonarioFacade().getTalonariosByTipo(TipoTalonario.RECIBO_CAJA, empleado);
+            talonariosTMP = getTalonarioFacade().getTalonariosByTipo(TipoTalonario.REMISION, empleado);
 
             if (talonariosTMP == null || talonariosTMP.isEmpty()) {
                 selected.setEmpleado(null);
                 JsfUtil.addErrorMessage("No existen talonarios para el empleado " + empleado.toString());
             } else {
-                Talonario t = getTalonarioFacade().getActiveTalonario(TipoTalonario.RECIBO_CAJA, empleado);
+                Talonario t = getTalonarioFacade().getActiveTalonario(TipoTalonario.REMISION, empleado);
                 if (t != null) {
                     selected.setOrdenPedido("" + t.getActual());
                 }

@@ -1,5 +1,6 @@
 package jp.facades;
 
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -7,7 +8,6 @@ import javax.ejb.EJB;
 import jp.entidades.Talonario;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import jp.entidades.Empleado;
@@ -53,22 +53,11 @@ public class TalonarioFacade extends AbstractFacade<Talonario> {
      */
     public Talonario getActiveTalonario(TipoTalonario tipo, Empleado e) {
         try {
-            Query query = getEntityManager().createQuery("SELECT t FROM Talonario t WHERE t.empleado.id = :empleado AND t.tipo = :tipo AND t.actual <= t.final1");
+            Query query = getEntityManager().createQuery("SELECT t FROM Talonario t WHERE t.empleado.id = :empleado AND t.tipo = :tipo AND t.actual <= t.final1 ORDER BY t.fecha DESC");
             query.setParameter("empleado", e.getId());
             query.setParameter("tipo", tipo.getValor());
-            List<Talonario> talonarios = query.getResultList();
-
-            Collections.sort(talonarios, new Comparator() {
-                @Override
-                public int compare(Object o1, Object o2) {
-                    String uno = String.valueOf(((Talonario) o1).getFinal1());
-                    String dos = String.valueOf(((Talonario) o2).getFinal1());
-                    return new Integer(uno).compareTo(new Integer(dos));
-                }
-            });
-
-            return talonarios.get(0);
-
+            query.setMaxResults(1);
+            return (Talonario) query.getResultList();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -124,6 +113,8 @@ public class TalonarioFacade extends AbstractFacade<Talonario> {
 
             try {
                 talonario.setActual(op);
+                Calendar fecha = Calendar.getInstance();
+                talonario.setFecha(fecha.getTime());
                 getEntityManager().merge(talonario);
                 return true;
             } catch (Exception e) {

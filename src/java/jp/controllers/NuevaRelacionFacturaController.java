@@ -20,26 +20,16 @@ import org.primefaces.event.*;
 public class NuevaRelacionFacturaController implements Serializable {
 
     //==========================================================================
-    @EJB
-    private RelacionFacturaFacade relacionFacturaFacade;
-    @EJB
-    private TalonarioFacade talonarioFacade;
-    @EJB
-    private FacturaFacade facturaFacade;
-    @EJB
-    private PagoFacade pagoFacade;
-    @EJB
-    private ParametrosFacade parametrosFacade;
-    @EJB
-    private PagoDetalleFacade pagoDetalleFacade;
-    @EJB
-    private PagoPublicidadFacade pagoPublicidadFacade;
-    @EJB
-    private TransactionFacade transactionFacade;
-    @EJB
-    private ClienteFacade clienteFacade;
-    @Inject
-    private UsuarioActual usuarioActual;
+    @EJB private RelacionFacturaFacade relacionFacturaFacade;
+    @EJB private TalonarioFacade talonarioFacade;
+    @EJB private FacturaFacade facturaFacade;
+    @EJB private PagoFacade pagoFacade;
+    @EJB private ParametrosFacade parametrosFacade;
+    @EJB private PagoDetalleFacade pagoDetalleFacade;
+    @EJB private PagoPublicidadFacade pagoPublicidadFacade;
+    @EJB private TransactionFacade transactionFacade;
+    @EJB private ClienteFacade clienteFacade;
+    @Inject private UsuarioActual usuarioActual;
 
     private PagoHelper pagoHelper;
     private PagoHelper pagoHelperTMP;
@@ -71,157 +61,44 @@ public class NuevaRelacionFacturaController implements Serializable {
     }
 
     //==========================================================================
-    public RelacionFacturaFacade getRelacionFacturaFacade() {
-        return relacionFacturaFacade;
-    }
-
-    public TalonarioFacade getTalonarioFacade() {
-        return talonarioFacade;
-    }
-
-    public FacturaFacade getFacturaFacade() {
-        return facturaFacade;
-    }
-
-    public PagoFacade getPagoFacade() {
-        return pagoFacade;
-    }
-
-    public ParametrosFacade getParametrosFacade() {
-        return parametrosFacade;
-    }
-
-    public PagoDetalleFacade getPagoDetalleFacade() {
-        return pagoDetalleFacade;
-    }
-
-    public PagoPublicidadFacade getPagoPublicidadFacade() {
-        return pagoPublicidadFacade;
-    }
-
-    public TransactionFacade getTransactionFacade() {
-        return transactionFacade;
-    }
-
-    public ClienteFacade getClienteFacade() {
-        return clienteFacade;
-    }
-
-    public UsuarioActual getUsuarioActual() {
-        return usuarioActual;
-    }
-
-    public PagoHelper getPagoHelper() {
-        return pagoHelper == null ? new PagoHelper() : pagoHelper;
-    }
-
-    public void setPagoHelper(PagoHelper pagoHelper) {
-        this.pagoHelper = pagoHelper;
-    }
-
-    public PagoHelper getPagoHelperTMP() {
-        return pagoHelperTMP == null ? new PagoHelper() : pagoHelperTMP;
-    }
-
-    public void setPagoHelperTMP(PagoHelper pagoHelperTMP) {
-        this.pagoHelperTMP = pagoHelperTMP;
-    }
-
-    public TipoPagoHelper getTipoPagoHelper() {
-        return tipoPagoHelper == null ? new TipoPagoHelper() : tipoPagoHelper;
-    }
-
-    public void setTipoPagoHelper(TipoPagoHelper tipoPagoHelper) {
-        this.tipoPagoHelper = tipoPagoHelper;
-    }
-
-    public RelacionFactura getRelacionFactura() {
-        return relacionFactura == null ? new RelacionFactura() : relacionFactura;
-    }
-
-    public void setRelacionFactura(RelacionFactura relacionFactura) {
-        this.relacionFactura = relacionFactura;
-    }
-
-    public Pago getPago() {
-        return pago == null ? new Pago() : pago;
-    }
-
-    public void setPago(Pago pago) {
-        this.pago = pago;
-    }
-
-    public Cliente getClienteTMP() {
-        return clienteTMP;
-    }
-
-    public void setClienteTMP(Cliente clienteTMP) {
-        this.clienteTMP = clienteTMP;
-    }
-
-    public List<PagoHelper> getPagoHelpers() {
-        return pagoHelpers == null ? new ArrayList<PagoHelper>() : pagoHelpers;
-    }
-
-    public void setPagoHelpers(List<PagoHelper> pagoHelpers) {
-        this.pagoHelpers = pagoHelpers;
-    }
-
-    public List<TipoPagoHelper> getTipoPagoHelpers() {
-        return tipoPagoHelpers == null ? new ArrayList<TipoPagoHelper>() : tipoPagoHelpers;
-    }
-
-    public void setTipoPagoHelpers(List<TipoPagoHelper> tipoPagoHelpers) {
-        this.tipoPagoHelpers = tipoPagoHelpers;
-    }
-
-    public List<TipoPagoHelper> getTipoPagoHelpersTMP() {
-        return tipoPagoHelpersTMP == null ? new ArrayList<TipoPagoHelper>() : tipoPagoHelpersTMP;
-    }
-
-    public void setTipoPagoHelpersTMP(List<TipoPagoHelper> tipoPagoHelpersTMP) {
-        this.tipoPagoHelpersTMP = tipoPagoHelpersTMP;
-    }
-
-    public List<Factura> getFacturasTMP() {
-        return facturasTMP;
-    }
-
-    public void setFacturasTMP(List<Factura> facturasTMP) {
-        this.facturasTMP = facturasTMP;
-    }
-
-    public String getError() {
-        return error;
-    }
-
-    public void setError(String error) {
-        this.error = error;
-    }
-
-    public boolean isDesabilitarButton() {
-        return desabilitarButton;
-    }
-
-    public void setDesabilitarButton(boolean desabilitarButton) {
-        this.desabilitarButton = desabilitarButton;
-    }
-
-    public double getValorPublicidad() {
-        return valorPublicidad;
-    }
-
-    public void setValorPublicidad(double valorPublicidad) {
-        this.valorPublicidad = valorPublicidad;
-    }
-
-    public double getValorComision() {
-        return valorComision;
-    }
-
-    public void setValorComision(double valorComision) {
-        this.valorComision = valorComision;
-    }
+    public RelacionFacturaFacade getRelacionFacturaFacade() {return relacionFacturaFacade;}
+    public TalonarioFacade getTalonarioFacade() {return talonarioFacade;}
+    public FacturaFacade getFacturaFacade() {return facturaFacade;}
+    public PagoFacade getPagoFacade() {return pagoFacade;    }
+    public ParametrosFacade getParametrosFacade() {return parametrosFacade;    }
+    public PagoDetalleFacade getPagoDetalleFacade() {return pagoDetalleFacade;    }
+    public PagoPublicidadFacade getPagoPublicidadFacade() {return pagoPublicidadFacade;    }
+    public TransactionFacade getTransactionFacade() {return transactionFacade;    }
+    public ClienteFacade getClienteFacade() {return clienteFacade;    }
+    public UsuarioActual getUsuarioActual() {return usuarioActual;    }
+    public PagoHelper getPagoHelper() {return pagoHelper == null ? new PagoHelper() : pagoHelper;    }
+    public void setPagoHelper(PagoHelper pagoHelper) {this.pagoHelper = pagoHelper;    }
+    public PagoHelper getPagoHelperTMP() {return pagoHelperTMP == null ? new PagoHelper() : pagoHelperTMP;    }
+    public void setPagoHelperTMP(PagoHelper pagoHelperTMP) {this.pagoHelperTMP = pagoHelperTMP;    }
+    public TipoPagoHelper getTipoPagoHelper() {return tipoPagoHelper == null ? new TipoPagoHelper() : tipoPagoHelper;    }
+    public void setTipoPagoHelper(TipoPagoHelper tipoPagoHelper) {this.tipoPagoHelper = tipoPagoHelper;    }
+    public RelacionFactura getRelacionFactura() {return relacionFactura == null ? new RelacionFactura() : relacionFactura;    }
+    public void setRelacionFactura(RelacionFactura relacionFactura) {this.relacionFactura = relacionFactura;    }
+    public Pago getPago() {return pago == null ? new Pago() : pago;    }
+    public void setPago(Pago pago) {this.pago = pago;    }
+    public Cliente getClienteTMP() {return clienteTMP;    }
+    public void setClienteTMP(Cliente clienteTMP) {this.clienteTMP = clienteTMP;    }
+    public List<PagoHelper> getPagoHelpers() {return pagoHelpers == null ? new ArrayList<PagoHelper>() : pagoHelpers;    }
+    public void setPagoHelpers(List<PagoHelper> pagoHelpers) {this.pagoHelpers = pagoHelpers;    }
+    public List<TipoPagoHelper> getTipoPagoHelpers() {return tipoPagoHelpers == null ? new ArrayList<TipoPagoHelper>() : tipoPagoHelpers;    }
+    public void setTipoPagoHelpers(List<TipoPagoHelper> tipoPagoHelpers) {        this.tipoPagoHelpers = tipoPagoHelpers;    }
+    public List<TipoPagoHelper> getTipoPagoHelpersTMP() {        return tipoPagoHelpersTMP == null ? new ArrayList<TipoPagoHelper>() : tipoPagoHelpersTMP;    }
+    public void setTipoPagoHelpersTMP(List<TipoPagoHelper> tipoPagoHelpersTMP) {        this.tipoPagoHelpersTMP = tipoPagoHelpersTMP;    }
+    public List<Factura> getFacturasTMP() {        return facturasTMP;    }
+    public void setFacturasTMP(List<Factura> facturasTMP) {        this.facturasTMP = facturasTMP;    }
+    public String getError() {        return error;    }
+    public void setError(String error) {        this.error = error;    }
+    public boolean isDesabilitarButton() {        return desabilitarButton;    }
+    public void setDesabilitarButton(boolean desabilitarButton) {        this.desabilitarButton = desabilitarButton;    }
+    public double getValorPublicidad() {        return valorPublicidad;    }
+    public void setValorPublicidad(double valorPublicidad) {        this.valorPublicidad = valorPublicidad;    }
+    public double getValorComision() {        return valorComision;    }
+    public void setValorComision(double valorComision) {        this.valorComision = valorComision;    }
 
     //==========================================================================    
     public void changedEmpleado(SelectEvent e) {
