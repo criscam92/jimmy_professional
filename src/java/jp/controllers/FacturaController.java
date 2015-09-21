@@ -759,7 +759,7 @@ public class FacturaController implements Serializable {
             }
 
             if (talonarioTMP.getId() != null) {
-                return getTalonarioFacade().update(talonarioTMP, ordenPedido);
+                return getTalonarioFacade().update(talonarioTMP, ordenPedido, 1);
             }
         }
         return false;

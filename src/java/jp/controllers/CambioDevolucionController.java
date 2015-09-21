@@ -394,7 +394,7 @@ public class CambioDevolucionController implements Serializable {
                 JsfUtil.addErrorMessage("No existe un talonario valido para el No. de pedido " + opTMP);
                 return false;
             } else {
-                return getEjbTalonarioFacade().update(talonarioTMP, ordenPedido);
+                return getEjbTalonarioFacade().update(talonarioTMP, ordenPedido, 1);
             }
         }
 

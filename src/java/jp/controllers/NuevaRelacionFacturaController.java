@@ -672,10 +672,15 @@ public class NuevaRelacionFacturaController implements Serializable {
     //==========================================================================   
     public void create(boolean crearNuevo) {
         if (validarNumeroRecibo()) {
-            if (crearNuevo) {
-                if (!actulizarTalonario(getPago().getOrdenPago(), getPago().getRelacionFactura().getVendedor())) {
+
+            try {
+                System.out.println("Numero Orden: " + getPago().getOrdenPago());
+                System.out.println("Vendedor: " + getRelacionFactura().getVendedor());
+                if (!actulizarTalonario(getPago().getOrdenPago())) {
                     JsfUtil.addErrorMessage("Error actualizando el talonario");
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
             if (!getTipoPagoHelpers().isEmpty()) {
@@ -820,23 +825,26 @@ public class NuevaRelacionFacturaController implements Serializable {
         return getClienteFacade().getClienteByQuery(query, relacionFactura.getVendedor());
     }
 
-    private boolean actulizarTalonario(String opTMP, Empleado empleado) {
-        List<Talonario> talonariosTMP = getTalonarioFacade().getTalonariosByTipo(TipoTalonario.REMISION, empleado);
+    private boolean actulizarTalonario(String opTMP) {
+        try {            
+            if (talonarios != null && !talonarios.isEmpty()) {
+                Long ordenPago = Long.valueOf(opTMP);
+                Talonario talonarioTMP = new Talonario();
+                for (Talonario talonario : talonarios) {
+                    if (ordenPago >= talonario.getInicial() && ordenPago <= talonario.getFinal1()) {
+                        talonarioTMP = talonario;
+                        break;
+                    }
+                }
 
-        if (talonariosTMP != null && !talonariosTMP.isEmpty()) {
-            Long ordenPedido = Long.valueOf(opTMP);
-            Talonario talonarioTMP = new Talonario();
-            for (Talonario talonario : talonariosTMP) {
-                if (ordenPedido >= talonario.getInicial() && ordenPedido <= talonario.getFinal1()) {
-                    talonarioTMP = talonario;
-                    break;
+                if (talonarioTMP.getId() != null) {
+                    return getTalonarioFacade().update(talonarioTMP, ordenPago, 2);
                 }
             }
-
-            if (talonarioTMP.getId() != null) {
-                return getTalonarioFacade().update(talonarioTMP, ordenPedido);
-            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
         return false;
     }
 }

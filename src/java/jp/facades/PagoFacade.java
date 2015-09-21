@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import jp.entidades.Factura;
@@ -94,15 +95,26 @@ public class PagoFacade extends AbstractFacade<Pago> {
         }
         return rf;
     }
-    
+
     @Override
     public List<Pago> findAll() {
         return super.findPagoAll(true);
     }
-    
+
     @Override
     public List<Pago> findPagoAll(boolean asc) {
         return super.findPagoAll(asc);
+    }
+
+    public Pago getPagosByOrdenPago(String ordenPago) {
+        try {
+            Query query = getEntityManager().createQuery("SELECT p FROM Pago p WHERE p.ordenPago = :op");
+            query.setParameter("op", ordenPago);
+            query.setMaxResults(1);
+            return (Pago) query.getSingleResult();
+        } catch (NoResultException e) {
+        }
+        return null;
     }
 
 }
