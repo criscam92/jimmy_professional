@@ -57,7 +57,7 @@ public class TalonarioFacade extends AbstractFacade<Talonario> {
             query.setParameter("empleado", e.getId());
             query.setParameter("tipo", tipo.getValor());
             query.setMaxResults(1);
-            return (Talonario) query.getResultList();
+            return (Talonario) query.getSingleResult();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
