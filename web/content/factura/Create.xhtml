@@ -93,7 +93,7 @@
                                     <p:outputLabel value="Precios:" for="precios"/>
                                 </p:column>
                                 <p:column>
-                                    <p:selectOneMenu style="width: 155px;" id="precios" value="#{facturaController.listaPrecio}" converter="listaprecioconverter">
+                                    <p:selectOneMenu disabled="#{facturaController.prb}" style="width: 155px;" id="precios" value="#{facturaController.listaPrecio}" converter="listaprecioconverter">
                                         <p:ajax listener="#{facturaController.changeTipoList}" update="producto, precio, venta, bonificacion, btnAgregar, listaProductos, :growl" />
                                         <f:selectItem itemLabel="#{bundle.PrecioBase}" itemValue="" noSelectionOption="true"/>
                                         <f:selectItems value="#{listaPrecioController.getItemsAvailableSelectMany()}"/>
@@ -189,7 +189,7 @@
                             <f:facet name="header">
                                 <h:outputText value="Quitar"/>
                             </f:facet>
-                            <p:commandButton icon="ui-icon-closethick" update="listaProductos" actionListener="#{facturaController.removeFacturaProductoPromocion(itemTMP)}" process="listaProductos" disabled="#{facturaController.qui}"/>
+                            <p:commandButton icon="ui-icon-closethick" update="listaProductos" actionListener="#{facturaController.removeFacturaProductoPromocion(itemTMP)}" process="listaProductos" disabled="#{itemTMP.bloquearQuitar}"/>
                         </p:column>
                         <p:columnGroup type="footer">
                             <p:row>

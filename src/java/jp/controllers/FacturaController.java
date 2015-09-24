@@ -131,7 +131,7 @@ public class FacturaController implements Serializable {
     private Date fechaFin;
     //====================
 
-    boolean emple, clien, tPago, mon, agre, qui;
+    boolean emple, clien, tPago, mon, agre, qui, prb;
 
     private DespachoFactura despachoFactura;
     private List<DespachoFactura> despachosFactura = null;
@@ -161,7 +161,7 @@ public class FacturaController implements Serializable {
         if (ordenPedido != null && !ordenPedido.trim().isEmpty()) {
 
             editar = true;
-
+            agre = false;
             selected = getFacade().getFacturaByOrdenPedido(ordenPedido);
 
             if (selected.getId() != null) {
@@ -187,14 +187,14 @@ public class FacturaController implements Serializable {
             for (FacturaProducto fp : listProductos) {
                 double[] valores = getValoresProducto(fp);
                 Long id = objects.size() + 1L;
-                objects.add(new ProductoPromocionHelper(id, fp.getId(), fp.getUnidadesVenta(), fp.getUnidadesBonificacion(), valores[0], valores[1], fp.getProducto(), true, fp.isPrecioEditado()));
+                objects.add(new ProductoPromocionHelper(id, fp.getId(), fp.getUnidadesVenta(), fp.getUnidadesBonificacion(), valores[0], valores[1], fp.getProducto(), true, fp.isPrecioEditado(), qui));
             }
 
             List<FacturaPromocion> listPromociones = getPromocionFacade().getFacturaPromocionByFactura(selected);
             for (FacturaPromocion fp : listPromociones) {
                 double[] valores = getValoresPromocion(fp);
                 Long id = objects.size() + 1L;
-                objects.add(new ProductoPromocionHelper(id, fp.getId(), fp.getUnidadesVenta(), fp.getUnidadesBonificacion(), valores[0], valores[1], fp.getPromocion(), false, fp.isPrecioEditado()));
+                objects.add(new ProductoPromocionHelper(id, fp.getId(), fp.getUnidadesVenta(), fp.getUnidadesBonificacion(), valores[0], valores[1], fp.getPromocion(), false, fp.isPrecioEditado(), qui));
             }
 
             objectsEditar.addAll(objects);
@@ -306,6 +306,14 @@ public class FacturaController implements Serializable {
 
     public void setQui(boolean qui) {
         this.qui = qui;
+    }
+
+    public boolean isPrb() {
+        return prb;
+    }
+
+    public void setPrb(boolean prb) {
+        this.prb = prb;
     }
 
     public boolean isClien() {
@@ -996,7 +1004,11 @@ public class FacturaController implements Serializable {
                     repetido = ((Promocion) pph.getProductoPromocion()).getId().equals(promocion.getId());
                 }
 
-                if (repetido) {
+                if (repetido && pph.isBloquearQuitar()) {
+                    JsfUtil.addErrorMessage("El producto o promocion ya existe y no puede ser modificado");
+                    cleanProductoOrPromocion();
+                    return;
+                } else if (repetido) {
                     existe = true;
                     int io = objects.indexOf(pph);
                     objects.get(io).setPrecio(valores[0] != 0 ? (valores[0] + pph.getPrecioUs()) : (0.0));
@@ -1028,7 +1040,7 @@ public class FacturaController implements Serializable {
 
             if (!existe) {
                 ProductoPromocionHelper pph = new ProductoPromocionHelper(objects.size() + 1L, null, unidadesVenta, unidadesBonificacion,
-                        valores[0], valores[1], isProducto ? producto : promocion, isProducto, isEditado);
+                        valores[0], valores[1], isProducto ? producto : promocion, isProducto, isEditado, false);
 
                 if (selected.getId() != null && editar) {
                     objectsCreate.add(pph);
@@ -1433,9 +1445,10 @@ public class FacturaController implements Serializable {
                 emple = true;
                 clien = true;
                 tPago = false;
-                mon = false;
-                agre = true;
+                mon = true;
+                agre = false;
                 qui = true;
+                prb = true;
             } else if (usuarioActual.getUsuario().getTipo() == TipoUsuario.Administrador.getValor()) {
                 emple = false;
                 clien = false;
@@ -1443,6 +1456,7 @@ public class FacturaController implements Serializable {
                 mon = false;
                 agre = false;
                 qui = false;
+                prb = false;
             } else {
                 mostrarTrue();
             }
@@ -1458,6 +1472,7 @@ public class FacturaController implements Serializable {
         mon = true;
         agre = true;
         qui = true;
+        prb = true;
     }
 
     public String getValueButton() {
@@ -1625,6 +1640,18 @@ public class FacturaController implements Serializable {
     }
 
     public boolean validarOrdenPago() {
+        if (editar) {
+            if (!(ordenPedidoTMP.trim().equals(getSelected().getOrdenPedido().trim()))) {
+                return validarOrdenPago2();
+            } else {
+                return true;
+            }
+        } else {
+            return validarOrdenPago2();
+        }
+    }
+
+    public boolean validarOrdenPago2() {
         boolean isValid = true;
         Factura f = getFacade().getFacturaByOrdenPedido(getSelected().getOrdenPedido());
 

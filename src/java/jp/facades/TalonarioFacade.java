@@ -1,8 +1,6 @@
 package jp.facades;
 
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import javax.ejb.EJB;
 import jp.entidades.Talonario;
