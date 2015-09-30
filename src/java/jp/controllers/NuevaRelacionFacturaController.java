@@ -550,7 +550,7 @@ public class NuevaRelacionFacturaController implements Serializable {
         }
 
         if (!repetido) {
-            getTipoPagoHelpersTMP().add(new TipoPagoHelper(count++, pagoDetalle.getTipo(), pagoDetalle.getValor(), (pagoPublicidad == null ? null : pagoPublicidad.getTipo())));
+            getTipoPagoHelpersTMP().add(new TipoPagoHelper(count++, null, pagoDetalle.getTipo(), pagoDetalle.getValor(), (pagoPublicidad == null ? null : pagoPublicidad.getTipo())));
         }
     }
 
@@ -778,7 +778,7 @@ public class NuevaRelacionFacturaController implements Serializable {
             }
         }
     }
-    
+
     //==========================================================================
     public void crearRecibo() {
         if (pagoHelpers.size() > 0) {

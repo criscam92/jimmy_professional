@@ -24,17 +24,17 @@
                              paginatorPosition="bottom"
                              >
 
-                    <p:ajax event="rowSelect"   update="anularButton"/>
-                    <p:ajax event="rowUnselect" update="anularButton"/>
-                    
+                    <p:ajax event="rowSelect"   update="anularButton editButton"/>
+                    <p:ajax event="rowUnselect" update="anularButton editButton"/>
+
                     <f:facet name="header">
                         <div id="titulo">
                             Lista de Pagos
                         </div>
                         <div id="acciones">
-<!--                            <p:commandButton id="editButton" value="Editar" disabled="{pagoController.disabled()}"                                          
-                                             update=":growl, :PagoCreateForm" icon="ui-icon-pencil"
-                                             oncomplete="if (args &amp;&amp; !args.validationFailed) PF('PagoCreateDialog').show()"/>-->
+                            <p:commandButton id="editButton" value="Editar" disabled="#{pagoController.disabled()}"                                          
+                                             update=":growl, :PagoCreateForm" icon="ui-icon-pencil" actionListener="#{pagoController.prepareEdit()}"
+                                             oncomplete="if (args &amp;&amp; !args.validationFailed) PF('PagoCreateDialog').show()"/>
 
                             <p:commandButton id="anularButton" icon="ui-icon-cancel" value="Anular" disabled="#{pagoController.disabled()}" actionListener="#{pagoController.anularPago()}" update=":growl,datalist">
                                 <p:confirm header="Confirmar" message="Esta seguro de anular este pago?" icon="ui-icon-alert" />
@@ -78,17 +78,17 @@
                         <h:outputText value="#{item.factura.cliente}"/>
                     </p:column>
 
-                    <p:column filterMatchMode="exact" filterBy="#{nuevaRelacionFacturaController.getFormaPago(item.formaPago)}">
+                    <p:column filterMatchMode="exact" filterBy="#{pagoController.getFormaPago(item.formaPago)}">
                         <f:facet name="header">
                             <h:outputText value="Tipo"/>
                         </f:facet>
                         <f:facet name="filter">
                             <p:selectOneMenu onchange="PF('tablaPagos').filter()" >
                                 <f:selectItem itemLabel="#{bundle.All}" itemValue="#{null}" noSelectionOption="true" />
-                                <f:selectItems var="tipo" value="#{nuevaRelacionFacturaController.tiposPago}" itemLabel="#{nuevaRelacionFacturaController.getFormaPago(tipo.valor)}" itemValue="#{nuevaRelacionFacturaController.getFormaPago(tipo.valor)}" />
+                                <f:selectItems var="tipo" value="#{pagoController.tiposPago}" itemLabel="#{pagoController.getFormaPago(tipo.valor)}" itemValue="#{pagoController.getFormaPago(tipo.valor)}" />
                             </p:selectOneMenu>
                         </f:facet>
-                        <h:outputText value="#{nuevaRelacionFacturaController.getFormaPago(item.formaPago)}"/>
+                        <h:outputText value="#{pagoController.getFormaPago(item.formaPago)}"/>
                     </p:column>
 
                     <p:column>
@@ -131,7 +131,7 @@
                 </p:confirmDialog>
 
             </h:form>
-            <!--<ui:include src="EditarPago.xhtml" />-->
+            <ui:include src="EditarPago.xhtml" />
         </ui:define>
     </ui:composition>
 

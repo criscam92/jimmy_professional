@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package jp.facades;
 
 import java.util.ArrayList;
@@ -13,13 +8,10 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import jp.entidades.Factura;
 import jp.entidades.Pago;
-import jp.util.EstadoFactura;
+import jp.entidades.PagoDetalle;
+import jp.entidades.RelacionFactura;
 import jp.util.EstadoPago;
 
-/**
- *
- * @author CRISTIAN
- */
 @Stateless
 public class PagoFacade extends AbstractFacade<Pago> {
 
@@ -75,6 +67,32 @@ public class PagoFacade extends AbstractFacade<Pago> {
             result = false;
         }
         return result;
+    }
+
+    public List<PagoDetalle> getListPagoDetalleByPago(Pago pago) {
+
+        List<PagoDetalle> listTMP;
+        try {
+            Query query1 = getEntityManager().createQuery("SELECT pd FROM PagoDetalle pd WHERE pd.pago.id = :pago");
+            query1.setParameter("pago", pago.getId());
+            listTMP = query1.getResultList();
+        } catch (Exception e) {
+            listTMP = null;
+        }
+        return listTMP;
+
+    }
+
+    public RelacionFactura getRelacionFacturaByPago(Pago selected) {
+        RelacionFactura rf;
+        try {
+            Query query = getEntityManager().createQuery("SELECT r FROM RelacionFactura r WHERE r.id = :id");
+            query.setParameter("id", selected.getRelacionFactura().getId());
+            rf = (RelacionFactura) query.getSingleResult();
+        } catch (Exception e) {
+            rf = null;
+        }
+        return rf;
     }
 
 }

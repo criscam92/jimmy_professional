@@ -1045,18 +1045,18 @@ public class TransactionFacade {
         try {
             userTransaction.begin();
 
+            Factura facturaTMP = getEntityManager().find(Factura.class, pago.getFactura().getId());
+            
             Query query1 = getEntityManager().createQuery("SELECT pd FROM PagoDetalle pd WHERE pd.pago.id = :pago");
             query1.setParameter("pago", pago.getId());
             List<PagoDetalle> pagoDetalles = query1.getResultList();
-            System.out.println("PAGOS DETALLE: " + pagoDetalles.size());
-            
+
             List<PagoPublicidad> pagosPublicidad = new ArrayList<>();
             Query query2 = getEntityManager().createQuery("SELECT pp FROM PagoPublicidad pp WHERE pp.pagoDetalle.id = :pd");
             for (PagoDetalle pd : pagoDetalles) {
                 query2.setParameter("pd", pd.getId());
                 pagosPublicidad.addAll(query2.getResultList());
             }
-            System.out.println("PAGOS PUBLICIDAD: " + pagosPublicidad.size());
 
             for (PagoPublicidad pp : pagosPublicidad) {
                 PagoPublicidad ppTMP = getEntityManager().find(PagoPublicidad.class, pp.getId());
@@ -1067,11 +1067,90 @@ public class TransactionFacade {
                 PagoDetalle pdTMP = getEntityManager().find(PagoDetalle.class, pd.getId());
                 getEntityManager().remove(pdTMP);
             }
-            
+
             Pago pagoTMP = getEntityManager().find(Pago.class, pago.getId());
             pagoTMP.setEstado(EstadoPago.ANULADO.getValor());
             getEntityManager().merge(pagoTMP);
+
+            updateEstadosFactura(facturaTMP);
+            getEntityManager().merge(facturaTMP);
             
+            userTransaction.commit();
+            return true;
+        } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
+            e.printStackTrace();
+            try {
+                userTransaction.rollback();
+            } catch (IllegalStateException | SecurityException | SystemException ex) {
+            }
+        }
+        return false;
+    }
+
+    public boolean updatePago(Pago pago, List<TipoPagoHelper> tipoPagosCrear, List<TipoPagoHelper> tipoPagosEditar, List<TipoPagoHelper> tipoPagosEliminar) {
+        userTransaction = sessionContext.getUserTransaction();
+        try {
+            userTransaction.begin();
+
+            Factura facturaTMP = getEntityManager().find(Factura.class, pago.getFactura().getId());
+
+            Pago pagoTMP = getEntityManager().find(Pago.class, pago.getId());
+            pagoTMP.setCuenta(pago.getCuenta());
+            pagoTMP.setDolar(pago.getFactura().getDolar());
+            pagoTMP.setEstado(pago.getEstado());
+            pagoTMP.setFactura(facturaTMP);
+            pagoTMP.setFecha(pago.getFecha());
+            pagoTMP.setFormaPago(pago.getFormaPago());
+            pagoTMP.setNumeroCheque(pago.getNumeroCheque());
+            pagoTMP.setObservaciones(pago.getObservaciones());
+            pagoTMP.setOrdenPago(pago.getOrdenPago());
+            pagoTMP.setRelacionFactura(pago.getRelacionFactura());
+            pagoTMP.setUsuario(pago.getUsuario());
+            pagoTMP.setValorTotal(pago.getValorTotal());
+            getEntityManager().merge(pagoTMP);
+
+            for (TipoPagoHelper tph : tipoPagosCrear) {
+                PagoDetalle pd = new PagoDetalle();
+                pd.setPago(pagoTMP);
+                pd.setTipo(tph.getTipo());
+                pd.setValor(tph.getValor());
+                getEntityManager().persist(pd);
+
+                if (tph.getTipoPublicidad() != null) {
+                    PagoPublicidad pp = new PagoPublicidad();
+                    pp.setPagoDetalle(pd);
+                    pp.setTipo(tph.getTipoPublicidad());
+                    getEntityManager().persist(pp);
+                }
+            }
+
+            for (TipoPagoHelper tph : tipoPagosEditar) {
+                PagoDetalle pd = getEntityManager().find(PagoDetalle.class, tph.getIdObject());
+                pd.setTipo(tph.getTipo());
+                pd.setValor(tph.getValor());
+                getEntityManager().merge(pd);
+
+                Query query = getEntityManager().createQuery("SELECT pp FROM PagoPublicidad pp WHERE pp.pagoDetalle.id = :pd");
+                query.setParameter("pd", pd.getId());
+                PagoPublicidad pp = (PagoPublicidad) query.getSingleResult();
+                pp.setTipo(tph.getTipoPublicidad());
+                getEntityManager().merge(pp);
+            }
+
+            for (TipoPagoHelper tph : tipoPagosEliminar) {
+                PagoDetalle pd = getEntityManager().find(PagoDetalle.class, tph.getIdObject());
+
+                Query query = getEntityManager().createQuery("SELECT pp FROM PagoPublicidad pp WHERE pp.pagoDetalle.id = :pd");
+                query.setParameter("pd", pd.getId());
+                PagoPublicidad pp = (PagoPublicidad) query.getSingleResult();
+
+                getEntityManager().remove(pp);
+                getEntityManager().remove(pd);
+            }
+
+            updateEstadosFactura(facturaTMP);
+            getEntityManager().merge(facturaTMP);
+
             userTransaction.commit();
             return true;
         } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
