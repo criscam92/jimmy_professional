@@ -62,6 +62,9 @@ public class ReciboCaja implements Serializable {
     @JoinColumn(name = "tercero", referencedColumnName = "id", nullable = true)
     @ManyToOne(optional = true, fetch = FetchType.LAZY)
     private Tercero tercero;
+    @JoinColumn(name = "transaccion", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private ReciboCaja transaccion;
 
     public ReciboCaja() {
         this.fecha = Calendar.getInstance().getTime();
@@ -148,6 +151,14 @@ public class ReciboCaja implements Serializable {
 
     public void setTercero(Tercero tercero) {
         this.tercero = tercero;
+    }
+
+    public ReciboCaja getTransaccion() {
+        return transaccion;
+    }
+
+    public void setTransaccion(ReciboCaja transaccion) {
+        this.transaccion = transaccion;
     }
 
     @Override

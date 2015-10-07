@@ -16,8 +16,10 @@ import javax.faces.convert.FacesConverter;
 import jp.entidades.Concepto;
 import jp.facades.ConceptoFacade;
 import jp.facades.TransactionFacade;
+import jp.util.CondicionConcepto;
 import jp.util.JsfUtil;
 import jp.util.JsfUtil.PersistAction;
+import jp.util.TipoConcepto;
 import org.primefaces.context.RequestContext;
 
 @ManagedBean(name = "conceptoController")
@@ -32,9 +34,11 @@ public class ConceptoController implements Serializable {
     private Concepto selected;
     private final String uiError;
     private String error;
+    private CondicionConcepto[] condicionesConceptos;
 
     public ConceptoController() {
         uiError = "ui-state-error";
+        condicionesConceptos = CondicionConcepto.values();
     }
 
     public Concepto getSelected() {
@@ -67,10 +71,18 @@ public class ConceptoController implements Serializable {
         this.error = error;
     }
 
+    public CondicionConcepto[] getCondicionesConceptos() {
+        return condicionesConceptos;
+    }
+
+    public void setCondicionesConceptos(CondicionConcepto[] condicionesConceptos) {
+        this.condicionesConceptos = condicionesConceptos;
+    }
+
     public Concepto prepareCreate() {
         selected = new Concepto();
-        Long ultimoCodigo = getEjbTransactionFacade().getLastCodigoByEntity(selected) + 1;        
-        selected.setCodigo(JsfUtil.rellenar(""+ultimoCodigo, "0", 3, false));
+        Long ultimoCodigo = getEjbTransactionFacade().getLastCodigoByEntity(selected) + 1;
+        selected.setCodigo(JsfUtil.rellenar("" + ultimoCodigo, "0", 3, false));
         initializeEmbeddableKey();
         return selected;
     }
@@ -88,8 +100,8 @@ public class ConceptoController implements Serializable {
             JsfUtil.addErrorMessage("Ya existe el Código: " + selected.getCodigo());
         }
     }
-    
-    public boolean existeCodigoConcepto(){
+
+    public boolean existeCodigoConcepto() {
         boolean existe = getFacade().getEntityByCodigoOrTipo(selected);
         if (existe) {
             selected.setCodigo("");
@@ -169,18 +181,30 @@ public class ConceptoController implements Serializable {
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
+            
             if (value == null || value.length() == 0) {
                 return null;
             }
+            
+            try {
+                Integer.parseInt(value);
+            } catch (Exception e) {
+                return null;
+            }
+            
             ConceptoController controller = (ConceptoController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "conceptoController");
             return controller.getFacade().find(getKey(value));
         }
 
         java.lang.Integer getKey(String value) {
-            java.lang.Integer key;
-            key = Integer.valueOf(value);
-            return key;
+            try {
+                java.lang.Integer key;
+                key = Integer.valueOf(value);
+                return key;
+            } catch (Exception e) {
+                return null;
+            }
         }
 
         String getStringKey(java.lang.Integer value) {
@@ -205,8 +229,33 @@ public class ConceptoController implements Serializable {
 
     }
 
-    public String getTipoConcepto(boolean ingreso) {
-        return ingreso ? "Ingreso" : "Egreso";
+    public String getTipoConcepto(Integer tipo) {
+        return TipoConcepto.getFromValue(tipo).getDetalle();
     }
 
+    public String getCondicionConcepto(Integer tipo) {
+        return CondicionConcepto.getFromValue(tipo).getDetalle();
+    }
+
+    public TipoConcepto[] getTiposConceptos() {
+        return TipoConcepto.values();
+    }
+
+    public void changeTipoConcepto() {
+        if (selected != null) {
+            int tipo = selected.getTipo2();
+            System.out.println("Tipo-> " + tipo);
+            if (tipo == TipoConcepto.NEUTRAL.getValor()) {
+                condicionesConceptos = CondicionConcepto.getFromValue(new Integer[]{1, 2});
+            } else if (tipo == TipoConcepto.INGRESO.getValor()) {
+                condicionesConceptos = CondicionConcepto.getFromValue(new Integer[]{0, 2});
+            } else if (tipo == TipoConcepto.EGRESO.getValor()) {
+                condicionesConceptos = CondicionConcepto.getFromValue(new Integer[]{0, 1});
+            }
+        }
+    }
+
+    public List<Concepto> llenarConceptos(String query) {
+        return getFacade().getConceptosByQuery(query);
+    }
 }

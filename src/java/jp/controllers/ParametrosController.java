@@ -47,7 +47,7 @@ public class ParametrosController implements Serializable {
     public void init() {
         selected = new Parametros();
         comprobarRegistros();
-        ciudades = new ArrayList<>();
+//        ciudades = new ArrayList<>();
     }
 
     public Parametros getSelected() {
@@ -179,12 +179,15 @@ public class ParametrosController implements Serializable {
 
     private void comprobarRegistros() {
         selected = getFacade().getParametros();
+        System.out.println("Ciudad-> "+selected.getCiudad());
+        
         if (selected == null) {
             selected = new Parametros();
         } else {
             pais = selected.getCiudad().getPais();
             ciudades = getCiudadFacade().getCiudadesByPais(pais);
         }
+        System.out.println("Ciudades-> "+ciudades.size());
     }
 
     @FacesConverter(forClass = Ciudad.class)

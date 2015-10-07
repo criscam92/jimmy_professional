@@ -54,7 +54,13 @@
                         <f:facet name="header">
                             <h:outputText value="#{bundle.CreateConceptoTitle_tipo}"/>
                         </f:facet>
-                        <h:outputText value="#{conceptoController.getTipoConcepto(item.ingreso)}"/>
+                        <h:outputText value="#{conceptoController.getTipoConcepto(item.tipo2)}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.CreateConceptoTitle_condicion}"/>
+                        </f:facet>
+                        <h:outputText value="#{conceptoController.getCondicionConcepto(item.cxccxp)}"/>
                     </p:column>
                 </p:dataTable>
             </h:form>

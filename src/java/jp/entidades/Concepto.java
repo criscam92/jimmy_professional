@@ -26,7 +26,7 @@ import jp.entidades.auxiliar.Codificable;
     @NamedQuery(name = "Concepto.findAll", query = "SELECT c FROM Concepto c"),
     @NamedQuery(name = "Concepto.findById", query = "SELECT c FROM Concepto c WHERE c.id = :id"),
     @NamedQuery(name = "Concepto.findByDetalle", query = "SELECT c FROM Concepto c WHERE c.detalle = :detalle"),
-    @NamedQuery(name = "Concepto.findByIngreso", query = "SELECT c FROM Concepto c WHERE c.ingreso = :ingreso")})
+    @NamedQuery(name = "Concepto.findByTipo", query = "SELECT c FROM Concepto c WHERE c.tipo = :tipo")})
 public class Concepto implements Serializable, Codificable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -42,11 +42,14 @@ public class Concepto implements Serializable, Codificable {
     @Basic(optional = false)
     @NotNull
     @Column(nullable = false)
-    private boolean ingreso;
+    private Integer tipo;
     @NotNull
     @Size(min = 1, max = 45)
     @Column(nullable = false, length = 45)
     private String codigo;
+    @NotNull
+    @Column(nullable = false)
+    private Integer cxccxp;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "concepto", fetch = FetchType.LAZY)
     private List<ReciboCaja> reciboCajaList;
 
@@ -79,12 +82,12 @@ public class Concepto implements Serializable, Codificable {
         this.detalle = detalle;
     }
 
-    public boolean getIngreso() {
-        return ingreso;
+    public Integer getTipo2() {
+        return tipo;
     }
 
-    public void setIngreso(boolean ingreso) {
-        this.ingreso = ingreso;
+    public void setTipo2(Integer tipo) {
+        this.tipo = tipo;
     }
 
     @Override
@@ -94,6 +97,14 @@ public class Concepto implements Serializable, Codificable {
 
     public void setCodigo(String codigo) {
         this.codigo = codigo;
+    }
+
+    public Integer getCxccxp() {
+        return cxccxp;
+    }
+
+    public void setCxccxp(Integer cxccxp) {
+        this.cxccxp = cxccxp;
     }
 
     public List<ReciboCaja> getReciboCajaList() {
@@ -126,7 +137,7 @@ public class Concepto implements Serializable, Codificable {
 
     @Override
     public String toString() {
-        return this.getDetalle();
+        return this.getCodigo()+" - "+this.getDetalle();
     }
 
     @Override

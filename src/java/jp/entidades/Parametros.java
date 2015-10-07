@@ -95,6 +95,9 @@ public class Parametros implements Serializable {
     @Size(min = 1, max = 200)
     @Column(name = "url_base", nullable = false, length = 200)
     private String urlBase;
+    @JoinColumn(name = "concepto_nomina", referencedColumnName = "id", nullable = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private Concepto conceptoNomina;
 
     public Parametros() {
     }
@@ -259,6 +262,14 @@ public class Parametros implements Serializable {
 
     public void setUrlBase(String urlBase) {
         this.urlBase = urlBase;
+    }
+
+    public Concepto getConceptoNomina() {
+        return conceptoNomina;
+    }
+
+    public void setConceptoNomina(Concepto conceptoNomina) {
+        this.conceptoNomina = conceptoNomina;
     }
 
     @Override

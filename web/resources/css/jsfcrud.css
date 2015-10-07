@@ -296,3 +296,18 @@ table.center {
 .tamanoInputNumber input{
     width: 100px;
 }
+
+.estiloConceptoTipoBlack {
+    color: black;
+    font-weight: bold;
+}
+
+.estiloConceptoTipoGreen {
+    color: green;
+    font-weight: bold;
+}
+
+.estiloConceptoTipoRed {
+    color: red;
+    font-weight: bold;
+}

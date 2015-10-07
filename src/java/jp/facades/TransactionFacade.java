@@ -2,8 +2,8 @@ package jp.facades;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -21,6 +21,8 @@ import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import jp.entidades.CambioDevolucion;
 import jp.entidades.Cliente;
 import jp.entidades.DespachoFactura;
@@ -51,6 +53,7 @@ import jp.entidades.RelacionFactura;
 import jp.entidades.Salida;
 import jp.entidades.SalidaProducto;
 import jp.entidades.TipoPagoHelper;
+import jp.entidades.Usuario;
 import jp.entidades.Visita;
 import jp.entidades.VisitaProducto;
 import jp.util.EstadoDespachoFactura;
@@ -72,6 +75,8 @@ public class TransactionFacade {
     private FacturaPromocionFacade facturaPromocionFacade;
     @EJB
     private PromocionProductoFacade promocionProductoFacade;
+    @EJB
+    private UsuarioFacade usuarioFacade;
     @Resource
     private SessionContext sessionContext;
 
@@ -85,6 +90,10 @@ public class TransactionFacade {
 
     public PromocionProductoFacade getPromocionProductoFacade() {
         return promocionProductoFacade;
+    }
+
+    public UsuarioFacade getUsuarioFacade() {
+        return usuarioFacade;
     }
 
     public boolean createVisitaProducto(List<VisitaProducto> visitaProducto, Visita v) {
@@ -170,24 +179,31 @@ public class TransactionFacade {
             parametroTMP.setPorcentajeVentaPublic(p.getPorcentajeVentaPublic());
             parametroTMP.setPrecioDolar(p.getPrecioDolar());
             parametroTMP.setValorProntoPago(p.getValorProntoPago());
+            parametroTMP.setNombre(p.getNombre());
+            parametroTMP.setServidorCorreo(p.getServidorCorreo());
+            parametroTMP.setPuertoSmtp(p.getPuertoSmtp());
+            parametroTMP.setSsl(p.getSsl());
+            parametroTMP.setContrasenhaCorreo(p.getContrasenhaCorreo());
+            parametroTMP.setUrlBase(p.getUrlBase());
+            parametroTMP.setConceptoNomina(p.getConceptoNomina());
 
             em.merge(parametroTMP);
             userTransaction.commit();
             complete = true;
-
+            
         } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
             complete = false;
-            try {
+                try {
                 System.out.println("======>");
                 e.printStackTrace();
                 System.out.println("<======");
-                userTransaction.rollback();
-            } catch (IllegalStateException | SecurityException | SystemException es) {
+                    userTransaction.rollback();
+                } catch (IllegalStateException | SecurityException | SystemException es) {
                 System.out.println("======>");
                 es.printStackTrace();
                 System.out.println("<======");
+                }
             }
-        }
         return complete;
     }
 
@@ -1277,7 +1293,7 @@ public class TransactionFacade {
                         PrecioProducto precioProductoTMP = em.find(PrecioProducto.class, pp.getId());
                         em.remove(precioProductoTMP);
                     }
-                    continue;//falta persistir cuando se quita el elemento de lista
+                    continue;
                 }
                 pp.setListaPrecio(listaPrecio);
                 getEntityManager().merge(pp);
@@ -1301,20 +1317,34 @@ public class TransactionFacade {
     }
 
     public boolean actualizarListasEmpleados(Empleado empleadoOrigen, Empleado empleadoDestino, List<Cliente> clientesOrigen, List<Cliente> clientesDestino) {
+        System.out.println("Clientes Origen-> "+clientesOrigen.size()+"\nClientes Destino-> "+clientesDestino.size());
         userTransaction = sessionContext.getUserTransaction();
         try {
             userTransaction.begin();
 
             for (Cliente c : clientesOrigen) {
+                Usuario usuario2 = getUsuarioFacade().getUsuarioByEmpleado(c.getEmpleado());
+                usuario2.setEmpleado(empleadoOrigen);
+                getEntityManager().merge(usuario2);
+                
                 c.setEmpleado(empleadoOrigen);
                 getEntityManager().merge(c);
             }
 
             for (Cliente c : clientesDestino) {
+                Usuario usuario = getUsuarioFacade().getUsuarioByEmpleado(c.getEmpleado());
+                usuario.setEmpleado(empleadoDestino);
+                getEntityManager().merge(usuario);
+                
                 c.setEmpleado(empleadoDestino);
-                getEntityManager().merge(c);
+                getEntityManager().merge(c);                
             }
-            
+            if (clientesOrigen.isEmpty()) {
+                for (Cliente clienteDestino : clientesDestino) {
+                    
+                }
+            }
+
             userTransaction.commit();
             return true;
         } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {

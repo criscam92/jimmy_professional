@@ -3,7 +3,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:p="http://primefaces.org/ui">
 
     <ui:composition>
@@ -19,7 +18,9 @@
                         <h:outputText value="#{bundle.CreateConceptoLabel_detalle}"/>
                         <h:outputText value="#{conceptoController.selected.detalle}" title="#{bundle.ListConceptoTitle_detalle}"/>
                         <h:outputText value="#{bundle.CreateConceptoLabel_tipo}"/>
-                        <h:outputText value="#{conceptoController.getTipoConcepto(conceptoController.selected.ingreso)}" title="#{bundle.ListConceptoTitle_ingreso}"/>
+                        <h:outputText value="#{conceptoController.getTipoConcepto(conceptoController.selected.tipo2)}" title="#{bundle.ListConceptoTitle_tipo}"/>
+                        <h:outputText value="#{bundle.CreateConceptoLabel_cxccxp}"/>
+                        <h:outputText value="#{conceptoController.getCondicionConcepto(conceptoController.selected.cxccxp)}" title="#{bundle.CreateConceptoTitle_condicion}"/>
                     </p:panelGrid>
                     <p:commandButton value="#{bundle.Close}" type="button" onclick="PF('ConceptoViewDialog').hide()"/>
                 </h:panelGroup>

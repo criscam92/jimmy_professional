@@ -11,27 +11,27 @@ import jp.seguridad.Encrypt;
 
 @Stateless
 public class UsuarioFacade extends AbstractFacade<Usuario> {
-    
+
     @PersistenceContext(unitName = "jimmy_professionalPU")
     private EntityManager em;
-    
+
     @Override
     protected EntityManager getEntityManager() {
         return em;
     }
-    
+
     public UsuarioFacade() {
         super(Usuario.class);
     }
-    
+
     public boolean getUsuarioByNombre(Usuario usuario) {
         try {
             Query query = getEntityManager().createNamedQuery("Usuario.findByUsuario");
             query.setParameter("usuario", usuario.getUsuario());
             query.setMaxResults(1);
-            
+
             Usuario user = (Usuario) query.getSingleResult();
-            
+
             if (user != null) {
                 if (usuario.getId() != null) {
                     return !user.getId().equals(usuario.getId());
@@ -39,12 +39,12 @@ public class UsuarioFacade extends AbstractFacade<Usuario> {
                     return true;
                 }
             }
-            
-        } catch (Exception e) {            
+
+        } catch (Exception e) {
         }
         return false;
     }
-    
+
     public Usuario login(String userName, String password) {
         Usuario usuario = null;
         try {
@@ -54,15 +54,15 @@ public class UsuarioFacade extends AbstractFacade<Usuario> {
             usuario = (Usuario) query.getSingleResult();
         } catch (NoResultException e) {
             System.out.println("\n======================= NO EXISTE EL USUARIO  ======================");
-        }catch(Exception e){
+        } catch (Exception e) {
             System.out.println("\n======================= ERROR CONSULTANDO EL USUARIO Y CONTRASENA ======================");
             e.printStackTrace();
             System.out.println("======================= ERROR CONSULTANDO EL USUARIO Y CONTRASENA ======================\n");
         }
         return usuario;
     }
-    
-    public Empleado empleadoUsuarioExist(Empleado e, Usuario u){
+
+    public Empleado empleadoUsuarioExist(Empleado e, Usuario u) {
         try {
             Empleado empleado;
             Query q = getEntityManager().createQuery("SELECT u.empleado FROM Usuario u WHERE u.empleado.id= :emp");
@@ -74,4 +74,18 @@ public class UsuarioFacade extends AbstractFacade<Usuario> {
             return null;
         }
     }
+
+    public Usuario getUsuarioByEmpleado(Empleado empleado) {
+        try {
+            Usuario usuario;
+            Query q = getEntityManager().createQuery("SELECT u FROM Usuario u WHERE u.empleado.id= :emp");
+            q.setParameter("emp", empleado.getId());
+            q.setMaxResults(1);
+            usuario = (Usuario) q.getSingleResult();
+            return usuario;
+        } catch (NoResultException exc) {
+            return null;
+        }
+    }
+
 }

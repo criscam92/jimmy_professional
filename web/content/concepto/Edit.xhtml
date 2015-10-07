@@ -18,10 +18,18 @@
                         <p:outputLabel value="#{bundle.CreateConceptoLabel_detalle}" for="detalle" />
                         <p:inputText id="detalle" value="#{conceptoController.selected.detalle}" title="#{bundle.ListConceptoTitle_detalle}" required="true" requiredMessage="#{bundle.CreateConceptoRequiredMessage_detalle}"/>
                         <p:outputLabel value="#{bundle.CreateConceptoLabel_tipo}" for="tipo" />
-                        <p:selectOneRadio id="tipo" value="#{conceptoController.selected.ingreso}">
-                            <f:selectItem itemValue="#{true}" itemLabel="Ingreso"/>
-                            <f:selectItem itemValue="#{false}" itemLabel="Egreso" />
-                        </p:selectOneRadio>
+                        <p:selectOneMenu id="tipo" value="#{conceptoController.selected.tipo2}" required="true" requiredMessage="#{bundle.CreateConceptoRequiredMessage_tipo}">
+                            <f:selectItem value="#{null}" itemValue="#{null}" itemLabel="Elige una opción"/>
+                            <f:selectItems itemValue="#{tipo.valor}" itemLabel="#{tipo.detalle}" value="#{conceptoController.tiposConceptos}"
+                                           var="tipo"/>
+                            <p:ajax event="change" update="condicion" listener="#{conceptoController.changeTipoConcepto()}"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel value="#{bundle.CreateConceptoLabel_cxccxp}" for="condicion" />
+                        <p:selectOneMenu id="condicion" value="#{conceptoController.selected.cxccxp}" required="true" requiredMessage="#{bundle.CreateConceptoRequiredMessage_condicion}">
+                            <f:selectItem value="#{null}" itemValue="#{null}" itemLabel="Elige una opción"/>
+                            <f:selectItems itemValue="#{condicion.valor}" itemLabel="#{condicion.detalle}" value="#{conceptoController.condicionesConceptos}"
+                                           var="condicion"/>
+                        </p:selectOneMenu>
                     </p:panelGrid>
                     <p:commandButton actionListener="#{conceptoController.update}" value="#{bundle.Save}" update="display,:ConceptoListForm:datalist,:growl" oncomplete="handleSubmit(args, 'ConceptoEditDialog');"/>
                     <p:commandButton value="#{bundle.Cancel}" type="button" onclick="PF('ConceptoEditDialog').hide()"/>

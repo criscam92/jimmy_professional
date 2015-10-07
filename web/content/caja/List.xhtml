@@ -4,7 +4,8 @@
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions">
 
     <ui:composition template="/content/index.xhtml">
 
@@ -21,7 +22,7 @@
                         <p:inputText id="detalle" value="#{cajaController.selected.detalle}" required="true" requiredMessage="El campo Detalle es requerido" disabled="true"/>
 
                         <p:outputLabel for="base" value="Base:"/>
-                        <p:inputText id="base" value="#{cajaController.selected.base}" required="true" requiredMessage="El campo Base es requerido"/>
+                        <pe:inputNumber id="base" value="#{cajaController.selected.base}" required="true" requiredMessage="El campo Base es requerido"/>
 
                         <p:commandButton actionListener="#{cajaController.update()}" value="#{bundle.Save}" icon="ui-icon-disk" update=":AuditoriaForm,:growl,@form"/>
 

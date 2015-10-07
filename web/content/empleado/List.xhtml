@@ -106,7 +106,8 @@
                         </p:autoComplete>
                     </p:panelGrid>
                     <p:pickList id="listaClientes" value="#{empleadoController.clientesByEmpleado}" var="empleado" converter="clienteconverter"
-                                itemLabel="#{empleado}" itemValue="#{empleado}" addLabel="Añadir" addAllLabel="Añadir Todos" removeLabel="Quitar" removeAllLabel="Quitar Todos">
+                                itemLabel="#{empleado}" itemValue="#{empleado}" addLabel="Añadir" addAllLabel="Añadir Todos" removeLabel="Quitar"
+                                removeAllLabel="Quitar Todos" showSourceFilter="true" showTargetFilter="true" filterMatchMode="contains">
                         <p:ajax event="transfer" listener="#{empleadoController.handleTransfer}" update=":growl"/>
                     </p:pickList>
                     <p:commandButton id="TransferButton" value="#{bundle.Save}" icon="ui-icon-disk" actionListener="#{empleadoController.actualizarListasEmpleados()}"
