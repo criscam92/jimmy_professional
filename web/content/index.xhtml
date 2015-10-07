@@ -12,8 +12,7 @@
         <h:outputScript library="js" name="jsfcrud.js"/>
     </h:head>
 
-    <h:body>
-        
+    <h:body>        
         <p:ajaxStatus onstart="PF('statusDialog').show();" onsuccess="PF('statusDialog').hide();"/>  
               
         <p:dialog modal="true" widgetVar="statusDialog" draggable="false" closable="false">  
@@ -26,7 +25,6 @@
             <p:layoutUnit position="north" size="135">
                 <div id="logo"></div>
                 <h:form id="menuForm">
-
                     <p:menubar>
                         <p:menuitem class="menuPrincipal" value="#{bundle.Home}" icon="ui-icon-home" outcome="/content/index.xhtml"/>
 
@@ -64,6 +62,7 @@
 
                         <p:submenu class="menuPrincipal" label="Cajas">
                             <p:menuitem value="Caja Menor" outcome="/content/cajaMenor/List.xhtml" />
+                            <p:menuitem value="Nómina" outcome="/content/cajaMenor/nomina.xhtml" />
                         </p:submenu>
 
                         <p:submenu class="menuPrincipal" label="Configuración">
@@ -104,10 +103,7 @@
                             <p:menuitem value="Códigos de Devolución" outcome="/content/codigoDevolucion/List.xhtml" />
                             <p:menuitem value="Talonarios" outcome="/content/talonario/List.xhtml" />
 
-
                             <p:menuitem value="Parametros Adicionales" outcome="/content/parametros/index.xhtml" />
-
-
                         </p:submenu>
 
                         <p:submenu style="float:right;" class="menuPrincipal" label="Usuario Actual: #{usuarioActual.usuario.usuario}" rendered="#{usuarioActual.usuario != null}">
@@ -126,5 +122,4 @@
 
         </p:layout>
     </h:body>
-
 </html>
