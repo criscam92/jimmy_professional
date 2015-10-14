@@ -8,12 +8,12 @@
       xmlns:pe="http://primefaces.org/ui/extensions">
     <ui:composition template="/content/index.xhtml">
         <ui:define name="title">
-            <h:outputText value="#{bundle.ListReciboCajaTitle}"></h:outputText>
+            <h:outputText value="#{bundle.ListCXPTitle}"></h:outputText>
         </ui:define>
 
         <ui:define name="body">
             <h:form id="formReciboCaja">
-                <p:panel header="Recibos de Caja Menor" style="width: 900px; margin: auto;" id="panelReciboCaja">
+                <p:panel header="#{bundle.ListCXPTitle}" style="width: 900px; margin: auto;" id="panelReciboCaja">
 
                     <p:panelGrid columns="6" styleClass="center">
 
@@ -47,7 +47,7 @@
                         <p:autoComplete id="concepto" value="#{reciboCajaController.nuevoRecibo.concepto}" converter="conceptoconverter"
                                         required="true" minQueryLength="3" itemLabel="#{concepto.toString()}" var="concepto" itemValue="#{concepto}"
                                         requiredMessage="#{bundle.EditConceptoRequiredMessage}" completeMethod="#{conceptoController.llenarConceptos}">
-                            <p:ajax update="tipoConcepto" event="itemSelect" listener="#{reciboCajaController.changeTipoConcepto(false)}"/>
+                            <p:ajax update="tipoConcepto" event="itemSelect" listener="#{reciboCajaController.changeTipoConcepto(true)}"/>
                         </p:autoComplete>
                         
                         <p:outputLabel for="valor" value="Valor:"/>

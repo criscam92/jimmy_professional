@@ -258,4 +258,8 @@ public class ConceptoController implements Serializable {
     public List<Concepto> llenarConceptos(String query) {
         return getFacade().getConceptosByQuery(query);
     }
+    
+    public List<Concepto> llenarConceptosCXCCXP(String query) {
+        return getFacade().getConceptosCXCCXPByQuery(query);
+    }
 }

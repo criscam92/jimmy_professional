@@ -6,6 +6,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -30,6 +31,7 @@ import jp.facades.ReciboCajaFacade;
 import jp.facades.TerceroFacade;
 import jp.facades.TransactionFacade;
 import jp.seguridad.UsuarioActual;
+import jp.util.CondicionConcepto;
 import jp.util.EstadoFactura;
 import jp.util.JsfUtil;
 import jp.util.JsfUtil.PersistAction;
@@ -54,6 +56,7 @@ public class ReciboCajaController implements Serializable {
     @EJB
     private TerceroFacade terceroFacade;
     private List<ReciboCaja> items = null;
+    private List<ReciboCaja> itemsCxcCxp = null;
     private ReciboCaja selected, nuevoRecibo;
     private Tercero tercero;
     private Long totalIngresos, totalEgresos, totalNeutros, totalRecibos;
@@ -61,7 +64,7 @@ public class ReciboCajaController implements Serializable {
     private SimpleDateFormat formatoDelTexto;
     private Date fechaIni, fechaFin;
     private DecimalFormat formatter;
-    private String tipoConcepto;
+    private String tipoConcepto, condicionConcepto;
     private String estiloTipo;
 
     public ReciboCajaController() {
@@ -69,28 +72,12 @@ public class ReciboCajaController implements Serializable {
         fechaFin = new Date();
         tercero = new Tercero();
         tipoConcepto = "Seleccione un Concepto";
+        condicionConcepto = "";
         estiloTipo = "estiloConceptoTipoBlack";
     }
 
     @PostConstruct
     private void init() {
-        Map<String, String> requestMap = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-//        FacesContext.getCurrentInstance().getExternalContext().getSession(true);
-        try {
-            fechaIni = formatoDelTexto.parse(requestMap.get("date1"));
-            System.out.println("Fecha Inicio ==> " + formatoDelTexto.format(fechaIni));
-        } catch (Exception e) {
-            fechaIni = null;
-            System.out.println("No se recibe fecha Inicial en el filtro");
-        }
-        try {
-            fechaFin = formatoDelTexto.parse(requestMap.get("date2"));
-            System.out.println("Fecha Final ==> " + formatoDelTexto.format(fechaFin));
-        } catch (Exception e) {
-            fechaFin = null;
-            System.out.println("No se recibe fecha Final en el filtro");
-        }
-
         nuevoRecibo = prepareCreate();
         formatoDelTexto = new SimpleDateFormat("dd/MMM/yyyy");
 
@@ -134,7 +121,7 @@ public class ReciboCajaController implements Serializable {
     public void setTotalEgresos(Long totalEgresos) {
         this.totalEgresos = totalEgresos;
     }
-    
+
     public String getTotalNeutros() {
         return formatter.format(totalNeutros);
     }
@@ -219,6 +206,14 @@ public class ReciboCajaController implements Serializable {
         this.tipoConcepto = tipoConcepto;
     }
 
+    public String getCondicionConcepto() {
+        return condicionConcepto;
+    }
+
+    public void setCondicionConcepto(String condicionConcepto) {
+        this.condicionConcepto = condicionConcepto;
+    }
+
     public String getEstiloTipo() {
         return estiloTipo;
     }
@@ -245,6 +240,7 @@ public class ReciboCajaController implements Serializable {
         if (!JsfUtil.isValidationFailed()) {
             nuevoRecibo = prepareCreate();
             items = null;    // Invalidate list of items to trigger re-query.
+            itemsCxcCxp = null;
         }
         calcularSaldo();
     }
@@ -262,10 +258,18 @@ public class ReciboCajaController implements Serializable {
 //    }
     public List<ReciboCaja> getItems() {
         if (items == null) {
-            items = getFacade().getRecibosCaja(null, null);
+            items = getFacade().getRecibosCaja(false);
             getTotalIngresosEgresos();
         }
         return items;
+    }
+
+    public List<ReciboCaja> getItemsCxcCxp() {
+        if (itemsCxcCxp == null) {
+            itemsCxcCxp = getFacade().getRecibosCaja(true);
+            getTotalIngresosEgresos();
+        }
+        return itemsCxcCxp;
     }
 
     private void persist(PersistAction persistAction, String successMessage) {
@@ -317,7 +321,7 @@ public class ReciboCajaController implements Serializable {
     private void calcularSaldo() {
 
         base = cajaFacade.getCaja().getBase();
-        List<ReciboCaja> transacciones = ejbFacade.getRecibosCaja(null, null);
+        List<ReciboCaja> transacciones = ejbFacade.getRecibosCaja(false);
 
         egresos = 0l;
         ingresos = 0l;
@@ -326,12 +330,12 @@ public class ReciboCajaController implements Serializable {
             if (transaccion.getEstado() == EstadoFactura.REALIZADA.getValor()) {
                 if (transaccion.getConcepto().getTipo2() == TipoConcepto.INGRESO.getValor()) {
                     ingresos += transaccion.getValor();
-                } else if (transaccion.getConcepto().getTipo2() == TipoConcepto.EGRESO.getValor()){
+                } else if (transaccion.getConcepto().getTipo2() == TipoConcepto.EGRESO.getValor()) {
                     egresos += transaccion.getValor();
                 }
             }
         }
-        
+
         totalRecibos = ingresos - egresos;
 
     }
@@ -383,6 +387,7 @@ public class ReciboCajaController implements Serializable {
                 JsfUtil.addSuccessMessage(JsfUtil.getMessageBundle(new String[]{"MessageReciboCaja", "AnullSuccessM"}));
                 selected = null; // Remove selection
                 items = null;
+                itemsCxcCxp = null;
                 calcularSaldo();
             }
         } else {
@@ -413,7 +418,7 @@ public class ReciboCajaController implements Serializable {
             return 0l;
         }
     }
-    
+
     public Long getNeutral(ReciboCaja reciboCaja) {
         if (reciboCaja.getConcepto().getTipo2() == TipoConcepto.NEUTRAL.getValor()) {
             return reciboCaja.getValor();
@@ -426,20 +431,34 @@ public class ReciboCajaController implements Serializable {
         totalIngresos = 0l;
         totalEgresos = 0l;
         totalNeutros = 0l;
-        for (ReciboCaja item : items) {
-            if (item.getEstado() == EstadoFactura.ANULADO.getValor()) {
-                continue;
+        if (items != null) {
+            for (ReciboCaja item : items) {
+                if (item.getEstado() == EstadoFactura.ANULADO.getValor()) {
+                    continue;
+                }
+                if (item.getConcepto().getTipo2() == TipoConcepto.INGRESO.getValor()) {
+                    totalIngresos += item.getValor();
+                } else if (item.getConcepto().getTipo2() == TipoConcepto.EGRESO.getValor()) {
+                    totalEgresos += item.getValor();
+                } else {
+                    totalNeutros += item.getValor();
+                }
             }
-            if (item.getConcepto().getTipo2() == TipoConcepto.INGRESO.getValor()) {
-                totalIngresos += item.getValor();
-            } else if (item.getConcepto().getTipo2() == TipoConcepto.EGRESO.getValor()){
-                totalEgresos += item.getValor();
-            } else {
-                totalNeutros += item.getValor();
+        } else if(itemsCxcCxp != null){
+            for (ReciboCaja item : itemsCxcCxp) {
+                if (item.getEstado() == EstadoFactura.ANULADO.getValor()) {
+                    continue;
+                }
+                if (item.getConcepto().getTipo2() == TipoConcepto.INGRESO.getValor()) {
+                    totalIngresos += item.getValor();
+                } else if (item.getConcepto().getTipo2() == TipoConcepto.EGRESO.getValor()) {
+                    totalEgresos += item.getValor();
+                } else {
+                    totalNeutros += item.getValor();
+                }
             }
         }
-        
-        
+
         totalRecibos = totalIngresos - totalEgresos;
     }
 
@@ -464,7 +483,8 @@ public class ReciboCajaController implements Serializable {
         calendar2.set(Calendar.MINUTE, 59);
         calendar2.set(Calendar.SECOND, 59);
 
-        items = getFacade().getRecibosCaja(calendar.getTime(), calendar2.getTime());
+        items = getFacade().getRecibosCaja(false);
+        itemsCxcCxp = getFacade().getRecibosCaja(true);
         System.out.println("TAMAÑO lista despues del filtro --> " + items.size());
         getTotalIngresosEgresos();
         System.out.println("URL");
@@ -494,21 +514,32 @@ public class ReciboCajaController implements Serializable {
         }
     }
 
-    public void changeTipoConcepto() {
+    public void changeTipoConcepto(boolean cxccxp) {
         if (nuevoRecibo.getConcepto() != null) {
-            if (nuevoRecibo.getConcepto().getTipo2() == TipoConcepto.INGRESO.getValor()) {
-                tipoConcepto = "El Concepto es un Ingreso a la Caja";
-                estiloTipo = "estiloConceptoTipoGreen";
-            } else if (nuevoRecibo.getConcepto().getTipo2() == TipoConcepto.EGRESO.getValor()) {
-                tipoConcepto = "El Concepto es un Egreso a la Caja";
-                estiloTipo = "estiloConceptoTipoRed";
-            } else if (nuevoRecibo.getConcepto().getTipo2() == TipoConcepto.NEUTRAL.getValor()) {
-                tipoConcepto = "El Concepto no afecta la Caja";
-                estiloTipo = "estiloConceptoTipoBlack";
+            if (!cxccxp) {
+                if (nuevoRecibo.getConcepto().getTipo2() == TipoConcepto.INGRESO.getValor()) {
+                    tipoConcepto = "El Concepto es un Ingreso a la Caja";
+                    estiloTipo = "estiloConceptoTipoGreen";
+                } else if (nuevoRecibo.getConcepto().getTipo2() == TipoConcepto.EGRESO.getValor()) {
+                    tipoConcepto = "El Concepto es un Egreso a la Caja";
+                    estiloTipo = "estiloConceptoTipoRed";
+                } else if (nuevoRecibo.getConcepto().getTipo2() == TipoConcepto.NEUTRAL.getValor()) {
+                    tipoConcepto = "El Concepto no afecta la Caja";
+                    estiloTipo = "estiloConceptoTipoBlack";
+                }
+            } else {
+                tipoConcepto = TipoConcepto.getFromValue(nuevoRecibo.getConcepto().getTipo2()).getDetalle();
+                condicionConcepto = CondicionConcepto.getFromValue(nuevoRecibo.getConcepto().getCxccxp()).getDetalle();
+                tipoConcepto = tipoConcepto + ", " + condicionConcepto;
+
+                if (nuevoRecibo.getConcepto().getTipo2() == TipoConcepto.INGRESO.getValor()) {
+                    estiloTipo = "estiloConceptoTipoGreen";
+                } else if (nuevoRecibo.getConcepto().getTipo2() == TipoConcepto.EGRESO.getValor()) {
+                    estiloTipo = "estiloConceptoTipoRed";
+                } else if (nuevoRecibo.getConcepto().getTipo2() == TipoConcepto.NEUTRAL.getValor()) {
+                    estiloTipo = "estiloConceptoTipoBlack";
+                }
             }
-        } else {
-            tipoConcepto = "El Concepto no afecta la Caja";
-            estiloTipo = "estiloTipoConceptoBlack";
         }
     }
 }

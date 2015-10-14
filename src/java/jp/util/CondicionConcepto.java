@@ -1,6 +1,8 @@
 package jp.util;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public enum CondicionConcepto {
@@ -59,5 +61,10 @@ public enum CondicionConcepto {
         this.detalle = detalle;
     }
     
-    
+    public static List<Integer> getConceptosCxCCxp(){
+        List<Integer> condicionConceptos = new ArrayList<>();
+        condicionConceptos.add(CXC.getValor());
+        condicionConceptos.add(CXP.getValor());
+        return condicionConceptos;
+    }
 }

@@ -11,11 +11,11 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import jp.entidades.Tercero;
-import jp.util.EstadoFactura;
+import jp.util.CondicionConcepto;
 
 @Stateless
 public class ReciboCajaFacade extends AbstractFacade<ReciboCaja> {
+
     @PersistenceContext(unitName = "jimmy_professionalPU")
     private EntityManager em;
     @EJB
@@ -29,28 +29,21 @@ public class ReciboCajaFacade extends AbstractFacade<ReciboCaja> {
     public ReciboCajaFacade() {
         super(ReciboCaja.class);
     }
-    
-    public List<ReciboCaja> getRecibosCaja(Date fecha1, Date fecha2){
+
+    public List<ReciboCaja> getRecibosCaja(boolean isCxcCxp) {
         List<ReciboCaja> reciboCajas;
-        Map<String, Object> parametros = new HashMap<>();
-        String consulta = "SELECT rc FROM ReciboCaja rc WHERE rc.fecha >= :fec";
+        String consulta = "SELECT rc FROM ReciboCaja rc WHERE rc.fecha >= :fec AND rc.concepto.cxccxp IN :condicion ORDER BY rc.fecha DESC";
         try {
-            if (fecha1 != null && fecha2 != null) {
-                consulta += " AND (rc.fecha BETWEEN :fechaInicio AND :fechaFin)";
-                parametros.put("fechaInicio", fecha1);
-                parametros.put("fechaFin", fecha2);
-            }
-            consulta += " ORDER BY rc.fecha DESC";
             Query q = em.createQuery(consulta);
             q.setParameter("fec", cajaFacade.getCaja().getFechaActualizacion());
-            
-            for (Map.Entry<String, Object> entrySet : parametros.entrySet()) {
-                String key = entrySet.getKey();
-                Object value = entrySet.getValue();
-                
-                q.setParameter(key, value);
-                
+            if (isCxcCxp) {
+                q.setParameter("condicion", CondicionConcepto.getConceptosCxCCxp());
+            } else {
+                List<Integer> condicionesConceptos = new ArrayList<>();
+                condicionesConceptos.add(CondicionConcepto.NINGUNO.getValor());
+                q.setParameter("condicion", condicionesConceptos);
             }
+            
             reciboCajas = q.getResultList();
         } catch (Exception e) {
             e.printStackTrace();
@@ -58,5 +51,5 @@ public class ReciboCajaFacade extends AbstractFacade<ReciboCaja> {
         }
         return reciboCajas;
     }
-    
+
 }
