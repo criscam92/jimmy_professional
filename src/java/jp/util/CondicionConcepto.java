@@ -67,4 +67,11 @@ public enum CondicionConcepto {
         condicionConceptos.add(CXP.getValor());
         return condicionConceptos;
     }
+    
+    public static List<Integer> getConceptos(){
+        List<Integer> condicionConceptos = new ArrayList<>();
+        condicionConceptos.add(CXC.getValor());
+        condicionConceptos.add(CXP.getValor());
+        return condicionConceptos;
+    }
 }

@@ -260,6 +260,9 @@ public class ConceptoController implements Serializable {
     }
     
     public List<Concepto> llenarConceptosCXCCXP(String query) {
+        boolean isCxc = (Boolean) UIComponent.getCurrentComponent(FacesContext.getCurrentInstance()).getAttributes().get("iscxc");
+        
         return getFacade().getConceptosCXCCXPByQuery(query);
     }
+    
 }

@@ -6,12 +6,10 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -57,7 +55,7 @@ public class ReciboCajaController implements Serializable {
     private TerceroFacade terceroFacade;
     private List<ReciboCaja> items = null;
     private List<ReciboCaja> itemsCxcCxp = null;
-    private ReciboCaja selected, nuevoRecibo;
+    private ReciboCaja selected, nuevoRecibo, selectedAPagar;
     private Tercero tercero;
     private Long totalIngresos, totalEgresos, totalNeutros, totalRecibos;
     private Long base, ingresos, egresos;
@@ -104,6 +102,14 @@ public class ReciboCajaController implements Serializable {
 
     public void setNuevoRecibo(ReciboCaja nuevoRecibo) {
         this.nuevoRecibo = nuevoRecibo;
+    }
+
+    public ReciboCaja getSelectedAPagar() {
+        return selectedAPagar;
+    }
+
+    public void setSelectedAPagar(ReciboCaja reciboAPagar) {
+        this.selectedAPagar = reciboAPagar;
     }
 
     public Tercero getTercero() {
@@ -162,20 +168,20 @@ public class ReciboCajaController implements Serializable {
         this.fechaFin = fechaFin;
     }
 
-    public Long getBase() {
-        return base;
+    public String getBase() {
+        return formatter.format(base);
     }
 
-    public Long getIngresos() {
-        return ingresos;
+    public String getIngresos() {
+        return formatter.format(ingresos);
     }
 
-    public Long getEgresos() {
-        return egresos;
+    public String getEgresos() {
+        return formatter.format(egresos);
     }
 
-    public Long getTotal() {
-        return base + (ingresos - egresos);
+    public String getTotal() {
+        return formatter.format(base + (ingresos - egresos));
     }
 
     private ReciboCajaFacade getFacade() {
@@ -227,10 +233,15 @@ public class ReciboCajaController implements Serializable {
         return nuevoRecibo;
     }
 
-    public void create() {
+    public void create(boolean isCxcCxp) {
         if (nuevoRecibo != null) {
             nuevoRecibo.setUsuario(getEjbUsuarioFacade().getUsuario());
-            nuevoRecibo.setEstado(EstadoFactura.REALIZADA.getValor());
+            if (isCxcCxp) {
+                nuevoRecibo.setEstado(EstadoFactura.PENDIENTE.getValor());
+            }else{
+                nuevoRecibo.setEstado(EstadoFactura.REALIZADA.getValor());
+            }
+            
             if (nuevoRecibo.getFecha() == null) {
                 nuevoRecibo.setFecha(Calendar.getInstance().getTime());
             }
@@ -243,6 +254,9 @@ public class ReciboCajaController implements Serializable {
             itemsCxcCxp = null;
         }
         calcularSaldo();
+        tipoConcepto = "Seleccione un Concepto";
+        condicionConcepto = "";
+        estiloTipo = "estiloConceptoTipoBlack";
     }
 
     public void update() {
@@ -321,7 +335,7 @@ public class ReciboCajaController implements Serializable {
     private void calcularSaldo() {
 
         base = cajaFacade.getCaja().getBase();
-        List<ReciboCaja> transacciones = ejbFacade.getRecibosCaja(false);
+        List<ReciboCaja> transacciones = ejbFacade.getRecibosCaja(null);
 
         egresos = 0l;
         ingresos = 0l;
@@ -396,13 +410,16 @@ public class ReciboCajaController implements Serializable {
     }
 
     public boolean disableAnular() {
-        System.out.println("Admin: " + usuarioActual.getUsuario().isAdmin());
-        System.out.println("Selected: " + selected);
         boolean result = !(usuarioActual.getUsuario().isAdmin() && selected != null && (selected.getEstado() == EstadoFactura.REALIZADA.getValor()));
         System.out.println("ANULAR: " + result);
         return result;
     }
-
+    
+    public boolean disablePagar(){
+        //comprobar primero el estado cancelado | pagado
+        return false;
+    }
+    
     public Long getIngreso(ReciboCaja reciboCaja) {
         if (reciboCaja.getConcepto().getTipo2() == TipoConcepto.INGRESO.getValor()) {
             return reciboCaja.getValor();
@@ -431,6 +448,7 @@ public class ReciboCajaController implements Serializable {
         totalIngresos = 0l;
         totalEgresos = 0l;
         totalNeutros = 0l;
+        
         if (items != null) {
             for (ReciboCaja item : items) {
                 if (item.getEstado() == EstadoFactura.ANULADO.getValor()) {
@@ -444,7 +462,8 @@ public class ReciboCajaController implements Serializable {
                     totalNeutros += item.getValor();
                 }
             }
-        } else if(itemsCxcCxp != null){
+        } 
+        if(itemsCxcCxp != null){
             for (ReciboCaja item : itemsCxcCxp) {
                 if (item.getEstado() == EstadoFactura.ANULADO.getValor()) {
                     continue;
@@ -458,8 +477,9 @@ public class ReciboCajaController implements Serializable {
                 }
             }
         }
-
+        
         totalRecibos = totalIngresos - totalEgresos;
+        System.out.println("total===> "+totalRecibos);
     }
 
     public void redirect() throws IOException {
@@ -541,5 +561,17 @@ public class ReciboCajaController implements Serializable {
                 }
             }
         }
+    }
+    
+    public Long getValorPendienteCxcCxp(ReciboCaja reciboCaja){
+        return getFacade().getValorPendienteCxcCxp(reciboCaja);
+    }
+    
+    public void prepareReciboAPagar(){
+        this.selectedAPagar = selected;
+    }
+    
+    public boolean isCxc(){
+        return selectedAPagar.getConcepto().getCxccxp() == CondicionConcepto.CXC.getValor();
     }
 }
