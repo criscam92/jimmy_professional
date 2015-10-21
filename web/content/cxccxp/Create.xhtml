@@ -8,12 +8,12 @@
       xmlns:pe="http://primefaces.org/ui/extensions">
     <ui:composition template="/content/index.xhtml">
         <ui:define name="title">
-            <h:outputText value="#{bundle.ListCXCTitle}"/>
+            <h:outputText value="#{bundle.ListCXCCXPTitle}"/>
         </ui:define>
 
         <ui:define name="body">
             <h:form id="formReciboCaja">
-                <p:panel header="#{bundle.ListCXCTitle}" style="width: 900px; margin: auto;" id="panelReciboCaja">
+                <p:panel header="#{bundle.ListCXCCXPTitle}" style="width: 900px; margin: auto;" id="panelReciboCaja">
 
                     <p:panelGrid columns="6" styleClass="center">
 
@@ -49,7 +49,7 @@
                                         requiredMessage="#{bundle.EditConceptoRequiredMessage}" completeMethod="#{conceptoController.llenarConceptosCXCCXP}">
                             <p:ajax update="tipoConcepto" event="itemSelect" listener="#{reciboCajaController.changeTipoConcepto(true)}"/>
                         </p:autoComplete>
-                        
+
                         <p:outputLabel for="valor" value="Valor:"/>
                         <pe:inputNumber id="valor" value="#{reciboCajaController.nuevoRecibo.valor}" required="true" requiredMessage="El campo Valor es requerido"/>
 
@@ -63,25 +63,17 @@
                     </p:panelGrid>
 
                     <f:facet name="footer">
-                        <p:commandButton value="Registrar" icon="ui-icon-disk" actionListener="#{reciboCajaController.create()}" update=":tablaRecibosCaja,@form,:growl,formReciboCaja,panelReciboCaja"/>
+                        <p:commandButton value="Registrar" icon="ui-icon-disk" actionListener="#{reciboCajaController.create(true)}" update=":tablaRecibosCaja,@form,:growl,formReciboCaja,panelReciboCaja"/>
                         <div class="cajamenor">
 
                             <p:outputLabel value="Base:" />
-                            <p:outputLabel styleClass="valor" value="#{reciboCajaController.base}">
-                                <f:convertNumber type="currency" currencySymbol="$ " maxFractionDigits="0" />
-                            </p:outputLabel>
+                            <p:outputLabel styleClass="valor" value="$ #{reciboCajaController.base}"/>
                             <p:outputLabel value="Ingresos:" />
-                            <p:outputLabel styleClass="valor" value="#{reciboCajaController.ingresos}">
-                                <f:convertNumber type="currency" currencySymbol="$ " maxFractionDigits="0" />
-                            </p:outputLabel>
+                            <p:outputLabel styleClass="valor" value="$ #{reciboCajaController.ingresos}"/>
                             <p:outputLabel value="Egresos:" />
-                            <p:outputLabel styleClass="valor" value="#{reciboCajaController.egresos}">
-                                <f:convertNumber type="currency" currencySymbol="$ " maxFractionDigits="0" />
-                            </p:outputLabel>
+                            <p:outputLabel styleClass="valor" value="$ #{reciboCajaController.egresos}"/>
                             <p:outputLabel value="Total:" />
-                            <p:outputLabel styleClass="valor" value="#{reciboCajaController.total}">
-                                <f:convertNumber type="currency" currencySymbol="$ " maxFractionDigits="0" />
-                            </p:outputLabel>
+                            <p:outputLabel styleClass="valor" value="$ #{reciboCajaController.total}"/>
                         </div>
                     </f:facet>
 
@@ -99,8 +91,8 @@
                              rowStyleClass="#{item.estado == reciboCajaController.estadoAnulado ? 'anulado' : 'realizado'}"
                              widgetVar="tablaRecibosCajaMenor">
 
-                    <p:ajax event="rowSelect"   update="botonAnular"/>
-                    <p:ajax event="rowUnselect" update="botonAnular"/>
+                    <p:ajax event="rowSelect"   update="botonAnular botonPagar botonViewPagos"/>
+                    <p:ajax event="rowUnselect" update="botonAnular botonPagar botonViewPagos"/>
 
                     <f:facet name="header">
                         <div class="clearfix">
@@ -122,6 +114,12 @@
                                     <p:confirm header="Confirmar" message="Esta seguro de anular este recibo?" icon="ui-icon-alert" />
                                 </p:commandButton>
 
+                                <p:commandButton styleClass="boton_accion" id="botonPagar" value="#{bundle.Pay}" oncomplete="PF('PagoCxcCxpDialog').show()"
+                                                 update=":growl,datalist,botonAnular,:PagoCxcCxpForm" actionListener="#{reciboCajaController.prepareReciboAPagar()}"
+                                                 disabled="#{reciboCajaController.disableAnular() || empty reciboCajaController.selected}" rendered="#{usuarioActual.usuario.admin}" icon="ui-icon-check"/>
+
+                                <p:commandButton styleClass="boton_accion" id="botonViewPagos" value="Ver pagos" icon="ui-icon-clipboard" oncomplete="PF('ViewPagosDialog').show()"/>
+
                                 <p:commandLink styleClass="exporter" title="Exportar a Excel" ajax="false" disabled="#{cajaController.items == null}">
                                     <i class="fa fa-file-excel-o"></i>
                                     <p:dataExporter type="xls" target="datalist" fileName="caja_menor" />
@@ -135,29 +133,11 @@
                         </div>
                     </f:facet>
 
-                    <p:column sortBy="#{item.fecha}">
+                    <p:column sortBy="#{item.id}">
                         <f:facet name="header">
-                            <h:outputText value="Fecha"/>
+                            <h:outputText value="Id"/>
                         </f:facet>
-                        <h:outputText value="#{item.fecha}">
-                            <f:convertDateTime pattern="dd/MMM/yyyy" />
-                        </h:outputText>
-                    </p:column>
-
-                    <p:column>
-                        <f:facet name="header">
-                            <h:outputText value="Hora"/>
-                        </f:facet>
-                        <h:outputText value="#{item.fecha}">
-                            <f:convertDateTime pattern="hh:mm a" />
-                        </h:outputText>
-                    </p:column>
-
-                    <p:column>
-                        <f:facet name="header">
-                            <h:outputText value="Usuario"/>
-                        </f:facet>
-                        <h:outputText value="#{item.usuario.toString()}"/>
+                        <h:outputText value="#{item.id}"/>
                     </p:column>
 
                     <p:column>
@@ -169,16 +149,27 @@
 
                     <p:column>
                         <f:facet name="header">
-                            <h:outputText value="Detalle"/>
+                            <h:outputText value="Tercero"/>
                         </f:facet>
-                        <h:outputText value="#{item.detalle}"/>
+                        <h:outputText value="#{item.tercero}"/>
                     </p:column>
 
                     <p:column>
                         <f:facet name="header">
-                            <h:outputText value="Tercero"/>
+                            <h:outputText value="Valor"/>
                         </f:facet>
-                        <h:outputText value="#{item.tercero}"/>
+                        <h:outputText value="#{item.valor}">
+                            <f:convertNumber type="currency" currencySymbol="$ " maxFractionDigits="0" />
+                        </h:outputText>
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Valor pendiente"/>
+                        </f:facet>
+                        <h:outputText value="#{reciboCajaController.getValorPendienteCxcCxp(item)}">
+                            <f:convertNumber type="currency" currencySymbol="$ " maxFractionDigits="0" />
+                        </h:outputText>
                     </p:column>
 
                     <p:column>
@@ -187,47 +178,6 @@
                         </f:facet>
                         <h:outputText value="#{facturaController.getEstado(item.estado)}"/>
                     </p:column>
-
-                    <p:column style="font-weight: bold; text-align:center;">
-                        <f:facet name="header">
-                            <h:outputText value="Ingreso"/>
-                        </f:facet>
-                        <h:outputText value="#{reciboCajaController.getIngreso(item)}">
-                            <f:convertNumber type="currency" currencySymbol="" maxFractionDigits="0" locale="es_ES" />
-                        </h:outputText>
-                    </p:column>
-
-                    <p:column style="font-weight: bold; text-align:center;">
-                        <f:facet name="header">
-                            <h:outputText value="Egreso"/>
-                        </f:facet>
-                        <h:outputText value="#{reciboCajaController.getEgreso(item)}">
-                            <f:convertNumber type="currency" currencySymbol="" maxFractionDigits="0" locale="es_ES" />
-                        </h:outputText>
-                    </p:column>
-
-                    <p:column style="font-weight: bold; text-align:center;">
-                        <f:facet name="header">
-                            <h:outputText value="Neutral"/>
-                        </f:facet>
-                        <h:outputText value="#{reciboCajaController.getNeutral(item)}">
-                            <f:convertNumber type="currency" currencySymbol="" maxFractionDigits="0" locale="es_ES" />
-                        </h:outputText>
-                    </p:column>
-
-                    <p:columnGroup type="footer">
-                        <p:row>
-                            <p:column footerText="SubTotal" colspan="7" style="font-weight: bold; text-align:right;"/>
-                            <p:column footerText="$ #{reciboCajaController.totalIngresos}" style="font-weight: bold;"/>
-                            <p:column footerText="$ #{reciboCajaController.totalEgresos}" style="font-weight: bold;"/>
-                            <p:column footerText="$ #{reciboCajaController.totalNeutros}" style="font-weight: bold;"/>
-                        </p:row>
-
-                        <p:row>
-                            <p:column footerText="Total" colspan="7" style="font-weight: bold; text-align:right;"/>
-                            <p:column footerText="$ #{reciboCajaController.totalRecibos}" colspan="3" style="font-weight: bold;"/>
-                        </p:row>
-                    </p:columnGroup>
 
                 </p:dataTable>
 
@@ -258,6 +208,8 @@
                     </h:panelGroup>
                 </h:form>
             </p:dialog>
+            <ui:include src="PagoCxcCxp.xhtml" />
+            <ui:include src="ViewPagos.xhtml" />
         </ui:define>
 
     </ui:composition>
