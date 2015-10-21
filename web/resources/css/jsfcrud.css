@@ -311,3 +311,11 @@ table.center {
     color: red;
     font-weight: bold;
 }
+
+.panelgridnomina tr{
+    background: transparent;
+}
+
+.panelgridnomina{
+    margin:0 auto 10px auto;
+}
