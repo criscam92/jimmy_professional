@@ -2,7 +2,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-      xmlns:h="http://xmlns.jcp.org/jsf/html">
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <ui:composition template="/content/index.xhtml">
         <ui:define name="title">
@@ -10,7 +12,145 @@
         </ui:define>
 
         <ui:define name="body">
-            
+            <p:panelGrid styleClass="panelgridnomina">   
+                <p:row>
+                    <p:column>        
+                        <h:form id="datosNomina">
+                            <p:panel header="Datos Nomina" style="width: 530px; margin: auto;">
+                                <p:panelGrid columns="4">
+                                    <p:outputLabel for="cajaMenor" value="Caja Menor:" />
+                                    <p:selectOneMenu id="cajaMenor" style="width: 155px;">
+                                        <f:selectItem  itemLabel="#{bundle.SelectOneMessage}" itemValue="-1"/>
+                                    </p:selectOneMenu>
+
+                                    <p:outputLabel value="Fecha" for="fecha"/>
+                                    <p:calendar id="fecha" size="15" pattern="MM/dd/yyyy" showOn="button"/>
+
+                                    <p:outputLabel value="Tercero" for="tercero"/>
+                                    <p:autoComplete id="tercero"/>
+
+                                    <p:outputLabel value="Valor" for="valor"/>
+                                    <p:inputText id="valor" style="width: 150px;"/>
+
+                                    <p:outputLabel value="Detalle" for="detalle"/>
+                                    <p:inputText id="detalle"/>
+                                </p:panelGrid>
+                            </p:panel>
+                        </h:form>
+                    </p:column>
+                    <p:column>
+                        <p:panel header="Totales" style="margin: auto; height: 129px;">
+                            <p:panelGrid columns="2">
+                                <p:outputLabel value="Total Abonos CXC" />
+                                <p:outputLabel value="$0.0" />
+
+                                <p:outputLabel value="Totatal Pago" />
+                                <p:outputLabel value="$0.0" />
+
+                                <p:outputLabel value="Total Nomina" />
+                                <p:outputLabel value="$0.0"/>
+                            </p:panelGrid>
+                        </p:panel>
+                    </p:column>
+                </p:row>
+            </p:panelGrid>   
+
+            <h:form id="detalleCuentasPorCobrar" style="margin: 0 auto 10px auto; width: 1000px;">
+                <p:dataTable styleClass="tabla" id="datalist"
+                             selectionMode="single" widgetVar="tblFactura"
+                             paginator="true" style="text-align: center;"
+                             rows="10"
+                             rowsPerPageTemplate="10,20,30,40,50"
+                             emptyMessage="#{bundle.EmptyTable}"
+                             paginatorPosition="bottom"
+                             >
+
+                    <p:ajax event="rowSelect"   update="abonar_pagar"/>
+                    <p:ajax event="rowUnselect" update="abonar_pagar"/>
+
+                    <f:facet name="header">
+                        <div id="titulo">
+                            Cuentas por Cobrar a Empleado
+                        </div>
+                        <div id="acciones">   
+                            <p:commandButton id="abonar_pagar" icon="ui-icon-pencil" value="Abonar/Pagar"/>
+                        </div>
+                    </f:facet>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Fecha"/>
+                        </f:facet>                        
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Concepto"/>
+                        </f:facet>                        
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Descripcion"/>
+                        </f:facet>                        
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Valor"/>
+                        </f:facet>                        
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Saldo"/>
+                        </f:facet>                        
+                    </p:column>
+
+                </p:dataTable>
+            </h:form>
+            <h:form id="cuentasPorCobrar" style="margin: 0 auto 10px auto; width: 1000px;">
+                <p:dataTable styleClass="tabla" id="datalistDetalle"
+                             selectionMode="single" widgetVar="tblFactura"
+                             paginator="true" style="text-align: center;"
+                             rows="10"
+                             rowsPerPageTemplate="10,20,30,40,50"
+                             emptyMessage="#{bundle.EmptyTable}"
+                             paginatorPosition="bottom"
+                             >
+
+                    <f:facet name="header">
+                        <div id="titulo">
+                            Detalle Cuentas por Cobrar
+                        </div>
+                    </f:facet>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Concepto"/>
+                        </f:facet>                        
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Valor"/>
+                        </f:facet>                        
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Detalle"/>
+                        </f:facet>                        
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Quitar"/>
+                        </f:facet>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+
         </ui:define>
     </ui:composition>
 </html>
