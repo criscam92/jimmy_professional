@@ -28,7 +28,7 @@
                                         required="true" minQueryLength="3" itemLabel="#{concepto.toString()}" var="concepto" itemValue="#{concepto}"
                                         requiredMessage="#{bundle.EditConceptoRequiredMessage}" completeMethod="#{conceptoController.llenarConceptosCXCCXP}">
                             <p:ajax update="tipoConcepto" event="itemSelect" listener="#{reciboCajaController.changeTipoConcepto(true)}"/>
-                            <f:attribute name="iscxc" value="#{reciboCajaController.selectedAPagar.concepto.cxccxp}"/>
+<!--                            <f:attribute name="iscxc" value="#{reciboCajaController.selectedAPagar.concepto.cxccxp}"/>-->
                         </p:autoComplete>
 
                         <p:outputLabel for="valor" value="Valor:"/>
