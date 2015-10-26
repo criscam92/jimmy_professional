@@ -14,6 +14,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import jp.entidades.Concepto;
+import jp.entidades.ReciboCaja;
 import jp.facades.ConceptoFacade;
 import jp.facades.TransactionFacade;
 import jp.util.CondicionConcepto;
@@ -181,17 +182,17 @@ public class ConceptoController implements Serializable {
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
-            
+
             if (value == null || value.length() == 0) {
                 return null;
             }
-            
+
             try {
                 Integer.parseInt(value);
             } catch (Exception e) {
                 return null;
             }
-            
+
             ConceptoController controller = (ConceptoController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "conceptoController");
             return controller.getFacade().find(getKey(value));
@@ -258,11 +259,16 @@ public class ConceptoController implements Serializable {
     public List<Concepto> llenarConceptos(String query) {
         return getFacade().getConceptosByQuery(query);
     }
-    
+
     public List<Concepto> llenarConceptosCXCCXP(String query) {
-//        boolean isCxc = (Boolean) UIComponent.getCurrentComponent(FacesContext.getCurrentInstance()).getAttributes().get("iscxc");
-        
-        return getFacade().getConceptosCXCCXPByQuery(query);
+        FacesContext context = FacesContext.getCurrentInstance();
+        ReciboCaja rc = (ReciboCaja) UIComponent.getCurrentComponent(context).getAttributes().get("filter");
+        Boolean isCxc = null;
+        if (rc != null) {
+            isCxc = rc.getConcepto().getCxccxp() == CondicionConcepto.CXP.getValor();
+        }
+
+        return getFacade().getConceptosCXCCXPByQuery(query, isCxc);
     }
-    
+
 }

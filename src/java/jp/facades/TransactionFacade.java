@@ -1417,4 +1417,47 @@ public class TransactionFacade {
         return false;
 
     }
+
+    public boolean createAbonoPago(ReciboCaja reciboCajaSelected, ReciboCaja reciboCajaAbono) {
+        userTransaction = sessionContext.getUserTransaction();
+        try {
+            userTransaction.begin();
+
+            getEntityManager().persist(reciboCajaAbono);
+            getEntityManager().merge(reciboCajaSelected);
+
+            userTransaction.commit();
+            return true;
+        } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean anularPagosRecibosCxcCxp(ReciboCaja reciboCaja) {
+
+        userTransaction = sessionContext.getUserTransaction();
+        try {
+            userTransaction.begin();
+            List<ReciboCaja> reciboCajasByPago;
+            Query q = getEntityManager().createQuery("SELECT rc FROM ReciboCaja rc WHERE rc.transaccion.id = :trans");
+            q.setParameter("trans", reciboCaja.getId());
+            reciboCajasByPago = q.getResultList();
+            for (ReciboCaja rc : reciboCajasByPago) {
+                rc.setEstado(EstadoFactura.ANULADO.getValor());
+                getEntityManager().merge(rc);
+            }
+            reciboCaja.setEstado(EstadoFactura.ANULADO.getValor());
+            getEntityManager().merge(reciboCaja);
+            userTransaction.commit();
+            return true;
+        } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
+            e.printStackTrace();
+            try {
+                userTransaction.rollback();
+            } catch (IllegalStateException | SecurityException | SystemException ex) {
+            }
+            return false;
+        }
+    }
 }

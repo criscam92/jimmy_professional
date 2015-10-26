@@ -30,6 +30,7 @@
                         <p:outputLabel value="#{bundle.MessageTerceroTitle}" for="tercero" />
 
                         <p:outputPanel>
+
                             <p:autoComplete size="21" id="tercero" minQueryLength="3" panelStyle="width: 320px;" value="#{reciboCajaController.nuevoRecibo.tercero}"
                                             itemValue="#{tercero}" completeMethod="#{reciboCajaController.llenarTercero}" effect="fade" converter="terceroconverter"
                                             itemLabel="#{tercero.toString()}" var="tercero" required="true" requiredMessage="#{bundle.MessageTerceroCajaRequiredMessage}"/>
@@ -37,6 +38,7 @@
                             <p:commandLink styleClass="exporter ui-state-default boton-tercero" oncomplete="PF('TerceroCreateDialog').show()"
                                            title="#{bundle.CreateTerceroTitle}" actionListener="#{reciboCajaController.prepareCreateTercero}" update=":TerceroCreateForm">
                                 <i class="fa fa-male"></i>
+
                             </p:commandLink>
                         </p:outputPanel>
 
@@ -95,7 +97,7 @@
                     <f:facet name="header">
                         <div class="clearfix">
                             <div id="titulo">
-                                Recibos de Caja Menor
+                                Recibos de CXC,CXP
                             </div>
                             <div id="acciones">
 
@@ -108,15 +110,16 @@
 
                                 <p:commandButton styleClass="boton_accion" id="botonAnular" value="#{bundle.Anull}" actionListener="#{reciboCajaController.anularRecibo()}" 
                                                  update=":growl,datalist,botonAnular,:formReciboCaja" 
-                                                 disabled="#{reciboCajaController.disableAnular() || empty reciboCajaController.selected}" rendered="#{usuarioActual.usuario.admin}" icon="ui-icon-alert">
-                                    <p:confirm header="Confirmar" message="Esta seguro de anular este recibo?" icon="ui-icon-alert" />
+                                                 disabled="#{reciboCajaController.disableAnular()}" rendered="#{usuarioActual.usuario.admin}" icon="ui-icon-alert">
+                                    <p:confirm header="Confirmar" message="Esta seguro de anular este recibo y sus posibles pagos?" icon="ui-icon-alert" />
                                 </p:commandButton>
 
                                 <p:commandButton styleClass="boton_accion" id="botonPagar" value="#{bundle.Pay}" oncomplete="PF('PagoCxcCxpDialog').show()"
-                                                 update=":growl,datalist,botonAnular,:PagoCxcCxpForm" actionListener="#{reciboCajaController.prepareReciboAPagar()}"
-                                                 disabled="#{reciboCajaController.disableAnular() || empty reciboCajaController.selected}" rendered="#{usuarioActual.usuario.admin}" icon="ui-icon-check"/>
+                                                 update=":growl,datalist,botonAnular,:PagoCxcCxpForm,:PagoCxcCxpForm"
+                                                 disabled="#{reciboCajaController.disableAnular()}" rendered="#{usuarioActual.usuario.admin}" icon="ui-icon-check"/>
 
-                                <p:commandButton styleClass="boton_accion" id="botonViewPagos" value="Ver pagos" icon="ui-icon-clipboard" oncomplete="PF('ViewPagosDialog').show()"/>
+                                <p:commandButton styleClass="boton_accion" id="botonViewPagos" value="Ver pagos" icon="ui-icon-clipboard" oncomplete="PF('ViewPagosDialog').show()"
+                                                 update=":ViewPagosForm" actionListener="#{reciboCajaController.prepareSelectedView()}"/>
 
                                 <p:commandLink styleClass="exporter" title="Exportar a Excel" ajax="false" disabled="#{cajaController.items == null}">
                                     <i class="fa fa-file-excel-o"></i>
@@ -174,7 +177,7 @@
                         <f:facet name="header">
                             <h:outputText value="Estado"/>
                         </f:facet>
-                        <h:outputText value="#{facturaController.getEstado(item.estado)}"/>
+                        <h:outputText value="#{reciboCajaController.getEstadoCxcCxp(item)}"/>
                     </p:column>
 
                 </p:dataTable>
@@ -193,16 +196,17 @@
                         <p:panelGrid columns="2" rendered="#{reciboCajaController.tercero != null}">
                             <p:outputLabel value="#{bundle.CreateTerceroLabel_nombre}" for="nombre" />
                             <p:inputText id="nombre" value="#{reciboCajaController.tercero.nombre}" title="#{bundle.CreateTerceroTitle_nombre}" required="true" requiredMessage="#{bundle.CreateTerceroRequiredMessage_nombre}"/>
-                            <p:outputLabel value="#{bundle.CreateTerceroLabel_numdocumento}" for="numdocumento" />
-                            <p:inputText id="numdocumento" value="#{reciboCajaController.tercero.numdocumento}" title="#{bundle.CreateTerceroTitle_numdocumento}" required="true" requiredMessage="#{bundle.CreateTerceroRequiredMessage_numdocumento}"/>                        
                             <p:outputLabel value="#{bundle.CreateTerceroLabel_tipodocumento}" for="tipodocumento" />
                             <p:selectOneMenu id="tipodocumento" value="#{reciboCajaController.tercero.tipodocumento}" required="true" 
                                              requiredMessage="#{bundle.CreateTerceroRequiredMessage_tipodocumento}" style="width: 134px;">
                                 <f:selectItems value="#{terceroController.tipoDocumentos}"/>
                             </p:selectOneMenu>
+                            <p:outputLabel value="#{bundle.CreateTerceroLabel_numdocumento}" for="numdocumento" />
+                            <p:inputText id="numdocumento" value="#{reciboCajaController.tercero.numdocumento}" title="#{bundle.CreateTerceroTitle_numdocumento}" required="true" requiredMessage="#{bundle.CreateTerceroRequiredMessage_numdocumento}"/>                            
                         </p:panelGrid>
+
                         <div class="botonesDialog">
-                            <p:commandButton actionListener="#{reciboCajaController.createTercero()}" value="#{bundle.Save}" update="display,:tablaRecibosCaja:datalist,:growl"/>
+                            <p:commandButton actionListener="#{reciboCajaController.createTercero()}" value="#{bundle.Save}" update="display,:tablaRecibosCaja:datalist,:growl" oncomplete="handleSubmit(args,'TerceroCreateDialog');"/>
                             <p:commandButton value="#{bundle.Cancel}" type="button" onclick="PF('TerceroCreateDialog').hide()"/>
                         </div>
                     </h:panelGroup>

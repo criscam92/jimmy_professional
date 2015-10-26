@@ -1,6 +1,8 @@
 package jp.util;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public enum EstadoFactura {
@@ -60,6 +62,15 @@ public enum EstadoFactura {
 
     public void setDetalle(String detalle) {
         this.detalle = detalle;
+    }
+    
+    public static List<Integer> getEstadosFactura(){
+        List<Integer> estadosFactura = new ArrayList<>();
+        estadosFactura.add(ANULADO.getValor());
+        estadosFactura.add(CANCELADO.getValor());
+        estadosFactura.add(PENDIENTE.getValor());
+        estadosFactura.add(REALIZADA.getValor());
+        return estadosFactura;
     }
 
     @Override

@@ -1,12 +1,70 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
     <ui:composition>
-        <p:dialog id="ViewPagos" widgetVar="ViewPagosDialog" closable="false" modal="true" resizable="false" appendTo="@(body)" header="Pagos de la Cxc|Cxp">
-            <p:dataTable>
-                
-            </p:dataTable>
+        <p:dialog id="ViewPagos" widgetVar="ViewPagosDialog" closable="false" modal="true" resizable="false" appendTo="@(body)" header="Pagos de la Cxc|Cxp" width="900">
+            <h:form id="ViewPagosForm">
+                <p:dataTable id="tablaPagos" value="#{reciboCajaController.getPagosByCxcCxp(reciboCajaController.selected, null)}" var="item"
+                             selectionMode="single" styleClass="tabla" selection="#{reciboCajaController.selectedView}"
+                             paginator="true" rows="7" rowKey="#{item.id}"
+                             rowsPerPageTemplate="10,20,30,40,50"
+                             paginatorPosition="bottom"
+                             emptyMessage="#{bundle.EmptyTable}"
+                             rowStyleClass="#{item.estado == reciboCajaController.estadoAnulado ? 'anulado' : 'realizado'}"
+                             widgetVar="tblPagos">
+                    <f:facet name="header">
+                        Pagos de la CXC|CXP
+                    </f:facet>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Caja"/>
+                        </f:facet>
+                        <h:outputText value="#{item.caja}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Fecha"/>
+                        </f:facet>
+                        <h:outputText value="#{item.fecha}">
+                            <f:convertDateTime pattern="dd/MMM/yyyy, hh:mm:ss a" />
+                        </h:outputText>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Tercero"/>
+                        </f:facet>
+                        <h:outputText value="#{item.tercero.toString()}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Concepto"/>
+                        </f:facet>
+                        <h:outputText value="#{item.concepto.toString()}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Valor"/>
+                        </f:facet>
+                        <h:outputText value="#{item.valor}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Estado"/>
+                        </f:facet>
+                        <h:outputText value="#{facturaController.getEstado(item.estado)}"/>
+                    </p:column>
+                </p:dataTable>
+
+                <div class="botonesDialog">
+                    <p:commandButton actionListener="#{reciboCajaController.anularPago()}" value="#{bundle.Anull}" update="tablaPagos,:tablaRecibosCaja:datalist,ViewPagosForm,:growl" icon="ui-icon-cancel"/>
+                    <p:commandButton type="button" value="#{bundle.Cancel}" onclick="PF('ViewPagosDialog').hide()" icon="ui-icon-close"/>
+                </div>
+            </h:form>
         </p:dialog>
     </ui:composition>
 </html>

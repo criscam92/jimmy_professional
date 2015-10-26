@@ -34,6 +34,7 @@ import jp.util.EstadoFactura;
 import jp.util.JsfUtil;
 import jp.util.JsfUtil.PersistAction;
 import jp.util.TipoConcepto;
+import org.primefaces.context.RequestContext;
 
 @ManagedBean(name = "reciboCajaController")
 @ViewScoped
@@ -55,7 +56,7 @@ public class ReciboCajaController implements Serializable {
     private TerceroFacade terceroFacade;
     private List<ReciboCaja> items = null;
     private List<ReciboCaja> itemsCxcCxp = null;
-    private ReciboCaja selected, nuevoRecibo, selectedAPagar;
+    private ReciboCaja selected, nuevoRecibo, selectedAPagar, selectedView;
     private Tercero tercero;
     private Long totalIngresos, totalEgresos, totalNeutros, totalRecibos;
     private Long base, ingresos, egresos;
@@ -77,6 +78,9 @@ public class ReciboCajaController implements Serializable {
     @PostConstruct
     private void init() {
         nuevoRecibo = prepareCreate();
+        selectedAPagar = new ReciboCaja();
+        selectedView = new ReciboCaja();
+        selected = new ReciboCaja();
         formatoDelTexto = new SimpleDateFormat("dd/MMM/yyyy");
 
         formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
@@ -110,6 +114,14 @@ public class ReciboCajaController implements Serializable {
 
     public void setSelectedAPagar(ReciboCaja reciboAPagar) {
         this.selectedAPagar = reciboAPagar;
+    }
+
+    public ReciboCaja getSelectedView() {
+        return selectedView;
+    }
+
+    public void setSelectedView(ReciboCaja selectedView) {
+        this.selectedView = selectedView;
     }
 
     public Tercero getTercero() {
@@ -238,12 +250,15 @@ public class ReciboCajaController implements Serializable {
             nuevoRecibo.setUsuario(getEjbUsuarioFacade().getUsuario());
             if (isCxcCxp) {
                 nuevoRecibo.setEstado(EstadoFactura.PENDIENTE.getValor());
-            }else{
+            } else {
                 nuevoRecibo.setEstado(EstadoFactura.REALIZADA.getValor());
             }
-            
+
             if (nuevoRecibo.getFecha() == null) {
                 nuevoRecibo.setFecha(Calendar.getInstance().getTime());
+            }
+            if (selected != null && selectedAPagar != null) {
+                selectedAPagar.setTransaccion(selected);
             }
             persist(PersistAction.CREATE, JsfUtil.getMessageBundle(new String[]{"MessageReciboCaja", "CreateSuccessM"}));
             getTotalIngresosEgresos();
@@ -252,6 +267,35 @@ public class ReciboCajaController implements Serializable {
             nuevoRecibo = prepareCreate();
             items = null;    // Invalidate list of items to trigger re-query.
             itemsCxcCxp = null;
+        }
+        calcularSaldo();
+        tipoConcepto = "Seleccione un Concepto";
+        condicionConcepto = "";
+        estiloTipo = "estiloConceptoTipoBlack";
+    }
+
+    public void createAbonoPago() {
+        if (selected != null && selectedAPagar != null) {
+            if (selectedAPagar.getValor() > getValorPendienteCxcCxp(selected)) {
+                JsfUtil.addWarnMessage("El valor a pagar no debe ser mayor a la deuda");
+                return;
+            }
+            selectedAPagar.setUsuario(getEjbUsuarioFacade().getUsuario());
+            selectedAPagar.setEstado(EstadoFactura.REALIZADA.getValor());
+            selectedAPagar.setTercero(selected.getTercero());
+            if (selectedAPagar.getFecha() == null) {
+                selectedAPagar.setFecha(Calendar.getInstance().getTime());
+            }
+            selectedAPagar.setTransaccion(selected);
+        }
+        JsfUtil.addSuccessMessage(JsfUtil.getMessageBundle(new String[]{"MessageReciboCaja", "CreateSuccessM"}));
+        getTotalIngresosEgresos();
+        if (!JsfUtil.isValidationFailed()) {
+            getTransactionFacade().createAbonoPago(selected, selectedAPagar);
+            selectedAPagar = new ReciboCaja();
+            items = null;    // Invalidate list of items to trigger re-query.
+            itemsCxcCxp = null;
+            RequestContext.getCurrentInstance().execute("PF('PagoCxcCxpDialog').hide()");
         }
         calcularSaldo();
         tipoConcepto = "Seleccione un Concepto";
@@ -396,7 +440,7 @@ public class ReciboCajaController implements Serializable {
     }
 
     public void anularRecibo() {
-        if (getTransactionFacade().anularRecibo(selected)) {
+        if (getTransactionFacade().anularPagosRecibosCxcCxp(selected)) {
             if (!JsfUtil.isValidationFailed()) {
                 JsfUtil.addSuccessMessage(JsfUtil.getMessageBundle(new String[]{"MessageReciboCaja", "AnullSuccessM"}));
                 selected = null; // Remove selection
@@ -410,16 +454,17 @@ public class ReciboCajaController implements Serializable {
     }
 
     public boolean disableAnular() {
-        boolean result = !(usuarioActual.getUsuario().isAdmin() && selected != null && (selected.getEstado() == EstadoFactura.REALIZADA.getValor()));
-        System.out.println("ANULAR: " + result);
+        boolean result = !(usuarioActual.getUsuario().isAdmin() && selected != null && (selected.getEstado() == EstadoFactura.PENDIENTE.getValor()));
         return result;
     }
-    
-    public boolean disablePagar(){
-        //comprobar primero el estado cancelado | pagado
-        return false;
+
+    public boolean disableVerPagos() {
+        boolean tienePagosRealizados = getFacade().getPagosByCxcCxp(selectedView, true).isEmpty();
+        boolean result = !(usuarioActual.getUsuario().isAdmin() && selected != null && (selected.getEstado() != EstadoFactura.ANULADO.getValor()) 
+                && tienePagosRealizados);
+        return result;
     }
-    
+
     public Long getIngreso(ReciboCaja reciboCaja) {
         if (reciboCaja.getConcepto().getTipo2() == TipoConcepto.INGRESO.getValor()) {
             return reciboCaja.getValor();
@@ -448,7 +493,7 @@ public class ReciboCajaController implements Serializable {
         totalIngresos = 0l;
         totalEgresos = 0l;
         totalNeutros = 0l;
-        
+
         if (items != null) {
             for (ReciboCaja item : items) {
                 if (item.getEstado() == EstadoFactura.ANULADO.getValor()) {
@@ -462,8 +507,8 @@ public class ReciboCajaController implements Serializable {
                     totalNeutros += item.getValor();
                 }
             }
-        } 
-        if(itemsCxcCxp != null){
+        }
+        if (itemsCxcCxp != null) {
             for (ReciboCaja item : itemsCxcCxp) {
                 if (item.getEstado() == EstadoFactura.ANULADO.getValor()) {
                     continue;
@@ -477,9 +522,9 @@ public class ReciboCajaController implements Serializable {
                 }
             }
         }
-        
+
         totalRecibos = totalIngresos - totalEgresos;
-        System.out.println("total===> "+totalRecibos);
+        System.out.println("total===> " + totalRecibos);
     }
 
     public void redirect() throws IOException {
@@ -505,7 +550,6 @@ public class ReciboCajaController implements Serializable {
 
         items = getFacade().getRecibosCaja(false);
         itemsCxcCxp = getFacade().getRecibosCaja(true);
-        System.out.println("TAMAÑO lista despues del filtro --> " + items.size());
         getTotalIngresosEgresos();
         System.out.println("URL");
         FacesContext.getCurrentInstance().getExternalContext().redirect(url);
@@ -562,16 +606,62 @@ public class ReciboCajaController implements Serializable {
             }
         }
     }
-    
-    public Long getValorPendienteCxcCxp(ReciboCaja reciboCaja){
+
+    public void changeConceptoCxcCxp() {
+        if (selectedAPagar != null) {
+            tipoConcepto = TipoConcepto.getFromValue(selectedAPagar.getConcepto().getTipo2()).getDetalle();
+            condicionConcepto = CondicionConcepto.getFromValue(selectedAPagar.getConcepto().getCxccxp()).getDetalle();
+            tipoConcepto = tipoConcepto + ", " + condicionConcepto;
+
+            if (selectedAPagar.getConcepto().getTipo2() == TipoConcepto.INGRESO.getValor()) {
+                estiloTipo = "estiloConceptoTipoGreen";
+            } else if (selectedAPagar.getConcepto().getTipo2() == TipoConcepto.EGRESO.getValor()) {
+                estiloTipo = "estiloConceptoTipoRed";
+            } else if (selectedAPagar.getConcepto().getTipo2() == TipoConcepto.NEUTRAL.getValor()) {
+                estiloTipo = "estiloConceptoTipoBlack";
+            }
+        }
+    }
+
+    public Long getValorPendienteCxcCxp(ReciboCaja reciboCaja) {
         return getFacade().getValorPendienteCxcCxp(reciboCaja);
     }
-    
-    public void prepareReciboAPagar(){
+
+    public void prepareReciboAPagar() {
         this.selectedAPagar = selected;
     }
     
-    public boolean isCxc(){
-        return selectedAPagar.getConcepto().getCxccxp() == CondicionConcepto.CXC.getValor();
+    public void prepareSelectedView() {
+        this.selectedView = selected;
+    }
+    
+    public List<ReciboCaja> getPagosByCxcCxp(ReciboCaja reciboCaja, Integer estado) {
+        return getFacade().getPagosByCxcCxp(reciboCaja, null);
+    }
+
+    public void anularPago() {
+        if (getTransactionFacade().anularPagosRecibosCxcCxp(selectedView)) {
+            if (!JsfUtil.isValidationFailed()) {
+                JsfUtil.addSuccessMessage(JsfUtil.getMessageBundle(new String[]{"MessageReciboCaja", "AnullSuccessM"}));
+                items = null;
+                itemsCxcCxp = null;
+                calcularSaldo();
+            }
+        } else {
+            JsfUtil.addErrorMessage("Ocurrió un error anulando el Recibo de Caja");
+        }
+    }
+
+    public String getEstadoCxcCxp(ReciboCaja reciboCaja) {
+        Long valorPendiente = getFacade().getValorPendienteCxcCxp(reciboCaja);
+        if (valorPendiente == 0) {
+            return EstadoFactura.CANCELADO.getDetalle();
+        } else {
+            if (reciboCaja.getEstado() == EstadoFactura.ANULADO.getValor()) {
+                return EstadoFactura.ANULADO.getDetalle();
+            } else {
+                return EstadoFactura.PENDIENTE.getDetalle();
+            }
+        }
     }
 }

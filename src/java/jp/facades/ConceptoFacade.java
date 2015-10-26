@@ -1,5 +1,6 @@
 package jp.facades;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.ejb.Stateless;
@@ -13,6 +14,7 @@ import jp.util.TipoConcepto;
 
 @Stateless
 public class ConceptoFacade extends AbstractFacade<Concepto> {
+
     @PersistenceContext(unitName = "jimmy_professionalPU")
     private EntityManager em;
 
@@ -24,17 +26,17 @@ public class ConceptoFacade extends AbstractFacade<Concepto> {
     public ConceptoFacade() {
         super(Concepto.class);
     }
-    
+
     @Override
     public List<Concepto> findAll() {
         return super.findAll(true);
     }
-    
+
     @Override
     public List<Concepto> findAll(boolean asc) {
         return super.findAll(asc);
     }
-    
+
     public List<Concepto> getConceptosByQuery(String query) {
         try {
             Query q = getEntityManager().createQuery("SELECT c FROM Concepto c WHERE UPPER(CONCAT(c.codigo,' - ',c.detalle)) LIKE UPPER(:param)");
@@ -47,12 +49,25 @@ public class ConceptoFacade extends AbstractFacade<Concepto> {
         }
         return null;
     }
-    
-    public List<Concepto> getConceptosCXCCXPByQuery(String query) {
+
+    public List<Concepto> getConceptosCXCCXPByQuery(String query, Boolean isIngreso) {
         try {
             Query q = getEntityManager().createQuery("SELECT c FROM Concepto c WHERE UPPER(CONCAT(c.codigo,' - ',c.detalle)) LIKE UPPER(:param) AND c.cxccxp IN :condiciones");
             q.setParameter("param", "%" + query + "%");
-            q.setParameter("condiciones", CondicionConcepto.getConceptosCxCCxp());
+            if (isIngreso == null) {
+                q.setParameter("condiciones", CondicionConcepto.getConceptosCxCCxp());
+            } else {
+                if (isIngreso) {
+                    List<Integer> listaCxC = new ArrayList<>();
+                    listaCxC.add(CondicionConcepto.CXC.getValor());
+                    q.setParameter("condiciones", listaCxC);
+                } else {
+                    List<Integer> listaCxP = new ArrayList<>();
+                    listaCxP.add(CondicionConcepto.CXP.getValor());
+                    q.setParameter("condiciones", listaCxP);
+                }
+            }
+
             q.setFirstResult(0);
             q.setMaxResults(10);
             return q.getResultList();
@@ -61,5 +76,5 @@ public class ConceptoFacade extends AbstractFacade<Concepto> {
         }
         return null;
     }
-    
+
 }

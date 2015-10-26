@@ -38,8 +38,8 @@ public class ReciboCajaFacade extends AbstractFacade<ReciboCaja> {
         if (isCxcCxp != null && isCxcCxp) {
             transaccion = " AND rc.transaccion = NULL";
         }
-        String consulta = "SELECT rc FROM ReciboCaja rc WHERE rc.fecha >= :fec AND rc.concepto.cxccxp IN :condicion "+transaccion+" ORDER BY rc.fecha DESC";
-        
+        String consulta = "SELECT rc FROM ReciboCaja rc WHERE rc.fecha >= :fec AND rc.concepto.cxccxp IN :condicion " + transaccion + " ORDER BY rc.fecha DESC";
+
         try {
             Query q = em.createQuery(consulta);
             q.setParameter("fec", cajaFacade.getCaja().getFechaActualizacion());
@@ -61,10 +61,10 @@ public class ReciboCajaFacade extends AbstractFacade<ReciboCaja> {
         }
         return reciboCajas;
     }
-    
-    public Long getValorPendienteCxcCxp (ReciboCaja reciboCaja) {
+
+    public Long getValorPendienteCxcCxp(ReciboCaja reciboCaja) {
         Long pendiente = reciboCaja.getValor();
-        try {            
+        try {
             Query query = em.createQuery("SELECT SUM(rc.valor) FROM ReciboCaja rc WHERE rc.transaccion.id = :transaccion AND rc.estado = :est");
             query.setParameter("transaccion", reciboCaja.getId());
             query.setParameter("est", EstadoFactura.REALIZADA.getValor());
@@ -77,6 +77,33 @@ public class ReciboCajaFacade extends AbstractFacade<ReciboCaja> {
             e.printStackTrace();
         }
         return reciboCaja.getValor() - pendiente;
+    }
+
+    public List<ReciboCaja> getPagosByCxcCxp(ReciboCaja reciboCaja, Boolean estadoAnulado) {
+        List<ReciboCaja> reciboCajasTMP;
+        try {
+            String query = "SELECT rc FROM ReciboCaja rc WHERE rc.transaccion.id = :trans";
+
+            if (estadoAnulado != null) {
+                query += " AND rc.transaccion.estado IN :est";
+            }
+            Query q = em.createQuery(query);
+            if (estadoAnulado != null) {
+                if (estadoAnulado) {
+                    q.setParameter("est", new ArrayList<Integer>().add(EstadoFactura.ANULADO.getValor()));
+                } else {
+                    q.setParameter("est", EstadoFactura.getEstadosFactura());
+                }
+            }
+
+            
+            q.setParameter("trans", reciboCaja.getId());
+            reciboCajasTMP = q.getResultList();
+            return reciboCajasTMP;
+        } catch (Exception e) {
+            reciboCajasTMP = new ArrayList<>();
+        }
+        return reciboCajasTMP;
     }
 
 }

@@ -2,13 +2,33 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns="http://www.w3.org/1999/xhtml"
       xmlns:pe="http://primefaces.org/ui/extensions">
 
     <ui:composition>
         <p:dialog id="PagoCxcCxp" widgetVar="PagoCxcCxpDialog" closable="false" modal="true" resizable="false" appendTo="@(body)" header="Agregar Pago">
             <h:form id="PagoCxcCxpForm">
                 <h:panelGroup id="display">
-                    <p:panelGrid columns="6" styleClass="center">
+                    <p:panelGrid columns="8" styleClass="center">
+
+                        <p:outputLabel value="#{bundle.MessageTerceroTitle}" for="tercero" />
+                        <h:outputText id="tercero" value="#{reciboCajaController.selected.tercero.toString()}" styleClass="#{reciboCajaController.estiloTipo}"/>
+
+                        <p:outputLabel for="fecha" value="Fecha:"/>
+                        <h:outputText id="fecha" value="#{reciboCajaController.selected.fecha}" styleClass="#{reciboCajaController.estiloTipo}">
+                            <f:convertDateTime pattern="dd/MMM/yyyy, hh:mm:ss a" />
+                        </h:outputText>
+
+                        <p:outputLabel for="valor" value="Valor:"/>
+                        <h:outputText id="valor" value="#{reciboCajaController.selected.valor}" styleClass="#{reciboCajaController.estiloTipo}">
+                            <f:convertNumber type="currency" currencySymbol="$ " maxFractionDigits="0" />
+                        </h:outputText>
+
+                        <p:outputLabel for="valorPendiente" value="Valor Pendiente:"/>
+                        <h:outputText id="valorPendiente" value="#{reciboCajaController.getValorPendienteCxcCxp(reciboCajaController.selected)}" 
+                                      styleClass="#{reciboCajaController.estiloTipo}">
+                            <f:convertNumber type="currency" currencySymbol="$ " maxFractionDigits="0" />
+                        </h:outputText>
 
                         <p:outputLabel for="caja" value="Caja:"/>
                         <p:selectOneMenu converter="cajaconverter" id="caja" value="#{reciboCajaController.selectedAPagar.caja}" required="true" requiredMessage="#{bundle.EditCajaRequiredMessage}" style="width: 137px;">
@@ -17,36 +37,28 @@
                                            itemValue="#{cajaItem}"/>
                         </p:selectOneMenu>
 
-                        <p:outputLabel for="fecha" value="Fecha:"/>
-                        <p:calendar id="fecha" value="#{reciboCajaController.selectedAPagar.fecha}" showOn="button" pattern="dd/MM/yyyy" maxdate="now()"/>
-
-                        <p:outputLabel value="#{bundle.MessageTerceroTitle}" for="tercero" />
-                        <h:outputText id="tercero" value="#{reciboCajaController.selectedAPagar.tercero.toString()}"/>
-
                         <p:outputLabel for="concepto" value="Concepto:"/>
                         <p:autoComplete id="concepto" value="#{reciboCajaController.selectedAPagar.concepto}" converter="conceptoconverter"
                                         required="true" minQueryLength="3" itemLabel="#{concepto.toString()}" var="concepto" itemValue="#{concepto}"
                                         requiredMessage="#{bundle.EditConceptoRequiredMessage}" completeMethod="#{conceptoController.llenarConceptosCXCCXP}">
-                            <p:ajax update="tipoConcepto" event="itemSelect" listener="#{reciboCajaController.changeTipoConcepto(true)}"/>
-<!--                            <f:attribute name="iscxc" value="#{reciboCajaController.selectedAPagar.concepto.cxccxp}"/>-->
+                            <p:ajax update="tipoConcepto" event="itemSelect" listener="#{reciboCajaController.changeConceptoCxcCxp()}"/>
+                            <f:attribute name="filter" value="#{reciboCajaController.selected}" />
                         </p:autoComplete>
-
-                        <p:outputLabel for="valor" value="Valor:"/>
-                        <h:outputText id="valor" value="#{reciboCajaController.selectedAPagar.valor}">
-                            <f:convertNumber type="currency" currencySymbol="$ " maxFractionDigits="0" />
-                        </h:outputText>
-
-                        <p:outputLabel for="detalle" value="Detalle:"/>
-                        <p:inputText id="detalle" value="#{reciboCajaController.selectedAPagar.detalle}" required="true" 
-                                     requiredMessage="El campo Detalle es requerido" style="width: 156px;"/>
 
                         <p:outputLabel for="tipoConcepto" value="Tipo-Condición:"/>
                         <p:outputLabel id="tipoConcepto" value="#{reciboCajaController.tipoConcepto}" escape="false" styleClass="#{reciboCajaController.estiloTipo}"/>
 
+                        <p:outputLabel value="Valor Abono" for="valorAbono" />
+                        <pe:inputNumber id="valorAbono" value="#{reciboCajaController.selectedAPagar.valor}" required="true" 
+                                        requiredMessage="El campo Valor Abono es requerido" symbolPosition="s" emptyValue="zero"/>
+
+                        <p:outputLabel for="detalle" value="Detalle:"/>
+                        <p:inputText id="detalle" value="#{reciboCajaController.selectedAPagar.detalle}" style="width: 156px;"/>
+
                     </p:panelGrid>
                 </h:panelGroup>
                 <div class="botonesDialog">
-                    <p:commandButton actionListener="#{categoriaController.create}" value="#{bundle.Save}" update="display,:tablaRecibosCaja:datalist,:growl"/>
+                    <p:commandButton actionListener="#{reciboCajaController.createAbonoPago()}" value="#{bundle.Save}" update="display,:tablaRecibosCaja:datalist,:growl"/>
                     <p:commandButton type="button" value="#{bundle.Cancel}" onclick="PF('PagoCxcCxpDialog').hide()"/>
                 </div>
             </h:form>
