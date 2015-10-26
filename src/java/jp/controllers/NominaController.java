@@ -32,8 +32,8 @@ public class NominaController implements Serializable {
     private List<ReciboCaja> reciboCajasCXCM;
     private List<ReciboCaja> reciboCajasCXC;
     private Tercero terceroTMP;
-    
-    private long totalValorCXC; 
+
+    private long totalValorCXC;
 
     public NominaController() {
         terceroTMP = new Tercero();
@@ -214,24 +214,35 @@ public class NominaController implements Serializable {
     }
 
     public void guardar() {
-        System.out.println("Entre");
-        reciboCaja.setConcepto(getParametrosFacade().getParametros().getConceptoNomina());
-        if (reciboCaja.getDetalle().trim().isEmpty()) {
-            reciboCaja.setDetalle("NOMINA: " + terceroTMP.toString());
-        }
-        reciboCaja.setEstado(EstadoFactura.REALIZADA.getValor());
-        reciboCaja.setUsuario(usuarioActual.getUsuario());
 
+        long valor = 0L;
         try {
-            if (transactionFacade.createNomina(reciboCaja, reciboCajasCXCM, reciboCajasCXC)) {
-                JsfUtil.addSuccessMessage("La nomina fue guardada correctamente");
-                cleanAll();
-                return;
-            }
+            valor = reciboCaja.getValor();
         } catch (Exception e) {
-            e.printStackTrace();
+            valor = 0L;
         }
-        JsfUtil.addSuccessMessage("Ocurrio un error guardando la nomina");
+
+        if (valor == 0) {
+            JsfUtil.addErrorMessage("Debe ingresar un valor valido");
+        } else {
+            reciboCaja.setConcepto(getParametrosFacade().getParametros().getConceptoNomina());
+            if (reciboCaja.getDetalle().trim().isEmpty()) {
+                reciboCaja.setDetalle("NOMINA: " + terceroTMP.toString());
+            }
+            reciboCaja.setEstado(EstadoFactura.REALIZADA.getValor());
+            reciboCaja.setUsuario(usuarioActual.getUsuario());
+
+            try {
+                if (transactionFacade.createNomina(reciboCaja, reciboCajasCXCM, reciboCajasCXC)) {
+                    JsfUtil.addSuccessMessage("La nomina fue guardada correctamente");
+                    cleanAll();
+                    return;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            JsfUtil.addErrorMessage("Ocurrio un error guardando la nomina");
+        }
     }
 
     public long totalAbonosCXC() {
@@ -241,16 +252,16 @@ public class NominaController implements Serializable {
         }
         return totalValorCXC;
     }
-    
-    public long valorTotal(){
+
+    public long valorTotal() {
         return (reciboCaja.getValor() - totalValorCXC);
     }
-    
-    private void cleanAll(){
+
+    private void cleanAll() {
         setReciboCaja(new ReciboCaja());
         clean();
         terceroTMP = new Tercero();
         totalValorCXC = 0L;
-    }    
+    }
 
 }

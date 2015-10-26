@@ -57,8 +57,9 @@ public class NominaFacade extends AbstractFacade<ReciboCaja> {
     public List<ReciboCaja> recibosCajaCxcByTransaccion(ReciboCaja reciboCajaTMP) {
         List<ReciboCaja> recibosCaja = null;
         try {
-            Query query = getEntityManager().createQuery("SELECT rc FROM ReciboCaja rc WHERE rc.transaccion.id = :transaccion");
+            Query query = getEntityManager().createQuery("SELECT rc FROM ReciboCaja rc WHERE rc.transaccion.id = :transaccion AND rc.estado = :estado");
             query.setParameter("transaccion", reciboCajaTMP.getId());
+            query.setParameter("estado", EstadoFactura.REALIZADA);
             recibosCaja = query.getResultList();
         } catch (Exception e) {
             recibosCaja = null;
