@@ -17,6 +17,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -29,6 +30,7 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "ReciboCaja.findByValor", query = "SELECT r FROM ReciboCaja r WHERE r.valor = :valor"),
     @NamedQuery(name = "ReciboCaja.findByDetalle", query = "SELECT r FROM ReciboCaja r WHERE r.detalle = :detalle")})
 public class ReciboCaja implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -65,6 +67,8 @@ public class ReciboCaja implements Serializable {
     @JoinColumn(name = "transaccion", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.LAZY)
     private ReciboCaja transaccion;
+    @Transient
+    long saldo;
 
     public ReciboCaja() {
         this.fecha = Calendar.getInstance().getTime();
@@ -161,6 +165,14 @@ public class ReciboCaja implements Serializable {
         this.transaccion = transaccion;
     }
 
+    public long getSaldo() {
+        return saldo;
+    }
+
+    public void setSaldo(long saldo) {
+        this.saldo = saldo;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -175,15 +187,12 @@ public class ReciboCaja implements Serializable {
             return false;
         }
         ReciboCaja other = (ReciboCaja) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return !((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)));
     }
 
     @Override
     public String toString() {
         return "entidades.ReciboCaja[ id=" + id + " ]";
     }
-    
+
 }

@@ -3,7 +3,6 @@ package jp.facades;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Set;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -190,20 +189,20 @@ public class TransactionFacade {
             em.merge(parametroTMP);
             userTransaction.commit();
             complete = true;
-            
+
         } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
             complete = false;
-                try {
+            try {
                 System.out.println("======>");
                 e.printStackTrace();
                 System.out.println("<======");
-                    userTransaction.rollback();
-                } catch (IllegalStateException | SecurityException | SystemException es) {
+                userTransaction.rollback();
+            } catch (IllegalStateException | SecurityException | SystemException es) {
                 System.out.println("======>");
                 es.printStackTrace();
                 System.out.println("<======");
-                }
             }
+        }
         return complete;
     }
 
@@ -1317,7 +1316,7 @@ public class TransactionFacade {
     }
 
     public boolean actualizarListasEmpleados(Empleado empleadoOrigen, Empleado empleadoDestino, List<Cliente> clientesOrigen, List<Cliente> clientesDestino) {
-        System.out.println("Clientes Origen-> "+clientesOrigen.size()+"\nClientes Destino-> "+clientesDestino.size());
+        System.out.println("Clientes Origen-> " + clientesOrigen.size() + "\nClientes Destino-> " + clientesDestino.size());
         userTransaction = sessionContext.getUserTransaction();
         try {
             userTransaction.begin();
@@ -1326,7 +1325,7 @@ public class TransactionFacade {
                 Usuario usuario2 = getUsuarioFacade().getUsuarioByEmpleado(c.getEmpleado());
                 usuario2.setEmpleado(empleadoOrigen);
                 getEntityManager().merge(usuario2);
-                
+
                 c.setEmpleado(empleadoOrigen);
                 getEntityManager().merge(c);
             }
@@ -1335,13 +1334,13 @@ public class TransactionFacade {
                 Usuario usuario = getUsuarioFacade().getUsuarioByEmpleado(c.getEmpleado());
                 usuario.setEmpleado(empleadoDestino);
                 getEntityManager().merge(usuario);
-                
+
                 c.setEmpleado(empleadoDestino);
-                getEntityManager().merge(c);                
+                getEntityManager().merge(c);
             }
             if (clientesOrigen.isEmpty()) {
                 for (Cliente clienteDestino : clientesDestino) {
-                    
+
                 }
             }
 
@@ -1360,5 +1359,62 @@ public class TransactionFacade {
             }
         }
         return false;
+    }
+
+    public boolean createNomina(ReciboCaja reciboCaja, List<ReciboCaja> reciboCajasCXCM, List<ReciboCaja> reciboCajasCXC) {
+        userTransaction = sessionContext.getUserTransaction();
+        try {
+            userTransaction.begin();
+
+            ReciboCaja reciboCajaTMP = new ReciboCaja();
+            reciboCajaTMP.setCaja(reciboCaja.getCaja());
+            reciboCajaTMP.setConcepto(reciboCaja.getConcepto());
+            reciboCajaTMP.setDetalle(reciboCaja.getDetalle());
+            reciboCajaTMP.setEstado(reciboCaja.getEstado());
+            reciboCajaTMP.setFecha(reciboCaja.getFecha());
+            reciboCajaTMP.setTercero(reciboCaja.getTercero());
+            reciboCajaTMP.setTransaccion(reciboCaja.getTransaccion());
+            reciboCajaTMP.setUsuario(reciboCaja.getUsuario());
+            reciboCajaTMP.setValor(reciboCaja.getValor());
+            getEntityManager().persist(reciboCajaTMP);
+
+            for (ReciboCaja rc : reciboCajasCXCM) {
+                ReciboCaja rcTMP = getEntityManager().find(ReciboCaja.class, rc.getId());
+                if ((rc.getValor() - rc.getSaldo()) == 0) {
+                    rcTMP.setEstado(EstadoFactura.CANCELADO.getValor());
+                    getEntityManager().merge(rcTMP);
+                }
+            }
+
+            for (ReciboCaja rc : reciboCajasCXC) {
+                ReciboCaja rcTMP = new ReciboCaja();
+                rcTMP.setCaja(rc.getCaja());
+                rcTMP.setConcepto(rc.getConcepto());
+                rcTMP.setDetalle(rc.getDetalle());
+                rcTMP.setEstado(rc.getEstado());
+                rcTMP.setFecha(rc.getFecha());
+                rcTMP.setTercero(rc.getTercero());
+                rcTMP.setTransaccion(rc.getTransaccion());
+                rcTMP.setUsuario(rc.getUsuario());
+                rcTMP.setValor(rc.getValor());
+                getEntityManager().persist(rcTMP);
+            }
+
+            userTransaction.commit();
+            return true;
+        } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
+            try {
+                System.out.println("======>");
+                e.printStackTrace();
+                System.out.println("<======");
+                userTransaction.rollback();
+            } catch (IllegalStateException | SecurityException | SystemException es) {
+                System.out.println("======>");
+                es.printStackTrace();
+                System.out.println("<======");
+            }
+        }
+        return false;
+
     }
 }

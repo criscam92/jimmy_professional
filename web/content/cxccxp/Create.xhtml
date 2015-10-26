@@ -30,7 +30,6 @@
                         <p:outputLabel value="#{bundle.MessageTerceroTitle}" for="tercero" />
 
                         <p:outputPanel>
-
                             <p:autoComplete size="21" id="tercero" minQueryLength="3" panelStyle="width: 320px;" value="#{reciboCajaController.nuevoRecibo.tercero}"
                                             itemValue="#{tercero}" completeMethod="#{reciboCajaController.llenarTercero}" effect="fade" converter="terceroconverter"
                                             itemLabel="#{tercero.toString()}" var="tercero" required="true" requiredMessage="#{bundle.MessageTerceroCajaRequiredMessage}"/>
@@ -38,7 +37,6 @@
                             <p:commandLink styleClass="exporter ui-state-default boton-tercero" oncomplete="PF('TerceroCreateDialog').show()"
                                            title="#{bundle.CreateTerceroTitle}" actionListener="#{reciboCajaController.prepareCreateTercero}" update=":TerceroCreateForm">
                                 <i class="fa fa-male"></i>
-
                             </p:commandLink>
                         </p:outputPanel>
 
@@ -203,8 +201,10 @@
                                 <f:selectItems value="#{terceroController.tipoDocumentos}"/>
                             </p:selectOneMenu>
                         </p:panelGrid>
-                        <p:commandButton actionListener="#{reciboCajaController.createTercero()}" value="#{bundle.Save}" update="display,:tablaRecibosCaja:datalist,:growl" oncomplete="handleSubmit(args,'TerceroCreateDialog');"/>
-                        <p:commandButton value="#{bundle.Cancel}" type="button" onclick="PF('TerceroCreateDialog').hide()"/>
+                        <div class="botonesDialog">
+                            <p:commandButton actionListener="#{reciboCajaController.createTercero()}" value="#{bundle.Save}" update="display,:tablaRecibosCaja:datalist,:growl"/>
+                            <p:commandButton value="#{bundle.Cancel}" type="button" onclick="PF('TerceroCreateDialog').hide()"/>
+                        </div>
                     </h:panelGroup>
                 </h:form>
             </p:dialog>

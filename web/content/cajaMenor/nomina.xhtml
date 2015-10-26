@@ -4,7 +4,8 @@
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:pe="http://primefaces.org/ui/extensions">
 
     <ui:composition template="/content/index.xhtml">
         <ui:define name="title">
@@ -12,57 +13,74 @@
         </ui:define>
 
         <ui:define name="body">
-            <p:panelGrid styleClass="panelgridnomina">   
-                <p:row>
-                    <p:column>        
-                        <h:form id="datosNomina">
-                            <p:panel header="Datos Nomina" style="width: 530px; margin: auto;">
+            <h:form id="datosNomina" style="margin: 0 auto 10px auto; width: 1000px;">
+                <p:panelGrid id="datosNominaPanel" styleClass="panelgridnomina">   
+                    <p:row>
+                        <p:column>
+                            <p:panel header="Datos Nomina" style="width: 550px; margin: auto;">
                                 <p:panelGrid columns="4">
-                                    <p:outputLabel for="cajaMenor" value="Caja Menor:" />
-                                    <p:selectOneMenu id="cajaMenor" style="width: 155px;">
-                                        <f:selectItem  itemLabel="#{bundle.SelectOneMessage}" itemValue="-1"/>
+                                    <p:outputLabel for="cajaMenor" value="Caja:" />
+                                    <p:selectOneMenu converter="cajaconverter" id="cajaMenor" value="#{nominaController.reciboCaja.caja}" required="true" requiredMessage="#{bundle.EditCajaRequiredMessage}" style="width: 155px;">
+                                        <f:selectItems value="#{cajaController.itemsAvailableSelectOne}" 
+                                                       var="cajaItem"
+                                                       itemValue="#{cajaItem}"/>
                                     </p:selectOneMenu>
 
                                     <p:outputLabel value="Fecha" for="fecha"/>
-                                    <p:calendar id="fecha" size="15" pattern="MM/dd/yyyy" showOn="button"/>
+                                    <p:calendar id="fecha" value="#{nominaController.reciboCaja.fecha}" size="15" pattern="MM/dd/yyyy" showOn="button" required="true" />
 
                                     <p:outputLabel value="Tercero" for="tercero"/>
-                                    <p:autoComplete id="tercero"/>
+                                    <p:outputPanel>
+                                        <p:autoComplete size="15" id="tercero" minQueryLength="3" value="#{nominaController.reciboCaja.tercero}"
+                                                        itemValue="#{tercero}" completeMethod="#{reciboCajaController.llenarTercero}" effect="fade" converter="terceroconverter"
+                                                        itemLabel="#{tercero.toString()}" var="tercero" required="true" requiredMessage="#{bundle.MessageTerceroCajaRequiredMessage}">
+                                            <p:ajax event="itemSelect" listener="#{nominaController.onItemSelectTercero}" update=":growl, datalist" />
+                                        </p:autoComplete>
+
+                                        <p:commandLink styleClass="exporter ui-state-default boton-tercero" oncomplete="PF('TerceroCreateDialog').show()"
+                                                       title="#{bundle.CreateTerceroTitle}" actionListener="#{nominaController.prepareCreateTercero}" update=":TerceroCreateForm">
+                                            <i class="fa fa-male"></i>
+                                        </p:commandLink>
+
+                                    </p:outputPanel>
 
                                     <p:outputLabel value="Valor" for="valor"/>
-                                    <p:inputText id="valor" style="width: 150px;"/>
+                                    <pe:inputNumber decimalPlaces="0" id="valor" style="width: 150px;" value="#{nominaController.reciboCaja.valor}" required="true" requiredMessage="Debe ingresar un valor">
+                                        <p:ajax event="blur" update="valorTotalNomina, valorTotal"/>
+                                    </pe:inputNumber>
 
                                     <p:outputLabel value="Detalle" for="detalle"/>
-                                    <p:inputText id="detalle"/>
+                                    <p:inputText id="detalle" value="#{nominaController.reciboCaja.detalle}"/>
                                 </p:panelGrid>
                             </p:panel>
-                        </h:form>
-                    </p:column>
-                    <p:column>
-                        <p:panel header="Totales" style="margin: auto; height: 129px;">
-                            <p:panelGrid columns="2">
-                                <p:outputLabel value="Total Abonos CXC" />
-                                <p:outputLabel value="$0.0" />
+                        </p:column>
+                        <p:column>
+                            <p:panel header="Totales" style="margin: auto; height: 129px;">
+                                <p:panelGrid columns="2">
+                                    <p:outputLabel style="font-weight: bold" value="Total Nomina" />
+                                    <p:outputLabel id="valorTotalNomina" value="$#{nominaController.reciboCaja.valor}"/>
+                                    
+                                    <p:outputLabel style="font-weight: bold" value="Total Abonos CXC" />
+                                    <p:outputLabel id="totalValorCXC" value="$#{nominaController.totalAbonosCXC()}" />                                    
 
-                                <p:outputLabel value="Totatal Pago" />
-                                <p:outputLabel value="$0.0" />
-
-                                <p:outputLabel value="Total Nomina" />
-                                <p:outputLabel value="$0.0"/>
-                            </p:panelGrid>
-                        </p:panel>
-                    </p:column>
-                </p:row>
-            </p:panelGrid>   
-
-            <h:form id="detalleCuentasPorCobrar" style="margin: 0 auto 10px auto; width: 1000px;">
+                                    <p:outputLabel style="font-weight: bold" value="Totatal Pago" />
+                                    <p:outputLabel id="valorTotal" value="$#{nominaController.valorTotal()}" />
+                                </p:panelGrid>
+                            </p:panel>
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
                 <p:dataTable styleClass="tabla" id="datalist"
-                             selectionMode="single" widgetVar="tblFactura"
-                             paginator="true" style="text-align: center;"
+                             selectionMode="single" widgetVar="tblDetalleCXC"
+                             paginator="true" style="text-align: center"
                              rows="10"
                              rowsPerPageTemplate="10,20,30,40,50"
                              emptyMessage="#{bundle.EmptyTable}"
                              paginatorPosition="bottom"
+                             var="recibo"
+                             value="#{nominaController.reciboCajasCXCM}"
+                             rowKey="#{recibo.id}"
+                             selection="#{nominaController.reciboCajaCXCM}"
                              >
 
                     <p:ajax event="rowSelect"   update="abonar_pagar"/>
@@ -73,50 +91,64 @@
                             Cuentas por Cobrar a Empleado
                         </div>
                         <div id="acciones">   
-                            <p:commandButton id="abonar_pagar" icon="ui-icon-pencil" value="Abonar/Pagar"/>
+                            <p:commandButton id="abonar_pagar" icon="ui-icon-pencil" value="Abonar/Pagar" disabled="#{nominaController.reciboCajaCXCM.id == null ? true : false}" update=":AbonarPagarCreateForm" actionListener="#{nominaController.prepareCreateReciboCXC}" oncomplete="PF('AbonarPagarCreateDialog').show()"/>
                         </div>
                     </f:facet>
 
                     <p:column>
                         <f:facet name="header">
                             <h:outputText value="Fecha"/>
-                        </f:facet>                        
+                        </f:facet>
+                        <h:outputText value="#{recibo.fecha}">
+                            <f:convertDateTime pattern="dd-MMM-yyyy"/>
+                        </h:outputText>
                     </p:column>
 
                     <p:column>
                         <f:facet name="header">
                             <h:outputText value="Concepto"/>
-                        </f:facet>                        
+                        </f:facet>
+                        <h:outputText value="#{recibo.concepto.toString()}" />
                     </p:column>
 
                     <p:column>
                         <f:facet name="header">
                             <h:outputText value="Descripcion"/>
-                        </f:facet>                        
+                        </f:facet>
+                        <h:outputText value="#{recibo.detalle}" />
                     </p:column>
 
                     <p:column>
                         <f:facet name="header">
-                            <h:outputText value="Valor"/>
-                        </f:facet>                        
+                            <h:outputText value="Valor"/>                            
+                        </f:facet>                      
+                        <h:outputText value="#{recibo.valor}">
+                            <f:convertNumber type="currency" currencySymbol="$ " maxFractionDigits="0" />
+                        </h:outputText>
                     </p:column>
 
                     <p:column>
                         <f:facet name="header">
                             <h:outputText value="Saldo"/>
-                        </f:facet>                        
+                        </f:facet> 
+                        <h:outputText value="#{recibo.saldo}">
+                            <f:convertNumber type="currency" currencySymbol="$ " maxFractionDigits="0" />
+                        </h:outputText>
                     </p:column>
 
                 </p:dataTable>
-            </h:form>
-            <h:form id="cuentasPorCobrar" style="margin: 0 auto 10px auto; width: 1000px;">
-                <p:dataTable styleClass="tabla" id="datalistDetalle"
-                             selectionMode="single" widgetVar="tblFactura"
-                             paginator="true" style="text-align: center;"
+
+                <p:dataTable styleClass="tabla" id="datalistCXC"
+                             selectionMode="single"
+                             paginator="true" style="text-align: center; margin-top: 10px;"
                              rows="10"
                              rowsPerPageTemplate="10,20,30,40,50"
                              emptyMessage="#{bundle.EmptyTable}"
                              paginatorPosition="bottom"
+                             var="recibo"
+                             value="#{nominaController.reciboCajasCXC}"
+                             rowKey="#{recibo.id}"
+                             selection="#{nominaController.reciboCajaCXC}"
                              >
 
                     <f:facet name="header">
@@ -128,28 +160,84 @@
                     <p:column>
                         <f:facet name="header">
                             <h:outputText value="Concepto"/>
-                        </f:facet>                        
+                        </f:facet>
+                        <h:outputText value="#{recibo.concepto.toString()}" />
                     </p:column>
 
                     <p:column>
                         <f:facet name="header">
                             <h:outputText value="Valor"/>
-                        </f:facet>                        
+                        </f:facet>                      
+                        <h:outputText value="#{recibo.valor}">
+                            <f:convertNumber type="currency" currencySymbol="$ " maxFractionDigits="0" />
+                        </h:outputText>
                     </p:column>
 
                     <p:column>
                         <f:facet name="header">
                             <h:outputText value="Detalle"/>
                         </f:facet>                        
+                        <h:outputText value="#{recibo.detalle}" />
                     </p:column>
 
                     <p:column>
                         <f:facet name="header">
                             <h:outputText value="Quitar"/>
                         </f:facet>
+                        <p:commandButton icon="ui-icon-closethick" update="datalistCXC, :datosNomina:datalist" actionListener="#{nominaController.removeReciboCajaCXC(recibo)}" process="datalistCXC"/>  
                     </p:column>
                 </p:dataTable>
+                <p:commandButton style="margin-top: 10px; height: 30px; width: 100px; font-weight: bold;" actionListener="#{nominaController.guardar()}" value="#{bundle.Save}" update="datosNomina, :growl"/>
             </h:form>
+
+            <p:dialog id="TerceroCreateDlg" widgetVar="TerceroCreateDialog" modal="true" resizable="false" appendTo="@(body)" 
+                      header="#{bundle.CreateTerceroTitle}">
+                <h:form id="TerceroCreateForm">
+                    <h:panelGroup id="display">
+                        <p:panelGrid columns="2" rendered="#{reciboCajaController.tercero != null}">
+                            <p:outputLabel value="#{bundle.CreateTerceroLabel_nombre}" for="nombre" />
+                            <p:inputText id="nombre" value="#{reciboCajaController.tercero.nombre}" title="#{bundle.CreateTerceroTitle_nombre}" required="true" requiredMessage="#{bundle.CreateTerceroRequiredMessage_nombre}"/>
+                            <p:outputLabel value="#{bundle.CreateTerceroLabel_tipodocumento}" for="tipodocumento" />
+                            <p:selectOneMenu id="tipodocumento" value="#{reciboCajaController.tercero.tipodocumento}" required="true" 
+                                             requiredMessage="#{bundle.CreateTerceroRequiredMessage_tipodocumento}" style="width: 154px;">
+                                <f:selectItems value="#{terceroController.tipoDocumentos}"/>
+                            </p:selectOneMenu>
+                            <p:outputLabel value="#{bundle.CreateTerceroLabel_numdocumento}" for="numdocumento" />
+                            <p:inputText id="numdocumento" value="#{reciboCajaController.tercero.numdocumento}" title="#{bundle.CreateTerceroTitle_numdocumento}" required="true" requiredMessage="#{bundle.CreateTerceroRequiredMessage_numdocumento}"/>                        
+                        </p:panelGrid>
+                        <div class="botonesDialog">
+                            <p:commandButton actionListener="#{reciboCajaController.createTercero()}" value="#{bundle.Save}" update="display,:growl" oncomplete="handleSubmit(args,'TerceroCreateDialog');"/>
+                            <p:commandButton value="#{bundle.Cancel}" type="button" onclick="PF('TerceroCreateDialog').hide()"/>
+                        </div>
+                    </h:panelGroup>
+                </h:form>
+            </p:dialog>
+
+            <p:dialog id="AbonarPagarCreateDlg" widgetVar="AbonarPagarCreateDialog" modal="true" resizable="false" appendTo="@(body)" header="Abonar/Pagar">
+                <h:form id="AbonarPagarCreateForm">
+                    <h:panelGroup id="displayAbonarPagar">
+                        <p:panelGrid columns="2" rendered="#{nominaController.reciboCajaCXCM.id != null}">
+
+                            <p:outputLabel for="concepto" value="Concepto:"/>
+                            <p:autoComplete id="concepto" value="#{nominaController.reciboCajaCXC.concepto}" converter="conceptoconverter"
+                                            required="true" minQueryLength="3" itemLabel="#{concepto.toString()}" var="concepto" itemValue="#{concepto}"
+                                            requiredMessage="#{bundle.EditConceptoRequiredMessage}" completeMethod="#{nominaController.llenarConceptosIngresoCXC}">                            
+                            </p:autoComplete>
+
+                            <p:outputLabel value="Valor" for="valor"/>
+                            <pe:inputNumber decimalPlaces="0" id="valor" style="width: 150px;" value="#{nominaController.reciboCajaCXC.valor}" required="true" requiredMessage="El campo Valor es requerido"/>
+
+                            <p:outputLabel value="Detalle" for="detalle"/>
+                            <p:inputText id="detalle" value="#{nominaController.reciboCajaCXC.detalle}" />
+
+                        </p:panelGrid>
+                        <div class="botonesDialog">
+                            <p:commandButton actionListener="#{nominaController.crearConceptoCXC()}" value="#{bundle.Save}" update=":datosNomina:datalistCXC, :datosNomina:datalist, :datosNomina:totalValorCXC, :datosNomina:valorTotal, AbonarPagarCreateForm, :growl"/>
+                            <p:commandButton value="Cerrar" type="button" onclick="PF('AbonarPagarCreateDialog').hide()"/>
+                        </div>
+                    </h:panelGroup>
+                </h:form>
+            </p:dialog>
 
         </ui:define>
     </ui:composition>
