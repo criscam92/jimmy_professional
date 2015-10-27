@@ -17,7 +17,7 @@
             <h:form id="ConceptoListForm">
                 <p:dataTable id="datalist" value="#{conceptoController.items}" var="item"
                              selectionMode="single" selection="#{conceptoController.selected}"
-                             paginator="true" paginatorPosition="bottom"
+                             paginator="true" paginatorPosition="bottom" widgetVar="TableConceptos"
                              rowKey="#{item.id}" emptyMessage="#{bundle.EmptyTable}"
                              rows="10" styleClass="tabla"
                              rowsPerPageTemplate="10,20,30,40,50"
@@ -38,11 +38,8 @@
                         </div>
                     </f:facet>
 
-                    <p:column>
-                        <f:facet name="header">
-                            <h:outputText value="#{bundle.CreateProductoTitle_codigo}"/>
-                        </f:facet>
-                        <h:outputText value="#{item.codigo}"/>
+                    <p:column headerText="#{bundle.CreateProductoTitle_codigo}" filterStyle="width: 45px" filterBy="#{item.codigo}" filterMatchMode="contains" style="text-align: center;">
+                        <h:outputText value="#{item.codigo}" styleClass="num-orden"/>
                     </p:column>
                     <p:column>
                         <f:facet name="header">
@@ -50,15 +47,27 @@
                         </f:facet>
                         <h:outputText value="#{item.detalle}"/>
                     </p:column>
-                    <p:column>
+                    <p:column filterMatchMode="exact" filterBy="#{conceptoController.getTipoConcepto(item.tipo2)}">
                         <f:facet name="header">
                             <h:outputText value="#{bundle.CreateConceptoTitle_tipo}"/>
                         </f:facet>
+                        <f:facet name="filter">
+                            <p:selectOneMenu onchange="PF('TableConceptos').filter()" >
+                                <f:selectItem itemLabel="#{bundle.All}" itemValue="#{null}" noSelectionOption="true" />
+                                <f:selectItems var="tipo" value="#{conceptoController.tiposConceptos}" itemValue="#{conceptoController.getTipoConcepto(tipo.valor)}" itemLabel="#{conceptoController.getTipoConcepto(tipo.valor)}"/>
+                            </p:selectOneMenu>
+                        </f:facet>
                         <h:outputText value="#{conceptoController.getTipoConcepto(item.tipo2)}"/>
                     </p:column>
-                    <p:column>
+                    <p:column filterMatchMode="exact" filterBy="#{conceptoController.getCondicionConcepto(item.cxccxp)}">
                         <f:facet name="header">
                             <h:outputText value="#{bundle.CreateConceptoTitle_condicion}"/>
+                        </f:facet>
+                        <f:facet name="filter">
+                            <p:selectOneMenu onchange="PF('TableConceptos').filter()" >
+                                <f:selectItem itemLabel="#{bundle.All}" itemValue="#{null}" noSelectionOption="true" />
+                                <f:selectItems var="condicion" value="#{conceptoController.condicionesConceptos}" itemValue="#{conceptoController.getCondicionConcepto(condicion.valor)}" itemLabel="#{conceptoController.getCondicionConcepto(condicion.valor)}"/>
+                            </p:selectOneMenu>
                         </f:facet>
                         <h:outputText value="#{conceptoController.getCondicionConcepto(item.cxccxp)}"/>
                     </p:column>
