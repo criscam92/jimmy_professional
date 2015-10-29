@@ -12,6 +12,8 @@ import jp.entidades.Factura;
 import jp.entidades.FacturaProducto;
 import jp.entidades.IngresoProducto;
 import jp.entidades.Producto;
+import jp.entidades.Promocion;
+import jp.entidades.PromocionProducto;
 import jp.entidades.SalidaProducto;
 import jp.entidades.VisitaProducto;
 import jp.util.EstadoFactura;
@@ -94,7 +96,7 @@ public class ProductoFacade extends AbstractFacade<Producto> {
             for (Object o : query4.getResultList()) {
                 productosDespachoFactura += ((DespachoFacturaProducto) o).getCantidad();
             }
-            
+
             Query query5 = getEntityManager().createQuery("SELECT sp FROM SalidaProducto sp WHERE sp.producto.id = :prod AND sp.salida.estado <> :est1 AND sp.salida.estado <> :est2");
             query5.setParameter("prod", producto.getId());
             query5.setParameter("est1", EstadoFactura.ANULADO.getValor());
@@ -116,10 +118,54 @@ public class ProductoFacade extends AbstractFacade<Producto> {
     public List<Producto> findAll() {
         return super.findAll(true);
     }
-    
+
     @Override
     public List<Producto> findAll(boolean asc) {
         return super.findAll(asc);
     }
-    
+
+    public Long getTotalBonificacionesByProducto(Producto producto) {
+        Long cantidad = 0l;
+        try {
+            Query query = em.createQuery("SELECT SUM(p.unidadesBonificacion) FROM FacturaProducto p WHERE p.producto.id = :producto AND p.factura.estado = :estado");
+            query.setParameter("producto", producto.getId());
+            query.setParameter("estado", EstadoFactura.REALIZADA.getValor());
+
+            cantidad = (Long) query.getSingleResult();
+            
+            cantidad = cantidad==null?0:cantidad;
+
+            query = em.createQuery("SELECT p FROM PromocionProducto p WHERE p.producto.id = :producto");
+            query.setParameter("producto", producto.getId());
+            List<PromocionProducto> promociones = query.getResultList();
+
+                for (PromocionProducto promocionProducto : promociones) {
+                    
+                    try {
+
+                        query = em.createQuery("SELECT SUM(p.unidadesBonificacion) FROM FacturaPromocion p WHERE p.promocion.id = :promocion AND p.factura.estado = :estado");
+                        query.setParameter("promocion", promocionProducto.getPromocion().getId());
+                        query.setParameter("estado", EstadoFactura.REALIZADA.getValor());
+
+                        Long cantidadPromocion = (Long) query.getSingleResult();
+                        if (cantidadPromocion == null) {
+                            cantidadPromocion = 0l;
+                        }
+                        
+                        cantidad += (cantidadPromocion * promocionProducto.getCantidad());
+                        
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                }
+
+            return cantidad;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return cantidad;
+    }
+
 }

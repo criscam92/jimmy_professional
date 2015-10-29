@@ -141,17 +141,20 @@
                         <h:outputText value="#{item.id}"/>
                     </p:column>
 
-                    <p:column>
+                    <p:column sortBy="#{item.fecha}">
                         <f:facet name="header">
-                            <h:outputText value="Concepto"/>
+                            <h:outputText value="Fecha"/>
                         </f:facet>
+                        <h:outputText value="#{item.fecha}">
+                            <f:convertDateTime pattern="dd/MMM/yyyy, hh:mm a" />
+                        </h:outputText>
+                    </p:column>
+
+                    <p:column filterBy="#{item.concepto.toString()}" headerText="Concepto" filterMatchMode="contains">
                         <h:outputText value="#{item.concepto.toString()}"/>
                     </p:column>
 
-                    <p:column>
-                        <f:facet name="header">
-                            <h:outputText value="Tercero"/>
-                        </f:facet>
+                    <p:column filterBy="#{item.tercero}" headerText="Tercero" filterMatchMode="contains">
                         <h:outputText value="#{item.tercero}"/>
                     </p:column>
 
@@ -173,9 +176,12 @@
                         </h:outputText>
                     </p:column>
 
-                    <p:column>
-                        <f:facet name="header">
-                            <h:outputText value="Estado"/>
+                    <p:column filterBy="#{reciboCajaController.getEstadoCxcCxp(item)}" headerText="Estado" filterMatchMode="exact">
+                        <f:facet name="filter">
+                            <p:selectOneMenu onchange="PF('tablaRecibosCajaMenor').filter()" style="width: 90px;">
+                                <f:selectItem itemLabel="#{bundle.All}" itemValue="#{null}" noSelectionOption="true" />
+                                <f:selectItems var="estado" value="#{facturaController.estadosFactura}" itemValue="#{estado.detalle}" itemLabel="#{estado.detalle}"/>
+                            </p:selectOneMenu>
                         </f:facet>
                         <h:outputText value="#{reciboCajaController.getEstadoCxcCxp(item)}"/>
                     </p:column>

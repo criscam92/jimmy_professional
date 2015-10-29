@@ -366,4 +366,8 @@ public class ProductoController implements Serializable {
     public int getCantidadDisponible(Producto producto) {
         return getFacade().getCantidadDisponibleByProducto(producto);
     }
+    
+    public Long getBonificacionesByProducto(Producto producto){
+        return getFacade().getTotalBonificacionesByProducto(producto);
+    }
 }
