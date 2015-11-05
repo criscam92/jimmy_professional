@@ -2,16 +2,21 @@ package jp.facades;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import jp.entidades.Cliente;
 import jp.entidades.Factura;
 import jp.entidades.Pago;
 import jp.entidades.PagoDetalle;
+import jp.entidades.PagoPublicidad;
 import jp.entidades.RelacionFactura;
+import jp.entidades.TipoPagoHelper;
 import jp.util.EstadoPago;
+import jp.util.TipoPagoAbono;
 
 @Stateless
 public class PagoFacade extends AbstractFacade<Pago> {
@@ -71,7 +76,6 @@ public class PagoFacade extends AbstractFacade<Pago> {
     }
 
     public List<PagoDetalle> getListPagoDetalleByPago(Pago pago) {
-
         List<PagoDetalle> listTMP;
         try {
             Query query1 = getEntityManager().createQuery("SELECT pd FROM PagoDetalle pd WHERE pd.pago.id = :pago");
@@ -81,7 +85,6 @@ public class PagoFacade extends AbstractFacade<Pago> {
             listTMP = null;
         }
         return listTMP;
-
     }
 
     public RelacionFactura getRelacionFacturaByPago(Pago selected) {
@@ -115,6 +118,85 @@ public class PagoFacade extends AbstractFacade<Pago> {
         } catch (NoResultException e) {
         }
         return null;
+    }
+
+    /**
+     *
+     * @param clienteTMP (Cliente del cual se desea obtener las publicidad o la
+     * comision)
+     * @param limit (Resultados a devolver)
+     * @param tipo (0 - Publicidad, 1 - Comision)
+     * @return
+     */
+    public List<TipoPagoHelper> getPublicidadOrComisionByCliente(Cliente clienteTMP, int limit, int tipo) {
+        List<TipoPagoHelper> tipoPagoHelpersTMP = new ArrayList<>();
+        try {
+            String consulta = "SELECT pd FROM PagoDetalle pd WHERE pd.pago.factura.cliente.id = :cliente AND pd.tipo = :tipoAbono ORDER BY pd.id DESC";
+            Query query = getEntityManager().createQuery(consulta);
+            query.setParameter("cliente", clienteTMP.getId());
+
+            int tipoAbono;
+            if (tipo == 0) {
+                tipoAbono = TipoPagoAbono.PUBLICIDAD.getValor();
+            } else {
+                tipoAbono = TipoPagoAbono.COMISION.getValor();
+            }
+           
+            query.setParameter("tipoAbono", tipoAbono);
+            query.setMaxResults(limit);
+
+            List<PagoDetalle> pagoDetalles = query.getResultList();
+
+            if (tipo == 0) {
+                for (PagoDetalle pd : pagoDetalles) {
+                    if (pd.getTipo() == TipoPagoAbono.PUBLICIDAD.getValor()) {
+                        try {
+                            Query query2 = getEntityManager().createQuery("SELECT pp FROM PagoPublicidad pp WHERE pp.pagoDetalle.id = :pagoDetalle");
+                            query2.setParameter("pagoDetalle", pd.getId());
+                            PagoPublicidad pp = (PagoPublicidad) query2.getSingleResult();
+
+                            boolean repetido = false;
+                            for (TipoPagoHelper tph : tipoPagoHelpersTMP) {
+                                if (Objects.equals(tph.getTipoPublicidad().getId(), pp.getTipo().getId())) {
+                                    pd.setValor(pd.getValor() + tph.getValor());
+                                    repetido = true;
+                                }
+                            }
+
+                            if (!repetido) {
+                                TipoPagoHelper tph = new TipoPagoHelper();
+                                tph.setId(tipoPagoHelpersTMP.size() + 1);
+                                tph.setIdObject(pd.getId());
+                                tph.setTipo(pd.getTipo());
+                                tph.setTipoPublicidad(pp.getTipo());
+                                tph.setValor(pd.getValor());
+                                tipoPagoHelpersTMP.add(tph);
+                            }
+
+                        } catch (Exception e) {
+                           e.printStackTrace();
+                        }
+                    }
+                }
+            } else {
+                int count = 0;
+                for (PagoDetalle pd : pagoDetalles) {
+                    if (pd.getTipo() == TipoPagoAbono.COMISION.getValor()) {
+                        TipoPagoHelper tph = new TipoPagoHelper();
+                        tph.setId(count++);
+                        tph.setIdObject(pd.getId());
+                        tph.setTipo(pd.getTipo());
+                        tph.setValor(pd.getValor());
+                        tipoPagoHelpersTMP.add(tph);
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            tipoPagoHelpersTMP = new ArrayList<>();
+        }
+        return tipoPagoHelpersTMP;
     }
 
 }

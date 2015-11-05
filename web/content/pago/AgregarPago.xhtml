@@ -30,7 +30,7 @@
                                 <p:autoComplete id="cliente" minQueryLength="3" panelStyle="width: 210px;" value="#{nuevaRelacionFacturaController.clienteTMP}" requiredMessage="Debes indicar un cliente para el Recibo"
                                                 itemValue="#{cliente}" completeMethod="#{nuevaRelacionFacturaController.llenarCliente}" effect="fade" converter="clienteconverter" emptyMessage="Ingrese un Cliente válido"
                                                 itemLabel="#{cliente.toString()}" var="cliente" required="true" converterMessage="Ingrese un Cliente válido" validatorMessage="Ingrese un Cliente válido">
-                                    <p:ajax event="itemSelect" listener="#{nuevaRelacionFacturaController.onItemSelecCliente}" update=":growl,display" />
+                                    <p:ajax event="itemSelect" listener="#{nuevaRelacionFacturaController.onItemSelecCliente}" update=":growl,display,button_publicidad" />
                                 </p:autoComplete>
                             </p:column>
                             <p:column>
@@ -39,7 +39,8 @@
                             <p:column>
                                 <p:selectOneMenu id="factura" value="#{nuevaRelacionFacturaController.pago.factura}" required="true" requiredMessage="Débe indicar la factura para el recibo"
                                                  converter="facturaConverter" style="width: 155px;">
-                                    <p:ajax update="buttonAgregar,total,pendiente,publicidad,comision,datalist,valor_pago" listener="#{nuevaRelacionFacturaController.changedFactura}"/>
+                                    <p:ajax update="buttonAgregar,total,pendiente
+                                            ,datalist,valor_pago" listener="#{nuevaRelacionFacturaController.changedFactura}"/>
                                     <f:selectItem itemLabel="Seleccione una factura" itemValue="#{null}" noSelectionOption="true" itemDisabled="true"/>
                                     <f:selectItems value="#{nuevaRelacionFacturaController.facturasTMP}" var="fac" itemLabel="#{fac.ordenPedido}" itemValue="#{fac}" />
                                 </p:selectOneMenu>
@@ -72,7 +73,7 @@
                             </p:column>
                             <p:column>
                                 <p:selectOneMenu style="width: 155px;" id="forma_pago" value="#{nuevaRelacionFacturaController.pago.formaPago}" required="true" requiredMessage="Débe indicar la forma de pago">
-                                    <p:ajax update="button_comision,button_publicidad,cheque,label_cheque,label_cuenta,cuenta,tipo_detalle_pago, display_detalle_pago, publicidad, label_publicidad, label_comision, comision, datalist" immediate="true" listener="#{nuevaRelacionFacturaController.changedFormaPago}"/>
+                                    <p:ajax update="button_publicidad,cheque,label_cheque,label_cuenta,cuenta,tipo_detalle_pago, display_detalle_pago, label_publicidad, datalist" immediate="true" listener="#{nuevaRelacionFacturaController.changedFormaPago}"/>
                                     <f:selectItems var="tipo" value="#{nuevaRelacionFacturaController.tiposPago}" itemLabel="#{nuevaRelacionFacturaController.getFormaPago(tipo.valor)}" itemValue="#{tipo.valor}" />
                                 </p:selectOneMenu>
                             </p:column>
@@ -82,7 +83,7 @@
                                 <!-- CUENTA -->
                                 <p:outputLabel id="label_cuenta" style="#{nuevaRelacionFacturaController.mostrarCuenta()}" value="No Cuenta:" for="cuenta" />
                                 <!-- PUBLICIDAD -->
-                                <p:outputLabel id="label_publicidad" style="#{nuevaRelacionFacturaController.mostrarContado()}" value="Publicidad:" for="publicidad" />
+                                <p:outputLabel id="label_publicidad" style="#{nuevaRelacionFacturaController.mostrarContado()}" value="" for="button_publicidad" />
                             </p:column>
                             <p:column>
                                 <!-- CHEQUE -->
@@ -92,17 +93,8 @@
                                     <f:selectItems var="cta" value="#{cuentaBancariaController.items}" itemLabel="#{cta.nombre} - #{cta.numeroCuenta}" itemValue="#{tipo.valor}" />
                                 </p:selectOneMenu>
                                 <!-- PUBLICIDAD -->
-                                <p:inputText value="#{nuevaRelacionFacturaController.valorPublicidad}" size="15" style="#{nuevaRelacionFacturaController.mostrarContado()}" id="publicidad" readonly="true"/>                             
-                                <p:commandButton process="publicidad" update=":PublicidadForm, :growl" id="button_publicidad" icon="ui-icon-newwin" style="margin-left: 2px; #{nuevaRelacionFacturaController.mostrarContado()}" actionListener="#{nuevaRelacionFacturaController.prepareList(true)}"/>
-                            </p:column>
-                            <p:column>
-                                <!-- COMISION -->
-                                <p:outputLabel id="label_comision" style="#{nuevaRelacionFacturaController.mostrarContado()}" value="Comision:" for="comision" />
-                            </p:column>
-                            <p:column>
-                                <!-- COMISION -->
-                                <p:inputText size="15" value="#{nuevaRelacionFacturaController.valorComision}" style="#{nuevaRelacionFacturaController.mostrarContado()}" readonly="true" id="comision"/> 
-                                <p:commandButton process="comision" update=":ComisionForm, :growl" id="button_comision" icon="ui-icon-newwin" style="margin-left: 2px; #{nuevaRelacionFacturaController.mostrarContado()}" actionListener="#{nuevaRelacionFacturaController.prepareList(false)}"/>
+                                <!--<p:inputText value="{nuevaRelacionFacturaController.valorPublicidad}" size="15" style="{nuevaRelacionFacturaController.mostrarContado()}" id="publicidad" readonly="true"/>-->                             
+                                <p:commandButton value="Publicidad" process="label_publicidad" update=":PublicidadForm, :growl" id="button_publicidad" style="margin-left: 2px; width: 100%; #{nuevaRelacionFacturaController.mostrarContado()}" actionListener="#{nuevaRelacionFacturaController.prepareList()}" oncomplete="if (args &amp;&amp; !args.validationFailed) PF('PublicidadDialog').show()" disabled="#{nuevaRelacionFacturaController.clienteTMP == null}"/>
                             </p:column>
                         </p:row>
                         <p:row>
@@ -123,7 +115,7 @@
                                                 <p:outputLabel id="label_valor_detalle_pago" for="valor_detalle_pago" value="Valor:" />
                                             </p:column>
                                             <p:column>
-                                                <pe:inputNumber id="valor_detalle_pago" value="#{nuevaRelacionFacturaController.tipoPagoHelper.valor}" />
+                                                <pe:inputNumber styleClass="input-number-pago" id="valor_detalle_pago" value="#{nuevaRelacionFacturaController.tipoPagoHelper.valor}" />
                                             </p:column>
                                             <c:if test="#{nuevaRelacionFacturaController.requiereTipoPublicidad()}">
                                                 <p:column>
@@ -137,7 +129,7 @@
                                                 </p:column>
                                             </c:if>
                                             <p:column>
-                                                <p:commandButton id="buttonAgregar" icon="ui-icon-plus" value="Agregar" actionListener="#{nuevaRelacionFacturaController.addPagoDetalle()}" update=":growl,datalist,display_detalle_pago,pendiente,valor_pago,publicidad,comision" process="display_detalle_pago" disabled="#{nuevaRelacionFacturaController.desabilitarButton}"/>
+                                                <p:commandButton id="buttonAgregar" icon="ui-icon-plus" value="Agregar" actionListener="#{nuevaRelacionFacturaController.addPagoDetalle()}" update=":growl,datalist,display_detalle_pago,pendiente,valor_pago" process="display_detalle_pago" disabled="#{nuevaRelacionFacturaController.desabilitarButton}"/>
                                             </p:column>
                                         </p:row>
                                     </p:panelGrid>
@@ -174,7 +166,7 @@
                                             <f:facet name="header">
                                                 <h:outputText value="Quitar"/>
                                             </f:facet>
-                                            <p:commandButton icon="ui-icon-closethick" update="datalist,:PagoCreateForm:publicidad,:PagoCreateForm:comision,:PagoCreateForm:valor_pago,:PagoCreateForm:pendiente" process="datalist" actionListener="#{nuevaRelacionFacturaController.removePagoDetalle(item)}"/>
+                                            <p:commandButton icon="ui-icon-closethick" update="datalist,:PagoCreateForm:valor_pago,:PagoCreateForm:pendiente" process="datalist" actionListener="#{nuevaRelacionFacturaController.removePagoDetalle(item)}"/>
                                         </p:column>
                                     </p:dataTable>
 

@@ -319,3 +319,7 @@ table.center {
 .panelgridnomina{
     margin:0 auto 10px auto;
 }
+
+.input-number-pago input{
+    width: 100px;
+}
