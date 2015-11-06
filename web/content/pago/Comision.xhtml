@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/content/index.xhtml">
+
+
+        <ui:define name="title">
+            <h:outputText value="Comisión"></h:outputText>
+        </ui:define>
+
+        <ui:define name="body">
+            <h:form id="ComisionListForm">
+                <p:dataTable styleClass="tabla" id="datalist" value="#{pagoDetalleController.comisiones}" var="item"
+                             selectionMode="single" selection="#{pagoDetalleController.selected}"
+                             paginator="true"
+                             rowKey="#{item.id}"
+                             rows="10"
+                             rowsPerPageTemplate="10,20,30,40,50"
+                             emptyMessage="#{bundle.EmptyTable}"
+                             paginatorPosition="bottom"
+                             widgetVar="tablaComision"
+                             >
+
+                    <f:facet name="header">
+                        <div id="titulo">
+                            Comision
+                        </div>
+                        <div id="acciones">
+                            <p:commandLink styleClass="exporter" title="Exportar a Excel" ajax="false" disabled="#{!pagoDetalleController.disableC()}">
+                                <i class="fa fa-file-excel-o"></i>
+                                <p:dataExporter type="xls" target="datalist" fileName="Listado_Comision" postProcessor="#{pagoDetalleController.postProcessXLS2}"/>
+                            </p:commandLink>
+                        </div>
+                    </f:facet>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Fecha"/>
+                        </f:facet>
+                        <h:outputText value="#{item.pago.fecha}">
+                            <f:convertDateTime pattern="dd-MMM-yyyy"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column filterBy="#{item.pago.factura.empleado}" filterMatchMode="contains" filterStyle="width: 90%" headerText="Empleado">                       
+                        <h:outputText value="#{item.pago.factura.empleado}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Valor"/>
+                        </f:facet>
+                        <h:outputText value="#{item.valor}">
+                            <f:convertNumber type="currency"  currencySymbol="$"/>
+                        </h:outputText>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

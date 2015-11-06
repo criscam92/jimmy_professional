@@ -11,12 +11,8 @@ import javax.faces.bean.*;
 import javax.faces.component.*;
 import javax.faces.context.*;
 import javax.faces.convert.*;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.hssf.util.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 
 @ManagedBean(name = "pagoDetalleController")
@@ -27,6 +23,7 @@ public class PagoDetalleController implements Serializable {
     private PagoDetalleFacade ejbFacade;
 
     private List<DetallePagoHelper> items = null;
+    private List<DetallePagoHelper> comisiones = null;
     private DetallePagoHelper selected;
 
     public PagoDetalleController() {
@@ -54,6 +51,13 @@ public class PagoDetalleController implements Serializable {
             items = getFacade().getListPublicidad();
         }
         return items;
+    }
+
+    public List<DetallePagoHelper> getComisiones() {
+        if (comisiones == null || comisiones.isEmpty()) {
+            comisiones = getFacade().getListComisiones();
+        }
+        return comisiones;
     }
 
     public List<PagoDetalle> getItemsAvailableSelectMany() {
@@ -105,7 +109,15 @@ public class PagoDetalleController implements Serializable {
 
     }
 
+    public void postProcessXLS2(Object document) {
+        exportExcel(document, "Listado Comisión");
+    }
+
     public void postProcessXLS(Object document) {
+        exportExcel(document, "Listado Publicidad");
+    }
+
+    private void exportExcel(Object document, String title) {
         HSSFWorkbook wb = (HSSFWorkbook) document;
 
         HSSFSheet sheet = wb.getSheetAt(0);
@@ -124,7 +136,7 @@ public class PagoDetalleController implements Serializable {
 
         HSSFCell header = sheet.createRow(0).createCell(0);
         header.setCellStyle(cellStyle);
-        header.setCellValue("Listado de precios");
+        header.setCellValue(title);
 
         for (int i = 0; i < sheet.getPhysicalNumberOfRows(); i++) {
             HSSFRow row = sheet.getRow(i);
@@ -137,11 +149,13 @@ public class PagoDetalleController implements Serializable {
 
         CellRangeAddress range = new CellRangeAddress(0, 0, 0, numberOfCells - 1);
         sheet.addMergedRegion(range);
-
     }
 
     public boolean disable() {
-        return items != null && !items.isEmpty();
+        return (items != null && !items.isEmpty());
     }
 
+    public boolean disableC() {
+        return (comisiones != null && !comisiones.isEmpty());
+    }
 }
