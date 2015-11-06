@@ -31,6 +31,12 @@
                             Publicidad
                         </div>
                         <div id="acciones">
+                            <p:outputLabel for="fechaInicial" value="Fecha Inicial:"/>
+                            <p:calendar id="fechaInicial" showOn="button" navigator="true" pattern="dd/MMM/yyyy" value="#{pagoDetalleController.fechaIni}"/>
+                            <p:outputLabel for="fechaFinal" value="Fecha Final:"/>
+                            <p:calendar id="fechaFinal" showOn="button" navigator="true" pattern="dd/MMM/yyyy" value="#{pagoDetalleController.fechaFin}"/>
+                            <p:commandButton title="Filtrar Resultados" icon="ui-icon-search" action="#{pagoDetalleController.redirect()}" update="@form"/>
+
                             <p:commandLink styleClass="exporter" title="Exportar a Excel" ajax="false" disabled="#{!pagoDetalleController.disable()}">
                                 <i class="fa fa-file-excel-o"></i>
                                 <p:dataExporter type="xls" target="datalist" fileName="Listado_Publicidad" postProcessor="#{pagoDetalleController.postProcessXLS}"/>

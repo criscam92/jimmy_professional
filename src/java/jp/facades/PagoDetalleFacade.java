@@ -1,6 +1,8 @@
 package jp.facades;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import jp.entidades.PagoDetalle;
 import javax.ejb.Stateless;
@@ -10,8 +12,8 @@ import javax.persistence.Query;
 import jp.entidades.DetallePagoHelper;
 import jp.entidades.Pago;
 import jp.entidades.PagoPublicidad;
-import jp.entidades.TipoPagoHelper;
 import jp.util.TipoPagoAbono;
+import sun.java2d.pipe.SpanShapeRenderer;
 
 @Stateless
 public class PagoDetalleFacade extends AbstractFacade<PagoDetalle> {
@@ -40,11 +42,21 @@ public class PagoDetalleFacade extends AbstractFacade<PagoDetalle> {
         return pagoDetalles;
     }
 
-    public List<DetallePagoHelper> getListPublicidad() {
+    public List<DetallePagoHelper> getListPublicidad(String fechaIni, String fechaFin) {
         List<DetallePagoHelper> list = new ArrayList<>();
         try {
-            Query query = getEntityManager().createQuery("SELECT pd FROM PagoDetalle pd WHERE pd.tipo = :tipo");
+
+            String sql = "SELECT pd FROM PagoDetalle pd WHERE pd.tipo = :tipo";
+            if ((fechaIni != null && !fechaIni.trim().isEmpty()) && (fechaFin != null && !fechaFin.trim().isEmpty())) {
+                sql += " AND pd.pago.fecha BETWEEN :fecInicio AND :fecFin";
+            }
+
+            Query query = getEntityManager().createQuery(sql);
             query.setParameter("tipo", TipoPagoAbono.PUBLICIDAD.getValor());
+            if ((fechaIni != null && !fechaIni.trim().isEmpty()) && (fechaFin != null && !fechaFin.trim().isEmpty())) {
+                query.setParameter("fecInicio", new SimpleDateFormat("dd/MMM/yyyy").parse(fechaIni));
+                query.setParameter("fecFin", new SimpleDateFormat("dd/MMM/yyyy").parse(fechaFin));
+            }
             List<PagoDetalle> pds = query.getResultList();
 
             for (PagoDetalle pd : pds) {
@@ -67,11 +79,21 @@ public class PagoDetalleFacade extends AbstractFacade<PagoDetalle> {
         return list;
     }
 
-    public List<DetallePagoHelper> getListComisiones() {
+    public List<DetallePagoHelper> getListComisiones(String fechaIni, String fechaFin) {
         List<DetallePagoHelper> list = new ArrayList<>();
         try {
-            Query query = getEntityManager().createQuery("SELECT pd FROM PagoDetalle pd WHERE pd.tipo = :tipo");
+
+            String sql = "SELECT pd FROM PagoDetalle pd WHERE pd.tipo = :tipo";
+            if ((fechaIni != null && !fechaIni.trim().isEmpty()) && (fechaFin != null && !fechaFin.trim().isEmpty())) {
+                sql += " AND pd.pago.fecha BETWEEN :fecInicio AND :fecFin";
+            }
+
+            Query query = getEntityManager().createQuery(sql);
             query.setParameter("tipo", TipoPagoAbono.COMISION.getValor());
+            if ((fechaIni != null && !fechaIni.trim().isEmpty()) && (fechaFin != null && !fechaFin.trim().isEmpty())) {
+                query.setParameter("fecInicio", new SimpleDateFormat("dd/MMM/yyyy").parse(fechaIni));
+                query.setParameter("fecFin", new SimpleDateFormat("dd/MMM/yyyy").parse(fechaFin));
+            }
             List<PagoDetalle> pds = query.getResultList();
 
             for (PagoDetalle pd : pds) {

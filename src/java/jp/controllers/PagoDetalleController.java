@@ -1,22 +1,34 @@
 package jp.controllers;
 
-import jp.entidades.*;
-import jp.facades.*;
-
-import java.io.*;
-import java.util.*;
-import java.util.logging.*;
-import javax.ejb.*;
-import javax.faces.bean.*;
-import javax.faces.component.*;
-import javax.faces.context.*;
-import javax.faces.convert.*;
-import org.apache.poi.hssf.usermodel.*;
-import org.apache.poi.hssf.util.*;
+import java.io.IOException;
+import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
+import javax.faces.convert.Converter;
+import javax.faces.convert.FacesConverter;
+import jp.entidades.DetallePagoHelper;
+import jp.entidades.PagoDetalle;
+import jp.facades.PagoDetalleFacade;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.util.CellRangeAddress;
 
 @ManagedBean(name = "pagoDetalleController")
-@SessionScoped
+@ViewScoped
 public class PagoDetalleController implements Serializable {
 
     @EJB
@@ -25,8 +37,34 @@ public class PagoDetalleController implements Serializable {
     private List<DetallePagoHelper> items = null;
     private List<DetallePagoHelper> comisiones = null;
     private DetallePagoHelper selected;
+    private Date fechaIni, fechaFin;
+    private Date fechaIniC, fechaFinC;
+    private SimpleDateFormat formatoDelTexto;
 
     public PagoDetalleController() {
+//        fechaIni = new Date();
+//        fechaFin = new Date();
+//        fechaIniC = new Date();
+//        fechaFinC = new Date();
+    }
+    
+    @PostConstruct    
+    public void init() {
+        formatoDelTexto = new SimpleDateFormat("dd/MMM/yyyy");
+
+        Map<String, String> requestMap = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+        FacesContext.getCurrentInstance().getExternalContext().getSession(true);
+        String date1 = requestMap.get("date1");
+        String date2 = requestMap.get("date2");
+        String date3 = requestMap.get("date3");
+        String date4 = requestMap.get("date4");
+
+        if ((date1 != null && !date1.trim().isEmpty()) && (date2 != null && !date2.trim().isEmpty())) {
+            items = getFacade().getListPublicidad(date1, date2);
+        } else if ((date3 != null && !date3.trim().isEmpty()) && (date4 != null && !date4.trim().isEmpty())) {
+            comisiones = getFacade().getListComisiones(date3, date4);
+        }
+
     }
 
     public DetallePagoHelper getSelected() {
@@ -46,16 +84,48 @@ public class PagoDetalleController implements Serializable {
         return selected;
     }
 
+    public Date getFechaIni() {
+        return fechaIni;
+    }
+
+    public void setFechaIni(Date fechaIni) {
+        this.fechaIni = fechaIni;
+    }
+
+    public Date getFechaIniC() {
+        return fechaIniC;
+    }
+
+    public void setFechaIniC(Date fechaIniC) {
+        this.fechaIniC = fechaIniC;
+    }
+
+    public Date getFechaFinC() {
+        return fechaFinC;
+    }
+
+    public void setFechaFinC(Date fechaFinC) {
+        this.fechaFinC = fechaFinC;
+    }
+
+    public Date getFechaFin() {
+        return fechaFin;
+    }
+
+    public void setFechaFin(Date fechaFin) {
+        this.fechaFin = fechaFin;
+    }
+
     public List<DetallePagoHelper> getItems() {
-        if (items == null || items.isEmpty()) {
-            items = getFacade().getListPublicidad();
+        if (items == null) {
+            items = getFacade().getListPublicidad(null, null);
         }
         return items;
     }
 
     public List<DetallePagoHelper> getComisiones() {
         if (comisiones == null || comisiones.isEmpty()) {
-            comisiones = getFacade().getListComisiones();
+            comisiones = getFacade().getListComisiones(null, null);
         }
         return comisiones;
     }
@@ -157,5 +227,27 @@ public class PagoDetalleController implements Serializable {
 
     public boolean disableC() {
         return (comisiones != null && !comisiones.isEmpty());
+    }
+
+    public void redirect() throws IOException {
+        String url = "?";
+        if (fechaIni != null) {
+            url += "&date1=" + formatoDelTexto.format(fechaIni);
+        }
+        if (fechaFin != null) {
+            url += "&date2=" + formatoDelTexto.format(fechaFin);
+        }
+        FacesContext.getCurrentInstance().getExternalContext().redirect(url);
+    }
+
+    public void redirect2() throws IOException {
+        String url = "?";
+        if (fechaIniC != null) {
+            url += "&date3=" + formatoDelTexto.format(fechaIniC);
+        }
+        if (fechaFinC != null) {
+            url += "&date4=" + formatoDelTexto.format(fechaFinC);
+        }
+        FacesContext.getCurrentInstance().getExternalContext().redirect(url);
     }
 }
