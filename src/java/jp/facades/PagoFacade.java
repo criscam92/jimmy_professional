@@ -143,7 +143,10 @@ public class PagoFacade extends AbstractFacade<Pago> {
             }
            
             query.setParameter("tipoAbono", tipoAbono);
-            query.setMaxResults(limit);
+            
+            if (limit > 0) {    
+                query.setMaxResults(limit);
+            }         
 
             List<PagoDetalle> pagoDetalles = query.getResultList();
 

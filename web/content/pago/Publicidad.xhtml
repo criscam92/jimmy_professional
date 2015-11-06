@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/content/index.xhtml">
+
+
+        <ui:define name="title">
+            <h:outputText value="Publicidad"></h:outputText>
+        </ui:define>
+
+        <ui:define name="body">
+            <h:form id="PublicidadListForm">
+                <p:dataTable styleClass="tabla" id="datalist" value="#{pagoDetalleController.items}" var="item"
+                             selectionMode="single" selection="#{pagoDetalleController.selected}"
+                             paginator="true"
+                             rowKey="#{item.id}"
+                             rows="10"
+                             rowsPerPageTemplate="10,20,30,40,50"
+                             emptyMessage="#{bundle.EmptyTable}"
+                             paginatorPosition="bottom"
+                             widgetVar="tablaPublicidad"
+                             >
+
+                    <f:facet name="header">
+                        <div id="titulo">
+                            Publicidad
+                        </div>
+                        <div id="acciones">
+                            <p:commandLink styleClass="exporter" title="Exportar a Excel" ajax="false" disabled="#{!pagoDetalleController.disable()}">
+                                <i class="fa fa-file-excel-o"></i>
+                                <p:dataExporter type="xls" target="datalist" fileName="Listado_Publicidad" postProcessor="#{pagoDetalleController.postProcessXLS}"/>
+                            </p:commandLink>
+                        </div>
+                    </f:facet>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Fecha"/>
+                        </f:facet>
+                        <h:outputText value="#{item.pago.fecha}">
+                            <f:convertDateTime pattern="dd-MMM-yyyy"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column filterBy="#{item.pago.factura.empleado}" filterMatchMode="contains" filterStyle="width: 90%" headerText="Empleado">                       
+                        <h:outputText value="#{item.pago.factura.empleado}"/>
+                    </p:column>
+                    <p:column filterBy="#{item.pago.factura.cliente}" filterMatchMode="contains" filterStyle="width: 90%" headerText="Cliente">
+                        <h:outputText value="#{item.pago.factura.cliente}"/>
+                    </p:column>
+                    <p:column filterBy="#{item.tipoPublicidad}" headerText="Tipo" filterMatchMode="exact">
+                        <f:facet name="filter">
+                            <p:selectOneMenu onchange="PF('tablaPublicidad').filter()">
+                                <f:selectItem itemLabel="#{bundle.All}" itemValue="#{null}" noSelectionOption="true" />
+                                <f:selectItems value="#{tipoPublicidadController.itemsAvailableSelectOne}" />
+                            </p:selectOneMenu>
+                        </f:facet>
+                        <h:outputText value="#{item.tipoPublicidad.detalle}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Valor"/>
+                        </f:facet>
+                        <h:outputText value="#{item.valor}">
+                            <f:convertNumber type="currency"  currencySymbol="$"/>
+                        </h:outputText>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

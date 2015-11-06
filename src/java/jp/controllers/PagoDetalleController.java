@@ -1,112 +1,59 @@
 package jp.controllers;
 
-import jp.entidades.PagoDetalle;
-import jp.util.JsfUtil;
-import jp.util.JsfUtil.PersistAction;
-import jp.facades.PagoDetalleFacade;
+import jp.entidades.*;
+import jp.facades.*;
 
-import java.io.Serializable;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.ejb.EJB;
-import javax.ejb.EJBException;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
-import javax.faces.convert.Converter;
-import javax.faces.convert.FacesConverter;
+import java.io.*;
+import java.util.*;
+import java.util.logging.*;
+import javax.ejb.*;
+import javax.faces.bean.*;
+import javax.faces.component.*;
+import javax.faces.context.*;
+import javax.faces.convert.*;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.util.CellRangeAddress;
 
 @ManagedBean(name = "pagoDetalleController")
 @SessionScoped
 public class PagoDetalleController implements Serializable {
 
     @EJB
-    private jp.facades.PagoDetalleFacade ejbFacade;
-    private List<PagoDetalle> items = null;
-    private PagoDetalle selected;
+    private PagoDetalleFacade ejbFacade;
+
+    private List<DetallePagoHelper> items = null;
+    private DetallePagoHelper selected;
 
     public PagoDetalleController() {
     }
 
-    public PagoDetalle getSelected() {
+    public DetallePagoHelper getSelected() {
         return selected;
     }
 
-    public void setSelected(PagoDetalle selected) {
+    public void setSelected(DetallePagoHelper selected) {
         this.selected = selected;
-    }
-
-    protected void setEmbeddableKeys() {
-    }
-
-    protected void initializeEmbeddableKey() {
     }
 
     private PagoDetalleFacade getFacade() {
         return ejbFacade;
     }
 
-    public PagoDetalle prepareCreate() {
-        selected = new PagoDetalle();
-        initializeEmbeddableKey();
+    public DetallePagoHelper prepareCreate() {
+        selected = new DetallePagoHelper();
         return selected;
     }
 
-    public void create() {
-        persist(PersistAction.CREATE, ResourceBundle.getBundle("/Bundle").getString("PagoDetalleCreated"));
-        if (!JsfUtil.isValidationFailed()) {
-            items = null;    // Invalidate list of items to trigger re-query.
-        }
-    }
-
-    public void update() {
-        persist(PersistAction.UPDATE, ResourceBundle.getBundle("/Bundle").getString("PagoDetalleUpdated"));
-    }
-
-    public void destroy() {
-        persist(PersistAction.DELETE, ResourceBundle.getBundle("/Bundle").getString("PagoDetalleDeleted"));
-        if (!JsfUtil.isValidationFailed()) {
-            selected = null; // Remove selection
-            items = null;    // Invalidate list of items to trigger re-query.
-        }
-    }
-
-    public List<PagoDetalle> getItems() {
-        if (items == null) {
-            items = getFacade().findAll();
+    public List<DetallePagoHelper> getItems() {
+        if (items == null || items.isEmpty()) {
+            items = getFacade().getListPublicidad();
         }
         return items;
-    }
-
-    private void persist(PersistAction persistAction, String successMessage) {
-        if (selected != null) {
-            setEmbeddableKeys();
-            try {
-                if (persistAction != PersistAction.DELETE) {
-                    getFacade().edit(selected);
-                } else {
-                    getFacade().remove(selected);
-                }
-                JsfUtil.addSuccessMessage(successMessage);
-            } catch (EJBException ex) {
-                String msg = "";
-                Throwable cause = ex.getCause();
-                if (cause != null) {
-                    msg = cause.getLocalizedMessage();
-                }
-                if (msg.length() > 0) {
-                    JsfUtil.addErrorMessage(msg);
-                } else {
-                    JsfUtil.addErrorMessage(ex, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
-                }
-            } catch (Exception ex) {
-                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
-                JsfUtil.addErrorMessage(ex, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
-            }
-        }
     }
 
     public List<PagoDetalle> getItemsAvailableSelectMany() {
@@ -130,13 +77,13 @@ public class PagoDetalleController implements Serializable {
             return controller.getFacade().find(getKey(value));
         }
 
-        java.lang.Long getKey(String value) {
-            java.lang.Long key;
+        Long getKey(String value) {
+            Long key;
             key = Long.valueOf(value);
             return key;
         }
 
-        String getStringKey(java.lang.Long value) {
+        String getStringKey(Long value) {
             StringBuilder sb = new StringBuilder();
             sb.append(value);
             return sb.toString();
@@ -156,6 +103,45 @@ public class PagoDetalleController implements Serializable {
             }
         }
 
+    }
+
+    public void postProcessXLS(Object document) {
+        HSSFWorkbook wb = (HSSFWorkbook) document;
+
+        HSSFSheet sheet = wb.getSheetAt(0);
+
+        int rows = sheet.getLastRowNum();
+
+        int numberOfCells = sheet.getRow(0).getPhysicalNumberOfCells();
+
+        sheet.shiftRows(0, rows, 1);
+
+        HSSFCellStyle cellStyle = wb.createCellStyle();
+        cellStyle.setFillForegroundColor(HSSFColor.GREY_25_PERCENT.index);
+        cellStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+        cellStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+        cellStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+
+        HSSFCell header = sheet.createRow(0).createCell(0);
+        header.setCellStyle(cellStyle);
+        header.setCellValue("Listado de precios");
+
+        for (int i = 0; i < sheet.getPhysicalNumberOfRows(); i++) {
+            HSSFRow row = sheet.getRow(i);
+            row.setHeightInPoints(25);
+        }
+
+        for (short i = 0; i < numberOfCells; i++) {
+            sheet.autoSizeColumn(i);
+        }
+
+        CellRangeAddress range = new CellRangeAddress(0, 0, 0, numberOfCells - 1);
+        sheet.addMergedRegion(range);
+
+    }
+
+    public boolean disable() {
+        return items != null && !items.isEmpty();
     }
 
 }
