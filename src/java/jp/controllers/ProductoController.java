@@ -60,7 +60,7 @@ public class ProductoController implements Serializable {
     }
 
     @PostConstruct
-    private void init() {
+    public void init() {
         tipoLista = ProductoFacade.TIPO_PRECIO.LOCALES;
     }
 

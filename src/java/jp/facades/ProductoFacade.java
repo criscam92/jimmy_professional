@@ -1,5 +1,7 @@
 package jp.facades;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -10,9 +12,10 @@ import jp.entidades.DespachoFacturaProducto;
 import jp.entidades.DevolucionProducto;
 import jp.entidades.Factura;
 import jp.entidades.FacturaProducto;
+import jp.entidades.FacturaPromocion;
 import jp.entidades.IngresoProducto;
 import jp.entidades.Producto;
-import jp.entidades.Promocion;
+import jp.entidades.ProductoHelper2;
 import jp.entidades.PromocionProducto;
 import jp.entidades.SalidaProducto;
 import jp.entidades.VisitaProducto;
@@ -132,40 +135,98 @@ public class ProductoFacade extends AbstractFacade<Producto> {
             query.setParameter("estado", EstadoFactura.REALIZADA.getValor());
 
             cantidad = (Long) query.getSingleResult();
-            
-            cantidad = cantidad==null?0:cantidad;
+
+            cantidad = cantidad == null ? 0 : cantidad;
 
             query = em.createQuery("SELECT p FROM PromocionProducto p WHERE p.producto.id = :producto");
             query.setParameter("producto", producto.getId());
             List<PromocionProducto> promociones = query.getResultList();
 
-                for (PromocionProducto promocionProducto : promociones) {
-                    
-                    try {
-
-                        query = em.createQuery("SELECT SUM(p.unidadesBonificacion) FROM FacturaPromocion p WHERE p.promocion.id = :promocion AND p.factura.estado = :estado");
-                        query.setParameter("promocion", promocionProducto.getPromocion().getId());
-                        query.setParameter("estado", EstadoFactura.REALIZADA.getValor());
-
-                        Long cantidadPromocion = (Long) query.getSingleResult();
-                        if (cantidadPromocion == null) {
-                            cantidadPromocion = 0l;
-                        }
-                        
-                        cantidad += (cantidadPromocion * promocionProducto.getCantidad());
-                        
-                    } catch (Exception e) {
-                        e.printStackTrace();
+            for (PromocionProducto promocionProducto : promociones) {
+                try {
+                    query = em.createQuery("SELECT SUM(p.unidadesBonificacion) FROM FacturaPromocion p WHERE p.promocion.id = :promocion AND p.factura.estado = :estado");
+                    query.setParameter("promocion", promocionProducto.getPromocion().getId());
+                    query.setParameter("estado", EstadoFactura.REALIZADA.getValor());
+                    Long cantidadPromocion = (Long) query.getSingleResult();
+                    if (cantidadPromocion == null) {
+                        cantidadPromocion = 0l;
                     }
-
+                    cantidad += (cantidadPromocion * promocionProducto.getCantidad());
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-
+            }
             return cantidad;
 
         } catch (Exception e) {
             e.printStackTrace();
         }
         return cantidad;
+    }
+
+    public List<ProductoHelper2> getProductosHelper2(Date fechaIni, Date fechaFin) {
+        List<ProductoHelper2> list = new ArrayList<>();
+        try {
+            Query query1 = getEntityManager().createQuery("SELECT p FROM Producto p");
+            List<Producto> productos = query1.getResultList();
+
+            for (Producto p : productos) {
+                int cantBonificaciones = 0, cantVenta = 0;
+                double valBonificacion = 0, valVenta = 0;
+                Query query2 = getEntityManager().createQuery("SELECT fp FROM FacturaProducto fp WHERE fp.producto.id = :producto AND fp.factura.estado = :estado AND fp.factura.fecha BETWEEN :fecInicio AND :fecFin");
+                query2.setParameter("producto", p.getId());
+                query2.setParameter("estado", EstadoFactura.REALIZADA.getValor());
+                query2.setParameter("fecInicio", fechaIni);
+                query2.setParameter("fecFin", fechaFin);
+                List<FacturaProducto> facturaProductos = query2.getResultList();
+
+                for (FacturaProducto fp : facturaProductos) {
+                    cantBonificaciones += fp.getUnidadesBonificacion();
+                    cantVenta += fp.getUnidadesVenta();
+
+                    if (fp.getFactura().getDolar()) {
+                        valBonificacion += (cantBonificaciones) * (p.getValorVentaUsd() * fp.getFactura().getDolarActual());
+                        valVenta += (cantVenta) * (p.getValorVentaUsd() * fp.getFactura().getDolarActual());
+                    } else {
+                        valBonificacion += (cantBonificaciones) * (p.getValorVenta());
+                        valVenta += (cantVenta) * (p.getValorVenta());
+                    }
+                }
+
+                Query query3 = getEntityManager().createQuery("SELECT p FROM PromocionProducto p WHERE p.producto.id = :producto");
+                query3.setParameter("producto", p.getId());
+                List<PromocionProducto> promocionProductos = query3.getResultList();
+
+                for (PromocionProducto pp : promocionProductos) {
+                    Query query4 = getEntityManager().createQuery("SELECT fp FROM FacturaPromocion fp WHERE fp.promocion.id = :promocion AND fp.factura.estado = :estado AND fp.factura.fecha BETWEEN :fecInicio AND :fecFin");
+                    query4.setParameter("promocion", pp.getPromocion().getId());
+                    query4.setParameter("estado", EstadoFactura.REALIZADA.getValor());
+                    query4.setParameter("fecInicio", fechaIni);
+                    query4.setParameter("fecFin", fechaFin);
+                    List<FacturaPromocion> facturaPromociones = query4.getResultList();
+
+                    for (FacturaPromocion fp : facturaPromociones) {
+                        cantBonificaciones += fp.getUnidadesBonificacion() * pp.getCantidad();
+                        cantVenta += fp.getUnidadesVenta() * pp.getCantidad();
+
+                        if (fp.getFactura().getDolar()) {
+                            valBonificacion += (cantBonificaciones) * (p.getValorVentaUsd() * fp.getFactura().getDolarActual());
+                            valVenta += (cantVenta) * (p.getValorVentaUsd() * fp.getFactura().getDolarActual());
+                        } else {
+                            valBonificacion += (cantBonificaciones) * (p.getValorVenta());
+                            valVenta += (cantVenta) * (p.getValorVenta());
+                        }
+                    }
+                }
+                if (cantBonificaciones > 0 && cantVenta > 0) {
+                    list.add(new ProductoHelper2(p.getId(), p, cantBonificaciones, valBonificacion, cantVenta, valVenta));
+                }
+            }
+        } catch (Exception e) {
+            list = new ArrayList<>();
+            e.printStackTrace();
+        }
+        return list;
     }
 
 }

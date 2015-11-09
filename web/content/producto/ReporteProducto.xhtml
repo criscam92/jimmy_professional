@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/content/index.xhtml">
+
+        <ui:define name="title">
+            <h:outputText value="Reporte Producto"/>
+        </ui:define>
+
+        <ui:define name="body">
+            <h:form id="ProductoListForm">
+                <p:dataTable styleClass="tabla" id="datalist" value="#{productoControllerHelper.items}" var="item"
+                             selectionMode="single" selection="#{productoControllerHelper.selected}"
+                             paginator="true"
+                             rowKey="#{item.id}"
+                             rows="10"
+                             rowsPerPageTemplate="10,20,30,40,50"
+                             emptyMessage="#{bundle.EmptyTable}"
+                             paginatorPosition="bottom"
+                             >
+
+                    <f:facet name="header">
+                        <div id="titulo">
+                            Reporte Productos
+                        </div>
+                        <div id="acciones">
+                            <p:outputLabel for="fechaInicial" value="Fecha Inicial:"/>
+                            <p:calendar id="fechaInicial" showOn="button" navigator="true" pattern="dd/MMM/yyyy" value="#{productoControllerHelper.fechaIni}"/>
+                            <p:outputLabel for="fechaFinal" value="Fecha Final:"/>
+                            <p:calendar id="fechaFinal" showOn="button" navigator="true" pattern="dd/MMM/yyyy" value="#{productoControllerHelper.fechaFin}"/>
+                            <p:commandButton title="Filtrar Resultados" icon="ui-icon-search" action="#{productoControllerHelper.redirect()}" update="@form"/>
+                            
+                            <p:commandLink styleClass="exporter" title="Exportar a Excel" ajax="false">
+                                <i class="fa fa-file-excel-o"></i>
+                                <p:dataExporter type="xls" target="datalist" fileName="Reporte_Producto" postProcessor="#{productoControllerHelper.postProcessXLS}"/>
+                            </p:commandLink>
+                        </div>
+                    </f:facet>
+                    <p:column headerText="#{bundle.ListProductoTitle_codigo}" filterBy="#{item.producto.codigo}" filterMatchMode="contains" style="text-align: center; width: 120px;">
+                        <h:outputText value="#{item.producto.codigo}" styleClass="num-orden"/>
+                    </p:column>
+                    <p:column filterBy="#{item.producto.nombre}" filterMatchMode="contains" headerText="#{bundle.ListProductoTitle_nombre}">
+                        <h:outputText value="#{item.producto.nombre}"/>
+                    </p:column>
+                    <p:column style="text-align: center; width: 90px;">
+                        <f:facet name="header">
+                            <h:outputText value="Unidades Bonificaciones"/>
+                        </f:facet>
+                        <h:outputText value="#{item.cantBonificacion}"/>
+                    </p:column>
+                    <p:column style="width: 120px;">
+                        <f:facet name="header">
+                            <h:outputText value="Valor"/>
+                        </f:facet>
+                        <h:outputText style="float: right;" value="#{item.valBonificacion}" >
+                            <f:convertNumber type="currency"  currencySymbol="$"/>
+                        </h:outputText>
+                    </p:column>
+
+                    <p:column style="text-align: center; width: 90px;">
+                        <f:facet name="header">
+                            <h:outputText value="Unidades Venta"/>
+                        </f:facet>                        
+                        <h:outputText value="#{item.cantVenta}"/>
+                    </p:column>
+                    <p:column style="width: 120px;">
+                        <f:facet name="header">
+                            <h:outputText value="Valor Venta"/>
+                        </f:facet>
+                        <h:outputText style="float: right;" value="#{item.valVenta}">
+                            <f:convertNumber type="currency"  currencySymbol="$"/>
+                        </h:outputText>
+                    </p:column>
+
+                    <p:column style="width: 120px;">
+                        <f:facet name="header">
+                            <h:outputText value="Valor Total"/>
+                        </f:facet>
+                        <h:outputText style="float: right; font-weight: bold;" value="#{item.valBonificacion + item.valVenta}">
+                            <f:convertNumber type="currency"  currencySymbol="$"/>
+                        </h:outputText>
+                    </p:column>
+
+                    <p:columnGroup type="footer">
+                        <p:row style="font-weight: bold;">
+                            <p:column colspan="2" style="text-align:right" footerText="Totales:" />
+                            <p:column footerText="#{productoControllerHelper.getCantidadTotal(1)}" />
+                            <p:column style="text-align:right">
+                                <f:facet name="footer">
+                                    <h:outputText value="#{productoControllerHelper.getValorTotal(1)}">
+                                        <f:convertNumber type="currency"  currencySymbol="$"/>
+                                    </h:outputText>
+                                </f:facet>     
+                            </p:column>
+                            <p:column footerText="#{productoControllerHelper.getCantidadTotal(2)}" />
+                            <p:column style="text-align:right">
+                                <f:facet name="footer">
+                                    <h:outputText value="#{productoControllerHelper.getValorTotal(2)}">
+                                        <f:convertNumber type="currency"  currencySymbol="$"/>
+                                    </h:outputText>
+                                </f:facet>     
+                            </p:column>
+                            <p:column style="text-align:right">
+                                <f:facet name="footer">
+                                    <h:outputText value="#{productoControllerHelper.getValorTotal(3)}">
+                                        <f:convertNumber type="currency"  currencySymbol="$"/>
+                                    </h:outputText>
+                                </f:facet>                                
+                            </p:column>
+                        </p:row>
+                    </p:columnGroup>
+
+                </p:dataTable>
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>
