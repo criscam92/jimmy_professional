@@ -2,7 +2,6 @@ package jp.facades;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import jp.entidades.PagoDetalle;
 import javax.ejb.Stateless;
@@ -13,7 +12,6 @@ import jp.entidades.DetallePagoHelper;
 import jp.entidades.Pago;
 import jp.entidades.PagoPublicidad;
 import jp.util.TipoPagoAbono;
-import sun.java2d.pipe.SpanShapeRenderer;
 
 @Stateless
 public class PagoDetalleFacade extends AbstractFacade<PagoDetalle> {

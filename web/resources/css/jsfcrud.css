@@ -323,3 +323,7 @@ table.center {
 .input-number-pago input{
     width: 100px;
 }
+
+.autocompleteMultiple .ui-autocomplete-multiple-container {
+    width: 150px;
+}

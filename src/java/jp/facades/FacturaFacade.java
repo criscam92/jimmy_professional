@@ -171,6 +171,7 @@ public class FacturaFacade extends AbstractFacade<Factura> {
             }
 
             facturasPendientesTMP = queryFactura.getResultList();
+
             facturasPendientesTMP = getFacturasPendientesPago(facturasPendientesTMP);
             return facturasPendientesTMP;
         } catch (NoResultException e) {
@@ -188,7 +189,7 @@ public class FacturaFacade extends AbstractFacade<Factura> {
      */
     public List<Factura> getFacturasPendientesPago(List<Factura> fs) {
         List<Factura> facturasFinal = new ArrayList<>();
-
+        
         try {
             for (Factura factura : fs) {
                 factura = updatePagoPendiente(factura);
@@ -221,7 +222,7 @@ public class FacturaFacade extends AbstractFacade<Factura> {
             Query q2 = em.createQuery("SELECT SUM(f.totalPagar) FROM Factura f WHERE f.id = :f");
             q2.setParameter("f", factura.getId());
             Double totalFactura = (Double) q2.getSingleResult();
-
+            
             if (totalPago == null) {
                 factura.setSaldo(factura.getTotalPagar());
                 factura.setSaldoCancelado(0d);

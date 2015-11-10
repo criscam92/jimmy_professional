@@ -2,18 +2,18 @@ package jp.facades;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.ejb.EJB;
 import jp.entidades.ReciboCaja;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import jp.entidades.Concepto;
 import jp.util.CondicionConcepto;
 import jp.util.EstadoFactura;
-import jp.util.EstadoPago;
+import jp.util.TipoConcepto;
 
 @Stateless
 public class ReciboCajaFacade extends AbstractFacade<ReciboCaja> {
@@ -104,6 +104,34 @@ public class ReciboCajaFacade extends AbstractFacade<ReciboCaja> {
             reciboCajasTMP = new ArrayList<>();
         }
         return reciboCajasTMP;
+    }
+    
+    public List<ReciboCaja> getTransaccionesByTipoConceptos(Date fechaIni, Date fechaFin, TipoConcepto tipoConcepto, List<Concepto> conceptos){
+        List<ReciboCaja> reciboCajasTMP;
+        try {
+            String query = "SELECT rc FROM ReciboCaja rc WHERE rc.fecha BETWEEN :fecha1 AND :fecha2";
+            if (tipoConcepto != null) {
+                query += " AND rc.concepto.tipo = :tipo";
+            }
+            if (conceptos != null) {
+                query += " AND rc.concepto IN :concep";
+            }
+            Query q = em.createQuery(query);
+            q.setParameter("fecha1", fechaIni);
+            q.setParameter("fecha2", fechaFin);
+            if (tipoConcepto != null) {
+                q.setParameter("tipo", tipoConcepto.getValor());
+            }
+            if (conceptos != null) {
+                q.setParameter("concep", conceptos);
+            }
+            reciboCajasTMP = q.getResultList();
+            return reciboCajasTMP;
+            
+        } catch (NoResultException e) {
+            return new ArrayList<>();
+        }
+        
     }
 
 }
