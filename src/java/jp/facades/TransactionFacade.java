@@ -185,6 +185,8 @@ public class TransactionFacade {
             parametroTMP.setContrasenhaCorreo(p.getContrasenhaCorreo());
             parametroTMP.setUrlBase(p.getUrlBase());
             parametroTMP.setConceptoNomina(p.getConceptoNomina());
+            parametroTMP.setConceptoComision(p.getConceptoComision());
+            parametroTMP.setConceptoPublicidad(p.getConceptoPublicidad());
 
             em.merge(parametroTMP);
             userTransaction.commit();

@@ -122,8 +122,8 @@
                     <div class="ui-grid ui-grid-responsive">
                         <div class="ui-grid-row">
 
-                            <div class="ui-grid-col-4">
-                                <p:panel header="Recargo productos para venta al público" styleClass="tabla_centrada">
+                            <div class="ui-grid-col-6">
+                                <p:panel header="Recargo productos para venta al público" styleClass="tabla_centrada" style="width: 430px">
                                     <p:panelGrid columns="2">
 
                                         <p:outputLabel value="Porcentaje Recargo Venta al Público" for="recargo_venta_publico"/>
@@ -135,8 +135,8 @@
                                 </p:panel>
                             </div>
 
-                            <div class="ui-grid-col-4">
-                                <p:panel header="Valor Actual Dolar" styleClass="tabla_centrada">
+                            <div class="ui-grid-col-6">
+                                <p:panel header="Valor Actual Dolar" styleClass="tabla_centrada" style="width: 430px" >
                                     <p:panelGrid columns="2">
 
                                         <p:outputLabel value="Valor Dolar" for="valor_dolar"/>
@@ -145,24 +145,36 @@
                                     </p:panelGrid>
                                 </p:panel>
                             </div>
-                            
-                            <div class="ui-grid-col-4">
-                                <p:panel header="Concepto de Nómina" styleClass="tabla_centrada">
-                                    <p:panelGrid columns="2">
-
-                                        <p:outputLabel value="Concepto" for="concepto"/>
-                                        <p:autoComplete id="concepto" value="#{parametrosController.selected.conceptoNomina}" converter="conceptoconverter"
-                                                        required="true" minQueryLength="3" itemLabel="#{concepto.toString()}" var="concepto" itemValue="#{concepto}"
-                                                        requiredMessage="#{bundle.CreateConceptoRequiredMessage}" completeMethod="#{conceptoController.llenarConceptos}"/>
-
-                                    </p:panelGrid>
-                                </p:panel>
-                            </div>
-
                         </div>
                     </div>
+                    
+                    <div class="ui-grid-row">
+                        <div class="ui-grid-col-12">
+                            <p:panel header="Parametrización de Conceptos" styleClass="tabla_centrada">
+                                <p:panelGrid columns="6">
+
+                                    <p:outputLabel value="Concepto Nomina" for="conceptoNomina"/>
+                                    <p:autoComplete id="conceptoNomina" value="#{parametrosController.selected.conceptoNomina}" converter="conceptoconverter"
+                                                    required="true" minQueryLength="3" itemLabel="#{concepto.toString()}" var="concepto" itemValue="#{concepto}"
+                                                    requiredMessage="#{bundle.CreateConceptoNominaRequiredMessage}" completeMethod="#{conceptoController.llenarConceptos}"/>
+
+                                    <p:outputLabel value="Concepto Comisión" for="conceptoComision"/>
+                                    <p:autoComplete id="conceptoComision" value="#{parametrosController.selected.conceptoComision}" converter="conceptoconverter"
+                                                    required="true" minQueryLength="3" itemLabel="#{concepto.toString()}" var="concepto" itemValue="#{concepto}"
+                                                    requiredMessage="#{bundle.CreateConceptoComisionRequiredMessage}" completeMethod="#{conceptoController.llenarConceptos}"/>
+
+                                    <p:outputLabel value="Concepto Publicidad" for="conceptoPublicidad"/>
+                                    <p:autoComplete id="conceptoPublicidad" value="#{parametrosController.selected.conceptoPublicidad}" converter="conceptoconverter"
+                                                    required="true" minQueryLength="3" itemLabel="#{concepto.toString()}" var="concepto" itemValue="#{concepto}"
+                                                    requiredMessage="#{bundle.CreateConceptoPublicidadRequiredMessage}" completeMethod="#{conceptoController.llenarConceptos}"/>
+
+                                </p:panelGrid>
+                            </p:panel>
+                        </div>
+                    </div>
+
                     <p:commandButton icon="ui-icon-disk" value="#{bundle.Save}" action="#{parametrosController.crearRecargo()}"
-                                     update="display,formRecargo,:growl"/>
+                                     update="display,formRecargo,:growl" styleClass="tabla_centrada"/>
                 </h:panelGroup>
             </h:form>
         </ui:define>
