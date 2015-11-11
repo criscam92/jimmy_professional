@@ -63,7 +63,7 @@
                     </p:panelGrid>
 
                     <f:facet name="footer">
-                        <p:commandButton value="Registrar" icon="ui-icon-disk" actionListener="#{reciboCajaController.create()}" update=":tablaRecibosCaja,@form,:growl,formReciboCaja,panelReciboCaja"/>
+                        <p:commandButton value="Registrar" icon="ui-icon-disk" actionListener="#{reciboCajaController.create(false)}" update=":tablaRecibosCaja,@form,:growl,formReciboCaja,panelReciboCaja"/>
                         <div class="cajamenor">
 
                             <p:outputLabel value="Base:" />

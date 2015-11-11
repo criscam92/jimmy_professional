@@ -16,6 +16,7 @@ import jp.entidades.PagoPublicidad;
 import jp.entidades.RelacionFactura;
 import jp.entidades.TipoPagoHelper;
 import jp.util.EstadoPago;
+import jp.util.TipoPago;
 import jp.util.TipoPagoAbono;
 
 @Stateless
@@ -200,6 +201,19 @@ public class PagoFacade extends AbstractFacade<Pago> {
             tipoPagoHelpersTMP = new ArrayList<>();
         }
         return tipoPagoHelpersTMP;
+    }
+    
+    public Double getTotalPagosEfectivo(){
+        Double total;
+        try {
+            Query query = em.createQuery("SELECT SUM(p.valorTotal) FROM Pago p WHERE p.estado = :est AND p.formaPago = :tipoPago");
+            query.setParameter("est", EstadoPago.REALIZADO.getValor());
+            query.setParameter("tipoPago", TipoPago.CONTADO.getValor());
+            total = (Double) query.getSingleResult();
+        } catch (NoResultException e) {
+            total = 0d;
+        }
+        return total;
     }
 
 }

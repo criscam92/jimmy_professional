@@ -25,6 +25,7 @@ import javax.faces.convert.FacesConverter;
 import jp.entidades.ReciboCaja;
 import jp.entidades.Tercero;
 import jp.facades.CajaFacade;
+import jp.facades.PagoFacade;
 import jp.facades.ReciboCajaFacade;
 import jp.facades.TerceroFacade;
 import jp.facades.TransactionFacade;
@@ -54,6 +55,8 @@ public class ReciboCajaController implements Serializable {
     private CajaFacade cajaFacade;
     @EJB
     private TerceroFacade terceroFacade;
+    @EJB
+    private PagoFacade pagoFacade;
     private List<ReciboCaja> items = null;
     private List<ReciboCaja> itemsCxcCxp = null;
     private ReciboCaja selected, nuevoRecibo, selectedAPagar, selectedView;
@@ -210,6 +213,10 @@ public class ReciboCajaController implements Serializable {
 
     public TerceroFacade getTerceroFacade() {
         return terceroFacade;
+    }
+
+    public PagoFacade getPagoFacade() {
+        return pagoFacade;
     }
 
     public TransactionFacade getTransactionFacade() {
@@ -386,6 +393,7 @@ public class ReciboCajaController implements Serializable {
 
         for (ReciboCaja transaccion : transacciones) {
             if (transaccion.getEstado() == EstadoFactura.REALIZADA.getValor()) {
+                System.out.println("transaccion: "+transaccion.getId());
                 if (transaccion.getConcepto().getTipo2() == TipoConcepto.INGRESO.getValor()) {
                     ingresos += transaccion.getValor();
                 } else if (transaccion.getConcepto().getTipo2() == TipoConcepto.EGRESO.getValor()) {
@@ -393,9 +401,10 @@ public class ReciboCajaController implements Serializable {
                 }
             }
         }
-
+        
+        ingresos += getPagoFacade().getTotalPagosEfectivo().longValue();
+        System.out.println("\ningresos=> "+ingresos+"\negresos=> "+egresos);
         totalRecibos = ingresos - egresos;
-
     }
 
     @FacesConverter(forClass = ReciboCaja.class)
@@ -454,7 +463,7 @@ public class ReciboCajaController implements Serializable {
     }
 
     public boolean disableAnular() {
-        boolean result = !(usuarioActual.getUsuario().isAdmin() && selected != null && (selected.getEstado() == EstadoFactura.PENDIENTE.getValor()));
+        boolean result = !(usuarioActual.getUsuario().isAdmin() && selected != null && (selected.getEstado() == EstadoFactura.PENDIENTE.getValor() || selected.getEstado() == EstadoFactura.REALIZADA.getValor()));
         return result;
     }
 

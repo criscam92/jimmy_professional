@@ -72,6 +72,7 @@ public enum CondicionConcepto {
         List<Integer> condicionConceptos = new ArrayList<>();
         condicionConceptos.add(CXC.getValor());
         condicionConceptos.add(CXP.getValor());
+        condicionConceptos.add(NINGUNO.getValor());
         return condicionConceptos;
     }
 }

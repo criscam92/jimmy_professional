@@ -34,12 +34,12 @@ public class ReciboCajaFacade extends AbstractFacade<ReciboCaja> {
 
     public List<ReciboCaja> getRecibosCaja(Boolean isCxcCxp) {
         List<ReciboCaja> reciboCajas;
-        String transaccion = "";
-        if (isCxcCxp != null && isCxcCxp) {
-            transaccion = " AND rc.transaccion = NULL";
-        }
-        String consulta = "SELECT rc FROM ReciboCaja rc WHERE rc.fecha >= :fec AND rc.concepto.cxccxp IN :condicion " + transaccion + " ORDER BY rc.fecha DESC";
-
+//        String transaccion = "";
+//        if (isCxcCxp != null && isCxcCxp) {
+//            transaccion = " AND rc.transaccion IS NULL";
+//        }
+        String consulta = "SELECT rc FROM ReciboCaja rc WHERE rc.fecha >= :fec AND rc.concepto.cxccxp IN :condicion AND rc.transaccion IS NULL ORDER BY rc.fecha DESC";
+        System.out.println("=========QUERY========= "+consulta);
         try {
             Query q = em.createQuery(consulta);
             q.setParameter("fec", cajaFacade.getCaja().getFechaActualizacion());
