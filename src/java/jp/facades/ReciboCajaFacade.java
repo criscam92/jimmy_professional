@@ -128,7 +128,5 @@ public class ReciboCajaFacade extends AbstractFacade<ReciboCaja> {
         } catch (NoResultException e) {
             return new ArrayList<>();
         }
-
     }
-
 }

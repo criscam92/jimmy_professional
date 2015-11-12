@@ -343,7 +343,7 @@ public class PagoController implements Serializable {
         List<PagoDetalle> pds = getPagoDetalleFacade().getPagoDetallesByPago(selected);
         for (PagoDetalle pd : pds) {
             PagoPublicidad pp = getPagoPublicidadFacade().getPagoPublicidadByPagoDetalle(pd);
-            getTipoPagoHelpers().add(new TipoPagoHelper(count++, pd.getId(), pd.getTipo(), pd.getValor(), pp != null ? pp.getTipo() : null));
+            getTipoPagoHelpers().add(new TipoPagoHelper(count++, pd.getId(), pd.getTipo(), pd.getValor(), pp != null ? pp.getTipo() : null, pd.getTransaccion()));
         }
     }
 
@@ -511,7 +511,7 @@ public class PagoController implements Serializable {
             setTipoPagoHelper(new TipoPagoHelper());
             tipoPagoHelpersTMP = new ArrayList<>();
             for (TipoPagoHelper tph : tipoPagoHelpersCrear) {
-                tipoPagoHelpersTMP.add(new TipoPagoHelper(tph.getId(), null, tph.getTipo(), tph.getValor(), tph.getTipoPublicidad()));
+                tipoPagoHelpersTMP.add(new TipoPagoHelper(tph.getId(), null, tph.getTipo(), tph.getValor(), tph.getTipoPublicidad(), null));
             }
 
             addPagosAnteriores();
@@ -604,7 +604,7 @@ public class PagoController implements Serializable {
             for (TipoPagoHelper tph : tipoPagoHelpersEditar) {
                 if (tph.getIdObject().equals(pagoDetalle.getId())) {
                     add = false;
-                    getTipoPagoHelpersTMP().add(new TipoPagoHelper(tph.getId(), tph.getIdObject(), tph.getTipo(), tph.getValor(), (tph.getTipoPublicidad() == null ? null : tph.getTipoPublicidad())));
+                    getTipoPagoHelpersTMP().add(new TipoPagoHelper(tph.getId(), tph.getIdObject(), tph.getTipo(), tph.getValor(), (tph.getTipoPublicidad() == null ? null : tph.getTipoPublicidad()), tph.getReciboCaja()));
                     break;
                 }
             }
@@ -634,7 +634,7 @@ public class PagoController implements Serializable {
         }
 
         if (!repetido) {
-            getTipoPagoHelpersTMP().add(new TipoPagoHelper(count++, null, pagoDetalle.getTipo(), pagoDetalle.getValor(), (pagoPublicidad == null ? null : pagoPublicidad.getTipo())));
+            getTipoPagoHelpersTMP().add(new TipoPagoHelper(count++, null, pagoDetalle.getTipo(), pagoDetalle.getValor(), (pagoPublicidad == null ? null : pagoPublicidad.getTipo()), null));
         }
     }
 

@@ -8,18 +8,20 @@ public class TipoPagoHelper {
     private int id;
     private Long idObject;
     private int tipo;
-    private double valor;
+    private double valor;    
     private TipoPublicidad tipoPublicidad;
+    private ReciboCaja reciboCaja;
 
     public TipoPagoHelper() {
     }
 
-    public TipoPagoHelper(int id, Long idObject, int tipo, double valor, TipoPublicidad tipoPublicidad) {
+    public TipoPagoHelper(int id, Long idObject, int tipo, double valor, TipoPublicidad tipoPublicidad, ReciboCaja reciboCaja) {
         this.id = id;
         this.idObject = idObject;
         this.tipo = tipo;
         this.valor = valor;
         this.tipoPublicidad = tipoPublicidad;
+        this.reciboCaja = reciboCaja;
     }
 
     public int getId() {
@@ -60,6 +62,14 @@ public class TipoPagoHelper {
 
     public void setTipoPublicidad(TipoPublicidad tipoPublicidad) {
         this.tipoPublicidad = tipoPublicidad;
+    }
+
+    public ReciboCaja getReciboCaja() {
+        return reciboCaja;
+    }
+
+    public void setReciboCaja(ReciboCaja reciboCaja) {
+        this.reciboCaja = reciboCaja;
     }
 
 }

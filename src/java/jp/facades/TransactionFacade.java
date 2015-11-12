@@ -958,30 +958,30 @@ public class TransactionFacade {
                 for (TipoPagoHelper tph : ph.getTipoPagoHelpers()) {
 
                     ReciboCaja rc = new ReciboCaja();
-                    if (tph.getTipo() == TipoPagoAbono.COMISION.getValor() || tph.getTipo() == TipoPagoAbono.PUBLICIDAD.getValor()) {
-                        rc.setCaja(getCajaFacade().getCaja());
+                    rc.setCaja(getCajaFacade().getCaja());
 
-                        Concepto c = tph.getTipo() == TipoPagoAbono.COMISION.getValor()
-                                ? getParametrosFacade().getParametros().getConceptoComision()
-                                : getParametrosFacade().getParametros().getConceptoPublicidad();
+                    Concepto c = tph.getTipo() == TipoPagoAbono.ABONO.getValor()
+                            ? getParametrosFacade().getParametros().getConceptoAbono()
+                            : (tph.getTipo() == TipoPagoAbono.COMISION.getValor()
+                                    ? getParametrosFacade().getParametros().getConceptoComision()
+                                    : getParametrosFacade().getParametros().getConceptoPublicidad());
 
-                        rc.setConcepto(c);
-                        rc.setEstado(EstadoFactura.REALIZADA.getValor());
-                        rc.setFecha(p.getFecha());
+                    rc.setConcepto(c);
+                    rc.setEstado(EstadoFactura.REALIZADA.getValor());
+                    rc.setFecha(p.getFecha());
 
-                        Tercero t = getTerceroFacade().existeDocumento(p.getFactura().getCliente().getDocumento());
-                        if (t == null) {
-                            t = getTerceroFacade().createTerceroByCliente(p.getFactura().getCliente());
-                        }
-
-                        rc.setTercero(t);
-                        rc.setUsuario(p.getUsuario());
-
-                        double valor = p.getFactura().getDolar() ? (tph.getValor() * p.getFactura().getDolarActual()) : (tph.getValor());
-                        System.out.println("Double: " + valor);
-                        rc.setValor(valor);
-                        getEntityManager().persist(rc);
+                    Tercero t = getTerceroFacade().existeDocumento(p.getFactura().getCliente().getDocumento());
+                    if (t == null) {
+                        t = getTerceroFacade().createTerceroByCliente(p.getFactura().getCliente());
                     }
+
+                    rc.setTercero(t);
+                    rc.setUsuario(p.getUsuario());
+
+                    double valor = p.getFactura().getDolar() ? (tph.getValor() * p.getFactura().getDolarActual()) : (tph.getValor());
+                    System.out.println("Double: " + valor);
+                    rc.setValor(valor);
+                    getEntityManager().persist(rc);
 
                     PagoDetalle pd = new PagoDetalle();
                     pd.setPago(p);
@@ -1207,30 +1207,31 @@ public class TransactionFacade {
             for (TipoPagoHelper tph : tipoPagosCrear) {
 
                 ReciboCaja rc = new ReciboCaja();
-                if (tph.getTipo() == TipoPagoAbono.COMISION.getValor() || tph.getTipo() == TipoPagoAbono.PUBLICIDAD.getValor()) {
-                    rc.setCaja(getCajaFacade().getCaja());
 
-                    Concepto c = tph.getTipo() == TipoPagoAbono.COMISION.getValor()
-                            ? getParametrosFacade().getParametros().getConceptoComision()
-                            : getParametrosFacade().getParametros().getConceptoPublicidad();
+                rc.setCaja(getCajaFacade().getCaja());
 
-                    rc.setConcepto(c);
-                    rc.setEstado(EstadoFactura.REALIZADA.getValor());
-                    rc.setFecha(pagoTMP.getFecha());
+                Concepto c = tph.getTipo() == TipoPagoAbono.ABONO.getValor()
+                        ? getParametrosFacade().getParametros().getConceptoAbono()
+                        : (tph.getTipo() == TipoPagoAbono.COMISION.getValor()
+                                ? getParametrosFacade().getParametros().getConceptoComision()
+                                : getParametrosFacade().getParametros().getConceptoPublicidad());
 
-                    Tercero t = getTerceroFacade().existeDocumento(pagoTMP.getFactura().getCliente().getDocumento());
-                    if (t == null) {
-                        t = getTerceroFacade().createTerceroByCliente(pagoTMP.getFactura().getCliente());
-                    }
+                rc.setConcepto(c);
+                rc.setEstado(EstadoFactura.REALIZADA.getValor());
+                rc.setFecha(pagoTMP.getFecha());
 
-                    rc.setTercero(t);
-                    rc.setUsuario(pagoTMP.getUsuario());
-
-                    double valor = pagoTMP.getFactura().getDolar() ? (tph.getValor() * pagoTMP.getFactura().getDolarActual()) : (tph.getValor());
-                    System.out.println("Double: " + valor);
-                    rc.setValor(valor);
-                    getEntityManager().persist(rc);
+                Tercero t = getTerceroFacade().existeDocumento(pagoTMP.getFactura().getCliente().getDocumento());
+                if (t == null) {
+                    t = getTerceroFacade().createTerceroByCliente(pagoTMP.getFactura().getCliente());
                 }
+
+                rc.setTercero(t);
+                rc.setUsuario(pagoTMP.getUsuario());
+
+                double valor = pagoTMP.getFactura().getDolar() ? (tph.getValor() * pagoTMP.getFactura().getDolarActual()) : (tph.getValor());
+                System.out.println("Double: " + valor);
+                rc.setValor(valor);
+                getEntityManager().persist(rc);
 
                 PagoDetalle pd = new PagoDetalle();
                 pd.setPago(pagoTMP);
@@ -1250,6 +1251,32 @@ public class TransactionFacade {
             Query query = getEntityManager().createQuery("SELECT pp FROM PagoPublicidad pp WHERE pp.pagoDetalle.id = :pd");
 
             for (TipoPagoHelper tph : tipoPagosEditar) {
+
+                ReciboCaja rc = getEntityManager().find(ReciboCaja.class, tph.getReciboCaja().getId());
+
+                Concepto c = tph.getTipo() == TipoPagoAbono.ABONO.getValor()
+                        ? getParametrosFacade().getParametros().getConceptoAbono()
+                        : (tph.getTipo() == TipoPagoAbono.COMISION.getValor()
+                                ? getParametrosFacade().getParametros().getConceptoComision()
+                                : getParametrosFacade().getParametros().getConceptoPublicidad());
+
+                rc.setConcepto(c);
+                rc.setEstado(EstadoFactura.REALIZADA.getValor());
+                rc.setFecha(pagoTMP.getFecha());
+
+                Tercero t = getTerceroFacade().existeDocumento(pagoTMP.getFactura().getCliente().getDocumento());
+                if (t == null) {
+                    t = getTerceroFacade().createTerceroByCliente(pagoTMP.getFactura().getCliente());
+                }
+
+                rc.setTercero(t);
+                rc.setUsuario(pagoTMP.getUsuario());
+
+                double valor = pagoTMP.getFactura().getDolar() ? (tph.getValor() * pagoTMP.getFactura().getDolarActual()) : (tph.getValor());
+                System.out.println("Double: " + valor);
+                rc.setValor(valor);
+                getEntityManager().merge(rc);
+
                 PagoDetalle pd = getEntityManager().find(PagoDetalle.class, tph.getIdObject());
                 pd.setTipo(tph.getTipo());
                 pd.setValor(tph.getValor());
@@ -1265,6 +1292,9 @@ public class TransactionFacade {
 
             for (TipoPagoHelper tph : tipoPagosEliminar) {
                 PagoDetalle pd = getEntityManager().find(PagoDetalle.class, tph.getIdObject());
+
+                ReciboCaja rc = getEntityManager().find(ReciboCaja.class, tph.getReciboCaja().getId());
+                getEntityManager().remove(rc);
 
                 if (tph.getTipoPublicidad() != null) {
                     query.setParameter("pd", pd.getId());
