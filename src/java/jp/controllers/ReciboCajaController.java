@@ -25,7 +25,6 @@ import javax.faces.convert.FacesConverter;
 import jp.entidades.ReciboCaja;
 import jp.entidades.Tercero;
 import jp.facades.CajaFacade;
-import jp.facades.PagoFacade;
 import jp.facades.ReciboCajaFacade;
 import jp.facades.TerceroFacade;
 import jp.facades.TransactionFacade;
@@ -55,14 +54,12 @@ public class ReciboCajaController implements Serializable {
     private CajaFacade cajaFacade;
     @EJB
     private TerceroFacade terceroFacade;
-    @EJB
-    private PagoFacade pagoFacade;
     private List<ReciboCaja> items = null;
     private List<ReciboCaja> itemsCxcCxp = null;
     private ReciboCaja selected, nuevoRecibo, selectedAPagar, selectedView;
     private Tercero tercero;
-    private Long totalIngresos, totalEgresos, totalNeutros, totalRecibos;
-    private Long base, ingresos, egresos;
+    private double totalIngresos, totalEgresos, totalNeutros, totalRecibos;
+    private double base, ingresos, egresos;
     private SimpleDateFormat formatoDelTexto;
     private Date fechaIni, fechaFin;
     private DecimalFormat formatter;
@@ -79,7 +76,7 @@ public class ReciboCajaController implements Serializable {
     }
 
     @PostConstruct
-    private void init() {
+    public void init() {
         nuevoRecibo = prepareCreate();
         selectedAPagar = new ReciboCaja();
         selectedView = new ReciboCaja();
@@ -139,7 +136,7 @@ public class ReciboCajaController implements Serializable {
         return formatter.format(totalEgresos);
     }
 
-    public void setTotalEgresos(Long totalEgresos) {
+    public void setTotalEgresos(double totalEgresos) {
         this.totalEgresos = totalEgresos;
     }
 
@@ -147,7 +144,7 @@ public class ReciboCajaController implements Serializable {
         return formatter.format(totalNeutros);
     }
 
-    public void setTotalNeutros(Long totalNeutros) {
+    public void setTotalNeutros(double totalNeutros) {
         this.totalNeutros = totalNeutros;
     }
 
@@ -155,7 +152,7 @@ public class ReciboCajaController implements Serializable {
         return formatter.format(totalIngresos);
     }
 
-    public void setTotalIngresos(Long totalIngresos) {
+    public void setTotalIngresos(double totalIngresos) {
         this.totalIngresos = totalIngresos;
     }
 
@@ -163,7 +160,7 @@ public class ReciboCajaController implements Serializable {
         return formatter.format(totalRecibos);
     }
 
-    public void setTotalRecibos(Long totalRecibos) {
+    public void setTotalRecibos(double totalRecibos) {
         this.totalRecibos = totalRecibos;
     }
 
@@ -213,10 +210,6 @@ public class ReciboCajaController implements Serializable {
 
     public TerceroFacade getTerceroFacade() {
         return terceroFacade;
-    }
-
-    public PagoFacade getPagoFacade() {
-        return pagoFacade;
     }
 
     public TransactionFacade getTransactionFacade() {
@@ -393,7 +386,6 @@ public class ReciboCajaController implements Serializable {
 
         for (ReciboCaja transaccion : transacciones) {
             if (transaccion.getEstado() == EstadoFactura.REALIZADA.getValor()) {
-                System.out.println("transaccion: "+transaccion.getId());
                 if (transaccion.getConcepto().getTipo2() == TipoConcepto.INGRESO.getValor()) {
                     ingresos += transaccion.getValor();
                 } else if (transaccion.getConcepto().getTipo2() == TipoConcepto.EGRESO.getValor()) {
@@ -401,10 +393,9 @@ public class ReciboCajaController implements Serializable {
                 }
             }
         }
-        
-        ingresos += getPagoFacade().getTotalPagosEfectivo().longValue();
-        System.out.println("\ningresos=> "+ingresos+"\negresos=> "+egresos);
+
         totalRecibos = ingresos - egresos;
+
     }
 
     @FacesConverter(forClass = ReciboCaja.class)
@@ -463,38 +454,38 @@ public class ReciboCajaController implements Serializable {
     }
 
     public boolean disableAnular() {
-        boolean result = !(usuarioActual.getUsuario().isAdmin() && selected != null && (selected.getEstado() == EstadoFactura.PENDIENTE.getValor() || selected.getEstado() == EstadoFactura.REALIZADA.getValor()));
+        boolean result = !(usuarioActual.getUsuario().isAdmin() && selected != null && (selected.getEstado() == EstadoFactura.PENDIENTE.getValor()));
         return result;
     }
 
     public boolean disableVerPagos() {
         boolean tienePagosRealizados = getFacade().getPagosByCxcCxp(selectedView, true).isEmpty();
-        boolean result = !(usuarioActual.getUsuario().isAdmin() && selected != null && (selected.getEstado() != EstadoFactura.ANULADO.getValor()) 
+        boolean result = !(usuarioActual.getUsuario().isAdmin() && selected != null && (selected.getEstado() != EstadoFactura.ANULADO.getValor())
                 && tienePagosRealizados);
         return result;
     }
 
-    public Long getIngreso(ReciboCaja reciboCaja) {
+    public double getIngreso(ReciboCaja reciboCaja) {
         if (reciboCaja.getConcepto().getTipo2() == TipoConcepto.INGRESO.getValor()) {
             return reciboCaja.getValor();
         } else {
-            return 0l;
+            return 0.0;
         }
     }
 
-    public Long getEgreso(ReciboCaja reciboCaja) {
+    public double getEgreso(ReciboCaja reciboCaja) {
         if (reciboCaja.getConcepto().getTipo2() == TipoConcepto.EGRESO.getValor()) {
             return reciboCaja.getValor();
         } else {
-            return 0l;
+            return 0.0;
         }
     }
 
-    public Long getNeutral(ReciboCaja reciboCaja) {
+    public double getNeutral(ReciboCaja reciboCaja) {
         if (reciboCaja.getConcepto().getTipo2() == TipoConcepto.NEUTRAL.getValor()) {
             return reciboCaja.getValor();
         } else {
-            return 0l;
+            return 0.0;
         }
     }
 
@@ -632,18 +623,18 @@ public class ReciboCajaController implements Serializable {
         }
     }
 
-    public Long getValorPendienteCxcCxp(ReciboCaja reciboCaja) {
+    public Double getValorPendienteCxcCxp(ReciboCaja reciboCaja) {
         return getFacade().getValorPendienteCxcCxp(reciboCaja);
     }
 
     public void prepareReciboAPagar() {
         this.selectedAPagar = selected;
     }
-    
+
     public void prepareSelectedView() {
         this.selectedView = selected;
     }
-    
+
     public List<ReciboCaja> getPagosByCxcCxp(ReciboCaja reciboCaja, Integer estado) {
         return getFacade().getPagosByCxcCxp(reciboCaja, null);
     }
@@ -662,15 +653,13 @@ public class ReciboCajaController implements Serializable {
     }
 
     public String getEstadoCxcCxp(ReciboCaja reciboCaja) {
-        Long valorPendiente = getFacade().getValorPendienteCxcCxp(reciboCaja);
+        double valorPendiente = getFacade().getValorPendienteCxcCxp(reciboCaja);
         if (valorPendiente == 0) {
             return EstadoFactura.CANCELADO.getDetalle();
+        } else if (reciboCaja.getEstado() == EstadoFactura.ANULADO.getValor()) {
+            return EstadoFactura.ANULADO.getDetalle();
         } else {
-            if (reciboCaja.getEstado() == EstadoFactura.ANULADO.getValor()) {
-                return EstadoFactura.ANULADO.getDetalle();
-            } else {
-                return EstadoFactura.PENDIENTE.getDetalle();
-            }
+            return EstadoFactura.PENDIENTE.getDetalle();
         }
     }
 }

@@ -33,6 +33,8 @@ public class PagoController implements Serializable {
     @EJB
     private PagoPublicidadFacade pagoPublicidadFacade;
     @EJB
+    private PagoFacade pagoFacade;
+    @EJB
     private ParametrosFacade parametrosFacade;
     //==========================================================================
 
@@ -64,6 +66,10 @@ public class PagoController implements Serializable {
         tipoPagoHelper = new TipoPagoHelper();
     }
     //==========================================================================
+
+    public PagoFacade getPagoFacade() {
+        return pagoFacade;
+    }
 
     public PagoFacade getFacade() {
         return facade;
@@ -191,6 +197,15 @@ public class PagoController implements Serializable {
 
     public void setDesabilitarButton(boolean desabilitarButton) {
         this.desabilitarButton = desabilitarButton;
+    }
+
+    public List<TipoPagoHelper> getTipoPagoHelpersPublicidad() {
+        System.out.println("Publicidad");
+        if (clienteTMP != null) {
+            System.out.println("El cliente existe");
+            return getPagoFacade().getPublicidadOrComisionByCliente(clienteTMP, 4, 0);
+        }
+        return new ArrayList<>();
     }
 
     @FacesConverter(forClass = Pago.class)
@@ -403,7 +418,7 @@ public class PagoController implements Serializable {
     public TipoPago[] getTiposPago() {
         return new TipoPago[]{TipoPago.CONTADO, TipoPago.CHEQUE, TipoPago.CONSIGNACION};
     }
-    
+
     public EstadoPago[] getEstadosPago() {
         return new EstadoPago[]{EstadoPago.ANULADO, EstadoPago.REALIZADO};
     }
@@ -611,12 +626,10 @@ public class PagoController implements Serializable {
                     tph.setValor(tph.getValor() + pagoDetalle.getValor());
                     repetido = true;
                 }
-            } else {
-                if (pagoDetalle.getTipo() == tph.getTipo()) {
-                    tph.setValor(tph.getValor() + pagoDetalle.getValor());
+            } else if (pagoDetalle.getTipo() == tph.getTipo()) {
+                tph.setValor(tph.getValor() + pagoDetalle.getValor());
 //                    System.out.println("HOLA 2");
-                    repetido = true;
-                }
+                repetido = true;
             }
         }
 
@@ -694,9 +707,16 @@ public class PagoController implements Serializable {
         selected = new Pago();
         RequestContext.getCurrentInstance().execute("PF('PagoCreateDialog').hide()");
     }
-    
+
     public int getEstadoAnulado() {
         return EstadoPago.ANULADO.getValor();
+    }
+
+    public void prepareList() {
+        if (clienteTMP != null && clienteTMP.getId() != null) {
+        } else {
+            JsfUtil.addErrorMessage("Debe seleccionar un cliente");
+        }
     }
 
 }

@@ -351,8 +351,10 @@ public class NuevaRelacionFacturaController implements Serializable {
 
     //==========================================================================    
     public List<TipoPagoHelper> getTipoPagoHelpersPublicidad() {
+        System.out.println("Publicidad");
         if (clienteTMP != null) {
-            return getPagoFacade().getPublicidadOrComisionByCliente(clienteTMP, 4, 0);
+            System.out.println("El cliente existe");
+            return getPagoFacade().getPublicidadOrComisionByCliente(clienteTMP, 4, 0);            
         }
         return new ArrayList<>();
     }
@@ -598,19 +600,8 @@ public class NuevaRelacionFacturaController implements Serializable {
         } else if (getTipoPagoHelper().getValor() > getPago().getFactura().getSaldo()) {
             JsfUtil.addErrorMessage("El valor supera el valor pendiente de la factura");
             isValid = false;
-        } //            if (getPago().getFormaPago() == TipoPago.CONTADO.getValor()) {
-        //                if (getTipoPagoHelper().getTipo() == TipoPagoAbono.PUBLICIDAD.getValor()) {
-        //                    if (getTipoPagoHelper().getValor() > getValorPublicidad()) {
-        //                        JsfUtil.addErrorMessage("El valor supera el valor permitido por publicidad");
-        //                        isValid = false;
-        //                    }
-        //                } else if (getTipoPagoHelper().getTipo() == TipoPagoAbono.COMISION.getValor()) {
-        //                    if (getTipoPagoHelper().getValor() > getValorComision()) {
-        //                        JsfUtil.addErrorMessage("El valor supera el valor permitido por comision");
-        //                        isValid = false;
-        //                    }
-        //                }
-        //            }
+        }
+        
         return isValid;
     }
 

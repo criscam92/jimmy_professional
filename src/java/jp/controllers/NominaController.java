@@ -33,7 +33,7 @@ public class NominaController implements Serializable {
     private List<ReciboCaja> reciboCajasCXC;
     private Tercero terceroTMP;
 
-    private long totalValorCXC;
+    private double totalValorCXC;
 
     public NominaController() {
         terceroTMP = new Tercero();
@@ -140,7 +140,7 @@ public class NominaController implements Serializable {
 
     private void getSaldoPendiente(List<ReciboCaja> reciboCajasCXCMTMP) {
         for (ReciboCaja reciboCajaTMP : reciboCajasCXCMTMP) {
-            long valor = 0;
+            double valor = 0;
             List<ReciboCaja> recibosCajaTMP = getNominaFacade().recibosCajaCxcByTransaccion(reciboCajaTMP);
             if (recibosCajaTMP != null && !recibosCajaTMP.isEmpty()) {
                 for (ReciboCaja rc : recibosCajaTMP) {
@@ -172,7 +172,7 @@ public class NominaController implements Serializable {
     public void crearConceptoCXC() {
         try {
 
-            long valor = 0L;
+            double valor = 0L;
             try {
                 valor = getReciboCajaCXC().getValor();
             } catch (Exception e) {
@@ -215,7 +215,7 @@ public class NominaController implements Serializable {
 
     public void guardar() {
 
-        long valor = 0L;
+        double valor = 0L;
         try {
             valor = reciboCaja.getValor();
         } catch (Exception e) {
@@ -245,7 +245,7 @@ public class NominaController implements Serializable {
         }
     }
 
-    public long totalAbonosCXC() {
+    public double totalAbonosCXC() {
         totalValorCXC = 0L;
         for (ReciboCaja rc : getReciboCajasCXC()) {
             totalValorCXC += rc.getValor();
@@ -253,7 +253,7 @@ public class NominaController implements Serializable {
         return totalValorCXC;
     }
 
-    public long valorTotal() {
+    public double valorTotal() {
         return (reciboCaja.getValor() - totalValorCXC);
     }
 

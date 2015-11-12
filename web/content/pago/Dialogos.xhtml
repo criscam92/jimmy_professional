@@ -45,12 +45,12 @@
             </h:form>
         </p:dialog>
 
-        <p:dialog id="ComisionDlg" widgetVar="ComisionDialog" modal="true" resizable="false" appendTo="@(body)" header="Comisión">
-            <h:form id="ComisionForm">
+        <p:dialog id="Publicidad2Dlg" widgetVar="Publicidad2Dialog" modal="true" resizable="false" appendTo="@(body)" header="Publicidad">
+            <h:form id="Publicidad2Form">
 
-                <p:dataTable styleClass="tabla" id="listComision" value="#{nuevaRelacionFacturaController.tipoPagoHelpersComision}" var="item"
-                             selectionMode="single" widgetVar="tblComision" paginator="true" style="text-align: center; width: 500px;"
-                             rows="10" rowsPerPageTemplate="10,20,30,40,50" emptyMessage="#{bundle.EmptyTable}" paginatorPosition="bottom"
+                <p:dataTable styleClass="tabla" id="listPublicidad2" value="#{pagoController.tipoPagoHelpersPublicidad}" var="item"
+                             selectionMode="single" widgetVar="tblPublicidad2" paginator="true" style="text-align: center; width: 500px;" rows="10"
+                             rowsPerPageTemplate="10,20,30,40,50" emptyMessage="#{bundle.EmptyTable}" paginatorPosition="bottom"
                              paginatorAlwaysVisible="false" rowKey="#{item.id}"
                              >
 
@@ -58,7 +58,7 @@
                         <f:facet name="header">
                             <h:outputText value="Tipo"/>
                         </f:facet>
-                        <h:outputText value="#{nuevaRelacionFacturaController.getTiposPagoAbono(item.tipo)}"/>
+                        <h:outputText value="#{pagoController.getTiposPagoAbono(item.tipo)}"/>
                     </p:column>
 
                     <p:column>
@@ -68,10 +68,17 @@
                         <h:outputText value="#{item.valor}"/>
                     </p:column>
 
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Tipo Publicidad"/>
+                        </f:facet>
+                        <h:outputText value="#{item.tipoPublicidad.detalle}"/>
+                    </p:column>
+
                 </p:dataTable>
                 <div class="botonesDialog">
-                    <p:commandButton type="button" value="#{bundle.Close}" onclick="PF('ComisionDialog').hide()"/>
-                </div>
+                    <p:commandButton type="button" value="#{bundle.Close}" onclick="PF('Publicidad2Dialog').hide()"/>
+                </div>                
             </h:form>
         </p:dialog>
     </ui:composition>

@@ -44,7 +44,7 @@ public class ReciboCaja implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Column(nullable = false)
-    private long valor;
+    private double valor;
     @Size(max = 100)
     @Column(length = 100)
     private String detalle;
@@ -68,7 +68,7 @@ public class ReciboCaja implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     private ReciboCaja transaccion;
     @Transient
-    long saldo;
+    double saldo;
 
     public ReciboCaja() {
         this.fecha = Calendar.getInstance().getTime();
@@ -101,11 +101,11 @@ public class ReciboCaja implements Serializable {
         this.fecha = fecha;
     }
 
-    public long getValor() {
+    public double getValor() {
         return valor;
     }
 
-    public void setValor(long valor) {
+    public void setValor(double valor) {
         this.valor = valor;
     }
 
@@ -165,11 +165,11 @@ public class ReciboCaja implements Serializable {
         this.transaccion = transaccion;
     }
 
-    public long getSaldo() {
+    public double getSaldo() {
         return saldo;
     }
 
-    public void setSaldo(long saldo) {
+    public void setSaldo(double saldo) {
         this.saldo = saldo;
     }
 
@@ -182,7 +182,6 @@ public class ReciboCaja implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof ReciboCaja)) {
             return false;
         }

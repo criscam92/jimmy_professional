@@ -28,6 +28,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "PagoDetalle.findByValor", query = "SELECT p FROM PagoDetalle p WHERE p.valor = :valor"),
     @NamedQuery(name = "PagoDetalle.findByTipo", query = "SELECT p FROM PagoDetalle p WHERE p.tipo = :tipo")})
 public class PagoDetalle implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,6 +46,9 @@ public class PagoDetalle implements Serializable {
     @JoinColumn(name = "pago", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Pago pago;
+    @JoinColumn(name = "transaccion", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private ReciboCaja transaccion;
     @OneToMany(mappedBy = "pagoDetalle", fetch = FetchType.LAZY)
     private List<PagoPublicidad> pagoPublicidadList;
 
@@ -93,6 +97,14 @@ public class PagoDetalle implements Serializable {
         this.pago = pago;
     }
 
+    public ReciboCaja getTransaccion() {
+        return transaccion;
+    }
+
+    public void setTransaccion(ReciboCaja transaccion) {
+        this.transaccion = transaccion;
+    }
+
     @XmlTransient
     public List<PagoPublicidad> getPagoPublicidadList() {
         return pagoPublicidadList;
@@ -116,15 +128,12 @@ public class PagoDetalle implements Serializable {
             return false;
         }
         PagoDetalle other = (PagoDetalle) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return !((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)));
     }
 
     @Override
     public String toString() {
         return "entidades.PagoDetalle[ id=" + id + " ]";
     }
-    
+
 }

@@ -34,25 +34,23 @@ public class ReciboCajaFacade extends AbstractFacade<ReciboCaja> {
 
     public List<ReciboCaja> getRecibosCaja(Boolean isCxcCxp) {
         List<ReciboCaja> reciboCajas;
-//        String transaccion = "";
-//        if (isCxcCxp != null && isCxcCxp) {
-//            transaccion = " AND rc.transaccion IS NULL";
-//        }
-        String consulta = "SELECT rc FROM ReciboCaja rc WHERE rc.fecha >= :fec AND rc.concepto.cxccxp IN :condicion AND rc.transaccion IS NULL ORDER BY rc.fecha DESC";
-        System.out.println("=========QUERY========= "+consulta);
+        String transaccion = "";
+        if (isCxcCxp != null && isCxcCxp) {
+            transaccion = " AND rc.transaccion = NULL";
+        }
+        String consulta = "SELECT rc FROM ReciboCaja rc WHERE rc.fecha >= :fec AND rc.concepto.cxccxp IN :condicion " + transaccion + " ORDER BY rc.fecha DESC";
+
         try {
             Query q = em.createQuery(consulta);
             q.setParameter("fec", cajaFacade.getCaja().getFechaActualizacion());
             if (isCxcCxp == null) {
                 q.setParameter("condicion", CondicionConcepto.getConceptos());
+            } else if (isCxcCxp) {
+                q.setParameter("condicion", CondicionConcepto.getConceptosCxCCxp());
             } else {
-                if (isCxcCxp) {
-                    q.setParameter("condicion", CondicionConcepto.getConceptosCxCCxp());
-                } else {
-                    List<Integer> condicionesConceptos = new ArrayList<>();
-                    condicionesConceptos.add(CondicionConcepto.NINGUNO.getValor());
-                    q.setParameter("condicion", condicionesConceptos);
-                }
+                List<Integer> condicionesConceptos = new ArrayList<>();
+                condicionesConceptos.add(CondicionConcepto.NINGUNO.getValor());
+                q.setParameter("condicion", condicionesConceptos);
             }
             reciboCajas = q.getResultList();
         } catch (Exception e) {
@@ -62,13 +60,13 @@ public class ReciboCajaFacade extends AbstractFacade<ReciboCaja> {
         return reciboCajas;
     }
 
-    public Long getValorPendienteCxcCxp(ReciboCaja reciboCaja) {
-        Long pendiente = reciboCaja.getValor();
+    public Double getValorPendienteCxcCxp(ReciboCaja reciboCaja) {
+        Double pendiente = reciboCaja.getValor();
         try {
             Query query = em.createQuery("SELECT SUM(rc.valor) FROM ReciboCaja rc WHERE rc.transaccion.id = :transaccion AND rc.estado = :est");
             query.setParameter("transaccion", reciboCaja.getId());
             query.setParameter("est", EstadoFactura.REALIZADA.getValor());
-            pendiente = (Long) query.getSingleResult();
+            pendiente = (Double) query.getSingleResult();
             if (pendiente == null) {
                 pendiente = reciboCaja.getValor();
                 return pendiente;
@@ -96,7 +94,6 @@ public class ReciboCajaFacade extends AbstractFacade<ReciboCaja> {
                 }
             }
 
-            
             q.setParameter("trans", reciboCaja.getId());
             reciboCajasTMP = q.getResultList();
             return reciboCajasTMP;
@@ -105,8 +102,8 @@ public class ReciboCajaFacade extends AbstractFacade<ReciboCaja> {
         }
         return reciboCajasTMP;
     }
-    
-    public List<ReciboCaja> getTransaccionesByTipoConceptos(Date fechaIni, Date fechaFin, TipoConcepto tipoConcepto, List<Concepto> conceptos){
+
+    public List<ReciboCaja> getTransaccionesByTipoConceptos(Date fechaIni, Date fechaFin, TipoConcepto tipoConcepto, List<Concepto> conceptos) {
         List<ReciboCaja> reciboCajasTMP;
         try {
             String query = "SELECT rc FROM ReciboCaja rc WHERE rc.fecha BETWEEN :fecha1 AND :fecha2";
@@ -127,11 +124,11 @@ public class ReciboCajaFacade extends AbstractFacade<ReciboCaja> {
             }
             reciboCajasTMP = q.getResultList();
             return reciboCajasTMP;
-            
+
         } catch (NoResultException e) {
             return new ArrayList<>();
         }
-        
+
     }
 
 }

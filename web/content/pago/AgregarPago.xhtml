@@ -92,8 +92,7 @@
                                 <p:selectOneMenu id="cuenta" style="width: 155px; #{nuevaRelacionFacturaController.mostrarCuenta()}" value="#{nuevaRelacionFacturaController.pago.cuenta}" required="#{nuevaRelacionFacturaController.requiereCuenta()}">
                                     <f:selectItems var="cta" value="#{cuentaBancariaController.items}" itemLabel="#{cta.nombre} - #{cta.numeroCuenta}" itemValue="#{tipo.valor}" />
                                 </p:selectOneMenu>
-                                <!-- PUBLICIDAD -->
-                                <!--<p:inputText value="{nuevaRelacionFacturaController.valorPublicidad}" size="15" style="{nuevaRelacionFacturaController.mostrarContado()}" id="publicidad" readonly="true"/>-->                             
+                                <!-- PUBLICIDAD -->                             
                                 <p:commandButton value="Publicidad" process="label_publicidad" update=":PublicidadForm, :growl" id="button_publicidad" style="margin-left: 2px; width: 100%; #{nuevaRelacionFacturaController.mostrarContado()}" actionListener="#{nuevaRelacionFacturaController.prepareList()}" oncomplete="if (args &amp;&amp; !args.validationFailed) PF('PublicidadDialog').show()" disabled="#{nuevaRelacionFacturaController.clienteTMP == null}"/>
                             </p:column>
                         </p:row>
