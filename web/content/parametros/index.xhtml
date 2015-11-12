@@ -151,7 +151,7 @@
                     <div class="ui-grid-row">
                         <div class="ui-grid-col-12">
                             <p:panel header="Parametrización de Conceptos" styleClass="tabla_centrada">
-                                <p:panelGrid columns="6">
+                                <p:panelGrid columns="4">
 
                                     <p:outputLabel value="Concepto Nomina" for="conceptoNomina"/>
                                     <p:autoComplete id="conceptoNomina" value="#{parametrosController.selected.conceptoNomina}" converter="conceptoconverter"
@@ -167,6 +167,11 @@
                                     <p:autoComplete id="conceptoPublicidad" value="#{parametrosController.selected.conceptoPublicidad}" converter="conceptoconverter"
                                                     required="true" minQueryLength="3" itemLabel="#{concepto.toString()}" var="concepto" itemValue="#{concepto}"
                                                     requiredMessage="#{bundle.CreateConceptoPublicidadRequiredMessage}" completeMethod="#{conceptoController.llenarConceptos}"/>
+                                    
+                                    <p:outputLabel value="Concepto Abono" for="conceptoAbono"/>
+                                    <p:autoComplete id="conceptoAbono" value="#{parametrosController.selected.conceptoAbono}" converter="conceptoconverter"
+                                                    required="true" minQueryLength="3" itemLabel="#{concepto.toString()}" var="concepto" itemValue="#{concepto}"
+                                                    requiredMessage="#{bundle.CreateConceptoAbonoRequiredMessage}" completeMethod="#{conceptoController.llenarConceptos}"/>
 
                                 </p:panelGrid>
                             </p:panel>

@@ -104,6 +104,9 @@ public class Parametros implements Serializable {
     @JoinColumn(name = "concepto_publicidad", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Concepto conceptoPublicidad;
+    @JoinColumn(name = "concepto_abono", referencedColumnName = "id", nullable = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private Concepto conceptoAbono;
 
     public Parametros() {
     }
@@ -292,6 +295,14 @@ public class Parametros implements Serializable {
 
     public void setConceptoPublicidad(Concepto conceptoPublicidad) {
         this.conceptoPublicidad = conceptoPublicidad;
+    }
+
+    public Concepto getConceptoAbono() {
+        return conceptoAbono;
+    }
+
+    public void setConceptoAbono(Concepto conceptoAbono) {
+        this.conceptoAbono = conceptoAbono;
     }
 
     @Override

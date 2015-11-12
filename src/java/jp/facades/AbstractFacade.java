@@ -1,6 +1,5 @@
 package jp.facades;
 
-import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -8,7 +7,6 @@ import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import jp.entidades.Pago;
 import jp.entidades.auxiliar.Codificable;
 
 public abstract class AbstractFacade<T> {
