@@ -61,10 +61,11 @@ public class TerceroFacade extends AbstractFacade<Tercero> {
     public Tercero existeDocumento(String documento) {
         Tercero t = null;
         try {
-            String jpql = "SELECT t ROM Tercero t WHERE t.numdocumento = :documento";
+            String jpql = "SELECT t FROM Tercero t WHERE t.numdocumento = :documento";
             Query query = getEntityManager().createQuery(jpql);
             query.setParameter("documento", documento);
             t = (Tercero) query.getSingleResult();
+            return t;
         } catch (Exception e) {
             t = null;
             e.printStackTrace();

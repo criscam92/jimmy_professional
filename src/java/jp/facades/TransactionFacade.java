@@ -1548,6 +1548,7 @@ public class TransactionFacade {
         try {
             userTransaction.begin();
             List<ReciboCaja> reciboCajasByPago;
+
             Query q = getEntityManager().createQuery("SELECT rc FROM ReciboCaja rc WHERE rc.transaccion.id = :trans");
             q.setParameter("trans", reciboCaja.getId());
             reciboCajasByPago = q.getResultList();
@@ -1555,6 +1556,33 @@ public class TransactionFacade {
                 rc.setEstado(EstadoFactura.ANULADO.getValor());
                 getEntityManager().merge(rc);
             }
+
+            Query queryPagoDetalle = em.createQuery("SELECT pd FROM PagoDetalle pd WHERE pd.transaccion.id = :transaccion");
+            queryPagoDetalle.setParameter("transaccion", reciboCaja.getId());
+            List<PagoDetalle> pagosDetalle = queryPagoDetalle.getResultList();
+            Pago pagoTMP = new Pago();
+//            if (pagosDetalle != null || !pagosDetalle.isEmpty()) {
+            for (PagoDetalle pd : pagosDetalle) {
+                if (pd.getTipo() == TipoPagoAbono.PUBLICIDAD.getValor()) {
+                    Query queryPagoPublicidad = em.createQuery("SELECT pb FROM PagoPublicidad pb WHERE pb.pagoDetalle.id = :pd");
+                    queryPagoPublicidad.setParameter("pd", pd.getId());
+                    List<PagoPublicidad> pps = queryPagoPublicidad.getResultList();
+                    for (PagoPublicidad pp : pps) {
+                        em.remove(pp);
+                    }
+
+                }
+                pagoTMP = pd.getPago();
+                
+                pagoTMP.setValorTotal(recalcularValorTotalPago(pagoTMP));
+                if (pagoTMP.getValorTotal() == 0) {
+                    pagoTMP.setEstado(EstadoPago.ANULADO.getValor());
+                }
+                em.remove(pd);
+                em.merge(pagoTMP);
+            }
+//            }
+
             reciboCaja.setEstado(EstadoFactura.ANULADO.getValor());
             getEntityManager().merge(reciboCaja);
             userTransaction.commit();
@@ -1567,5 +1595,18 @@ public class TransactionFacade {
             }
             return false;
         }
+    }
+
+    private Double recalcularValorTotalPago(Pago pagoTMP) {
+        Double valor;
+        try {
+            Query q = em.createQuery("SELECT SUM(pd.valor) FROM PagoDetalle pd WHERE pd.pago.id = :pago");
+            q.setParameter("pago", pagoTMP.getId());
+            valor = (Double) q.getSingleResult();
+            return valor;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0d;
     }
 }
